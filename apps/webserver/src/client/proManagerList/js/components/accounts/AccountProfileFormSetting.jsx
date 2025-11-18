@@ -10,6 +10,7 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  Tooltip,
 } from '@mui/material';
 
 import PencilIcon from '@mui/icons-material/EditOutlined';
@@ -38,7 +39,7 @@ export default function AccountProfileFormSetting() {
     policyList,
     refreshAccountData,
   } = useAccountDetail();
-  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
+  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING']; // only editable when Pending
   const getClassificationsValuesFromArrId = (orgClassificationsArrId) => {
     return orgClassificationsArrId.map((classification) => {
       const classId = parseInt(classification, 10);
@@ -298,16 +299,26 @@ export default function AccountProfileFormSetting() {
             <FieldLabel required aria-label={accountProfileStrings.accountFormLabels.org_website}>
               {accountProfileStrings.accountFormLabels.org_website}
             </FieldLabel>
-            <TextField
-              name="org_website"
-              id="org_website"
-              onChange={(e) => onChangeUpdateField('org_website', e.target.value)}
-              value={accountFormData.org_website}
-              disabled={isEditingDisabled}
-              required
-              size="small"
-              variant="outlined"
-            />
+            <Tooltip
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
+              arrow
+              placement="top"
+            >
+              <TextField
+                name="org_website"
+                id="org_website"
+                onChange={(e) => onChangeUpdateField('org_website', e.target.value)}
+                value={accountFormData.org_website}
+                disabled={isEditingDisabled}
+                required
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
@@ -317,47 +328,67 @@ export default function AccountProfileFormSetting() {
             <FieldLabel required aria-label={accountProfileStrings.accountFormLabels.org_address}>
               {accountProfileStrings.accountFormLabels.org_address}
             </FieldLabel>
-            <TextField
-              name="org_address"
-              id="org_address"
-              onChange={(e) => onChangeUpdateField('org_address', e.target.value)}
-              value={accountFormData.org_address}
-              disabled={isEditingDisabled}
-              required
-              size="small"
-              variant="outlined"
-            />
+            <Tooltip
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
+              arrow
+              placement="top"
+            >
+              <TextField
+                name="org_address"
+                id="org_address"
+                onChange={(e) => onChangeUpdateField('org_address', e.target.value)}
+                value={accountFormData.org_address}
+                disabled={isEditingDisabled}
+                required
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12} alignSelf="center">
           <Grid container>
-            <FormControlLabel
-              label={
-                <FieldLabel
-                  htmlFor="is_subsidiary"
-                  disabled={isEditingDisabled}
-                  aria-label={accountProfileStrings.accountFormLabels.is_subsidiary}
-                  sx={{ marginBottom: 0 }}
-                >
-                  {accountProfileStrings.accountFormLabels.is_subsidiary}
-                </FieldLabel>
+            <Tooltip
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
               }
-              labelPlacement="end"
-              control={
-                <Checkbox
-                  checked={Boolean(accountFormData.is_subsidiary)}
-                  disabled={isEditingDisabled}
-                  inputProps={{
-                    disabled: isEditingDisabled,
-                  }}
-                  name="is_subsidiary"
-                  id="is_subsidiary"
-                  onChange={(event) => onChangeUpdateField('is_subsidiary', event.target.checked)}
-                />
-              }
-            />
+              arrow
+              placement="top"
+            >
+              <FormControlLabel
+                label={
+                  <FieldLabel
+                    htmlFor="is_subsidiary"
+                    disabled={isEditingDisabled}
+                    aria-label={accountProfileStrings.accountFormLabels.is_subsidiary}
+                    sx={{ marginBottom: 0 }}
+                  >
+                    {accountProfileStrings.accountFormLabels.is_subsidiary}
+                  </FieldLabel>
+                }
+                labelPlacement="end"
+                control={
+                  <Checkbox
+                    checked={Boolean(accountFormData.is_subsidiary)}
+                    disabled={isEditingDisabled}
+                    inputProps={{
+                      disabled: isEditingDisabled,
+                    }}
+                    name="is_subsidiary"
+                    id="is_subsidiary"
+                    onChange={(event) => onChangeUpdateField('is_subsidiary', event.target.checked)}
+                  />
+                }
+              />
+            </Tooltip>
           </Grid>
         </Grid>
         <Grid item sm={6} xs={12}>
@@ -368,16 +399,26 @@ export default function AccountProfileFormSetting() {
             >
               {accountProfileStrings.accountFormLabels.parent_org_name}
             </FieldLabel>
-            <TextField
-              name="parent_org_name"
-              id="parent_org_name"
-              onChange={(e) => onChangeUpdateField('parent_org_name', e.target.value)}
-              value={accountFormData.parent_org_name}
-              disabled={!accountFormData.is_subsidiary && isEditingDisabled}
-              required={accountFormData.is_subsidiary}
-              size="small"
-              variant="outlined"
-            />
+            <Tooltip
+              title={
+                !accountFormData.is_subsidiary && isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
+              arrow
+              placement="top"
+            >
+              <TextField
+                name="parent_org_name"
+                id="parent_org_name"
+                onChange={(e) => onChangeUpdateField('parent_org_name', e.target.value)}
+                value={accountFormData.parent_org_name}
+                disabled={!accountFormData.is_subsidiary && isEditingDisabled}
+                required={accountFormData.is_subsidiary}
+                size="small"
+                variant="outlined"
+              />
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
@@ -390,18 +431,30 @@ export default function AccountProfileFormSetting() {
             >
               {accountProfileStrings.accountFormLabels.arr_org_classification}
             </FieldLabel>
-            <Select
-              id="classificationFieldOptions"
-              required
-              disabled={isEditingDisabled}
-              placeholder={profilePage.profileManager.multiselectPrompt}
-              isMulti
-              isSearchable
-              maxMenuHeight={150}
-              options={classificationFieldOptions}
-              onChange={setAccountClassificationsFieldValue}
-              value={accountClassificationsFieldValue}
-            />
+            <Tooltip
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
+              arrow
+              placement="top"
+            >
+              <div>
+                <Select
+                  id="classificationFieldOptions"
+                  required
+                  isDisabled={isEditingDisabled}
+                  placeholder={profilePage.profileManager.multiselectPrompt}
+                  isMulti
+                  isSearchable
+                  maxMenuHeight={150}
+                  options={classificationFieldOptions}
+                  onChange={setAccountClassificationsFieldValue}
+                  value={accountClassificationsFieldValue}
+                />
+              </div>
+            </Tooltip>
           </Grid>
         </Grid>
         <Grid item sm={6} xs={12}>
@@ -412,16 +465,28 @@ export default function AccountProfileFormSetting() {
             >
               {accountProfileStrings.accountFormLabels.arr_org_policy}
             </FieldLabel>
-            <Select
-              required
-              disabled={isEditingDisabled}
-              isMulti
-              isSearchable
-              maxMenuHeight={150}
-              options={policyFieldOptions}
-              onChange={(results) => setAccountPoliciesFieldValue(results)}
-              value={accountPolicySelectedList}
-            />
+            <Tooltip
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
+              arrow
+              placement="top"
+            >
+              <div>
+                <Select
+                  required
+                  isDisabled={isEditingDisabled}
+                  isMulti
+                  isSearchable
+                  maxMenuHeight={150}
+                  options={policyFieldOptions}
+                  onChange={(results) => setAccountPoliciesFieldValue(results)}
+                  value={accountPolicySelectedList}
+                />
+              </div>
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
@@ -431,48 +496,59 @@ export default function AccountProfileFormSetting() {
             <FieldLabel aria-label={accountProfileStrings.accountFormLabels.subscription_status_id}>
               {accountProfileStrings.accountFormLabels.subscription_status_id}
             </FieldLabel>
-            <FormControl fullWidth>
-              <SelectMui
-                size="small"
-                disabled={accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']}
-                required
-                value={
-                  accountFormData.subscription_status_id !== null
-                    ? accountFormData.subscription_status_id
-                    : ACCOUNT_ORG_STATUSES['PENDING']
-                }
-                name="subscription_status_id"
-                onChange={(event) =>
-                  onChangeUpdateField('subscription_status_id', event.target.value)
-                }
-                sx={{
-                  ...disabledStyles,
-                }}
-              >
-                {subscriptionStatusOptions.map((subsOptions, index) => (
-                  <MenuItem key={`status-${index}`} value={subsOptions.value}>
-                    {subsOptions.label}
-                  </MenuItem>
-                ))}
-              </SelectMui>
-            </FormControl>
+            <Tooltip
+              title={
+                accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']
+                  ? 'Subscription status cannot be edited while account status is Pending'
+                  : ''
+              }
+              arrow
+              placement="top"
+            >
+              <FormControl fullWidth>
+                <SelectMui
+                  size="small"
+                  disabled={accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']}
+                  required
+                  value={
+                    accountFormData.subscription_status_id !== null
+                      ? accountFormData.subscription_status_id
+                      : ACCOUNT_ORG_STATUSES['PENDING']
+                  }
+                  name="subscription_status_id"
+                  onChange={(event) =>
+                    onChangeUpdateField('subscription_status_id', event.target.value)
+                  }
+                  sx={{
+                    ...disabledStyles,
+                  }}
+                >
+                  {subscriptionStatusOptions.map((subsOptions, index) => (
+                    <MenuItem key={`status-${index}`} value={subsOptions.value}>
+                      {subsOptions.label}
+                    </MenuItem>
+                  ))}
+                </SelectMui>
+              </FormControl>
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>
-      <Grid container spacing={2} rowSpacing={2}>
-        <Grid item sm={6} xs={12}>
-          <div className="account-profile-submit-button-container">
-            <PillButton
-              variant="contained"
-              size="small"
-              classNames={`${isEditingDisabled ? 'hide' : ''}`}
-              onClick={() => updateProAccount(accountFormData)}
-            >
-              Save
-            </PillButton>
-          </div>
+      {!isEditingDisabled && (
+        <Grid container spacing={2} rowSpacing={2}>
+          <Grid item sm={6} xs={12}>
+            <div className="account-profile-submit-button-container">
+              <PillButton
+                variant="contained"
+                size="small"
+                onClick={() => updateProAccount(accountFormData)}
+              >
+                Save
+              </PillButton>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
       <AccountNameChangeDialog
         open={isModalOpen}
         initialValue={accountFormData.org_name}

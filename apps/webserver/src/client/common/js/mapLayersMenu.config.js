@@ -137,6 +137,13 @@ const forestChangeLayers = [
     ignored: true,
     order: 118,
   },
+  {
+    id: proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    ignored: true,
+    order: 119,
+  },
 ];
 
 const landCoverLayers = [

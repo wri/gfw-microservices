@@ -158,12 +158,29 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
         } else {
           // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
           if (action.data === proLayers.disturbanceAlertsDriversId) {
-            return newLayers.filter(
-              (layer) => layer !== proLayers.disturbanceAlertsDriversGeographicCoverageId
+            const index = newLayers.indexOf(proLayers.disturbanceAlertsDriversGeographicCoverageId);
+            if (index > -1) {
+              newLayers.splice(index, 1);
+            }
+          }
+          // If removing globalIntegratedDisturbanceAlertsId, also remove its geographic coverage layers
+          if (action.data === proLayers.globalIntegratedDisturbanceAlertsId) {
+            const globalVegIndex = newLayers.indexOf(
+              proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
             );
+            if (globalVegIndex > -1) {
+              newLayers.splice(globalVegIndex, 1);
+            }
+            const integratedIndex = newLayers.indexOf(
+              proLayers.integratedAlertsGeographicCoverageID
+            );
+            if (integratedIndex > -1) {
+              newLayers.splice(integratedIndex, 1);
+            }
           }
         }
       }
+
       return newLayers;
     }
   } else {

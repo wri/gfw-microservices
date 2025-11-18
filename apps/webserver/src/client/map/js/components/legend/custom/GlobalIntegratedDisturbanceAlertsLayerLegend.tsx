@@ -61,9 +61,9 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
     }
   };
 
-  const toggleGeographicCoverageLayer = () => {
+  const toggleGeographicCoverageLayer = (layer: string) => {
     if (!disabled) {
-      dispatch(toggleLayer(proLayers.integratedAlertsGeographicCoverageID));
+      dispatch(toggleLayer(layer));
     }
   };
 
@@ -142,7 +142,9 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
       <Typography sx={{ fontSize: '0.875rem', marginTop: '10px' }}>Geographic coverage</Typography>
       <Box style={{ padding: 0, marginTop: 0 }}>
         <Box
-          onClick={toggleGeographicCoverageLayer}
+          onClick={() =>
+            toggleGeographicCoverageLayer(proLayers.integratedAlertsGeographicCoverageID)
+          }
           className={`layer-checkbox ${
             visibleLayers.includes(proLayers.integratedAlertsGeographicCoverageID) ? 'active' : ''
           }`}
@@ -161,8 +163,18 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
             GLAD-L, GLAD-S2 and/or RADD alerts (tropics)
           </span>
         </Box>
-        {/* TODO: Remove comment when enabling the Disturbance alerts (global) alerts coverage layer */}
-        {/* <Box className={`layer-checkbox`}>
+        <Box
+          onClick={() =>
+            toggleGeographicCoverageLayer(
+              proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
+            )
+          }
+          className={`layer-checkbox ${
+            visibleLayers.includes(proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId)
+              ? 'active'
+              : ''
+          }`}
+        >
           <span className="toggle-switch pointer">
             <span />
           </span>
@@ -176,7 +188,7 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
           <span className="layer-checkbox-label pointer" style={{ paddingLeft: 0 }}>
             Disturbance alerts (global)
           </span>
-        </Box> */}
+        </Box>
       </Box>
       <DateRangeSlider
         startDate={globalIntegratedDisturbanceAlertsFilter.startDate}

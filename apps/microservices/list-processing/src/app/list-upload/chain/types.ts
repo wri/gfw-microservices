@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { updateListsUploadStatus } from '../shared/update.lists.upload.status';
 import { formatDurationStr, formatHeapUsed } from '../shared/performance.utils';
+import { yieldIfLong } from './shared';
 
 export type AttributeType = {
   [x: string]: string;
@@ -72,6 +73,7 @@ export abstract class AbstractHandler<T> implements Handler<T> {
   static async runFullChain<T>(chain: AbstractHandler<T>, chainType: T): Promise<T> {
     let nextJob = chain;
     let result: T = chainType;
+    let lastYieldTimestamp = Date.now();
     await AbstractHandler.updateListsUploadStatus(
       result as ChainType,
       'Starting list upload process - ' + chain.constructor.name
@@ -80,8 +82,8 @@ export abstract class AbstractHandler<T> implements Handler<T> {
       const start = performance.now();
       try {
         result = await nextJob.handle(result);
-        // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // periodically yield to avoid CPU overload that may trigger AWS ECS health check failure
+        lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
       } catch (error) {
         const err: unknown = error;
         const { statusCode, stack, message } = AbstractHandler.parseError(err);

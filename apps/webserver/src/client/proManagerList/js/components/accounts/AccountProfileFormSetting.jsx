@@ -300,7 +300,11 @@ export default function AccountProfileFormSetting() {
               {accountProfileStrings.accountFormLabels.org_website}
             </FieldLabel>
             <Tooltip
-              title={isEditingDisabled ? "This field can only be edited when account status is Pending" : ""}
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
               arrow
               placement="top"
             >
@@ -325,7 +329,11 @@ export default function AccountProfileFormSetting() {
               {accountProfileStrings.accountFormLabels.org_address}
             </FieldLabel>
             <Tooltip
-              title={isEditingDisabled ? "This field can only be edited when account status is Pending" : ""}
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
               arrow
               placement="top"
             >
@@ -347,7 +355,11 @@ export default function AccountProfileFormSetting() {
         <Grid item sm={6} xs={12} alignSelf="center">
           <Grid container>
             <Tooltip
-              title={isEditingDisabled ? "This field can only be edited when account status is Pending" : ""}
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
               arrow
               placement="top"
             >
@@ -390,8 +402,8 @@ export default function AccountProfileFormSetting() {
             <Tooltip
               title={
                 !accountFormData.is_subsidiary && isEditingDisabled
-                  ? "This field can only be edited when account status is Pending"
-                  : ""
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
               }
               arrow
               placement="top"
@@ -420,7 +432,11 @@ export default function AccountProfileFormSetting() {
               {accountProfileStrings.accountFormLabels.arr_org_classification}
             </FieldLabel>
             <Tooltip
-              title={isEditingDisabled ? "This field can only be edited when account status is Pending" : ""}
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
               arrow
               placement="top"
             >
@@ -450,7 +466,11 @@ export default function AccountProfileFormSetting() {
               {accountProfileStrings.accountFormLabels.arr_org_policy}
             </FieldLabel>
             <Tooltip
-              title={isEditingDisabled ? "This field can only be edited when account status is Pending" : ""}
+              title={
+                isEditingDisabled
+                  ? 'This field can only be edited when account status is Pending'
+                  : ''
+              }
               arrow
               placement="top"
             >
@@ -479,8 +499,8 @@ export default function AccountProfileFormSetting() {
             <Tooltip
               title={
                 accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']
-                  ? "Subscription status cannot be edited while account status is Pending"
-                  : ""
+                  ? 'Subscription status cannot be edited while account status is Pending'
+                  : ''
               }
               arrow
               placement="top"

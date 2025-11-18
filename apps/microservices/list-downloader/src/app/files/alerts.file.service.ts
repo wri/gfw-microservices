@@ -112,10 +112,8 @@ export class AlertsFileService extends IPipeService {
     }
 
     try {
-      const {
-        getFeatureFlagsForCurrentOrg,
-        getClientIdByClientStoreDatabaseName,
-      } = await featureFlagsService(this.clientStoreConnection);
+      const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+        await featureFlagsService(this.clientStoreConnection);
 
       const organizationId = await getClientIdByClientStoreDatabaseName(organizationDatabase);
       const featureFlags = await getFeatureFlagsForCurrentOrg(organizationId);

@@ -170,7 +170,7 @@ module.exports = (app, limiter) => {
       }
 
       const response = await fetch(
-        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json',
+        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
         {
           method: 'POST',
           headers: {

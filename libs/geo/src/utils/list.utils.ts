@@ -438,8 +438,7 @@ export async function setListAnalysisStatus(
   clientDatabase: string,
   listId: number,
   analysisIds: string[],
-  status: number = listStatus.Pending,
-  isFromEAPI = false
+  status: number = listStatus.Pending
 ) {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
@@ -447,6 +446,7 @@ export async function setListAnalysisStatus(
 
   // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
+
   await Promise.all(
     analysisIds
       .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
@@ -459,6 +459,7 @@ export async function setListAnalysisStatus(
         if (!normalizedAnalysisId) {
           throw new Error(`Invalid analysisId: ${analysisId}`);
         }
+
         const value = {
           status,
           errorInfo: null,
@@ -468,6 +469,7 @@ export async function setListAnalysisStatus(
           bundleCreationTime: null,
           options: null,
         };
+
         if (
           isPalmRiskIncluded &&
           normalizedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
@@ -479,20 +481,19 @@ export async function setListAnalysisStatus(
         const existingRecord = await listAnalysisStatusRepository.findOne({
           where: { listId, analysisId: normalizedAnalysisId },
         });
-        // Update or save GHG record only for EAPI
-        if (isFromEAPI || normalizedAnalysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS) {
-          if (existingRecord) {
-            await listAnalysisStatusRepository.update(
-              { listId, analysisId: normalizedAnalysisId },
-              value
-            );
-          } else {
-            await listAnalysisStatusRepository.save({
-              listId,
-              analysisId: normalizedAnalysisId,
-              ...value,
-            });
-          }
+
+        // Save or update for ALL analysis types (including GHG)
+        if (existingRecord) {
+          await listAnalysisStatusRepository.update(
+            { listId, analysisId: normalizedAnalysisId },
+            value
+          );
+        } else {
+          await listAnalysisStatusRepository.save({
+            listId,
+            analysisId: normalizedAnalysisId,
+            ...value,
+          });
         }
       })
   );
@@ -502,18 +503,11 @@ export async function setListAnalysisStatusByTypes(
   clientDatabase: string,
   listId: number,
   analysisTypesToProcess: string,
-  status: number = listStatus.Pending,
-  isFromEAPI = false
+  status: number = listStatus.Pending
 ) {
   const analysisTypesToUpdate = analysisTypesToProcess
     .split(',')
     .map((type) => type.trim())
     .filter(Boolean);
-  return await setListAnalysisStatus(
-    clientDatabase,
-    listId,
-    analysisTypesToUpdate,
-    status,
-    isFromEAPI
-  );
+  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status);
 }

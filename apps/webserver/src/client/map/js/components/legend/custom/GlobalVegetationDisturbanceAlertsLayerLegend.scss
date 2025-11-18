@@ -1,0 +1,26 @@
+.global-vegetation-disturbance-alerts-layer-legend {
+  &__vegetation {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+
+    label {
+      font-size: 0.8125rem;
+      text-transform: none;
+    }
+
+    .MuiSelect-select {
+      padding-right: 2px;
+      padding-left: 8px;
+      padding-top: 1px;
+      padding-bottom: 1px;
+      font-size: 0.8125rem;
+    }
+
+    .MuiOutlinedInput-root {
+      &.Mui-focused .MuiOutlinedInput-notchedOutline {
+        border-color: #9fc642;
+      }
+    }
+  }
+}

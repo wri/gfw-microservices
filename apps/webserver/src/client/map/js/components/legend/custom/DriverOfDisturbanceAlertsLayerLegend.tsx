@@ -1,54 +1,32 @@
-import store from '../../../store';
-import { useState } from 'react';
-import { Slider, Typography, Box } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
 import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
 import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
-('../constants/actionTypes');
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
+import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
+import { DateRangeSlider } from '../../../../../components';
 
 import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
 export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
-  const { driverOfDisturbanceAlertsFilter, visibleLayers } = store.getState();
+  const dispatch = useDispatch();
+  const { driverOfDisturbanceAlertsFilter, visibleLayers } = useSelector(
+    (state: MapReducerRootState) => ({
+      driverOfDisturbanceAlertsFilter: state.driverOfDisturbanceAlertsFilter,
+      visibleLayers: state.visibleLayers,
+    })
+  );
 
-  const initialStartDate = new Date(driverOfDisturbanceAlertsFilter.startDate).getTime();
-  const initialEndDate = new Date(driverOfDisturbanceAlertsFilter.endDate).getTime();
-  const minDate = new Date(driverOfDisturbanceAlertsDateRange[0]).getTime();
-  const maxDate = new Date(driverOfDisturbanceAlertsDateRange[1]).getTime();
-
-  const [dateRange, setDateRange] = useState([initialStartDate, initialEndDate]);
-
-  const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toISOString().split('T')[0];
-  };
-
-  const formatDisplayDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
-
-  const handleDateChange = (event, newValue) => {
-    setDateRange(newValue);
-  };
+  const { startDate, endDate } = driverOfDisturbanceAlertsFilter;
 
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
-      store.dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
+      dispatch(toggleLayer(proLayers.disturbanceAlertsDriversGeographicCoverageId));
     }
   };
 
-  const handleDateChangeCommitted = (event, newValue) => {
-    const [newStartTimestamp, newEndTimestamp] = newValue;
-    const newStartDate = formatDate(newStartTimestamp);
-    const newEndDate = formatDate(newEndTimestamp);
-
-    store.dispatch({
+  const handleDateChange = (newStartDate: string, newEndDate: string) => {
+    dispatch({
       type: UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
       payload: {
         startDate: newStartDate,
@@ -187,42 +165,14 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
           </li>
         </div>
       </ul>
-      <Box sx={{ pl: 2, pr: 5, py: 2 }}>
-        <Typography variant="body2" gutterBottom>
-          From {formatDisplayDate(dateRange[0])} to {formatDisplayDate(dateRange[1])}
-        </Typography>
-        <Slider
-          value={dateRange}
-          onChange={handleDateChange}
-          onChangeCommitted={handleDateChangeCommitted}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(value) => formatDisplayDate(value)}
-          min={minDate}
-          max={maxDate}
-          step={86400000}
-          marks={[
-            { value: minDate, label: formatDisplayDate(minDate) },
-            { value: maxDate, label: formatDisplayDate(maxDate) },
-          ]}
-          disabled={disabled}
-          sx={{
-            color: '#97bd3d',
-            '& .MuiSlider-thumb': {
-              width: 16,
-              height: 16,
-            },
-            '& .MuiSlider-markLabel': {
-              fontSize: '0.75rem',
-            },
-            '& .MuiSlider-markLabel[data-index="0"]': {
-              left: '5% !important',
-            },
-            '& .MuiSlider-markLabel[data-index="1"]': {
-              left: '90% !important',
-            },
-          }}
-        />
-      </Box>
+      <DateRangeSlider
+        startDate={startDate}
+        endDate={endDate}
+        minDate={driverOfDisturbanceAlertsDateRange[0]}
+        maxDate={driverOfDisturbanceAlertsDateRange[1]}
+        disabled={disabled}
+        onDateChange={handleDateChange}
+      />
       <div
         style={{ padding: 0, marginTop: 0 }}
         onClick={toggleGeographicCoverageLayer}

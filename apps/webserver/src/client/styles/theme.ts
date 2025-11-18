@@ -22,7 +22,8 @@ export const theme = createTheme({
     secondary: {
       main: '#58A9CD', // TODO should be the same as 500, sync up with design team
       light: '#D4EAFC',
-      contrastText: '#1A210B',
+      contrastText: '#13487A',
+      dark: '#007ED8',
       100: '#F6F5FF',
       200: '#E8E6FB',
       300: '#D0CBF6',

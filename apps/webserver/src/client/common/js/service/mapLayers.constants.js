@@ -1210,7 +1210,7 @@ export const mapLayers = [
     id: 'aafb62d4-2040-4a07-9d4d-f6e17270243d',
     type: 'layer',
     attributes: {
-      name: 'SBTN Natural Forest',
+      name: proLayers.sbtnNaturalLands,
       slug: 'SBTN-Natural-Forest',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
       description: 'Science Based Targets Network Natural Forest',
@@ -1273,7 +1273,7 @@ export const mapLayers = [
               },
             ],
             source: 'Science Based Targets Network',
-            name: 'SBTN Natural Forest',
+            name: proLayers.sbtnNaturalLands,
           },
         ],
         type: 'basic',
@@ -2513,7 +2513,7 @@ export const mapLayers = [
           {
             color: '#c6a541',
             categories: [],
-            name: 'Disturbance Alerts Drivers',
+            name: proLayers.disturbanceAlertsDriversId,
           },
         ],
       },
@@ -2688,6 +2688,49 @@ export const mapLayers = [
       staticImageConfig: {},
       createdAt: '2021-04-16T08:25:16.353Z',
       updatedAt: '2021-12-14T18:24:42.065Z',
+    },
+  },
+  {
+    id: 'b696ec7a-2852-468a-a907-b2cf4f544b91',
+    type: 'layer',
+    attributes: {
+      name: proLayers.globalVegetationDisturbanceAlertsId,
+      slug: 'global-vegetation-disturbance-alerts',
+      dataset: '7b5c2316-8f97-41de-a268-06dc735cc8e9',
+      description: proLayers.globalVegetationDisturbanceAlertsId,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '596cde70824315350dd0f116',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b91-1686786379679.png',
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          metadata: 'gfw_global_vegetation_disturbance_alerts_metadata',
+          url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts/v20251108/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+        },
+      },
+      legendConfig: {
+        type: 'basic',
+        items: [
+          {
+            color: '#c6a541',
+            categories: [],
+            name: proLayers.globalVegetationDisturbanceAlertsId,
+          },
+        ],
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-12-06T22:12:06.352Z',
+      updatedAt: '2023-06-14T23:46:19.625Z',
     },
   },
 ];

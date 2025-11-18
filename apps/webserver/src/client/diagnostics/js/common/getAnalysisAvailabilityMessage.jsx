@@ -1,5 +1,7 @@
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import { formatDateForCurrentBrowserLanguage } from '../../../common/js/utils/format';
+import AlertBanner from '../../../listDetails/js/components/lists/ListDetails/AlertBanner';
+import InfoIcon from '@mui/icons-material/Info';
 
 const getAnalysisAvailabilityMessage = (listAnalysesStatus, isLegacyAnalysis = false) => {
   const { Pending, Draft } = listStatus;
@@ -26,7 +28,13 @@ const getAnalysisAvailabilityMessage = (listAnalysesStatus, isLegacyAnalysis = f
   }
 
   const DiagnosticsStatusMessage = message && (
-    <h4 style={{ color: '#ed1846', padding: '50px 300px', textAlign: 'center' }}>{message}</h4>
+    <AlertBanner
+      backgroundColor="#FFFFFF"
+      color="#5C5959"
+      borderColor="#E7E6E6"
+      icon={<InfoIcon sx={{ color: '#5C5959' }} />}
+      message={message}
+    />
   );
 
   return { DiagnosticsStatusMessage, isListBeingAnalyzed };

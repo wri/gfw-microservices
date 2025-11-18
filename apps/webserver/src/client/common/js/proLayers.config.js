@@ -4,7 +4,7 @@
 export const proLayers = {
   argentineanNativeForestsLoss: 'argentinean-native-forests-loss',
   jrcGlobalForestCover: 'jrc_global_forest_cover',
-  sBTNNaturalForest: 'SBTN Natural Forest',
+  sbtnNaturalLands: 'SBTN Natural Lands',
   negligibleRisk: 'Negligible Risk',
   cocoaDeforestationRisk: 'cocoa_deforestation_risk',
   otbn: 'Land Planning Classification of Native Forests',
@@ -48,6 +48,7 @@ export const proLayers = {
   oilPalmConcessions: 'Oil Palm Concessions', // GFW list
   protectedAreas: 'WDPA Esri', // GFW list
   universalMillList: 'Universal Mill List', // GFW list: Palm Oil Mills
+  globalVegetationDisturbanceAlertsId: 'Global vegetation disturbance alerts (DIST-ALERT)',
 
   // the next are not layers present in the map layer API as the previous ones
   // but they are constants that we use through the application

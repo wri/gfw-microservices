@@ -411,16 +411,32 @@ describe('ListAnalysisService', () => {
     let axiosPostSpy: jest.SpyInstance;
     let checkIfS3FileExistsSpy: jest.SpyInstance;
 
+    let externalUploadRepositoryMock;
+    let listsUploadStatusRepositoryMock;
+
     beforeEach(() => {
-      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-        getRepository: () => ({
-          findOne: jest.fn().mockResolvedValue({
-            id: 99,
-            userId: 7,
-            uploadKeyFile: 'mock-key.csv',
-          }),
+      externalUploadRepositoryMock = {
+        findOne: jest.fn().mockResolvedValue({
+          id: 99,
+          userId: 7,
+          uploadKeyFile: 'mock-key.csv',
         }),
-      });
+        save: jest.fn(),
+      };
+
+      listsUploadStatusRepositoryMock = {
+        find: jest.fn().mockResolvedValue([]),
+      };
+
+      clientStoreConnection.getConnection = jest
+        .fn()
+        .mockResolvedValueOnce({
+          getRepository: jest.fn().mockReturnValue(externalUploadRepositoryMock),
+          options: { database: ':memory:' },
+        })
+        .mockResolvedValue({
+          getRepository: jest.fn().mockReturnValue(listsUploadStatusRepositoryMock),
+        });
 
       saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
 
@@ -434,6 +450,43 @@ describe('ListAnalysisService', () => {
     afterEach(() => {
       checkIfS3FileExistsSpy.mockRestore();
       axiosPostSpy.mockRestore();
+    });
+
+    it('should return 402 when processing limit is detected after successful process-list response', async () => {
+      axiosPostSpy.mockImplementation((url: string) => {
+        if (url.includes('/api/create-large-list')) {
+          return Promise.resolve({ data: { list_id: 456 } });
+        }
+
+        if (url.includes('/api/save-list-to-process')) {
+          return Promise.resolve({ data: { list_id: 456, s3_location: 's3://bucket/key' } });
+        }
+
+        if (url.includes('/api/process-list')) {
+          return Promise.resolve({
+            data: {
+              executionArn: 'arn:aws:states:::startExecution',
+              startDate: new Date().toISOString(),
+            },
+          });
+        }
+
+        return Promise.resolve({});
+      });
+
+      listsUploadStatusRepositoryMock.find.mockResolvedValueOnce([
+        {
+          lastSuccessfulStage: 'List size limit exceeded',
+          errorInfo: 'List exceeds the maximum allowed size of 150000 locations.',
+        },
+      ]);
+
+      await expect(
+        service.uploadNewList(mockUploadRequest as any, organizationId)
+      ).rejects.toMatchObject({
+        status: HttpStatus.PAYMENT_REQUIRED,
+        response: { errorDetails: 'Analysis limit reached' },
+      });
     });
 
     it('should return 402 when analysis limit is reached while processing the list', async () => {

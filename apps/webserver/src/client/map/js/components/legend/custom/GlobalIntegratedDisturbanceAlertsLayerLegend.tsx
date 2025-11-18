@@ -161,7 +161,8 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
             GLAD-L, GLAD-S2 and/or RADD alerts (tropics)
           </span>
         </Box>
-        <Box className={`layer-checkbox`}>
+        {/* TODO: Remove comment when enabling the Disturbance alerts (global) alerts coverage layer */}
+        {/* <Box className={`layer-checkbox`}>
           <span className="toggle-switch pointer">
             <span />
           </span>
@@ -175,7 +176,7 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
           <span className="layer-checkbox-label pointer" style={{ paddingLeft: 0 }}>
             Disturbance alerts (global)
           </span>
-        </Box>
+        </Box> */}
       </Box>
       <DateRangeSlider
         startDate={globalIntegratedDisturbanceAlertsFilter.startDate}

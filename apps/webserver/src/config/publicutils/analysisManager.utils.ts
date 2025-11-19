@@ -527,7 +527,7 @@ export async function getDraftListLocationData(list_id, page, pageSize, clientDa
     },
     {
       field: 'hasError',
-      type: sql.Bit(),
+      type: sql.Bit,
       value: hasError ? hasError : null,
     },
     {
@@ -619,7 +619,7 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     },
     {
       field: 'hasError',
-      type: sql.Bit(),
+      type: sql.Bit,
       value: hasError ? hasError : null,
     },
   ];
@@ -716,7 +716,7 @@ export async function getAlertsListAnalyses(list_id, page, pageSize, clientDatab
     },
     {
       field: 'hasError',
-      type: sql.Bit(),
+      type: sql.Bit,
       value: hasError ? hasError : null,
     },
     {

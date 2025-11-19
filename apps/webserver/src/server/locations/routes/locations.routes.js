@@ -24,7 +24,6 @@ const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.u
 import config from '../../../config/config';
 
 import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
-import { mockAlertsAnalysisResponse } from '../utils/locations.utils';
 
 /**
  * @name exports

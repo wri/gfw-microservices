@@ -13,7 +13,8 @@ CREATE TABLE #activity_data (
   activity_time DATETIME NOT NULL,
   activity_type_id INT NOT NULL,
   activity_type VARCHAR(MAX) NOT NULL,
-  activity_type_category VARCHAR(MAX) NOT NULL
+  activity_type_category VARCHAR(MAX) NOT NULL,
+  download_file_type VARCHAR(50) NULL
 );
 
 DECLARE @org_id INT
@@ -48,7 +49,7 @@ BEGIN
       INSERT INTO #activity_data (
         org_id, org_name, org_database, user_id, user_email,
         activity_description, activity_time, activity_type_id,
-        activity_type, activity_type_category
+        activity_type, activity_type_category, download_file_type
       )
       SELECT
         @org_id AS org_id,
@@ -60,7 +61,20 @@ BEGIN
         AL.activity_time,
         AL.activity_type_id,
         ISNULL(AT.activity_type_name, ''Unknown'') AS activity_type,
-        ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category
+        ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category,
+        -- Extract file type from download activity descriptions
+        -- Activity types 42-45 correspond to ListDetailsDownload, ListLandingDownload, 
+        -- ListDashboardDownload, ListDiagnosticsDownload from listActivityTypesEnum.ts
+        -- Pattern: "List Download: <FileType> for list..." so we extract what comes after the colon and before " for"
+        CASE
+          WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: % for list%'' 
+          THEN LOWER(LTRIM(RTRIM(SUBSTRING(
+            AL.activity_description,
+            CHARINDEX('':'', AL.activity_description) + 1,
+            CHARINDEX('' for list'', AL.activity_description) - CHARINDEX('':'', AL.activity_description) - 1
+          ))))
+          ELSE NULL
+        END AS download_file_type
       FROM [' + @db_name + '].dbo.ActivityLog AL
       LEFT JOIN [' + @db_name + '].dbo.Users U ON U.id = AL.user_id
       LEFT JOIN gfwpro.dbo.ActivityType AT ON AT.id = AL.activity_type_id

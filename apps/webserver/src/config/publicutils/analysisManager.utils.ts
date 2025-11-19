@@ -30,7 +30,9 @@ import {
   getPaginatedLocationsByListIdSortedByFilters,
   PaginatedLocationsByListIdSortedByFilters,
   getPaginatedAfiAnalysisByListIdSortedByFilters,
+  getPaginatedAlertsAnalysisByListIdSortedByFilters,
   PaginatedAfiAnalysisByListIdSortedByFilters,
+  PaginatedAlertsAnalysisByListIdSortedByFilters,
   getDashboardDataPaginated,
   DashboardDataPaginated,
   CountDashboardDataType,
@@ -641,6 +643,111 @@ export async function getAFIListAnalyses(list_id, page, pageSize, clientDatabase
     getPaginatedAfiAnalysisByListIdSortedByFilters,
     parameters
   );
+
+  const numberOfResults = listAnalyses?.[0]?.totalRows;
+
+  const formattedListAnalyses = listAnalyses.map((analysis) => {
+    return {
+      ...analysis,
+      list_id: analysis.listId,
+      location_id: analysis.locationId,
+    };
+  });
+
+  return { listAnalyses: formattedListAnalyses, numberOfResults };
+}
+
+export async function getAlertsListAnalyses(list_id, page, pageSize, clientDatabase, filters) {
+  const {
+    orderType,
+    sortByAttribute,
+    searchString,
+    country,
+    state,
+    subState,
+    hasError,
+    startDate,
+    endDate,
+
+    // commodity risk filters:
+    selectedSupplier,
+    selectedSecondSupplier,
+    selectedParentCompany,
+    showRSPOCertified,
+  } = filters;
+
+  const parameters = [
+    { field: 'listId', type: sql.Int, value: list_id },
+    { field: 'rowsOfPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page },
+    { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
+    {
+      field: 'selectedSecondSupplier',
+      type: sql.NVarChar(255),
+      value:
+        selectedSecondSupplier !== '' && selectedSecondSupplier ? selectedSecondSupplier : null,
+    },
+    {
+      field: 'selectedParentCompany',
+      type: sql.NVarChar(255),
+      value: selectedParentCompany !== '' && selectedParentCompany ? selectedParentCompany : null,
+    },
+    { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+    {
+      field: 'SearchString',
+      type: sql.NVarChar(255),
+      value: searchString !== '' && searchString ? searchString : null,
+    },
+    {
+      field: 'Country',
+      type: sql.NVarChar(255),
+      value: country !== '' && country ? country : null,
+    },
+    {
+      field: 'State',
+      type: sql.NVarChar(255),
+      value: state !== '' && state ? state : null,
+    },
+    {
+      field: 'SubState',
+      type: sql.NVarChar(255),
+      value: subState !== '' && subState ? subState : null,
+    },
+    {
+      field: 'hasError',
+      type: sql.Bit(),
+      value: hasError ? hasError : null,
+    },
+    {
+      field: 'startDate',
+      type: sql.Date,
+      value: startDate || null,
+    },
+    {
+      field: 'endDate',
+      type: sql.Date,
+      value: endDate || null,
+    },
+  ];
+
+  parameters.push({
+    field: 'sortByAttribute',
+    type: sql.NVarChar(255),
+    value: sortByAttribute,
+  });
+
+  const listJsonAttributes = await getListJsonAttributesColumnsSqlParam(clientDatabase, list_id);
+
+  parameters.push({
+    field: 'jsonAttributeColumns',
+    type: sql.NVarChar(sql.MAX),
+    value: listJsonAttributes,
+  });
+
+  const listAnalyses = await SQLUtilsLibSql.queryDB<
+    PaginatedAlertsAnalysisByListIdSortedByFilters[]
+  >(clientDatabase, getPaginatedAlertsAnalysisByListIdSortedByFilters, parameters);
 
   const numberOfResults = listAnalyses?.[0]?.totalRows;
 

@@ -188,6 +188,7 @@ function downloadDashboard() {
     selectedAlert,
     selectedTimeframe,
     isGFWList,
+    source: 'dashboard',
   };
 
   gtag('event', 'Download button clicked', {

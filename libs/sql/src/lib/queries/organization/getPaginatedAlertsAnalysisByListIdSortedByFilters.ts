@@ -20,7 +20,7 @@ DECLARE @listLocationTableName NVARCHAR(1000);
 DECLARE @dateFilteredAlertsSQL NVARCHAR(MAX) = '';
 DECLARE @unionClauses NVARCHAR(MAX) = '';
 
-DECLARE @alertsColumns NVARCHAR(MAX) = 'location_id, gadm_id, glad_alerts_coverage, glad_alerts_daily, glad_alerts_weekly, glad_alerts_monthly, viirs_alerts_daily, tree_cover_extent_total, integrated_alerts_coverage, total_ha, integrated_alerts_daily_all_nominal, integrated_alerts_daily_all_high, integrated_alerts_daily_all_highest, integrated_alerts_daily_sbtn_nominal, integrated_alerts_daily_sbtn_high, integrated_alerts_daily_sbtn_highest, integrated_alerts_daily_jrc_nominal, integrated_alerts_daily_jrc_high, integrated_alerts_daily_jrc_highest, status_code, location_error, intdist_alerts_area_sbtn_natural_forests_nominal, intdist_alerts_area_sbtn_natural_forests_high, intdist_alerts_area_sbtn_natural_forests_highest, intdist_alerts_area_sbtn_natural_ecosystem_nominal, intdist_alerts_area_sbtn_natural_ecosystem_high, intdist_alerts_area_sbtn_natural_ecosystem_highest, intdist_alerts_area_jrc_nominal, intdist_alerts_area_jrc_high, intdist_alerts_area_jrc_highest, intdist_alerts_area_all_nominal, intdist_alerts_area_all_high, intdist_alerts_area_all_highest';
+DECLARE @alertsColumns NVARCHAR(MAX) = 'location_id, gadm_id, viirs_alerts_daily, tree_cover_extent_total, integrated_alerts_coverage, total_ha, integrated_alerts_daily_all_nominal, integrated_alerts_daily_all_high, integrated_alerts_daily_all_highest, integrated_alerts_daily_sbtn_nominal, integrated_alerts_daily_sbtn_high, integrated_alerts_daily_sbtn_highest, integrated_alerts_daily_jrc_nominal, integrated_alerts_daily_jrc_high, integrated_alerts_daily_jrc_highest, status_code, location_error, intdist_alerts_area_sbtn_natural_nominal, intdist_alerts_area_sbtn_natural_high, intdist_alerts_area_sbtn_natural_highest, intdist_alerts_area_jrc_nominal, intdist_alerts_area_jrc_high, intdist_alerts_area_jrc_highest, intdist_alerts_area_all_nominal, intdist_alerts_area_all_high, intdist_alerts_area_all_highest';
 DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]';
 DECLARE @calculatedColumns NVARCHAR(MAX) = '';
 
@@ -35,7 +35,19 @@ INSERT INTO @DateBasedFields (FieldName) VALUES
 ('integrated_alerts_daily_sbtn_highest'),
 ('integrated_alerts_daily_jrc_nominal'),
 ('integrated_alerts_daily_jrc_high'),
-('integrated_alerts_daily_jrc_highest');
+('integrated_alerts_daily_jrc_highest'),
+('intdist_alerts_area_sbtn_natural_forests_nominal'),
+('intdist_alerts_area_sbtn_natural_forests_high'),
+('intdist_alerts_area_sbtn_natural_forests_highest'),
+('intdist_alerts_area_sbtn_natural_ecosystem_nominal'),
+('intdist_alerts_area_sbtn_natural_ecosystem_high'),
+('intdist_alerts_area_sbtn_natural_ecosystem_highest'),
+('intdist_alerts_area_jrc_nominal'),
+('intdist_alerts_area_jrc_high'),
+('intdist_alerts_area_jrc_highest'),
+('intdist_alerts_area_all_nominal'),
+('intdist_alerts_area_all_high'),
+('intdist_alerts_area_all_highest');
 
 SELECT
     @list_table = [list_table_name],
@@ -101,7 +113,7 @@ SET @LocationNameColumn =
 
 -- Build dynamic SQL for date-filtered or all-time aggregations
 -- Always build the aggregation CTE to parse JSON values
-SELECT @unionClauses = STRING_AGG(
+SELECT @unionClauses = STRING_AGG(CAST(
     CONCAT(
         'SELECT t.location_id, ''',
         FieldName,
@@ -113,7 +125,7 @@ SELECT @unionClauses = STRING_AGG(
          WHERE t.list_id = @listId
            AND t.location_id > 0
            AND (@startDate IS NULL OR @endDate IS NULL OR TRY_CAST(a.[key] AS DATE) BETWEEN @startDate AND @endDate)'
-    ),
+    ) AS NVARCHAR(MAX)),
     '
     UNION ALL
     '
@@ -136,7 +148,16 @@ AggregatedAlerts AS (
         ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_sbtn_highest'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_sbtn_highest,
         ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_nominal,
         ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_high'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_high,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_highest'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_highest
+        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_highest'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_highest,
+        ISNULL(SUM(CASE WHEN FieldName IN (''intdist_alerts_area_sbtn_natural_forests_nominal'', ''intdist_alerts_area_sbtn_natural_ecosystem_nominal'') THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_sbtn_natural_nominal,
+        ISNULL(SUM(CASE WHEN FieldName IN (''intdist_alerts_area_sbtn_natural_forests_high'', ''intdist_alerts_area_sbtn_natural_ecosystem_high'') THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_sbtn_natural_high,
+        ISNULL(SUM(CASE WHEN FieldName IN (''intdist_alerts_area_sbtn_natural_forests_highest'', ''intdist_alerts_area_sbtn_natural_ecosystem_highest'') THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_sbtn_natural_highest,
+        ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_jrc_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_jrc_nominal,
+        ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_jrc_high'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_jrc_high,
+        ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_jrc_highest'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_jrc_highest,
+        ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_all_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_all_nominal,
+        ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_all_high'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_all_high,
+        ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_all_highest'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_all_highest
     FROM UnpivotedData
     GROUP BY location_id
 )';
@@ -147,10 +168,6 @@ SELECT
     @listName AS listName,
     ISNULL(alerts.location_id, 0) AS locationId,
     ISNULL(alerts.gadm_id, 0) AS gadmId,
-    ISNULL(alerts.glad_alerts_coverage, 0) AS gladAlertsCoverage,
-    ISNULL(alerts.glad_alerts_daily, 0) AS gladAlertsDaily,
-    ISNULL(alerts.glad_alerts_weekly, 0) AS gladAlertsWeekly,
-    ISNULL(alerts.glad_alerts_monthly, 0) AS gladAlertsMonthly,
     ISNULL(alerts.viirs_alerts_daily, 0) AS viirsAlertsDaily,
     ISNULL(alerts.tree_cover_extent_total, 0) AS treeCoverExtentTotal,
     ISNULL(alerts.integrated_alerts_coverage, 0) AS integratedAlertsCoverage,
@@ -166,18 +183,15 @@ SELECT
     ISNULL(agg.integrated_alerts_daily_jrc_highest, 0) AS integratedAlertsDailyJrcHighest,
     alerts.status_code AS location_status_id,
     alerts.location_error AS analysisError,
-    ISNULL(alerts.intdist_alerts_area_sbtn_natural_forests_nominal, 0) AS intdistAlertsAreaSbtnNaturalForestsNominal,
-    ISNULL(alerts.intdist_alerts_area_sbtn_natural_forests_high, 0) AS intdistAlertsAreaSbtnNaturalForestsHigh,
-    ISNULL(alerts.intdist_alerts_area_sbtn_natural_forests_highest, 0) AS intdistAlertsAreaSbtnNaturalForestsHighest,
-    ISNULL(alerts.intdist_alerts_area_sbtn_natural_ecosystem_nominal, 0) AS intdistAlertsAreaSbtnNaturalEcosystemNominal,
-    ISNULL(alerts.intdist_alerts_area_sbtn_natural_ecosystem_high, 0) AS intdistAlertsAreaSbtnNaturalEcosystemHigh,
-    ISNULL(alerts.intdist_alerts_area_sbtn_natural_ecosystem_highest, 0) AS intdistAlertsAreaSbtnNaturalEcosystemHighest,
-    ISNULL(alerts.intdist_alerts_area_jrc_nominal, 0) AS intdistAlertsAreaJrcNominal,
-    ISNULL(alerts.intdist_alerts_area_jrc_high, 0) AS intdistAlertsAreaJrcHigh,
-    ISNULL(alerts.intdist_alerts_area_jrc_highest, 0) AS intdistAlertsAreaJrcHighest,
-    ISNULL(alerts.intdist_alerts_area_all_nominal, 0) AS intdistAlertsAreaAllNominal,
-    ISNULL(alerts.intdist_alerts_area_all_high, 0) AS intdistAlertsAreaAllHigh,
-    ISNULL(alerts.intdist_alerts_area_all_highest, 0) AS intdistAlertsAreaAllHighest,
+    ISNULL(agg.intdist_alerts_area_sbtn_natural_nominal, 0) AS distAlertsAreaSbtnNaturalNominal,
+    ISNULL(agg.intdist_alerts_area_sbtn_natural_high, 0) AS distAlertsAreaSbtnNaturalHigh,
+    ISNULL(agg.intdist_alerts_area_sbtn_natural_highest, 0) AS distAlertsAreaSbtnNaturalHighest,
+    ISNULL(agg.intdist_alerts_area_jrc_nominal, 0) AS distAlertsAreaJrcNominal,
+    ISNULL(agg.intdist_alerts_area_jrc_high, 0) AS distAlertsAreaJrcHigh,
+    ISNULL(agg.intdist_alerts_area_jrc_highest, 0) AS distAlertsAreaJrcHighest,
+    ISNULL(agg.intdist_alerts_area_all_nominal, 0) AS distAlertsAreaAllNominal,
+    ISNULL(agg.intdist_alerts_area_all_high, 0) AS distAlertsAreaAllHigh,
+    ISNULL(agg.intdist_alerts_area_all_highest, 0) AS distAlertsAreaAllHighest,
 
     ' + @LocationNameColumn + N'
     lt.Country as country,
@@ -187,13 +201,11 @@ SELECT
     lt.attributes as attributes,
     ' + CAST(@listVersion AS NVARCHAR(10)) + N' AS version,
 
-    ' + @locationColumns + N'
-
-    ' +
-    N' ' + CASE WHEN @jsonAttributeColumns IS NOT NULL AND LEN(@jsonAttributeColumns) > 0
-                THEN @jsonAttributeColumns + ','
-                ELSE ''
-           END + N'
+    ' + @locationColumns + 
+    CASE WHEN @jsonAttributeColumns IS NOT NULL AND LEN(@jsonAttributeColumns) > 0
+         THEN @jsonAttributeColumns + N','
+         ELSE N''
+    END + N'
 
     COUNT(*) OVER () AS totalRows
 
@@ -327,10 +339,6 @@ export class PaginatedAlertsAnalysisByListIdSortedByFilters {
   listName: string;
   locationId: number;
   gadmId: number;
-  gladAlertsCoverage: number;
-  gladAlertsDaily: number;
-  gladAlertsWeekly: number;
-  gladAlertsMonthly: number;
   viirsAlertsDaily: number;
   treeCoverExtentTotal: number;
   integratedAlertsCoverage: number;
@@ -346,18 +354,15 @@ export class PaginatedAlertsAnalysisByListIdSortedByFilters {
   integratedAlertsDailyJrcHighest: number;
   location_status_id: number;
   analysisError: number | null;
-  intdistAlertsAreaSbtnNaturalForestsNominal: number;
-  intdistAlertsAreaSbtnNaturalForestsHigh: number;
-  intdistAlertsAreaSbtnNaturalForestsHighest: number;
-  intdistAlertsAreaSbtnNaturalEcosystemNominal: number;
-  intdistAlertsAreaSbtnNaturalEcosystemHigh: number;
-  intdistAlertsAreaSbtnNaturalEcosystemHighest: number;
-  intdistAlertsAreaJrcNominal: number;
-  intdistAlertsAreaJrcHigh: number;
-  intdistAlertsAreaJrcHighest: number;
-  intdistAlertsAreaAllNominal: number;
-  intdistAlertsAreaAllHigh: number;
-  intdistAlertsAreaAllHighest: number;
+  distAlertsAreaSbtnNaturalNominal: number;
+  distAlertsAreaSbtnNaturalHigh: number;
+  distAlertsAreaSbtnNaturalHighest: number;
+  distAlertsAreaJrcNominal: number;
+  distAlertsAreaJrcHigh: number;
+  distAlertsAreaJrcHighest: number;
+  distAlertsAreaAllNominal: number;
+  distAlertsAreaAllHigh: number;
+  distAlertsAreaAllHighest: number;
   locationName: string;
   country: string;
   state: string;

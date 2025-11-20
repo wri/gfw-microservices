@@ -164,9 +164,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
             }
           }
         }
-        if (i % 200 === 0) {
-          lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
-        }
+        lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
       }
     }
     return input;

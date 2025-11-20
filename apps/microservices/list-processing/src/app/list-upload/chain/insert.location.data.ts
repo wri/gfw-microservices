@@ -4,7 +4,7 @@ import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepo
 import { Logger } from '@nestjs/common';
 import { yieldIfLong } from './shared';
 
-const BATCH_SIZE = 80;
+const BATCH_SIZE = 50;
 
 export class InsertLocationData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(InsertLocationData.name);

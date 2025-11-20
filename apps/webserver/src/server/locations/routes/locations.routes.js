@@ -24,7 +24,6 @@ const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.u
 import config from '../../../config/config';
 
 import { extractAnalysisTypes, getListAnalysisStatusByListId } from '@wri-monorepos/geo';
-import { mockAlertsAnalysisResponse } from '../utils/locations.utils';
 
 /**
  * @name exports
@@ -382,24 +381,25 @@ module.exports = (app, limiter) => {
             break;
           }
           case 'ALERTS': {
-            return res.send(mockAlertsAnalysisResponse);
-            // TODO: Uncomment and restore the following code when real dashboard analysis data is available and mockAlertsAnalysisResponse is no longer needed for the 'ALERTS' case.
+            const analysisManagerResult = await AnalysisManager.getAlertsListAnalyses(
+              listID,
+              page,
+              pageSize,
+              req.session.organization_database,
+              filters
+            );
 
-            // const analysisManagerResult = await AnalysisManager.getDashboardDataPaginatedByList(
-            //   listID,
-            //   page,
-            //   pageSize,
-            //   req.session.organization_database,
-            //   filters
-            // );
-            // listAnalyses = analysisManagerResult.listDashboardAnalyses;
-            // numberOfResults = analysisManagerResult.numberOfResults.quantity;
-            // numberOfPages = analysisManagerResult.numberOfPages;
-            // maximumAnalysisAreaInTheList = 0;
-            // if (listAnalyses.length > 0) {
-            //   location_analyses = listAnalyses.filter((analysis) => analysis.location_id > 1);
-            // }
-            // break;
+            listAnalyses = analysisManagerResult.listAnalyses;
+            numberOfResults = analysisManagerResult.numberOfResults;
+            numberOfPages =
+              numberOfResults % pageSize === 0
+                ? numberOfResults / pageSize
+                : Math.floor(numberOfResults / pageSize) + 1;
+
+            if (listAnalyses.length > 0) {
+              location_analyses = listAnalyses;
+            }
+            break;
           }
           default:
           case 'FCD': {

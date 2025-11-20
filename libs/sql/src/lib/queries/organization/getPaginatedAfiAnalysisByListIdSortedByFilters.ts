@@ -1,5 +1,5 @@
 /**
- * This query to get paginated AFI Analysis for a list by location
+ * This query gets paginated AFI Analysis for a list by location
  * The command requires the following parameters:
  * @listId AS INT,
  * @rowsOfPage AS INT
@@ -128,8 +128,8 @@ SELECT
     END AS jrcNaturalForestLossPercent,
 
     ' +
-    N' ' + CASE WHEN @JsonAttributeColumns IS NOT NULL AND LEN(@JsonAttributeColumns) > 0
-                THEN @JsonAttributeColumns + ','
+    N' ' + CASE WHEN @jsonAttributeColumns IS NOT NULL AND LEN(@jsonAttributeColumns) > 0
+                THEN @jsonAttributeColumns + ','
                 ELSE ''
            END + N'
 
@@ -180,7 +180,7 @@ DECLARE @isValidSortColumn BIT = 0;
 IF CHARINDEX(@sortByAttribute, @afiColumns) > 0
    OR CHARINDEX(@sortByAttribute, @ltColumns) > 0
    OR CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
-   OR (@JsonAttributeColumns IS NOT NULL AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0)
+   OR (@jsonAttributeColumns IS NOT NULL AND CHARINDEX('AS [' + @sortByAttribute + ']', @jsonAttributeColumns) > 0)
 BEGIN
     SET @isValidSortColumn = 1;
 END;
@@ -197,8 +197,8 @@ BEGIN
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
                 WHEN ',' + @calculatedColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
                      THEN QUOTENAME(@sortByAttribute)
-                WHEN @JsonAttributeColumns IS NOT NULL 
-                     AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0
+                WHEN @jsonAttributeColumns IS NOT NULL 
+                     AND CHARINDEX('AS [' + @sortByAttribute + ']', @jsonAttributeColumns) > 0
                      THEN CASE
                           WHEN (
                               SELECT attribute_type
@@ -237,7 +237,7 @@ N'@listId INT,
   @SearchString NVARCHAR(255),
   @orderType NVARCHAR(255),
   @sortByAttribute NVARCHAR(255),
-  @JsonAttributeColumns NVARCHAR(MAX)',
+  @jsonAttributeColumns NVARCHAR(MAX)',
 @listId               = @listId,
 @listName             = @listName,
 @rowsOfPage           = @rowsOfPage,
@@ -253,7 +253,7 @@ N'@listId INT,
 @SearchString         = @SearchString,
 @orderType            = @orderType,
 @sortByAttribute      = @sortByAttribute,
-@JsonAttributeColumns = @JsonAttributeColumns;`;
+@jsonAttributeColumns = @jsonAttributeColumns;`;
 
 export class PaginatedAfiAnalysisByListIdSortedByFilters {
   listId: number;

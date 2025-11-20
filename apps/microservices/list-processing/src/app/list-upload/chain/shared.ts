@@ -38,3 +38,18 @@ export function logExecutionTime(className) {
     return descriptor;
   };
 }
+
+export async function yieldIfLong(
+  lastYieldTimestamp: number,
+  options: { thresholdMs?: number; delayMs?: number } = {}
+): Promise<number> {
+  const { thresholdMs = 1000, delayMs = 100 } = options;
+  const now = Date.now();
+
+  if (now - lastYieldTimestamp > thresholdMs) {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    return Date.now();
+  }
+
+  return lastYieldTimestamp;
+}

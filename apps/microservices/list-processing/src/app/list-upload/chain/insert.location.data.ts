@@ -2,6 +2,7 @@ import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
+import { yieldIfLong } from './shared';
 
 const BATCH_SIZE = 80;
 
@@ -59,10 +60,12 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     this.convertErrorDetails(values);
 
     try {
+      let lastYieldTimestamp = Date.now();
       for (let i = 0; i < values.length; i += BATCH_SIZE) {
         const batch = values.slice(i, i + BATCH_SIZE);
 
         await this.insertBatch(connection, ListEntity, batch);
+        lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
       }
 
       return request;

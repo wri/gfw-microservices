@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import * as turf from '@turf/turf';
 import { Feature, Polygon, MultiPolygon } from 'geojson';
+import { yieldIfLong } from './shared';
 
 export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ValidateLatLongGeojson.name);
@@ -132,6 +133,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     }
 
     if (geojson.type === 'FeatureCollection' && geojson.features) {
+      let lastYieldTimestamp = Date.now();
       for (let i = geojson.features.length - 1; i >= 0; i--) {
         const feature = geojson.features[i];
         const country = (feature.properties?.country as string) || '';
@@ -160,6 +162,9 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
               (feature.properties.errorDetails as Array<string>).push('Invalid polygon geometry');
             }
           }
+        }
+        if (i % 200 === 0) {
+          lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
         }
       }
     }

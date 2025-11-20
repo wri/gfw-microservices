@@ -3,6 +3,7 @@ import { AbstractHandler, RequestNewList } from './types';
 import { ChainType } from './types';
 import { AnalysisSchema, AnalysisSchemaType, ClientStoreConnection } from '@wri-monorepos/sql';
 import { DataSource, EntitySchema } from 'typeorm';
+import { yieldIfLong } from './shared';
 
 const BATCH_SIZE = 1000;
 
@@ -46,10 +47,12 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
     ]);
 
     try {
+      let lastYieldTimestamp = Date.now();
       for (let i = 0; i < dataToInsert.length; i += BATCH_SIZE) {
         const batch = dataToInsert.slice(i, i + BATCH_SIZE);
 
         await this.insertBatch(connection, AnalysisEntity, batch);
+        lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
       }
 
       return request;

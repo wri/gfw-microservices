@@ -81,10 +81,10 @@ export const mapLayers = [
     id: 'b0b0b73a-1d9e-4259-9dec-8fb1b0f207e0',
     type: 'layer',
     attributes: {
-      name: 'integrated alerts geographic coverage',
+      name: proLayers.integratedAlertsGeographicCoverageID,
       slug: 'umd-glad-landsat-alerts-coverage',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
-      description: 'Integrated Alerts Geographic Coverage',
+      description: proLayers.integratedAlertsGeographicCoverageID,
       application: ['gfw-pro'],
       iso: [],
       provider: 'leaflet',
@@ -645,10 +645,10 @@ export const mapLayers = [
     id: '28d775ac-05ac-4ebc-91c2-59d664c59480',
     type: 'layer',
     attributes: {
-      name: 'Integrated Deforestation Alerts',
+      name: proLayers.integratedDeforestationAlertsID,
       slug: 'Integrated-Deforestation-Alerts',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
-      description: 'Integrated deforestation alerts',
+      description: proLayers.integratedDeforestationAlertsID,
       application: ['gfw-pro'],
       iso: [],
       provider: 'leaflet',
@@ -693,9 +693,51 @@ export const mapLayers = [
                 color: '#f69',
               },
             ],
-            name: 'Integrated Deforestation Alerts',
+            name: proLayers.integratedDeforestationAlertsID,
             source: '(weekly, 10m, select countries, UMD/GLAD)',
             color: '#dc6699',
+          },
+        ],
+        type: 'basic',
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2023-11-13T18:21:57.425Z',
+      updatedAt: '2024-06-11T13:58:08.443Z',
+    },
+  },
+  {
+    id: '28d775ac-05ac-4ebc-91c2-59d664c59480',
+    type: 'layer',
+    attributes: {
+      name: proLayers.globalIntegratedDisturbanceAlertsId,
+      slug: 'Integrated-Deforestation-Alerts',
+      dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
+      description: proLayers.globalIntegratedDisturbanceAlertsId,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '62601518cdc846001a7756b5',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/28d775ac-05ac-4ebc-91c2-59d664c59480-1718114288536.png',
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          metadata: 'gfw_global_integrated_disturbance_alerts_metadata',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_dist_alerts/latest/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+        },
+      },
+      legendConfig: {
+        items: [
+          {
+            categories: [],
+            name: proLayers.globalIntegratedDisturbanceAlertsId,
           },
         ],
         type: 'basic',
@@ -1210,7 +1252,7 @@ export const mapLayers = [
     id: 'aafb62d4-2040-4a07-9d4d-f6e17270243d',
     type: 'layer',
     attributes: {
-      name: 'SBTN Natural Forest',
+      name: proLayers.sbtnNaturalLands,
       slug: 'SBTN-Natural-Forest',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
       description: 'Science Based Targets Network Natural Forest',
@@ -1227,7 +1269,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          url: 'https://tiles.globalforestwatch.org/sbtn_natural_forests_map/v202504/default_pro/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/sbtn_natural_lands_classification/v1.1/default_pro/{z}/{x}/{y}.png',
           metadata: 'sbtn_natural_forests_map',
         },
       },
@@ -1238,14 +1280,42 @@ export const mapLayers = [
               {
                 name: 'Natural forest',
                 color: '#246E24',
+                subCategories: [
+                  'Natural forests',
+                  'Mangroves',
+                  'Wetland natural forests',
+                  'Natural peat forests',
+                ],
               },
               {
-                name: 'Non-natural forest',
-                color: '#A8DDB5',
+                name: 'Natural Open Ecosystems',
+                color: '#B9B91E',
+                subCategories: [
+                  'Natural short vegetation',
+                  'Natural water',
+                  'Bare',
+                  'Snow',
+                  'Wetland natural short vegetation',
+                  'Natural peat short vegetation',
+                ],
+              },
+              {
+                name: 'Non-natural Classes',
+                color: '#D3D3D3',
+                subCategories: [
+                  'Cropland',
+                  'Built-up',
+                  'Non-natural tree cover',
+                  'Non-natural short vegetation',
+                  'Wetland non-natural tree cover',
+                  'Non-natural peat tree cover',
+                  'Wetland non-natural short vegetation',
+                  'Non-natural peat short vegetation',
+                ],
               },
             ],
             source: 'Science Based Targets Network',
-            name: 'SBTN Natural Forest',
+            name: proLayers.sbtnNaturalLands,
           },
         ],
         type: 'basic',
@@ -1464,7 +1534,7 @@ export const mapLayers = [
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
           useCors: true,
           metadata: 'umd_soy_planted_area',
-          url: 'https://tiles.globalforestwatch.org/umd_soy_planted_area/v3/{year}/{z}/{x}/{y}.png',
+          url: 'https://tiles.globalforestwatch.org/umd_soy_planted_area/v4/{year}/{z}/{x}/{y}.png',
         },
       },
       legendConfig: {
@@ -1886,7 +1956,7 @@ export const mapLayers = [
     id: '7c43084e-3687-4c2d-9705-c566759273ad',
     type: 'layer',
     attributes: {
-      name: 'RADD Coverage',
+      name: proLayers.raddCoverageID,
       slug: 'RADD-Coverage',
       dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
       description: 'Geographic Coverage',
@@ -2454,6 +2524,49 @@ export const mapLayers = [
     },
   },
   {
+    id: 'b696ec7a-2852-468a-a907-b2cf4f584b95',
+    type: 'layer',
+    attributes: {
+      name: proLayers.disturbanceAlertsDriversId,
+      slug: 'Drivers-of-disturbance-alerts',
+      dataset: '7b5c2316-8f97-41de-a268-06dc735cc8e9',
+      description: proLayers.disturbanceAlertsDriversId,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '596cde70824315350dd0f116',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b97-1686786379679.png',
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          metadata: 'gfw_integrated_alerts_drivers_metadata',
+          url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts_drivers/v20250925/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+        },
+      },
+      legendConfig: {
+        type: 'basic',
+        items: [
+          {
+            color: '#c6a541',
+            categories: [],
+            name: proLayers.disturbanceAlertsDriversId,
+          },
+        ],
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-12-06T22:12:06.352Z',
+      updatedAt: '2023-06-14T23:46:19.625Z',
+    },
+  },
+  {
     id: 'e045c55c-3455-4a19-8ee8-e0cbe9926085',
     type: 'layer',
     attributes: {
@@ -2560,6 +2673,164 @@ export const mapLayers = [
       staticImageConfig: {},
       createdAt: '2021-01-06T15:11:38.457Z',
       updatedAt: '2021-03-29T14:58:45.072Z',
+    },
+  },
+
+  {
+    id: '7c43084e-3687-4c2d-9705-c56675927392',
+    type: 'layer',
+    attributes: {
+      name: proLayers.disturbanceAlertsDriversGeographicCoverageId,
+      slug: 'Alerts-Drivers-Coverage',
+      dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
+      description: 'Geographic Coverage',
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'esrivectorservice',
+      userId: '5c533e5cc3b3242d2ed73bc7',
+      default: true,
+      protected: false,
+      published: true,
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          options: {
+            color: [252, 204, 220],
+          },
+          'coverage-options': {
+            opacity: 0.3,
+            color: '#f69',
+          },
+          'css-url':
+            'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
+          url: 'https://tiles.globalforestwatch.org/wur_alert_drivers_coverage/v20251007.1/default/{z}/{x}/{y}.png',
+          useCors: true,
+          metadata: 'wur_alert_drivers',
+        },
+      },
+      legendConfig: {
+        items: [
+          {
+            categories: [
+              {
+                name: 'Geographic Coverage',
+                color: '#dc6699',
+              },
+            ],
+            name: 'Geographic Coverage',
+            source: '(every 6-12 days, 10m, select countries, WUR)',
+            color: '#dc6699',
+          },
+        ],
+        type: 'disabled',
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-04-16T08:25:16.353Z',
+      updatedAt: '2021-12-14T18:24:42.065Z',
+    },
+  },
+  {
+    id: 'b696ec7a-2852-468a-a907-b2cf4f544b91',
+    type: 'layer',
+    attributes: {
+      name: proLayers.globalVegetationDisturbanceAlertsId,
+      slug: 'global-vegetation-disturbance-alerts',
+      dataset: '7b5c2316-8f97-41de-a268-06dc735cc8e9',
+      description: proLayers.globalVegetationDisturbanceAlertsId,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '596cde70824315350dd0f116',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b91-1686786379679.png',
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          useCors: true,
+          metadata: 'gfw_global_vegetation_disturbance_alerts_metadata',
+          url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts/v20251108/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+        },
+      },
+      legendConfig: {
+        type: 'basic',
+        items: [
+          {
+            color: '#c6a541',
+            categories: [],
+            name: proLayers.globalVegetationDisturbanceAlertsId,
+          },
+        ],
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-12-06T22:12:06.352Z',
+      updatedAt: '2023-06-14T23:46:19.625Z',
+    },
+  },
+  {
+    id: 'b0b0b73a-1d9e-4230-9dec-8fb1b0f207e0',
+    type: 'layer',
+    attributes: {
+      name: proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId,
+      slug: 'umd-glad-landsat-alerts-coverage',
+      dataset: 'e663eb09-04de-4f39-b871-35c6c2ed10b5',
+      description: proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId,
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'leaflet',
+      userId: '62601518cdc846001a7756b5',
+      default: true,
+      protected: false,
+      published: true,
+      thumbnailUrl:
+        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b0b0b73a-1d9e-4259-9dec-8fb1b0f207e0-1702307467296.png',
+      env: 'production',
+      layerConfig: {
+        type: 'Vector.Layer',
+        body: {
+          options: {
+            color: [220, 102, 153],
+          },
+          'coverage-options': {
+            opacity: 0.3,
+            color: '#f69',
+          },
+          'css-url':
+            'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
+          url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts_coverage/v202412/default/root.json',
+          useCors: true,
+          metadata: 'umd_landsat_alerts',
+        },
+      },
+      legendConfig: {
+        items: [
+          {
+            categories: [
+              {
+                name: 'Geographic coverage',
+                color: '#f69',
+              },
+            ],
+            name: 'Landsat Integrated Alerts Geographic Coverage',
+            source: '(weekly, 30m, select countries, UMD/GLAD)',
+            color: '#dc6699',
+          },
+        ],
+        type: 'basic',
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2023-11-28T21:44:34.848Z',
+      updatedAt: '2023-12-11T15:11:07.233Z',
     },
   },
 ];

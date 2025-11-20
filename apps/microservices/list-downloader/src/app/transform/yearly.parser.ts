@@ -3,15 +3,39 @@ import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
 const yearlyParser = (operation, dataRow, data, csvData) => {
   operation.composites.forEach((field) => {
-    let yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+    let yearlyData = {};
 
     // Prefer country_specific_deforestation_wdpa_yearly.BRA for WDPA; fallback to
     // tree_cover_loss_prodes_wdpa_yearly is kept for backward compatibility
     if (field.attribute === 'tree_cover_loss_prodes_wdpa_yearly') {
-      const braWdpa = JSON.parse(data['country_specific_deforestation_wdpa_yearly'] || '{}')?.BRA;
-      if (braWdpa) {
-        yearlyData = braWdpa;
+      const braWdpaRaw = JSON.parse(data.country_specific_deforestation_wdpa_yearly || '{}')?.BRA;
+
+      if (braWdpaRaw && typeof braWdpaRaw === 'object') {
+        // Check if BRA is directly year-keyed (e.g., { 2018: 10, 2019: 20 })
+        // or category-keyed (e.g., { "Category I": { 2018: 10, 2019: 20 } })
+        const firstKey = Object.keys(braWdpaRaw)[0];
+        const isYearKeyed =
+          firstKey && (/^\d{4}$/.test(firstKey) || typeof braWdpaRaw[firstKey] === 'number');
+
+        if (isYearKeyed) {
+          // Direct year-keyed structure: { 2018: 10, 2019: 20 }
+          Object.entries(braWdpaRaw).forEach(([year, val]) => {
+            yearlyData[year] = val;
+          });
+        } else {
+          // Category-keyed structure: { "Category I": { 2018: 10, 2019: 20 }, ... }
+          Object.values(braWdpaRaw).forEach((category) => {
+            Object.entries(category || {}).forEach(([year, val]) => {
+              yearlyData[year] = (yearlyData[year] || 0) + (val || 0);
+            });
+          });
+        }
+      } else {
+        // Fallback to legacy attribute
+        yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
       }
+    } else {
+      yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
     }
 
     let totalListLevelCount = 0;
@@ -23,7 +47,7 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
     ]; //'commodity_mill_priority_level'
 
     if (nestedJSONAttributes.indexOf(field.attribute) === -1) {
-      if (!yearlyData.forEach) {
+      if (!Array.isArray(yearlyData)) {
         Object.keys(yearlyData).forEach((year) => {
           totalListLevelCount += yearlyData[year];
         });
@@ -96,7 +120,9 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
 
           if (
             totalSubCategory > 0 &&
-            (data.south_america_presence === true || data.south_america_presence === 'true') &&
+            (data.south_america_presence === true ||
+              data.south_america_presence === 'true' ||
+              data.south_america_presence === '1') &&
             data.Country === 'Brazil'
           ) {
             csvData.push(currentRow);

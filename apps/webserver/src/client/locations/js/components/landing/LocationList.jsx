@@ -126,7 +126,8 @@ export default class LocationList extends Component {
     const hasErrorFile = !!list.error_file_storage_path;
 
     const showDelete = (userIsAdmin || (!userIsViewer && userIsOwner)) && !isSavedLocation;
-    const showRerun = (userIsAdmin || (!userIsViewer && userIsOwner)) && !isSavedLocation;
+    const showRerun =
+      (userIsAdmin || (!userIsViewer && userIsOwner)) && !isSavedLocation && locations > 0;
 
     // List context menu flags
     const showMapOpt = !isShared && locations > 0;

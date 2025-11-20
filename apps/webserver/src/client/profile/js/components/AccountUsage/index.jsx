@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
   styled,
 } from '@mui/material';
 
@@ -19,6 +20,21 @@ import { formatNumber } from '../../../../common/js/utils/format';
 import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
 import AccountDetailUsageByAnalysisType from './AccountDetailUsageByAnalysisType';
 import moment from 'moment';
+
+const HeaderTableCell = styled(TableCell)(() => ({
+  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+  color: 'rgba(0, 0, 0, 0.73)',
+  fontSize: '15px',
+  fontWeight: 'bold',
+}));
+
+const AccountRenewalText = styled('p')({
+  marginBottom: '1rem',
+  color: 'rgba(0, 0, 0, 0.5)',
+  fontSize: '12px',
+  textAlign: 'right',
+  borderRadius: '5px',
+});
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -35,20 +51,6 @@ export default function AccountUsageContainer() {
 
   const { startDate, endDate, subscriptionYearEnd } =
     calculateAccountSubscriptionDates(accountRenewalTime);
-
-  const HeaderTableCell = styled(TableCell)(() => ({
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-    color: 'rgba(0, 0, 0, 0.73)',
-    fontSize: '15px',
-    fontWeight: 'bold',
-  }));
-
-  const renewalTextStyle = {
-    margin: '0px 0 30px 0',
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '12px',
-    textAlign: 'right',
-  };
 
   useEffect(() => {
     fetch(`/analytics/myorg/usage?startDate=${startDate}&endDate=${endDate}`, {
@@ -81,7 +83,8 @@ export default function AccountUsageContainer() {
     )
       .then((res) => res.json())
       .then((data) => {
-        setUsageDataperUser(data.organizationUsersAnalysisUsage);
+        const { organizationUsersAnalysisUsage = [] } = data;
+        setUsageDataperUser(organizationUsersAnalysisUsage);
       })
       .catch((error) => {
         console.log(error);
@@ -175,55 +178,65 @@ export default function AccountUsageContainer() {
   ) : (
     <>
       {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
-      <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
 
       <AccountUsageDropMenu export={exportUsage} />
       <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
 
-      <AccountUsage
-        {...usageData}
-        maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
-        maxLocations={usageLimitsData?.max_locations_per_year}
-      />
+      <Box
+        sx={{
+          backgroundColor: '#f5f5f5',
+          padding: '1em',
+          borderRadius: '5px',
+        }}
+      >
+        <AccountRenewalText>Account renewal on {subscriptionYearEnd}</AccountRenewalText>
+        <AccountUsage
+          {...usageData}
+          maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
+          maxLocations={usageLimitsData?.max_locations_per_year}
+        />
+      </Box>
+
       <AccountDetailUsageByAnalysisType
         analysisUsageByType={analysisUsageByType}
         setStartDateAnalysis={setStartDateAnalysis}
         setEndDateAnalysis={setEndDateAnalysis}
         startDateAnalysis={startDateAnalysis}
         endDateAnalysis={endDateAnalysis}
-      />
-      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              <HeaderTableCell>User</HeaderTableCell>
-              <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
-              <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {usageDataperUser.map((row) => (
-              <TableRow
-                key={row.user_id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.first_name} {row.last_name}
-                </TableCell>
-                <TableCell align="right">
-                  {formatNumber(row.total_locations_analyzed)} (
-                  {getAnalysesPercentage(row.total_locations_analyzed)}%)
-                </TableCell>
-                <TableCell align="right">
-                  {formatNumber(row.total_area_analyzed)} (
-                  {getAreasPercentage(row.total_area_analyzed)}%)
-                </TableCell>
+      >
+        <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow>
+                <HeaderTableCell>User</HeaderTableCell>
+                <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
+                <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {usageDataperUser.map((row) => (
+                <TableRow
+                  key={row.user_id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {row.first_name} {row.last_name}
+                  </TableCell>
+                  <TableCell align="right">
+                    {formatNumber(row.total_locations_analyzed)} (
+                    {getAnalysesPercentage(row.total_locations_analyzed)}%)
+                  </TableCell>
+                  <TableCell align="right">
+                    {formatNumber(row.total_area_analyzed)} (
+                    {getAreasPercentage(row.total_area_analyzed)}%)
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </AccountDetailUsageByAnalysisType>
     </>
   );
 }

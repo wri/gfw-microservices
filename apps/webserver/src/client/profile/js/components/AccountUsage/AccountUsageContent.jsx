@@ -4,55 +4,52 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { formatNumber } from '../../../../common/js/utils/format';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 
-export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleContent }) {
-  const getProgressColor = () => {
-    if (calculatePercentage === 100) {
-      return 'rgba(242, 78, 30, 0.73)';
-    }
+const getProgressColor = (usagePercentage = 0) => {
+  if (usagePercentage === 100) {
+    return 'rgba(242, 78, 30, 0.73)';
+  }
 
-    if (calculatePercentage > 90) {
-      return 'rgba(255, 138, 0, 0.73)';
-    }
+  if (usagePercentage > 90) {
+    return 'rgba(255, 138, 0, 0.73)';
+  }
 
-    return 'rgba(0, 0, 0, 0.73)';
-  };
+  return 'rgba(0, 0, 0, 0.73)';
+};
 
-  const BorderLinearProgress = styled(LinearProgress)(() => ({
-    height: 10,
+const CardLabel = styled(Typography)({
+  color: '#8b8b8b',
+  fontSize: '13px',
+  fontWeight: 'normal',
+  marginBottom: '0.75rem',
+});
+
+const CardValue = styled(CardLabel)(() => ({
+  fontSize: '16px',
+  fontWeight: 'bold',
+  marginBottom: '0.35rem',
+}));
+
+const LinearProgressBar = styled(LinearProgress, {
+  shouldForwardProp: (prop) => prop !== 'usagePercentage',
+})(({ usagePercentage }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
-    [`&.${linearProgressClasses.colorPrimary}`]: {
-      backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    },
-    [`& .${linearProgressClasses.bar}`]: {
-      borderRadius: 5,
-      backgroundColor: getProgressColor(),
-    },
-  }));
+    backgroundColor: getProgressColor(usagePercentage),
+  },
+}));
 
-  const CardLabel = styled(Typography)(() => ({
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '12px',
-  }));
-
-  const ProgressLabel = styled(Typography)(() => ({
-    color: getProgressColor(),
-    fontSize: '14px',
-    lineHeight: '36px',
-    fontWeight: 'bold',
-  }));
-
-  const ProgressMark = styled(Typography)(() => ({
-    color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '12px',
-    lineHeight: '36px',
-  }));
-
-  const calculatePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
+export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleContent }) {
+  const usagePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
 
   return (
-    <Card sx={{ padding: '1rem' }}>
+    <Card>
       <CardContent>
-        <CardLabel style={{ marginBottom: '30px' }} variant="span" display="block" gutterBottom>
+        <CardLabel sx={{ marginBottom: '30px' }} variant="span" display="block" gutterBottom>
           {label}
           <InfoBubble>
             <InfoBubbleContent />
@@ -60,23 +57,63 @@ export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleCon
         </CardLabel>
 
         <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
-          <Grid item>
+          <Grid item display="flex" flexDirection="column">
+            <CardValue
+              sx={{
+                color: getProgressColor(usagePercentage),
+              }}
+              variant="span"
+            >
+              {formatNumber(maxValue)}
+            </CardValue>
+            <CardLabel variant="caption" display="block">
+              Allocated
+            </CardLabel>
+          </Grid>
+
+          <Grid item display="flex" flexDirection="column">
+            <CardValue
+              sx={{
+                color: getProgressColor(usagePercentage),
+              }}
+              variant="span"
+            >
+              {formatNumber(usedValue)}
+            </CardValue>
             <CardLabel variant="caption" display="block">
               Used
             </CardLabel>
-            <ProgressLabel variant="span">{formatNumber(usedValue)}</ProgressLabel>
           </Grid>
 
-          <Grid item>
-            <CardLabel variant="caption" display="block" style={{ textAlign: 'right' }}>
-              Available
+          <Grid item display="flex" flexDirection="column">
+            <CardValue
+              sx={{
+                color: getProgressColor(usagePercentage),
+              }}
+              variant="span"
+            >
+              {formatNumber(maxValue - usedValue)}
+            </CardValue>
+            <CardLabel variant="caption" display="block" sx={{ textAlign: 'right' }}>
+              Remaining
             </CardLabel>
-            <ProgressLabel variant="span">{formatNumber(maxValue - usedValue)}</ProgressLabel>
-            <ProgressMark variant="span">/{formatNumber(maxValue)}</ProgressMark>
           </Grid>
         </Grid>
 
-        <BorderLinearProgress variant="determinate" value={calculatePercentage} />
+        <Grid container direction="column">
+          <Grid item>
+            <LinearProgressBar
+              variant="determinate"
+              value={usagePercentage}
+              usagePercentage={usagePercentage}
+            />
+          </Grid>
+          <Grid item alignSelf="flex-end" sx={{ paddingTop: '0.35em' }}>
+            <CardLabel variant="caption">
+              {formatNumber(usedValue)}/{formatNumber(maxValue)}
+            </CardLabel>
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );

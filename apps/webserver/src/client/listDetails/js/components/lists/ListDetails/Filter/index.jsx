@@ -8,7 +8,12 @@ import {
   Typography,
   Checkbox,
   FormControlLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
+import InfoBubble from '../../../../../../common/js/components/InfoBubble';
 import { Clear, FilterAlt } from '@mui/icons-material';
 import {
   toggleCanopyModal,
@@ -38,12 +43,15 @@ import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
+  ALERTS,
+  forestDataSet,
 } from '../listViews.constants';
 
 export default class Filter extends Component {
   constructor(props) {
     super(props);
-    this.state = { ...defaultFilterValues };
+    // NOTE: forestDataset is initialized here for future use in filtering logic, but is not currently used to filter or modify data.
+    this.state = { ...defaultFilterValues, forestDataset: forestDataSet.NaturalForestMap };
     this.initialState = this.state;
   }
 
@@ -67,6 +75,10 @@ export default class Filter extends Component {
     this.setState({ hasError: evt.target.checked }, () =>
       store.dispatch(updateFilters(this.state))
     );
+  };
+
+  changeDataSource = (event) => {
+    this.setState({ forestDataset: event.target.value });
   };
 
   updateValues = (state) => {
@@ -256,6 +268,29 @@ export default class Filter extends Component {
                         </Typography>
                       }
                     />
+                  )}
+                  {listView === ALERTS && (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <FormControl
+                        size="small"
+                        sx={{ width: 230, mt: shouldRenderLocationsWithErrorsCheckbox ? 1 : 0 }}
+                      >
+                        <InputLabel>Forest Dataset</InputLabel>
+                        <Select
+                          value={this.state.forestDataset}
+                          onChange={this.changeDataSource}
+                          label="Forest Dataset"
+                        >
+                          <MenuItem value={forestDataSet.NaturalForestMap}>
+                            {forestDataSet.NaturalForestMap}
+                          </MenuItem>
+                          <MenuItem value={forestDataSet.JrcForestLoss}>
+                            {forestDataSet.JrcForestLoss}
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+                      <InfoBubble />
+                    </Box>
                   )}
                 </Grid>
                 <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>

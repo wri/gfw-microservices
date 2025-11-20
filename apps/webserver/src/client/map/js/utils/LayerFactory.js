@@ -21,9 +21,21 @@ import LandCoverLayer from '../layers/LandCoverLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
-import { soyPlantedYearsRange } from '../../../common/js/config';
+import {
+  soyPlantedYearsRange,
+  driverOfDisturbanceAlertsDateRange,
+  globalVegetationDisturbanceAlertsDateRange,
+  globalIntegratedDisturbanceAlertsDateRange,
+} from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
-const { viirsActiveFiresID, granChacoDeforestationID } = proLayers;
+const {
+  viirsActiveFiresID,
+  granChacoDeforestationID,
+  disturbanceAlertsDriversId,
+  disturbanceAlertsDriversGeographicCoverageId,
+  globalVegetationDisturbanceAlertsId,
+  globalIntegratedDisturbanceAlertsId,
+} = proLayers;
 
 /**
  * Map Function that gets called for each entry in the provided layers config and returns an array of ArcGIS Layers
@@ -56,6 +68,12 @@ export const layerFactory = function LayersFactory(layersArray, view) {
   }
 
   const defaultDefExpression = "ACQ_DATE > date'" + year + '-' + month + '-' + day + "'";
+
+  const tileLayerDateRanges = {
+    [disturbanceAlertsDriversId]: driverOfDisturbanceAlertsDateRange,
+    [globalVegetationDisturbanceAlertsId]: globalVegetationDisturbanceAlertsDateRange,
+    [globalIntegratedDisturbanceAlertsId]: globalIntegratedDisturbanceAlertsDateRange,
+  };
 
   layersArray.forEach((layer) => {
     // if ((!layer.url && layer.type !== 'graphic') || !layer.type) { throw new Error(errors.missingLayerConfig); }
@@ -104,16 +122,27 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         layers.push(new TiledLayer(options));
         break;
       case 'tileLayer':
-        layers.push(
-          new WebTileLayer({
-            urlTemplate: layer.layerConfig.body.url,
-            id: layer.id,
-            visible: false,
-            order: layer.order || undefined,
-            view: view,
-            opacity: 1,
-          })
-        );
+        {
+          let urlTemplate = layer.layerConfig.body.url;
+
+          const dateRange = tileLayerDateRanges[layer.id];
+          if (dateRange) {
+            urlTemplate = layer.layerConfig.body.url.concat(
+              `&start_date=${dateRange[0]}&end_date=${dateRange[1]}`
+            );
+          }
+
+          layers.push(
+            new WebTileLayer({
+              urlTemplate,
+              id: layer.id,
+              visible: false,
+              order: layer.order || undefined,
+              view: view,
+              opacity: 1,
+            })
+          );
+        }
         break;
       case 'image': {
         options.id = layer.id;
@@ -370,6 +399,20 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             },
           })
         );
+        break;
+
+      case disturbanceAlertsDriversGeographicCoverageId:
+        layers.push(
+          new RaddCoverage({
+            id: layer.id,
+            visible: layer.visible || false,
+            order: layer.order || undefined,
+            urlTemplate: layer.url,
+            opacity: layer.layerConfig.body['coverage-options']?.opacity || 1,
+            view: view,
+          })
+        );
+
         break;
 
       default:

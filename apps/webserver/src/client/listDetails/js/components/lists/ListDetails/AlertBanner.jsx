@@ -10,55 +10,88 @@ export default function AlertBanner({
   message,
   buttonText,
   buttonTextColor,
+  borderColor,
   onButtonClick,
 }) {
-  return (
-    <Alert
+  const alertStyles = getAlertStyles(backgroundColor, color, borderColor);
+  const alertTitleStyles = getAlertTitleStyles(color);
+  const iconStyles = getIconContainerStyles(borderColor);
+
+  const action = onButtonClick ? (
+    <PillButton
       sx={{
-        backgroundColor,
-        color,
-        display: 'flex',
-        alignItems: 'center',
-        py: 1,
-        m: 1,
-        border: `1px solid ${darkenColor(backgroundColor)}`,
-        '& .MuiAlert-message': {
-          maxWidth: '1200px',
-          margin: 'auto',
-        },
-        '& .MuiAlert-action': {
-          marginRight: 'auto',
+        backgroundColor: (theme) => theme.palette.background.default,
+        color: buttonTextColor,
+        textTransform: 'none',
+        borderRadius: '5px',
+        letterSpacing: 0,
+        minWidth: 125,
+        border: `1px solid ${darkenColor('#FFFFFF')}`,
+        '&:hover': {
+          backgroundColor: darkenColor('#FFFFFF', 6),
         },
       }}
-      icon={false}
-      action={
-        onButtonClick && (
-          <PillButton
-            style={{
-              background: 'white',
-              color: buttonTextColor,
-              borderRadius: '20px',
-              padding: '10px 20px',
-              width: '220px',
-            }}
-            size="small"
-            onClick={onButtonClick}
-            aria-label={buttonText}
-          >
-            {buttonText}
-          </PillButton>
-        )
-      }
+      size="small"
+      onClick={onButtonClick}
+      aria-label={buttonText}
     >
-      <AlertTitle
-        sx={{ color, textTransform: 'none', display: 'flex', alignItems: 'center', gap: 1 }}
-      >
-        {icon}
-        {title}
-      </AlertTitle>
-      <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-        {message}
-      </Typography>
+      {buttonText}
+    </PillButton>
+  ) : null;
+
+  return (
+    <Alert sx={alertStyles} icon={false} action={action}>
+      <div style={iconStyles}>{icon}</div>
+      <div style={textContainerStyles}>
+        {title && <AlertTitle sx={alertTitleStyles}>{title}</AlertTitle>}
+
+        <Typography variant="body2">{message}</Typography>
+      </div>
     </Alert>
   );
 }
+
+// Styles
+const getIconContainerStyles = (borderColor) => ({
+  alignSelf: 'flex-start',
+  paddingTop: '2px',
+  color: borderColor,
+  '& svg': {
+    fill: borderColor,
+  },
+});
+
+const textContainerStyles = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+};
+
+const getAlertTitleStyles = (color) => ({
+  color,
+  textTransform: 'none',
+  margin: 0,
+  marginBottom: '4px',
+});
+
+const getAlertStyles = (backgroundColor, color, borderColor) => ({
+  backgroundColor,
+  color,
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'flex-start',
+  py: 1,
+  m: 1,
+  border: `1px solid ${borderColor || darkenColor(backgroundColor)}`,
+  '& .MuiAlert-message': {
+    maxWidth: '1200px',
+    margin: 'auto',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 1,
+  },
+  '& .MuiAlert-action': {
+    marginRight: 'auto',
+  },
+});

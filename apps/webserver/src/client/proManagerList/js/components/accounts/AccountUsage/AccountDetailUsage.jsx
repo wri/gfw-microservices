@@ -8,6 +8,8 @@ import {
   TableRow,
   Paper,
   Grid,
+  Box,
+  styled,
 } from '@mui/material';
 
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
@@ -19,6 +21,14 @@ import { LoadingModal } from '../../../../../components';
 import { calculateAccountSubscriptionDates } from '../../../../../common/js/utils/accountSubscriptionDates';
 import AccountDetailUsageByAnalysisType from '../../../../../profile/js/components/AccountUsage/AccountDetailUsageByAnalysisType.jsx';
 
+const AccountRenewalText = styled('p')({
+  marginBottom: '1rem',
+  color: 'rgba(0, 0, 0, 0.5)',
+  fontSize: '12px',
+  textAlign: 'right',
+  borderRadius: '5px',
+});
+
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -27,8 +37,10 @@ function AccountDetailUsage() {
   const [dateRangeAccountData, setDateRangeAccountData] = useState({});
   const [analysisUsageByType, setAnalysisUsageByType] = useState([]);
 
-  const { organization_id: organizationId, organization_name } = currentAccount;
+  const { organization_id: organizationId, renewal_time } = currentAccount;
   const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
+  const { subscriptionYearEnd } = calculateAccountSubscriptionDates(renewal_time);
+
   useEffect(() => {
     setIsLoading(true);
     fetch(
@@ -48,12 +60,12 @@ function AccountDetailUsage() {
       })
       .catch((error) => {
         console.log(error);
+        setDateRangeAccountData({});
+        setIsLoading(false);
       });
-  }, [startDate, endDate]);
 
-  useEffect(() => {
     fetch(
-      `analytics/usage/usage-by-analysis?startDate=${startDate}&endDate=${endDate}&organizationName=${organization_name}`,
+      `analytics/usage/usage-by-analysis?startDate=${startDate}&endDate=${endDate}&organizationId=${organizationId}`,
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -69,44 +81,59 @@ function AccountDetailUsage() {
       })
       .catch((error) => {
         console.log(error);
+        setAnalysisUsageByType([]);
+        setIsLoading(false);
       });
   }, [startDate, endDate]);
 
+  if (isLoading) {
+    return <LoadingModal isLoading={true} />;
+  }
+
   return (
     <section>
-      <AccountUsageInfoBubbles />
+      <Box
+        sx={{
+          backgroundColor: '#f5f5f5',
+          padding: '1em',
+          borderRadius: '5px',
+        }}
+      >
+        <AccountRenewalText>Account renewal on {subscriptionYearEnd}</AccountRenewalText>
+        <AccountUsageInfoBubbles />
+      </Box>
       <AccountDetailUsageByAnalysisType
         analysisUsageByType={analysisUsageByType}
         setStartDateAnalysis={setStartDate}
         setEndDateAnalysis={setEndDate}
         startDateAnalysis={startDate}
         endDateAnalysis={endDate}
-      />
-      {isLoading && <LoadingModal isLoading={true} />}
-      {!isLoading && (
-        <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>{accountProfileStrings.accountUsageLabels.numberOfLists}</TableCell>
-                  <TableCell>{accountProfileStrings.accountUsageLabels.maxAreaPerList}</TableCell>
-                  <TableCell>
-                    {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell>{numberWithCommas(number_of_lists_analyzed)}</TableCell>
-                  <TableCell>{numberWithCommas(max_area_analyzed)}</TableCell>
-                  <TableCell>{numberWithCommas(total_area_analyzed)}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
-      )}
+      >
+        {!isLoading && (
+          <Grid container justifyContent="center" sx={{ marginTop: '2em' }}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{accountProfileStrings.accountUsageLabels.numberOfLists}</TableCell>
+                    <TableCell>{accountProfileStrings.accountUsageLabels.maxAreaPerList}</TableCell>
+                    <TableCell>
+                      {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>{numberWithCommas(number_of_lists_analyzed)}</TableCell>
+                    <TableCell>{numberWithCommas(max_area_analyzed)}</TableCell>
+                    <TableCell>{numberWithCommas(total_area_analyzed)}</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        )}
+      </AccountDetailUsageByAnalysisType>
     </section>
   );
 }

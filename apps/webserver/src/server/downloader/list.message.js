@@ -20,6 +20,7 @@ const buildSQSMessage = ({ request, file }) => {
     listView,
     aggregate,
     isGFWList,
+    source,
   } = request.query;
 
   const tmpPath = tmp.tmpNameSync();
@@ -45,6 +46,7 @@ const buildSQSMessage = ({ request, file }) => {
     listView,
     selectedLocations,
     isGFWList,
+    source,
   };
   const filtersClean = _.pickBy(filters, _.identity);
 

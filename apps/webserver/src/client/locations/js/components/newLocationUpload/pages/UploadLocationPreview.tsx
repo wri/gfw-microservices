@@ -26,9 +26,10 @@ import { fetchListPreview } from '../../../../../api/list';
 
 export function UploadLocationPreview() {
   const {
-    uploadLocationState: { uploadedFile },
+    uploadLocationState: { uploadedFile, uploadType },
     clearUploadType,
     addFile,
+    setIsUmlFile,
   } = useUploadLocation();
   const history = useHistory();
   const theme = useTheme();
@@ -95,6 +96,27 @@ export function UploadLocationPreview() {
         ],
       });
     }
+
+    if (data && data.features) {
+      const firstFeature = data.features[0];
+      if (firstFeature?.properties) {
+        const props = firstFeature.properties;
+
+        // Check for ID columns (case-insensitive)
+        const hasIdColumns = 'ID' in props || 'ID Type' in props;
+
+        // Check for coordinates (case-insensitive)
+        const hasCoordinates =
+          ('Latitude' in props && 'Longitude' in props) ||
+          ('latitude' in props && 'longitude' in props);
+
+        // Check for UML-specific fields (analysisRadius or analysisArea)
+        const hasAnalysisField = 'analysisRadius' in props || 'analysisArea' in props;
+
+        const isUml = hasIdColumns && hasCoordinates && hasAnalysisField;
+        setIsUmlFile(isUml);
+      }
+    }
   }, [data]);
 
   const normalizedError = normalizeError(error);
@@ -108,6 +130,9 @@ export function UploadLocationPreview() {
         }
       : null;
   const errorToShow = normalizedError || apiRequestError || oversizedError;
+  const DATA_CY_NEW_UPLOAD_WORKFLOW = DATA_CY.NEW_UPLOAD_WORKFLOW[uploadType] as
+    | (typeof DATA_CY.NEW_UPLOAD_WORKFLOW)[UploadType.ByFile]
+    | (typeof DATA_CY.NEW_UPLOAD_WORKFLOW)[UploadType.ById];
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -140,7 +165,7 @@ export function UploadLocationPreview() {
             color="info"
             disabled={isLoading || iLoadingFileUpload}
             startIcon={<Replay />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_RETRY}
+            data-cy={DATA_CY_NEW_UPLOAD_WORKFLOW.PREVIEW_RETRY}
             onClick={() => fileInputRef.current?.click()}
           >
             Re-upload file
@@ -226,7 +251,7 @@ export function UploadLocationPreview() {
             variant="contained"
             color="info"
             startIcon={<Close />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_CANCEL}
+            data-cy={DATA_CY_NEW_UPLOAD_WORKFLOW.PREVIEW_CANCEL}
             onClick={clearUploadType}
           >
             Cancel
@@ -234,7 +259,7 @@ export function UploadLocationPreview() {
           <PillButton
             variant="contained"
             startIcon={<ArrowForwardIos />}
-            data-cy={DATA_CY.NEW_UPLOAD_WORKFLOW[UploadType.ByFile].PREVIEW_NEXT}
+            data-cy={DATA_CY_NEW_UPLOAD_WORKFLOW.PREVIEW_NEXT}
             onClick={() => history.push('CONFIGURE_LIST')}
             disabled={
               isLoading || !data?.features || !!error || !!apiRequestError || !!oversizedError

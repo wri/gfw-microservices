@@ -45,6 +45,13 @@ export const MARK_IS_TEST_LIST = 'e2e_automation';
 export const MARK_IS_TEST_USER = 'dt_';
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
+const geoTrellisUrlsByEnv = {
+  qa: GEO_TRELLIS__ANALYZE_LIST_QA,
+  staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
+  production: GEO_TRELLIS__ANALYZE_LIST_PROD,
+  ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+  default: GEO_TRELLIS__ANALYZE_LIST_DEV,
+};
 
 export const getAllListsAnalysisStatus = async (
   clientDatabase: string,
@@ -208,31 +215,21 @@ export const handleCreateAnalysis = async (
   sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
-  reanalyze = false,
-  isFromEAPI = false
+  reanalyze = false
 ) => {
-  const geoTrellisUrlsByEnv = {
-    qa: GEO_TRELLIS__ANALYZE_LIST_QA,
-    staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
-    production: GEO_TRELLIS__ANALYZE_LIST_PROD,
-    ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-    default: GEO_TRELLIS__ANALYZE_LIST_DEV,
-  };
   try {
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
-    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-      organizationDb,
-      organizationId,
-      subscriptionStatusId,
-      listId,
-    });
 
+    // Update [Lists], [Analyses] and [ListsAnalysisStatus] statuses before geotrellis
+    await SQLUtils.queryDB<ListsAnalysisStatus[]>(organizationDb, 'uspSetListStatus', [
+      { field: 'list_id', type: sql.Int, value: listId },
+      { field: 'status_id', type: sql.Int, value: listStatus.Pending },
+    ]);
     await setListAnalysisStatusByTypes(
       organizationDb,
       listId,
       analysisTypesToProcess,
-      listStatus.Pending,
-      isFromEAPI
+      listStatus.Pending
     );
 
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
@@ -244,6 +241,14 @@ export const handleCreateAnalysis = async (
           )
         : listAnalysisStatusData
     );
+
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb,
+      organizationId,
+      subscriptionStatusId,
+      listId,
+      analysisTypesToProcess: analysisTypes,
+    });
 
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organizationDb, {
@@ -273,6 +278,7 @@ export const handleCreateAnalysis = async (
 
     // Check if any locations have ErrorDetails before sending to Geotrellis
     await validateNoErrorDetails(listId, organizationDb);
+    const expeditedAnalysis = await getExpeditedAnalysisFlag(organizationDb);
 
     const data = {
       list_id: listId,
@@ -282,18 +288,16 @@ export const handleCreateAnalysis = async (
       analysis_types: analysisTypes,
       reanalyze,
       send_email: sendEmail,
+      gadm: '4.1',
+      // add FeatureFlag to data
+      expedited_analysis: expeditedAnalysis,
     };
 
-    const clientStoreConnection = new ClientStoreConnection();
-    const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
-
-    const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
-
-    // Add FeatureFlag to data
-    data['expedited_analysis'] = await getExpeditedAnalysisFlag(organizationDb);
-
-    // Add Gadm 4.1 to data
-    data['gadm'] = '4.1';
+    await updateActivityLog({
+      organizationDb,
+      organization_user_id,
+      listId,
+    });
 
     const microserviceEnvironment = process.env.MICROSERVICES_ENV;
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
@@ -302,6 +306,7 @@ export const handleCreateAnalysis = async (
       listId,
       organization_user_id
     );
+
     const isTestFlow = checkIsTestFlow(microserviceEnvironment, listName, testUserEmail);
 
     if (isTestFlow) {
@@ -314,20 +319,7 @@ export const handleCreateAnalysis = async (
         'Content-Type': 'application/json',
       },
     });
-    try {
-      await activityLogRepository.save({
-        userId: organization_user_id,
-        activityTypeId: 22,
-        activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
-        activityTime: new Date(),
-      });
-    } catch (error) {
-      Logger.error(
-        'createAnalysis',
-        `Error when updating ${listId} to analysis: ${error.stack || error}`
-      );
-      throw error;
-    }
+
     return response.statusText;
   } catch (error) {
     Logger.error(
@@ -337,6 +329,28 @@ export const handleCreateAnalysis = async (
     throw error;
   }
 };
+
+async function updateActivityLog({ organizationDb, organization_user_id, listId }) {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connectionLibSql = await clientStoreConnection.getConnection(organizationDb);
+
+  const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
+
+  try {
+    await activityLogRepository.save({
+      userId: organization_user_id,
+      activityTypeId: 22,
+      activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
+      activityTime: new Date(),
+    });
+  } catch (error) {
+    Logger.error(
+      'createAnalysis',
+      `Error when updating ${listId} to analysis: ${error.stack || error}`
+    );
+    throw error;
+  }
+}
 
 export const deleteListAnalysisStatusBy = async (
   clientDatabase: string,

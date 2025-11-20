@@ -14,6 +14,7 @@ const downloadRequest = ({
   selectedLocations,
   allLocationsSelected,
   isGfwList = false,
+  source,
 }) => {
   // 'Location Name' is named 'Investment Name' in the backend
   // adding quotation marks (stringify) to the column name as some of the field names in the database contain spaces
@@ -35,6 +36,7 @@ const downloadRequest = ({
     ...(filters.selectedSubState ? { subState: filters.selectedSubState } : {}),
     combinedColumns: combinedColumns?.join(','),
     selectedLocations: allLocationsSelected ? 'all' : selectedLocations?.join(','),
+    ...(source ? { source } : {}),
   };
   return axios({
     url: `/locations/${format}/${listID}`,

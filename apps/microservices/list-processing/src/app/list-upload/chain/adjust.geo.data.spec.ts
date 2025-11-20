@@ -153,7 +153,7 @@ describe('AdjustGeoData', () => {
       expect(result).not.toHaveProperty('hasUnanalyzableError');
     });
 
-    it('should calculate center of mass regardless of extraneous points', () => {
+    it('should calculate point on feature regardless of extraneous points', () => {
       const feature: Feature = {
         type: 'Feature',
         properties: {},
@@ -214,9 +214,9 @@ describe('AdjustGeoData', () => {
         },
       };
 
-      // Mock turf.centerOfMass to throw an error
-      jest.spyOn(turf, 'centerOfMass').mockImplementation(() => {
-        throw new Error('Center of mass calculation failed');
+      // Mock turf.pointOnFeature to throw an error
+      jest.spyOn(turf, 'pointOnFeature').mockImplementation(() => {
+        throw new Error('Point on feature calculation failed');
       });
 
       const result = adjustGeoData.getLatLngFromFeature(feature);

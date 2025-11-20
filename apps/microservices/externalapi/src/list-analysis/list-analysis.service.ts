@@ -43,7 +43,6 @@ import {
   ListSchemaType,
   ClientStoreConnection,
   ListsAnalysisStatus,
-  ListsUploadStatus,
   ExternalUpload,
   SQLUtils,
   GHGAnalysisDataByListId,
@@ -55,16 +54,6 @@ import * as sql from 'mssql';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 70; // single location CSV file size
-const PROCESSING_LIMIT_POLL_INTERVAL_MS = 300;
-const PROCESSING_LIMIT_TIMEOUT_MS = 1500;
-const PROCESSING_LIMIT_TOKENS = [
-  'analysis limit',
-  'processing limit',
-  'list size limit exceeded',
-  'maximum allowed size',
-  'exceeded analysis limit',
-];
-
 const contentType = {
   csv: 'text/csv',
   kml: 'application/vnd.google-earth.kml+xml',
@@ -440,47 +429,6 @@ export class ListAnalysisService {
     }
   }
 
-  private async waitForProcessingLimitFlag(
-    organizationDatabase: string,
-    listId: number,
-    timeoutMs = PROCESSING_LIMIT_TIMEOUT_MS,
-    pollIntervalMs = PROCESSING_LIMIT_POLL_INTERVAL_MS
-  ): Promise<boolean> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const repository = connection.getRepository(ListsUploadStatus);
-    const deadline = Date.now() + timeoutMs;
-
-    while (true) {
-      const records = await repository.find({ where: { listId } });
-      if (records.some((record) => this.isProcessingLimitRecord(record))) {
-        return true;
-      }
-
-      if (Date.now() >= deadline) {
-        return false;
-      }
-
-      await this.delay(pollIntervalMs);
-    }
-  }
-
-  private isProcessingLimitRecord(record: ListsUploadStatus): boolean {
-    if (!record) {
-      return false;
-    }
-
-    const stage = record.lastSuccessfulStage?.toLowerCase() ?? '';
-    const errorInfo = record.errorInfo?.toLowerCase() ?? '';
-
-    return PROCESSING_LIMIT_TOKENS.some(
-      (token) => stage.includes(token) || errorInfo.includes(token)
-    );
-  }
-
-  private async delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   async uploadNewList(
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
@@ -578,15 +526,6 @@ export class ListAnalysisService {
         saveAsDraft: false,
       });
       this.logger.log('Event analysis response: ', processListResponse.data);
-
-      const limitDetected = await this.waitForProcessingLimitFlag(
-        organizationDetails.organizationDb,
-        listId
-      );
-
-      if (limitDetected) {
-        throwCustomErrorResponse('Analysis limit reached', HttpStatus.PAYMENT_REQUIRED);
-      }
 
       const response: ListUploadNewResponse = {
         uploadId: newListDetails.uploadId,
@@ -761,7 +700,6 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
       ListActivityTypesEnum.ListAnalyzing
     );
-    const isFromEAPI = true;
     try {
       const response = await handleCreateAnalysis(
         analysisId.toUpperCase(),
@@ -771,10 +709,8 @@ export class ListAnalysisService {
         userEmail ? true : false,
         organization_user_id,
         organizationDetails.subscriptionStatusId,
-        true,
-        isFromEAPI
+        true
       );
-
       return response;
     } catch (error) {
       if (this.isAnalysisLimitError(error)) {

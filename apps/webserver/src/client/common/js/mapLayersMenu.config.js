@@ -41,60 +41,80 @@ const forestChangeLayers = [
     order: 106,
   },
   {
-    id: proLayers.gladAlertsID,
+    id: proLayers.globalIntegratedDisturbanceAlertsId,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 107,
   },
   {
-    id: proLayers.gladLGeographicCoverageID,
+    id: proLayers.integratedDeforestationAlertsID,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 107,
+  },
+
+  {
+    id: proLayers.disturbanceAlertsDriversId,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     order: 108,
   },
   {
-    id: proLayers.gladS2AlertsID,
+    id: proLayers.globalVegetationDisturbanceAlertsId,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
-    order: 108,
+    order: 109,
+  },
+  {
+    id: proLayers.gladLGeographicCoverageID,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 110,
+  },
+
+  {
+    id: proLayers.gladAlertsID,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 111,
   },
   {
     id: proLayers.gladS2GeographicCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
-    order: 110,
+    order: 112,
+  },
+  {
+    id: proLayers.gladS2AlertsID,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    order: 113,
   },
   {
     id: proLayers.raddAlertsID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
-    order: 111,
+    order: 114,
   },
   {
     id: proLayers.raddCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
     ignored: true,
-    order: 112,
-  },
-  {
-    id: proLayers.integratedDeforestationAlertsID,
-    group: 'forest-change',
-    subGroup: 'deforestation-alerts',
-    order: 113,
+    order: 115,
   },
   {
     id: proLayers.integratedAlertsGeographicCoverageID,
     group: 'forest-change',
     subGroup: 'deforestation-alerts',
-    order: 114,
+    order: 116,
     ignored: true,
   },
   {
     id: proLayers.viirsActiveFiresID,
     group: 'forest-change',
     subGroup: 'fire-alerts',
-    order: 115,
+    order: 117,
     popupTemplate: {
       title: null,
       content:
@@ -109,6 +129,20 @@ const forestChangeLayers = [
       { id: 'BRIGHT_TI5', text: 'Bright TI5' },
       { id: 'CONFIDENCE', text: 'Confidence' },
     ],
+  },
+  {
+    id: proLayers.disturbanceAlertsDriversGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    ignored: true,
+    order: 118,
+  },
+  {
+    id: proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'deforestation-alerts',
+    ignored: true,
+    order: 119,
   },
 ];
 
@@ -171,7 +205,7 @@ const landCoverLayers = [
     order: 209,
   },
   {
-    id: proLayers.sBTNNaturalForest,
+    id: proLayers.sbtnNaturalLands,
     group: 'land-cover',
     order: 211,
   },

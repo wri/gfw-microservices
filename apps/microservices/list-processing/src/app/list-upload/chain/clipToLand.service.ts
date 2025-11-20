@@ -7,6 +7,7 @@ import axiosRetry from 'axios-retry';
 import wkx from 'wkx';
 import { Position } from 'typeorm/driver/types/GeoJsonTypes';
 import { HttpStatus } from '@nestjs/common';
+import { yieldIfLong } from './shared';
 
 const DEFAULT_DELAY = 1000;
 axiosRetry(axios, {
@@ -35,25 +36,15 @@ axiosRetry(axios, {
     );
   },
 });
+
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
 
-  private BATCH_SIZE = 200;
-  getClipToLandData = async (feature: Feature) => {
-    // Type assertion for geometry with coordinates property
-    const geometryWithCoords = feature.geometry as Feature['geometry'] & {
-      coordinates: Position[];
-    };
+  // Batching value above 100 results in roughly same performance as 100, but may cause timeouts
+  // Value of 50 is 20% slower than 100, but may be more reliable
+  private BATCH_SIZE = 50;
 
-    const requestData = {
-      geometry: feature.geometry,
-      sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
-        feature.geometry.type
-      }", "coordinates": ${JSON.stringify(
-        geometryWithCoords.coordinates
-      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='2'`,
-    };
-
+  private async retryDataAPI(retriesLeft: number, requestData: any, feature: Feature) {
     try {
       const response = await axios.post(
         'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
@@ -98,9 +89,42 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       };
       return payload;
     } catch (error) {
-      const statusCode = error.response?.status;
+      const statusCode = error.response?.status || error.code;
+      // retry only for certain timeout/network errors
+      if (
+        retriesLeft > 0 &&
+        (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET')
+      ) {
+        this.logger.warn(
+          `Timeout error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
+        );
+        return this.retryDataAPI(retriesLeft - 1, requestData, feature);
+      }
+      throw error;
+    }
+  }
 
-      this.logger.warn(`ERROR in request (HTTP ${statusCode}):`, error.message);
+  getClipToLandData = async (feature: Feature) => {
+    // Type assertion for geometry with coordinates property
+    const geometryWithCoords = feature.geometry as Feature['geometry'] & {
+      coordinates: Position[];
+    };
+
+    const requestData = {
+      geometry: feature.geometry,
+      sql: `SELECT ST_UNION(ST_Intersection(geom, ST_setSRID(ST_GeomFromGeoJSON('{"type": "${
+        feature.geometry.type
+      }", "coordinates": ${JSON.stringify(
+        geometryWithCoords.coordinates
+      )}}') , 4326 ) ) ) FROM mytable WHERE adm_level='1'`,
+    };
+
+    try {
+      return await this.retryDataAPI(2, requestData, feature);
+    } catch (error) {
+      const statusCode = error.response?.status || error.code;
+
+      this.logger.warn(`ERROR in request (${statusCode}):`, error.stack || error.message);
       this.logger.warn(
         `Returning feature without geometry for feature ${
           feature.properties?.locationName || 'unknown'
@@ -109,10 +133,10 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       const payload = {
         properties: {
           ...feature.properties,
-          errorDetails: `ERROR in request (HTTP ${statusCode}): ${error.message}`,
+          errorDetails: `ERROR in request (${statusCode}): ${error.message}`,
         },
-        geometry: null,
-        type: 'FeatureCollection',
+        geometry: {},
+        type: 'Feature',
       };
       // Add a small delay before rethrowing
       if (error.response?.status !== 429) {
@@ -150,6 +174,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
     const { features } = geojson as FeatureCollection;
     const processedFeatures: Feature[] = [];
+    let lastYieldTimestamp = Date.now();
 
     // Process features in batches
     for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
@@ -161,6 +186,12 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         this.logger.warn('Error processing batch:', e);
         processedFeatures.push(...batch); // Add original features if processing fails
       }
+      if (Math.random() < 0.1) {
+        // Log progress for approximately 10% of batches
+        this.logger.debug(`clipToLand - progress: ${i} of ${features.length}`);
+      }
+      // periodically yield to avoid CPU overload that may trigger AWS ECS health check failure
+      lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
     }
 
     return {

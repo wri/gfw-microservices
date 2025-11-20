@@ -80,6 +80,7 @@ export const constructLayerObject = (visibleLayers, layer) => {
       treeCoverID,
       treeCoverLossID,
       argentineanNativeForestsLoss,
+      disturbanceAlertsDriversGeographicCoverageId,
     } = proLayers;
 
     switch (layerName) {
@@ -127,6 +128,9 @@ export const constructLayerObject = (visibleLayers, layer) => {
         break;
       case argentineanNativeForestsLoss:
         type = 'argentinean-native-forests-loss';
+        break;
+      case disturbanceAlertsDriversGeographicCoverageId:
+        type = disturbanceAlertsDriversGeographicCoverageId;
         break;
       default:
         type = 'tileLayer';

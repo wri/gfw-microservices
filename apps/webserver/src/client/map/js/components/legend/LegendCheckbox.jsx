@@ -32,11 +32,16 @@ const {
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
+  disturbanceAlertsDriversId,
+  disturbanceAlertsDriversGeographicCoverageId,
+  globalVegetationDisturbanceAlertsId,
+  globalIntegratedDisturbanceAlertsId,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import OpacitySlider from './OpacitySlider';
 import '../../../css/map.scss';
 import DeforestationAlertsLayerLegend from './DeforestationAlerts/DeforestationAlertsLayerLegend';
+import { DriverOfDisturbanceAlertsLayerLegend } from './custom/DriverOfDisturbanceAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
 import {
@@ -45,6 +50,8 @@ import {
   deforestationAlertsLayerToCoverageMap,
 } from './DeforestationAlerts/deforestationAlerts.constants';
 import './LegendCheckbox.scss';
+import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
+import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -163,6 +170,13 @@ export default class LegendCheckbox extends Component {
           layersToToggle.push(id);
         }
       });
+    } else if (layerId === disturbanceAlertsDriversId) {
+      if (
+        disturbanceAlertsDriversGeographicCoverageId &&
+        visibleLayers.includes(disturbanceAlertsDriversGeographicCoverageId)
+      ) {
+        layersToToggle.push(disturbanceAlertsDriversGeographicCoverageId);
+      }
     }
 
     layersToToggle.forEach((id) => toggleLayerVisibility(id)); // Toggle all collected layers
@@ -180,6 +194,13 @@ export default class LegendCheckbox extends Component {
       <li key={`${i}${symbol.name}`}>
         <span className="layer-legend-symbol" style={symbolStyle}></span>
         <span className="layer-legend-label">{symbol.name}</span>
+        {symbol?.subCategories && (
+          <ul className="layer-legend__subcategory">
+            {symbol.subCategories.map((subCategory) => (
+              <li key={subCategory}>{subCategory}</li>
+            ))}
+          </ul>
+        )}
       </li>
     );
   };
@@ -251,69 +272,74 @@ export default class LegendCheckbox extends Component {
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
         id={layer.id + '-layer-checkbox'}
       >
-        <div className="legend-item-content">
-          <span
-            onClick={this.toggleLayerVisibility}
-            className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
-              iconLoading === layer.id ? 'iconLoading' : ''
-            }`}
-          >
-            {grayed === 'grayed' ? (
-              <svg>
-                <use xlinkHref="#icon-hide-layer-map" />
-              </svg>
-            ) : (
-              <svg style={symbolStyle}>
-                <use xlinkHref="#icon-show-layer-map" />
-              </svg>
-            )}
-          </span>
-          <span className="legend-layer-name">{layer.name}</span>
+        <div style={{ display: 'flex', marginBottom: '10px' }}>
+          <div style={{ flex: 1 }}>
+            <span
+              onClick={this.toggleLayerVisibility}
+              className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
+                iconLoading === layer.id ? 'iconLoading' : ''
+              }`}
+            >
+              {grayed === 'grayed' ? (
+                <svg>
+                  <use xlinkHref="#icon-hide-layer-map" />
+                </svg>
+              ) : (
+                <svg style={symbolStyle}>
+                  <use xlinkHref="#icon-show-layer-map" />
+                </svg>
+              )}
+            </span>
+            <span className="legend-layer-name">{layer.name}</span>
 
-          <span className="layer-checkbox-label">{label}</span>
-        </div>
-
-        <div class="layer-actions">
-          <div class="layer-actions__action-button">
-            <OpacitySlider value={opacity} onChange={(value) => this.handleOpacityChange(value)} />
+            <span className="layer-checkbox-label">{label}</span>
           </div>
 
-          {gfwListDef &&
-            Object.keys(gfwListDef).length > 0 &&
-            Object.keys(gfwListDef)[0] === layer.id && (
-              <div class="layer-actions__action-button">
+          <div className="layer-actions">
+            <div className="layer-actions__action-button">
+              <OpacitySlider
+                value={opacity}
+                onChange={(value) => this.handleOpacityChange(value)}
+              />
+            </div>
+
+            {gfwListDef &&
+              Object.keys(gfwListDef).length > 0 &&
+              Object.keys(gfwListDef)[0] === layer.id && (
+                <div className="layer-actions__action-button">
+                  <span
+                    className="legend-checkbox-icon gfw-filter pointer"
+                    onClick={this.clearGFWFilter}
+                  >
+                    <svg>
+                      <use xlinkHref="#shape-close" />
+                    </svg>
+                  </span>
+                </div>
+              )}
+
+            {isInfoButtonVisible && (
+              <div className="layer-actions__action-button">
                 <span
-                  className="legend-checkbox-icon gfw-filter pointer"
-                  onClick={this.clearGFWFilter}
+                  className={`legend-checkbox-icon metadata-legend pointer ${
+                    iconLoading === layer.id ? 'iconLoading' : ''
+                  }`}
+                  onClick={this.showInfo}
                 >
                   <svg>
-                    <use xlinkHref="#shape-close" />
+                    <use xlinkHref="#shape-info" />
                   </svg>
                 </span>
               </div>
             )}
 
-          {isInfoButtonVisible && (
-            <div class="layer-actions__action-button">
-              <span
-                className={`legend-checkbox-icon metadata-legend pointer ${
-                  iconLoading === layer.id ? 'iconLoading' : ''
-                }`}
-                onClick={this.showInfo}
-              >
+            <div className="layer-actions__action-button">
+              <span className="legend-checkbox-icon pointer" onClick={this.hideLayer}>
                 <svg>
-                  <use xlinkHref="#shape-info" />
+                  <use xlinkHref="#shape-close" />
                 </svg>
               </span>
             </div>
-          )}
-
-          <div class="layer-actions__action-button">
-            <span className="legend-checkbox-icon pointer" onClick={this.hideLayer}>
-              <svg>
-                <use xlinkHref="#shape-close" />
-              </svg>
-            </span>
           </div>
         </div>
 
@@ -335,6 +361,18 @@ export default class LegendCheckbox extends Component {
 
         {deforestationAlertsIds.includes(layer.id) && (
           <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+        )}
+
+        {disturbanceAlertsDriversId.includes(layer.id) && (
+          <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} />
+        )}
+
+        {globalVegetationDisturbanceAlertsId.includes(layer.id) && (
+          <GlobalVegetationDisturbanceAlertsLayerLegend disabled={grayed} />
+        )}
+
+        {layer.id === globalIntegratedDisturbanceAlertsId && (
+          <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={grayed} />
         )}
 
         {symbolsLength === 1 &&
@@ -395,15 +433,15 @@ export default class LegendCheckbox extends Component {
                 <Typography variant="caption">
                   When comparing the map to the Post-2020 Risk Assessment, ensure that the canopy
                   density filter for the Tree Cover Loss map layer is turned off and the date range
-                  is filtered to 2021 onward, then use either the SBTN Natural Forest Map or the JRC
-                  Global Map of Forest Cover to assess the overlap between layers. The canopy
-                  density filter is based on the 2000 tree cover layer used in the Post-2000 Forest
-                  Change analysis and allows for adjustments, while both the SBTN Natural Forest Map
-                  and JRC Global Map of Forest Cover already account for canopy density. Leaving
-                  this filter on may cause relevant loss to be excluded from the map view. When
-                  comparing the map to the Post-2000 Forest Change analysis, ensure that the canopy
-                  density filter is turned on at set to 30% to match the threshold used in that
-                  analysis.
+                  is filtered to 2021 onward, then use either the {proLayers.sbtnNaturalLands} Map
+                  or the JRC Global Map of Forest Cover to assess the overlap between layers. The
+                  canopy density filter is based on the 2000 tree cover layer used in the Post-2000
+                  Forest Change analysis and allows for adjustments, while both the{' '}
+                  {proLayers.sbtnNaturalLands} Map and JRC Global Map of Forest Cover already
+                  account for canopy density. Leaving this filter on may cause relevant loss to be
+                  excluded from the map view. When comparing the map to the Post-2000 Forest Change
+                  analysis, ensure that the canopy density filter is turned on and set to 30% to
+                  match the threshold used in that analysis.
                 </Typography>
               </Box>
             </HelperTextWithPopover>

@@ -191,18 +191,14 @@ IF @orderType IS NOT NULL
 BEGIN
     SET @SQL += ' ORDER BY ' +
             CASE
-                WHEN CHARINDEX(@sortByAttribute, @afiColumns) > 0
+                WHEN ',' + @afiColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
                      THEN 'afi.' + QUOTENAME(@sortByAttribute)
-                WHEN CHARINDEX(@sortByAttribute, @ltColumns) > 0
+                WHEN ',' + @ltColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
                      THEN 'lt.' + QUOTENAME(@sortByAttribute)
-                WHEN CHARINDEX(@sortByAttribute, @calculatedColumns) > 0
+                WHEN ',' + @calculatedColumns + ',' LIKE '%,' + @sortByAttribute + ',%'
                      THEN QUOTENAME(@sortByAttribute)
-                WHEN EXISTS (
-                    SELECT 1
-                    FROM ListAttributes
-                    WHERE list_id = @listId
-                    AND attribute_name = @sortByAttribute
-                )
+                WHEN @JsonAttributeColumns IS NOT NULL 
+                     AND CHARINDEX('AS [' + @sortByAttribute + ']', @JsonAttributeColumns) > 0
                      THEN CASE
                           WHEN (
                               SELECT attribute_type

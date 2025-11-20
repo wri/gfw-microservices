@@ -27,6 +27,7 @@ import {
   Organization,
   UserRoutes,
 } from '@wri-monorepos/sql';
+import { ListUploadNewRequestSchema } from '../list-upload-new.dto';
 
 jest.mock('@wri-monorepos/geo', () => ({
   handleCreateAnalysis: jest.fn().mockResolvedValue('true value'),
@@ -401,47 +402,36 @@ describe('ListAnalysisService', () => {
 
   describe('uploadNewList', () => {
     const organizationId = 1;
-    const mockUploadRequest = {
+    const mockUploadRequest: ListUploadNewRequestSchema = {
       uploadId: '123',
       listName: 'Example List',
-      analysisIDs: 'FCD',
+      analysisIDs: ['FCD'],
       commodity: 'Cocoa Generic',
     };
 
     let axiosPostSpy: jest.SpyInstance;
     let checkIfS3FileExistsSpy: jest.SpyInstance;
 
-    let externalUploadRepositoryMock;
-    let listsUploadStatusRepositoryMock;
-
     beforeEach(() => {
-      externalUploadRepositoryMock = {
-        findOne: jest.fn().mockResolvedValue({
-          id: 99,
-          userId: 7,
-          uploadKeyFile: 'mock-key.csv',
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
+        getRepository: jest.fn().mockReturnValue({
+          findOne: jest.fn().mockResolvedValue({
+            id: 99,
+            userId: 7,
+            uploadKeyFile: 'mock-key.csv',
+          }),
+          save: jest.fn(),
         }),
-        save: jest.fn(),
-      };
-
-      listsUploadStatusRepositoryMock = {
-        find: jest.fn().mockResolvedValue([]),
-      };
-
-      clientStoreConnection.getConnection = jest
-        .fn()
-        .mockResolvedValueOnce({
-          getRepository: jest.fn().mockReturnValue(externalUploadRepositoryMock),
-          options: { database: ':memory:' },
-        })
-        .mockResolvedValue({
-          getRepository: jest.fn().mockReturnValue(listsUploadStatusRepositoryMock),
-        });
+        options: { database: ':memory:' },
+      });
 
       saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
 
+      const serviceWithPrivate = service as unknown as {
+        checkIfS3FileExists: (key: string) => Promise<void>;
+      };
       checkIfS3FileExistsSpy = jest
-        .spyOn(service as any, 'checkIfS3FileExists')
+        .spyOn(serviceWithPrivate, 'checkIfS3FileExists')
         .mockResolvedValue(undefined);
 
       axiosPostSpy = jest.spyOn(axios, 'post');
@@ -452,7 +442,7 @@ describe('ListAnalysisService', () => {
       axiosPostSpy.mockRestore();
     });
 
-    it('should return 402 when processing limit is detected after successful process-list response', async () => {
+    it('should return 402 when processing limit is detected via 422 response', async () => {
       axiosPostSpy.mockImplementation((url: string) => {
         if (url.includes('/api/create-large-list')) {
           return Promise.resolve({ data: { list_id: 456 } });
@@ -463,27 +453,19 @@ describe('ListAnalysisService', () => {
         }
 
         if (url.includes('/api/process-list')) {
-          return Promise.resolve({
-            data: {
-              executionArn: 'arn:aws:states:::startExecution',
-              startDate: new Date().toISOString(),
-            },
-          });
+          const error: Error & { response?: { data?: { message?: string }; status?: number } } =
+            new Error('Processing limit reached');
+          error.response = {
+            data: { message: 'Processing limit reached' },
+            status: HttpStatus.UNPROCESSABLE_ENTITY,
+          };
+          return Promise.reject(error);
         }
 
         return Promise.resolve({});
       });
 
-      listsUploadStatusRepositoryMock.find.mockResolvedValueOnce([
-        {
-          lastSuccessfulStage: 'List size limit exceeded',
-          errorInfo: 'List exceeds the maximum allowed size of 150000 locations.',
-        },
-      ]);
-
-      await expect(
-        service.uploadNewList(mockUploadRequest as any, organizationId)
-      ).rejects.toMatchObject({
+      await expect(service.uploadNewList(mockUploadRequest, organizationId)).rejects.toMatchObject({
         status: HttpStatus.PAYMENT_REQUIRED,
         response: { errorDetails: 'Analysis limit reached' },
       });
@@ -512,9 +494,7 @@ describe('ListAnalysisService', () => {
         return Promise.resolve({});
       });
 
-      await expect(
-        service.uploadNewList(mockUploadRequest as any, organizationId)
-      ).rejects.toMatchObject({
+      await expect(service.uploadNewList(mockUploadRequest, organizationId)).rejects.toMatchObject({
         status: HttpStatus.PAYMENT_REQUIRED,
         response: { errorDetails: 'Analysis limit reached' },
       });

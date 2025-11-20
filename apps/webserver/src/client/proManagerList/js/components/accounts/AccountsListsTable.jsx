@@ -32,9 +32,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="organization_name"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Organization Name
                   <div className={`sortable-carrot ${getSortClass('organization_name')}`} />
@@ -42,9 +40,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="organization_parent"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Parent Organization Name
                   <div className={`sortable-carrot ${getSortClass('organization_parent')}`} />
@@ -52,9 +48,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="classString"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Organization Classification(s)
                   <div className={`sortable-carrot ${getSortClass('classString')}`} />
@@ -62,9 +56,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="statusString"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Account Status
                   <div className={`sortable-carrot ${getSortClass('statusString')}`} />
@@ -72,9 +64,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="requestedDateString"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Date Requested
                   <div className={`sortable-carrot ${getSortClass('requestedDateString')}`} />
@@ -82,9 +72,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="activeDateString"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Date Activated
                   <div className={`sortable-carrot ${getSortClass('activeDateString')}`} />
@@ -92,9 +80,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="organization_address"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Organization Address
                   <div className={`sortable-carrot ${getSortClass('organization_address')}`} />
@@ -102,9 +88,7 @@ function AccountsListsTable({
                 <th
                   className="sortable-table-header"
                   title="organization_website"
-                  onClick={(evt) => {
-                    sortAcctTable(evt);
-                  }}
+                  onClick={(evt) => sortAcctTable(evt)}
                 >
                   Organization Website
                   <div className={`sortable-carrot ${getSortClass('organization_website')}`} />

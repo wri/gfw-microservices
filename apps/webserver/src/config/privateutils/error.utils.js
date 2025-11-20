@@ -59,6 +59,7 @@ export const ERROR_CODES = {
   // Organizations
   failedToGetOrganizations: 500,
   failedToDeleteOrganization: 501,
+  failedToCheckOrganizationName: 502,
   // Lists and Locations
   failedToCreateList: 600,
   failedToAppendList: 601,

@@ -10,7 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import Button from 'common/js/components/Button';
-import { ArrowBack, Close, NotListedLocation, QueryStats } from '@mui/icons-material';
+import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
@@ -96,6 +96,7 @@ import {
   FOREST_CHANGE_VIEW,
   COMMODITY_RISK_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
+  ALERTS,
 } from './listViews.constants';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
@@ -1682,6 +1683,8 @@ export default class ListDetails extends Component {
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
+    const hasValidLocations =
+      (selectedList?.list_locations_count ?? 0) > 0 && !selectedList?.error_file_storage_path;
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -2066,7 +2069,7 @@ export default class ListDetails extends Component {
                         />
                       )}
 
-                      {!isGfwList && (
+                      {!isGfwList && hasValidLocations && (
                         <MaterialButton
                           style={{ color: '#97bd3d', fontSize: '12px' }}
                           onClick={() => {
@@ -2111,12 +2114,23 @@ export default class ListDetails extends Component {
                                 {translatedDiagnosticButtonLabel}
                               </MaterialButton>
                             )}
-                            <span className="list-analysis-actions__analysis-date">
-                              {this.getAnalysisLastUpdatedDate(
-                                listAnalysesStatus,
-                                analysisIdOfCurrentTab
+                            <div>
+                              {listView === ALERTS && (
+                                <MaterialButton
+                                  className="list-analysis-actions__download-reports-button"
+                                  data-cy="download-reports-button"
+                                  startIcon={<Download />}
+                                >
+                                  {Transifex.live.translateText('Download Reports')}
+                                </MaterialButton>
                               )}
-                            </span>
+                              <span className="list-analysis-actions__analysis-date">
+                                {this.getAnalysisLastUpdatedDate(
+                                  listAnalysesStatus,
+                                  analysisIdOfCurrentTab
+                                )}
+                              </span>
+                            </div>
                           </div>
 
                           {/* Rendered only if there are locationsWithError */}

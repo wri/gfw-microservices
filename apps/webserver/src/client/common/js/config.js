@@ -23,7 +23,14 @@ export const latestTreeCoverLossYearCommodityRisk = 2024;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
 
-export const soyPlantedYearsRange = [2001, 2022];
+export const soyPlantedYearsRange = [2001, 2024];
+export const driverOfDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
+export const globalVegetationDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
+export const globalIntegratedDisturbanceAlertsDateRange = ['2022-01-01', '2024-12-31'];
+export const disturbanceAlertsVegetationTypes = {
+  AllVegetation: 'all-vegetation',
+  TreeCover: 'tree-cover',
+};
 
 export const GFW_PRO_USER_GUIDE = 'https://www.globalforestwatch.org/help/gfw-pro/';
 export const GFW_PRO_HELP_CENTER__LINK = 'https://www.globalforestwatch.org/help/pro-login/';
@@ -809,7 +816,7 @@ export const profilePage = {
   },
   profileManager: {
     title: 'Profile manager',
-    userProfileTitle: 'User profile',
+    userProfileTitle: 'User Profile',
     accountProfiles: 'Account Profiles',
     searchAccounts: 'search accounts...',
     createNew: 'Create New',
@@ -1064,7 +1071,7 @@ export const accountProfileStrings = {
     org_address: 'Organization Address',
     org_website: 'Organization Website',
     parent_org_name: 'Parent Organization',
-    is_subsidiary: 'Is Subsidiary ?',
+    is_subsidiary: 'Is Subsidiary?',
     arr_org_classification: 'Account Classifications',
     arr_org_policy: 'Organization Policy',
     subscription_status_id: 'Subscription Status',

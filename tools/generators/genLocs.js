@@ -61,6 +61,30 @@ function outputHeader(fileName) {
   fs.writeFileSync(fileName, headerString);
 }
 
+/**
+ * Generates coordinates for a star-shaped polygon with alternating inner and outer radii.
+ *
+ * @param {number} lat - Latitude of the polygon center.
+ * @param {number} lon - Longitude of the polygon center.
+ * @param {number} numPoints - Number of points (vertices) for the polygon.
+ * @returns {Array<Array<number>>} Array of [lon, lat] coordinates representing the polygon vertices.
+ */
+function genPolygonCoords(lat, lon, numPoints) {
+  const outerRadius = 0.004;
+  const innerRadius = 0.001;
+  const coordinates = [];
+
+  for (let i = 0; i <= numPoints; i++) {
+    const angle = (i * 2 * Math.PI) / numPoints;
+    const r = i % 2 === 0 ? outerRadius : innerRadius;
+    const pointLon = lon + r * Math.cos(angle);
+    const pointLat = lat + r * Math.sin(angle);
+    coordinates.push([pointLon, pointLat]);
+  }
+
+  return coordinates;
+}
+
 function outputLocation(fileName, locName, lat, lon) {
   let locString = '';
   try {
@@ -82,13 +106,10 @@ function outputLocation(fileName, locName, lat, lon) {
       }
       locString += '</SchemaData></ExtendedData>\n';
       if (polygon) {
+        const coordinates = genPolygonCoords(lat, lon, 100);
         locString += `<Polygon><outerBoundaryIs><LinearRing><coordinates>
-        ${lon - 0.01},${lat - 0.01},0
-        ${lon - 0.01},${lat + 0.01},0
-        ${lon + 0.01},${lat + 0.01},0
-        ${lon + 0.01},${lat - 0.01},0
-        ${lon - 0.01},${lat - 0.01},0
-        </coordinates></LinearRing></outerBoundaryIs></Polygon>`;
+          ${coordinates.map((coord) => coord.join(',') + ',0').join(' ')}
+          </coordinates></LinearRing></outerBoundaryIs></Polygon>`;
       } else {
         locString += `<Point><coordinates>${lon},${lat},0</coordinates></Point>`;
       }
@@ -100,20 +121,17 @@ function outputLocation(fileName, locName, lat, lon) {
       locString += `      {
         "type": "Feature",
         "properties": {"Location Name": "${locName}"`;
-      locString += polygon ? '},\n' : `,"Analysis Radius": ${radius},"Analysis Area": 0`;
+      locString += polygon ? '' : `,"Analysis Radius": ${radius},"Analysis Area": 0`;
       if (attributes) {
         locString += `,"Attr bC 1": "${randomAttr}"`;
       }
       locString += '},\n';
       if (polygon) {
+        const coordinates = genPolygonCoords(lat, lon, 100);
         locString += `        "geometry": {
           "type": "Polygon",
           "coordinates": [[
-            [${lon - 0.01},${lat - 0.01}],
-            [${lon - 0.01},${lat + 0.01}],
-            [${lon + 0.01},${lat + 0.01}],
-            [${lon + 0.01},${lat - 0.01}],
-            [${lon - 0.01},${lat - 0.01}]
+            [${coordinates.map((coord) => coord.join(',')).join('], [')}]
           ]]
         }`;
       } else {

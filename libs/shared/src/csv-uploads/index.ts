@@ -54,7 +54,7 @@ export const applyLookUpByChunks = async (
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunkMax = Math.min(data.length, i + chunkSize);
     const chunk = data.slice(i, chunkMax);
-    logger.log(`${idType} LookUp Chunk Size: ${chunk.length}`);
+    logger.log(`${idType} LookUp Chunk Size: ${chunk.length} (rows ${i} to ${chunkMax - 1})`);
 
     const chunkResp = await lookup(chunk.map((row) => row[column] as string));
 
@@ -100,12 +100,12 @@ export const idBasedSystemHandler = async (
     }
 
     // row-level handling
-    data.forEach((row) => {
+    data.forEach((row, index) => {
       try {
         const rowKey = determineIdType(row);
         (groups[rowKey] ??= []).push(row);
       } catch (error) {
-        logger.error(error);
+        logger.error(`Error at row index: ${index}: ${(error.stack || error).toString()}`);
         resolveFlaggedRowsByValueFound(row, error);
         errors.push(error);
       }
@@ -194,7 +194,7 @@ export const determineIdType = (row: Record<string, unknown>) => {
 
 export const validateIdBased = (idType: string, rows: Record<string, unknown>[]) => {
   const { validateColumns } = ID_TYPE_HANDLER[idType];
-  const dataColumns = Object.keys(rows[0] || {}); // headers from first row
+  const dataColumns = Object.keys(rows[0] || {});
 
   const missingFields = validateColumns.flatMap((requiredColumn) => {
     const options = requiredColumn.includes(' | ')
@@ -202,17 +202,22 @@ export const validateIdBased = (idType: string, rows: Record<string, unknown>[])
       : [requiredColumn];
 
     const hasHeader = options.some((c) => dataColumns.includes(c));
-    const hasValues = hasHeader
-      ? rows.some((row) =>
-          options.some((c) => {
-            const value = row[c];
-            return value !== undefined && value !== null && value !== '';
-          })
-        )
-      : false;
+    if (!hasHeader) {
+      return options; // missing column entirely
+    }
 
-    // If the entire group fails, list all columns in that group individually
-    return !(hasHeader && hasValues) ? options : [];
+    // All rows must have some value for one of the options
+    // Guard against empty arrays - Array.every() returns true for empty arrays
+    const allRowsHaveValue =
+      rows.length > 0 &&
+      rows.every((row) =>
+        options.some((c) => {
+          const value = row[c];
+          return value !== undefined && value !== null && value !== '';
+        })
+      );
+
+    return allRowsHaveValue ? [] : options;
   });
 
   return {

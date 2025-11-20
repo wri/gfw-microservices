@@ -8,7 +8,7 @@
       "name": "Webserver",
       "type": "node",
       "request": "attach",
-      "websocketAddress": ""
+      "websocketAddress": "ws://localhost:9229/5d424657-458f-467b-9f6a-c4c805cd7b0b"
     },
     {
       "name": "External API",

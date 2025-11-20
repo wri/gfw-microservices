@@ -666,8 +666,6 @@ export async function getAlertsListAnalyses(list_id, page, pageSize, clientDatab
     state,
     subState,
     hasError,
-    startDate,
-    endDate,
 
     // commodity risk filters:
     selectedSupplier,
@@ -675,6 +673,10 @@ export async function getAlertsListAnalyses(list_id, page, pageSize, clientDatab
     selectedParentCompany,
     showRSPOCertified,
   } = filters;
+
+  const { END_YEAR } = DIAGNOSTIC_ANALYSIS_PERIOD;
+  const startDate = `${END_YEAR + 1}-01-01`;
+  const endDate = new Date().toISOString().split('T')[0];
 
   const parameters = [
     { field: 'listId', type: sql.Int, value: list_id },
@@ -722,12 +724,12 @@ export async function getAlertsListAnalyses(list_id, page, pageSize, clientDatab
     {
       field: 'startDate',
       type: sql.Date,
-      value: startDate || null,
+      value: startDate,
     },
     {
       field: 'endDate',
       type: sql.Date,
-      value: endDate || null,
+      value: endDate,
     },
   ];
 

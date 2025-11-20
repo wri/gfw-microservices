@@ -292,8 +292,6 @@ module.exports = (app, limiter) => {
       selectedMillPriority: millPriority,
       analysisId = 'FCD',
       areAllAnalysesDraft,
-      startDate,
-      endDate,
     } = req.query;
     const hasError = hasErrorParam === 'true';
 
@@ -329,8 +327,6 @@ module.exports = (app, limiter) => {
       selectedOverallThreats,
       selectedOverallValues,
       selectedMillPriority,
-      startDate,
-      endDate,
     };
     const areAllAnalysesDraftBoolean = areAllAnalysesDraft === 'true';
     try {

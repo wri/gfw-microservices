@@ -7,6 +7,7 @@ import axiosRetry from 'axios-retry';
 import wkx from 'wkx';
 import { Position } from 'typeorm/driver/types/GeoJsonTypes';
 import { HttpStatus } from '@nestjs/common';
+import { yieldIfLong } from './shared';
 
 const DEFAULT_DELAY = 1000;
 axiosRetry(axios, {
@@ -173,6 +174,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
     const { features } = geojson as FeatureCollection;
     const processedFeatures: Feature[] = [];
+    let lastYieldTimestamp = Date.now();
 
     // Process features in batches
     for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
@@ -188,8 +190,8 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         // Log progress for approximately 10% of batches
         this.logger.debug(`clipToLand - progress: ${i} of ${features.length}`);
       }
-      // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      // periodically yield to avoid CPU overload that may trigger AWS ECS health check failure
+      lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
     }
 
     return {

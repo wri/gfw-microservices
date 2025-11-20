@@ -35,4 +35,8 @@ export enum ListActivityTypesEnum {
   ListInfo = 39,
   ListPrepareUpload = 40,
   ListGenerate = 41,
+  ListDetailsDownload = 42,
+  ListLandingDownload = 43,
+  ListDashboardDownload = 44,
+  ListDiagnosticsDownload = 45,
 }

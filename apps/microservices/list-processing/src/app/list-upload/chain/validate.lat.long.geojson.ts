@@ -38,6 +38,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validateCoordinates(coordinates: any, country: string): string {
     // Check if coordinates is a single point (array of two numbers)
     if (Array.isArray(coordinates) && coordinates.length === 2 && !Array.isArray(coordinates[0])) {

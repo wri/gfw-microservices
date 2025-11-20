@@ -94,6 +94,82 @@ export class ListAnalysisService {
     };
   }
 
+  private extractErrorMessage(error: unknown): string {
+    if (!error) {
+      return '';
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (error instanceof HttpException) {
+      const response = error.getResponse();
+      if (typeof response === 'string') {
+        return response;
+      }
+      if (response && typeof response === 'object') {
+        const { errorDetails, message, error: responseError } = response as Record<string, string>;
+        return errorDetails || message || responseError || error.message;
+      }
+      return error.message;
+    }
+
+    const anyError = error as {
+      message?: string;
+      response?: { status?: number; data?: unknown; message?: string; error?: string };
+    };
+
+    const responseData = anyError?.response?.data;
+
+    if (typeof responseData === 'string') {
+      return responseData;
+    }
+
+    if (responseData && typeof responseData === 'object') {
+      const {
+        message,
+        error: responseError,
+        errorDetails,
+      } = responseData as Record<string, string>;
+      if (message) {
+        return message;
+      }
+      if (responseError) {
+        return responseError;
+      }
+      if (errorDetails) {
+        return errorDetails;
+      }
+    }
+
+    if (anyError?.response?.message) {
+      return anyError.response.message;
+    }
+
+    if (anyError?.response?.error) {
+      return anyError.response.error;
+    }
+
+    return anyError?.message || '';
+  }
+
+  private isAnalysisLimitError(error: unknown): boolean {
+    const message = this.extractErrorMessage(error).toLowerCase();
+
+    if (!message) {
+      return false;
+    }
+
+    const analysisLimitTokens = [
+      'analysis limit reached',
+      'processing limit reached',
+      'exceeded analysis limit',
+    ];
+
+    return analysisLimitTokens.some((token) => message.includes(token));
+  }
+
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {
     if (
       listAnalysisStatus.status === listStatus.Active &&
@@ -464,6 +540,15 @@ export class ListAnalysisService {
     } catch (error) {
       // axios returns useful info in error.response.data
       this.logger.error('UploadNew error', error?.response?.data || error);
+
+      if (
+        this.isAnalysisLimitError(error) ||
+        (error as { response?: { status?: number } })?.response?.status ===
+          HttpStatus.UNPROCESSABLE_ENTITY
+      ) {
+        throwCustomErrorResponse('Analysis limit reached', HttpStatus.PAYMENT_REQUIRED);
+      }
+
       throwCustomErrorResponse(
         'UploadNew: Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -616,20 +701,24 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
       ListActivityTypesEnum.ListAnalyzing
     );
-    const isFromEAPI = true;
-    const response = await handleCreateAnalysis(
-      analysisId.toUpperCase(),
-      listId,
-      organizationId,
-      organizationDetails.organizationDb,
-      userEmail ? true : false,
-      organization_user_id,
-      organizationDetails.subscriptionStatusId,
-      true,
-      isFromEAPI
-    );
-
-    return response;
+    try {
+      const response = await handleCreateAnalysis(
+        analysisId.toUpperCase(),
+        listId,
+        organizationId,
+        organizationDetails.organizationDb,
+        userEmail ? true : false,
+        organization_user_id,
+        organizationDetails.subscriptionStatusId,
+        true
+      );
+      return response;
+    } catch (error) {
+      if (this.isAnalysisLimitError(error)) {
+        throwCustomErrorResponse('Analysis limit reached', HttpStatus.PAYMENT_REQUIRED);
+      }
+      throw error;
+    }
   }
   async getGhgLocationErrors(
     listId: number,

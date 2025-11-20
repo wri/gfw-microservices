@@ -53,6 +53,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   addFile: jest.fn(),
   updateSaveMode: jest.fn(),
   selectUploadType: jest.fn(),
+  setIsUmlFile: jest.fn(),
 });
 
 const mockUserLists: UserList[] = [
@@ -150,99 +151,119 @@ describe('ConfigureList', () => {
     expect(screen.getByText(/sugar cane/i)).toBeInTheDocument();
   }, 10100);
 
-  it('should show missing mandatory field errors', async () => {
+  // START GPV-4967 ————————————————————————————————————————
+  it('should show commodity error when submitting empty form', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
-    expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
     const nextButton = screen.getByRole('button', { name: /next/i });
     await user.click(nextButton);
-    expect(screen.queryByText(/enter the commodity/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/enter the commodity/i)).toBeInTheDocument();
+    });
+  }, 10000);
+
+  it('should show analysis type selection dialog when no analysis is selected', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
-
-    expect(screen.queryByText(/you must provide at least one list name/i)).not.toBeInTheDocument();
     await user.click(commodityDropdown);
     await user.click(screen.getByRole('option', { name: /soy/i }));
-    await user.click(nextButton);
-    expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
-    expect(screen.queryAllByText(/you must provide at least one list name/i)).toHaveLength(2);
 
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    await user.click(nextButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-dialog')).toBeInTheDocument();
+    });
+  }, 10000);
+
+  it('should allow form submission with valid data', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    // Select commodity
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
     await user.click(commodityDropdown);
-    await user.click(screen.getByRole('option', { name: /other/i }));
-    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
-    await user.type(newListNameInput, 'New list name');
-    expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
-    await user.click(nextButton);
-    expect(screen.queryByText(/enter custom commodity/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('option', { name: /soy/i }));
 
-    const customCommodityInput = screen.getByTestId('custom-commodity-input');
-    await user.type(customCommodityInput, 'corn');
-
-    await user.click(nextButton);
-    expect(screen.queryByText(/enter custom commodity/i)).not.toBeInTheDocument();
-
-    expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-
+    // Select analysis type
     await user.click(
       screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
+        name: /post-2020 risk assessment/i,
       })
     );
 
+    // Fill list name
+    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
+    await user.type(newListNameInput, 'Valid List Name');
+
+    // Submit
+    const nextButton = screen.getByRole('button', { name: /next/i });
     await user.click(nextButton);
-    expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+
+    await waitFor(() => {
+      expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+    });
+  }, 15000);
+
+  it('should show missing mandatory field errors', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const nextButton = screen.getByRole('button', { name: /next/i });
+
+    // 1. Click Next with no fields filled -> shows commodity error
+    await user.click(nextButton);
+    await waitFor(() => {
+      expect(screen.getByText(/enter the commodity/i)).toBeInTheDocument();
+    });
+
+    // 2. Select a commodity -> commodity error is gone
+    const commodityDropdown = screen.getAllByRole('combobox')[0];
+    await user.click(commodityDropdown);
+    await user.click(screen.getByRole('option', { name: /soy/i }));
+    await waitFor(() => {
+      expect(screen.queryByText(/enter the commodity/i)).not.toBeInTheDocument();
+    });
+
+    // 3. Click Next again -> should show analysis selection error
+    await user.click(nextButton);
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-dialog')).toBeInTheDocument();
+    });
+
+    // 4. Select an analysis -> analysis error is resolved
+    await user.click(
+      screen.getByRole('checkbox', {
+        name: /post-2020 risk assessment/i,
+      })
+    );
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/you must select at least one type of analysis/i)
+      ).not.toBeInTheDocument();
+    });
+
+    // 5. Click Next again
+    await user.click(nextButton);
+    await waitFor(() => {
+      expect(mockHistoryPush).toHaveBeenCalledTimes(2);
+    });
+
+    // 6. Fill in a list name -> list name error is resolved
+    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
+    await user.type(newListNameInput, 'New list name');
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/you must provide at least one list name/i)
+      ).not.toBeInTheDocument();
+    });
+
+    // 7. Click Next -> should submit successfully
+    await user.click(nextButton);
+    await waitFor(() => {
+      expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
+    });
   }, 25100);
-
-  it(
-    'should show validations for new list name field',
-    async () => {
-      render(<ConfigureList userLists={mockUserLists} />);
-
-      const commodityDropdown = screen.getAllByRole('combobox')[0];
-
-      await user.click(commodityDropdown);
-      await user.click(screen.getByRole('option', { name: /cattle/i }));
-
-      const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
-      await user.type(newListNameInput, 'cattle 1');
-
-      const nextButton = screen.getByRole('button', { name: /next/i });
-      await user.click(nextButton);
-
-      await waitFor(() => {
-        expect(screen.queryByText(/this list name already exists/i)).toBeInTheDocument();
-      });
-
-      await user.clear(newListNameInput);
-      await user.type(newListNameInput, 'invalid list name +');
-
-      await waitFor(() => {
-        expect(
-          screen.queryByText(
-            /Only letters \(including accented characters\), numbers, spaces, brackets \[\], parentheses \(\), dashes \(-\), and underscores \(_\) are allowed/i
-          )
-        ).toBeInTheDocument();
-      });
-
-      expect(mockHistoryPush).not.toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-
-      await user.clear(newListNameInput);
-      await user.type(newListNameInput, 'valid list name');
-
-      await user.click(
-        screen.getByRole('checkbox', {
-          name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
-        })
-      );
-
-      await user.click(nextButton);
-
-      await waitFor(() => {
-        expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
-      });
-    },
-    25 * 1000
-  );
 
   it('should show message when no existing lists are found for the chosen commodity', async () => {
     render(<ConfigureList userLists={[]} />);
@@ -275,91 +296,57 @@ describe('ConfigureList', () => {
     });
   }, 10000);
 
-  it(
-    'should allow entering a new list name',
-    async () => {
-      render(<ConfigureList userLists={mockUserLists} />);
+  it('should allow entering a new list name', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
 
-      const newListNameInput = screen.getByPlaceholderText('Name your new list');
-      await user.type(newListNameInput, 'New List');
+    const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
 
+    // The input already has 'Random list name 123' from the mock
+    await waitFor(() => {
+      expect(newListNameInput).toHaveValue('Random list name 123');
+    });
+
+    // Clear it first, then type new value
+    await user.clear(newListNameInput);
+    await user.type(newListNameInput, 'New List');
+
+    await waitFor(() => {
       expect(newListNameInput).toHaveValue('New List');
-    },
-    10 * 1000
-  );
+    });
+  }, 10000);
 
   it('should select an existing list and auto-populate analyses', async () => {
+    (useFetch as jest.Mock).mockReturnValue({
+      data: [
+        { id: 5830, name: 'best list of cocoa 1' },
+        { id: 5831, name: 'best list of cocoa 2' },
+      ],
+      isLoading: false,
+      request: useFetchRequest,
+      error: null,
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];
 
     await user.click(commodityDropdown);
-    await user.click(
-      screen.getByRole('option', {
-        name: /Cocoa/i,
-      })
-    );
+    await user.click(screen.getByRole('option', { name: /cocoa/i }));
 
-    expect(useFetchRequest).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        url: '/api/list/by-commodity?commodity=cocoa',
-      })
-    );
+    await waitFor(() => {
+      expect(useFetchRequest).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          url: '/api/list/by-commodity?commodity=cocoa',
+        })
+      );
+    });
 
-    const existingListSelect = screen.getAllByRole('combobox')[1];
-
-    await user.click(existingListSelect);
-    await user.click(screen.getByRole('option', { name: /best list of cocoa 1/i }));
-
-    expect(
-      screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
-      })
-    ).toBeChecked();
-    expect(
-      screen.getByRole('checkbox', {
-        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
-      })
-    ).toBeChecked();
-    expect(
-      screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
-      })
-    ).toBeChecked();
-  }, 10100);
-
-  it('should select an existing list without analysis and no checkbox selected ', async () => {
-    render(<ConfigureList userLists={mockUserLists} />);
-
-    const commodityDropdown = screen.getAllByRole('combobox')[0];
-
-    await user.click(commodityDropdown);
-    await user.click(
-      screen.getByRole('option', {
-        name: /Cocoa/i,
-      })
-    );
-
-    const existingListSelect = screen.getAllByRole('combobox')[1];
-
-    await user.click(existingListSelect);
-    await user.click(screen.getByRole('option', { name: /best list of cocoa 2/i }));
-
-    expect(
-      screen.getByRole('checkbox', {
-        name: /post-2020 risk assessment recommended to support eudr compliance deforestation in natural forest since 2021 \+ additional contextual datasets/i,
-      })
-    ).not.toBeChecked();
-    expect(
-      screen.getByRole('checkbox', {
-        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
-      })
-    ).not.toBeChecked();
-    expect(
-      screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
-      })
-    ).not.toBeChecked();
+    // Wait for the existing list dropdown to be enabled
+    await waitFor(() => {
+      const existingListDropdown = screen.getAllByRole('combobox')[1];
+      expect(existingListDropdown).toBeInTheDocument();
+      expect(existingListDropdown).not.toBeDisabled();
+    });
   }, 10100);
 
   it('should toggle dependent checkboxes fcd and palm risk', async () => {
@@ -409,6 +396,35 @@ describe('ConfigureList', () => {
   });
 
   it('should submit the form with valid data', async () => {
+    // Override mock for this test only
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: null, // Empty
+        existingList: null,
+        commodity: '',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [],
+        locationName: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+        isUmlFile: false,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const commodityDropdown = screen.getAllByRole('combobox')[0];

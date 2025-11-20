@@ -626,6 +626,7 @@ export default class Diagnostics extends Component {
       aggregate,
       selectedLocations: filteredLocations,
       isGfwList,
+      source: 'diagnostics',
     })
       .then(() => {
         this.setState({

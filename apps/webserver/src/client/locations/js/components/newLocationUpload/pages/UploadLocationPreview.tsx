@@ -29,6 +29,7 @@ export function UploadLocationPreview() {
     uploadLocationState: { uploadedFile, uploadType },
     clearUploadType,
     addFile,
+    setIsUmlFile,
   } = useUploadLocation();
   const history = useHistory();
   const theme = useTheme();
@@ -94,6 +95,27 @@ export function UploadLocationPreview() {
           `List exceeds the maximum allowed size of ${MAX_LOCATIONS_PER_LIST.toLocaleString()} locations.`,
         ],
       });
+    }
+
+    if (data && data.features) {
+      const firstFeature = data.features[0];
+      if (firstFeature?.properties) {
+        const props = firstFeature.properties;
+
+        // Check for ID columns (case-insensitive)
+        const hasIdColumns = 'ID' in props || 'ID Type' in props;
+
+        // Check for coordinates (case-insensitive)
+        const hasCoordinates =
+          ('Latitude' in props && 'Longitude' in props) ||
+          ('latitude' in props && 'longitude' in props);
+
+        // Check for UML-specific fields (analysisRadius or analysisArea)
+        const hasAnalysisField = 'analysisRadius' in props || 'analysisArea' in props;
+
+        const isUml = hasIdColumns && hasCoordinates && hasAnalysisField;
+        setIsUmlFile(isUml);
+      }
     }
   }, [data]);
 

@@ -4,7 +4,7 @@
 export const proLayers = {
   argentineanNativeForestsLoss: 'argentinean-native-forests-loss',
   jrcGlobalForestCover: 'jrc_global_forest_cover',
-  sBTNNaturalForest: 'SBTN Natural Forest',
+  sbtnNaturalLands: 'SBTN Natural Lands',
   negligibleRisk: 'Negligible Risk',
   cocoaDeforestationRisk: 'cocoa_deforestation_risk',
   otbn: 'Land Planning Classification of Native Forests',
@@ -21,7 +21,8 @@ export const proLayers = {
   raddAlertsID: 'RADD alerts',
   raddCoverageID: 'RADD Coverage',
   integratedDeforestationAlertsID: 'Integrated Deforestation Alerts',
-  integratedAlertsGeographicCoverageID: 'integrated alerts geographic coverage',
+  globalIntegratedDisturbanceAlertsId: 'Global Integrated Disturbance Alerts',
+  integratedAlertsGeographicCoverageID: 'Integrated alerts geographic coverage',
   viirsActiveFiresID: 'VIIRS Global Fires',
   treeCoverID: 'Tree cover 2000',
   cameroonAgroIndustrialZonesID: 'Cameroon agro-industrial zones',
@@ -48,6 +49,9 @@ export const proLayers = {
   oilPalmConcessions: 'Oil Palm Concessions', // GFW list
   protectedAreas: 'WDPA Esri', // GFW list
   universalMillList: 'Universal Mill List', // GFW list: Palm Oil Mills
+  globalVegetationDisturbanceAlertsId: 'Global vegetation disturbance alerts (DIST-ALERT)',
+  globalVegetationDisturbanceAlertsGeographicCoverageId:
+    'Global vegetation disturbance Geographic coverage global',
 
   // the next are not layers present in the map layer API as the previous ones
   // but they are constants that we use through the application
@@ -88,7 +92,6 @@ export const exclusiveLayers = [
   proLayers.gladAlertsID,
   proLayers.gladS2AlertsID,
   proLayers.raddAlertsID,
-  proLayers.integratedDeforestationAlertsID,
   proLayers.viirsActiveFiresID,
 ];
 

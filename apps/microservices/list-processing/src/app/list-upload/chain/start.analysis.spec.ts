@@ -87,24 +87,20 @@ describe('StartAnalysis', () => {
 
     it('should create analysis successfully', async () => {
       process.env.MICROSERVICES_ENV = 'DEVELOPMENT';
-      mockListRepository.findOne
-        .mockResolvedValueOnce({ listStatusId: listStatus.Active })
-        .mockResolvedValueOnce({ listName: 'normal_list' });
-      mockUserRepository.findOne.mockResolvedValue({ email: 'normal@example.com' });
+      mockListRepository.findOne.mockResolvedValue({ listStatusId: listStatus.Active });
       (handleCreateAnalysis as jest.Mock).mockResolvedValue('OK');
 
       const result = await startAnalysis.handle(mockRequest);
 
       expect(handleCreateAnalysis).toHaveBeenCalledWith(
-        'analysis1,analysis2',
-        123,
-        456,
-        'test_db',
-        true,
-        1,
-        1,
-        false,
-        false
+        'analysis1,analysis2', // analysisTypesToProcess
+        123, // listId
+        456, // organizationId
+        'test_db', // organizationDatabase
+        true, // !isExternalAPIProcess (false becomes true via negation)
+        1, // user_id
+        1, // subscriptionStatusId
+        false // sendEmail parameter
       );
       expect(result).toBe(mockRequest);
     });

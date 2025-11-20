@@ -9,6 +9,7 @@ import { ReadmeService } from '../files/readme.service';
 import { createDirectory } from '../shared/file.utils';
 import { AfiVcGeneratorService } from './afi.vc.generator.service';
 import { GreenHouseGasEmissionsGeneratorService } from './ghg.generator.service';
+import { DownloadActivityLogService } from '../services/download-activity-log.service';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -24,11 +25,12 @@ export class PipeService {
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly readmeService: ReadmeService,
     private readonly afiVcGeneratorService: AfiVcGeneratorService,
-    private readonly greenHouseGasEmissionsGeneratorService: GreenHouseGasEmissionsGeneratorService
+    private readonly greenHouseGasEmissionsGeneratorService: GreenHouseGasEmissionsGeneratorService,
+    private readonly downloadActivityLogService: DownloadActivityLogService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
-    const { type, listId } = filters;
+    const { type, listId, file, userEmail, organizationDatabase } = filters;
 
     const pipeHandler = this.getGeneratorBaseOnType()[type];
 
@@ -45,7 +47,25 @@ export class PipeService {
       await this.readmeService.write(filters);
     }
 
-    pipeHandler.makeFile(filters);
+    await pipeHandler.makeFile(filters);
+
+    // Log download activity to ActivityLog table
+    if (file && userEmail && organizationDatabase) {
+      // listName may not be defined here if listId is not provided, so we need to get it again if necessary
+      let listNameToLog = filters.listName;
+      if (!listNameToLog && listId) {
+        listNameToLog = await this.getListName(filters);
+      }
+      await this.downloadActivityLogService.logDownloadActivity({
+        organizationDatabase,
+        userEmail,
+        listId,
+        listName: listNameToLog,
+        fileType: file as 'csv' | 'shapefile' | 'json',
+        downloadType: type,
+        source: filters.source,
+      });
+    }
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {

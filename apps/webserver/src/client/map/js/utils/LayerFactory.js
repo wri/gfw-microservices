@@ -24,6 +24,8 @@ import viirsLayer from '../layers/VIIRSLayerUtil';
 import {
   soyPlantedYearsRange,
   driverOfDisturbanceAlertsDateRange,
+  globalVegetationDisturbanceAlertsDateRange,
+  globalIntegratedDisturbanceAlertsDateRange,
 } from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
 const {
@@ -31,6 +33,8 @@ const {
   granChacoDeforestationID,
   disturbanceAlertsDriversId,
   disturbanceAlertsDriversGeographicCoverageId,
+  globalVegetationDisturbanceAlertsId,
+  globalIntegratedDisturbanceAlertsId,
 } = proLayers;
 
 /**
@@ -64,6 +68,12 @@ export const layerFactory = function LayersFactory(layersArray, view) {
   }
 
   const defaultDefExpression = "ACQ_DATE > date'" + year + '-' + month + '-' + day + "'";
+
+  const tileLayerDateRanges = {
+    [disturbanceAlertsDriversId]: driverOfDisturbanceAlertsDateRange,
+    [globalVegetationDisturbanceAlertsId]: globalVegetationDisturbanceAlertsDateRange,
+    [globalIntegratedDisturbanceAlertsId]: globalIntegratedDisturbanceAlertsDateRange,
+  };
 
   layersArray.forEach((layer) => {
     // if ((!layer.url && layer.type !== 'graphic') || !layer.type) { throw new Error(errors.missingLayerConfig); }
@@ -114,11 +124,14 @@ export const layerFactory = function LayersFactory(layersArray, view) {
       case 'tileLayer':
         {
           let urlTemplate = layer.layerConfig.body.url;
-          if (layer.id === disturbanceAlertsDriversId) {
+
+          const dateRange = tileLayerDateRanges[layer.id];
+          if (dateRange) {
             urlTemplate = layer.layerConfig.body.url.concat(
-              `&start_date=${driverOfDisturbanceAlertsDateRange[0]}&end_date=${driverOfDisturbanceAlertsDateRange[1]}`
+              `&start_date=${dateRange[0]}&end_date=${dateRange[1]}`
             );
           }
+
           layers.push(
             new WebTileLayer({
               urlTemplate,

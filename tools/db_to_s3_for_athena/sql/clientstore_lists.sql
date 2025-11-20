@@ -8,11 +8,13 @@ CREATE TABLE #list_data
 (
   organization NVARCHAR(MAX),
   list_name NVARCHAR(MAX),
+  list_id INT,
   country NVARCHAR(50),
   commodity NVARCHAR(100),
   analysis_area FLOAT,
   locations_count INT,
-  list_status NVARCHAR(25)
+  list_status NVARCHAR(25),
+  is_api_list BIT
 );
 
 -- SETting up variables
@@ -25,6 +27,7 @@ DECLARE @list_status_id INT;
 DECLARE @analysis_area_sum FLOAT;
 DECLARE @sql NVARCHAR(MAX);
 DECLARE @status_params NVARCHAR(MAX);
+DECLARE @is_api_list BIT;
 
 SET @status_params = '@list_status_id_query INT OUTPUT';
 
@@ -70,9 +73,9 @@ BEGIN
       SELECT list_table_name,
         list_analysis_table_name,
         id
-      FROM [{DB_NAME}].dbo.Lists';
+      FROM {DB_NAME}.dbo.Lists';
 
-    SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name)
+    SET @sql = REPLACE(@sql, '{DB_NAME}', QUOTENAME(@db_name))
     --PRINT (@sql);
     EXEC sp_executesql @sql;
 
@@ -89,13 +92,28 @@ BEGIN
           WHERE id2 = (@list_item)
 
           -- dynamic sql to find list status
-          SET @sql = N'SELECT @list_status_id_query = L.list_status_id
-                      FROM [{DB_NAME}].dbo.Lists L
-                      WHERE L.list_table_name = ''{LIST_TABLE_NAME}''';
+          SET @sql = N'
+            SELECT @list_status_id_query = L.list_status_id
+            FROM {DB_NAME}.dbo.Lists L
+            WHERE L.list_table_name = ''{LIST_TABLE_NAME}''
+          ';
 
-          SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name);
+          SET @sql = REPLACE(@sql, '{DB_NAME}', QUOTENAME(@db_name));
           SET @sql = REPLACE(@sql, '{LIST_TABLE_NAME}', @list_table_name);
           EXEC sp_executesql @sql, @status_params, @list_status_id_query = @list_status_id OUTPUT;
+
+          -- dynamic sql to determine if list is an API list
+          SET @sql = N'
+            SELECT @is_api_list_query = CASE WHEN EU.id IS NOT NULL THEN 1 ELSE 0 END
+            FROM {DB_NAME}.dbo.Lists L
+            LEFT JOIN {DB_NAME}.dbo.LargeLists LL ON L.id = LL.list_id
+            LEFT JOIN {DB_NAME}.dbo.ExternalUploads EU ON LL.s3_filename = EU.uploadKeyFile
+            WHERE L.id = {LIST_ID}
+          ';
+
+          SET @sql = REPLACE(@sql, '{DB_NAME}', QUOTENAME(@db_name));
+          SET @sql = REPLACE(@sql, '{LIST_ID}', @list_id);
+          EXEC sp_executesql @sql, N'@is_api_list_query BIT OUTPUT', @is_api_list_query = @is_api_list OUTPUT;
 
           BEGIN
             BEGIN TRY
@@ -138,8 +156,8 @@ BEGIN
                                         ,at.location_id
                                         ,lt.Country
                                         ,lt.Commodity
-                                      FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
-                                      LEFT JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
+                                      FROM {DB_NAME}.dbo.[{LIST_TABLE_NAME}] AS lt
+                                      LEFT JOIN {DB_NAME}.dbo.[{ANALYSIS_TABLE_NAME}] AS at
                                       ON lt.location_id = at.location_id
                                     ) AS lat
                                     LEFT JOIN (
@@ -147,7 +165,7 @@ BEGIN
                                         location_id
                                         ,list_id
                                         ,total_area_ha
-                                      FROM [{DB_NAME}].dbo.[AFIAnalysis] 
+                                      FROM {DB_NAME}.dbo.[AFIAnalysis] 
                                     ) AS afi
                                     ON lat.location_id = afi.location_id AND lat.list_id = afi.list_id
                                     GROUP BY Country, Commodity';
@@ -164,8 +182,8 @@ BEGIN
                                     ,lt.Commodity
                                     ,SUM(ISNULL(at.total_area, 0)) AS analysis_area
                                     ,COUNT(ISNULL(lt.location_id, 0)) AS location_count
-                                  FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
-                                  JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
+                                  FROM {DB_NAME}.dbo.[{LIST_TABLE_NAME}] AS lt
+                                  JOIN {DB_NAME}.dbo.[{ANALYSIS_TABLE_NAME}] AS at
                                   ON lt.location_id = at.location_id
                                   GROUP BY lt.Country, lt.Commodity';
                     SET @sql = REPLACE(@sql, '{ANALYSIS_TABLE_NAME}', @analysis_table_name);
@@ -181,11 +199,11 @@ BEGIN
                                     ,Commodity
                                     ,SUM(ISNULL([Analysis Area], 0))
                                     ,COUNT(ISNULL(location_id, 0))
-                                  FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}]
+                                  FROM {DB_NAME}.dbo.[{LIST_TABLE_NAME}]
                                   GROUP BY Country, Commodity';
                   END
 
-                SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name);
+                SET @sql = REPLACE(@sql, '{DB_NAME}', QUOTENAME(@db_name));
                 SET @sql = REPLACE(@sql, '{LIST_ID}', @list_id);
                 SET @sql = REPLACE(@sql, '{LIST_TABLE_NAME}', @list_table_name);					
                 --PRINT @sql;
@@ -193,9 +211,10 @@ BEGIN
                   
                 -- inserts the collected data into #list_data
                 INSERT into #list_data
-                (organization, list_name, country, commodity, analysis_area, locations_count, list_status)
+                (organization, list_name, list_id, country, commodity, analysis_area, locations_count, list_status, is_api_list)
                 SELECT @org_name		
-                  , @list_table_name	
+                  , @list_table_name
+                  , gli.list_id
                   , gli.country					
                   , gli.commodity					
                   , gli.analysis_area
@@ -205,6 +224,7 @@ BEGIN
                       WHEN @list_status_id = 3 THEN 'FAILED'
                       ELSE 'PENDING'
                     END
+                  , @is_api_list
                 FROM #temp_grouped_list_info gli
             END TRY
             BEGIN CATCH

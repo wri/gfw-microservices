@@ -33,11 +33,15 @@ import {
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
   SET_LAYER_OPACITY,
   UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
+  UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
+  UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
 } from '../constants/actionTypes';
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
   driverOfDisturbanceAlertsDateRange,
+  globalVegetationDisturbanceAlertsDateRange,
+  globalIntegratedDisturbanceAlertsDateRange,
 } from '../../../common/js/config';
 import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
 
@@ -77,6 +81,17 @@ const initialLocationState = {
   driverOfDisturbanceAlertsFilter: {
     startDate: driverOfDisturbanceAlertsDateRange[0],
     endDate: driverOfDisturbanceAlertsDateRange[1],
+  },
+  globalVegetationDisturbanceAlertsFilter: {
+    startDate: globalVegetationDisturbanceAlertsDateRange[0],
+    endDate: globalVegetationDisturbanceAlertsDateRange[1],
+    vegetationType: 'all-vegetation',
+  },
+  globalIntegratedDisturbanceAlertsFilter: {
+    startDate: globalIntegratedDisturbanceAlertsDateRange[0],
+    endDate: globalIntegratedDisturbanceAlertsDateRange[1],
+    vegetationType: 'all-vegetation',
+    onlyHighConfidenceAlerts: false,
   },
 };
 
@@ -140,8 +155,32 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
         });
         if (state.length === newLayers.length) {
           newLayers.push(action.data);
+        } else {
+          // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
+          if (action.data === proLayers.disturbanceAlertsDriversId) {
+            const index = newLayers.indexOf(proLayers.disturbanceAlertsDriversGeographicCoverageId);
+            if (index > -1) {
+              newLayers.splice(index, 1);
+            }
+          }
+          // If removing globalIntegratedDisturbanceAlertsId, also remove its geographic coverage layers
+          if (action.data === proLayers.globalIntegratedDisturbanceAlertsId) {
+            const globalVegIndex = newLayers.indexOf(
+              proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
+            );
+            if (globalVegIndex > -1) {
+              newLayers.splice(globalVegIndex, 1);
+            }
+            const integratedIndex = newLayers.indexOf(
+              proLayers.integratedAlertsGeographicCoverageID
+            );
+            if (integratedIndex > -1) {
+              newLayers.splice(integratedIndex, 1);
+            }
+          }
         }
       }
+
       return newLayers;
     }
   } else {
@@ -265,6 +304,22 @@ export function updateDriverOfDisturbanceAlertsFilter(
   action
 ) {
   return action.type !== UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER ? state : action.payload;
+}
+export function updateGlobalVegetationDisturbanceAlertsFilter(
+  state = initialLocationState.globalVegetationDisturbanceAlertsFilter,
+  action
+) {
+  return action.type !== UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER
+    ? state
+    : action.payload;
+}
+export function updateGlobalIntegratedDisturbanceAlertsFilter(
+  state = initialLocationState.globalIntegratedDisturbanceAlertsFilter,
+  action
+) {
+  return action.type !== UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER
+    ? state
+    : action.payload;
 }
 
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(

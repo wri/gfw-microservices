@@ -82,25 +82,24 @@ describe('GreenHouseGasEmissionsGeneratorService', () => {
     mockAnalysisGhgDataService.getDataPaginated.mockResolvedValue([
       {
         country: '',
-        coverageHA: 0,
-        gadmId: '',
-        jrcForestLossByYear: '',
-        jrcLandAreaHA: 0,
-        jrcLandDeforestedArea: 0,
-        landmarkArea: 0,
         listId: 0,
         listName: '',
-        analysisError: '',
-        locationId: 0,
-        naturalForestLossByYear: '',
-        naturalForestLossHA: 0,
-        negligibleRisk: 0,
-        protectedAreasArea: 0,
         state: '',
-        location_status_id: 0,
-        errorDetails: '',
         subState: '',
-        totalAreaHA: 0,
+        locationName: '',
+        totalAreaHa: 0,
+        statusCode: 0,
+        locationError: '',
+        emissionsFactorByYear: '',
+        efCo2ByYear: '',
+        efCh4ByYear: '',
+        efN2oByYear: '',
+        emissionsCo2Yearly: '',
+        emissionsCh4Yearly: '',
+        emissionsN2oYearly: '',
+        emissionsYearly: '',
+        production: 0,
+        weightedAvgYield: 0,
       },
     ]);
 
@@ -126,29 +125,28 @@ describe('GreenHouseGasEmissionsGeneratorService', () => {
       listId: 123,
     };
 
-    mockAnalysisGhgDataService.getNumberOfPages.mockResolvedValue(3);
+    mockAnalysisGhgDataService.getNumberOfPages.mockResolvedValue(2);
     mockAnalysisGhgDataService.getDataPaginated.mockResolvedValue([
       {
         country: '',
-        coverageHA: 0,
-        gadmId: '',
-        jrcForestLossByYear: '',
-        jrcLandAreaHA: 0,
-        jrcLandDeforestedArea: 0,
-        landmarkArea: 0,
         listId: 0,
         listName: '',
-        analysisError: '',
-        locationId: 0,
-        naturalForestLossByYear: '',
-        naturalForestLossHA: 0,
-        negligibleRisk: 0,
-        protectedAreasArea: 0,
         state: '',
-        location_status_id: 0,
-        errorDetails: '',
         subState: '',
-        totalAreaHA: 0,
+        locationName: '',
+        totalAreaHa: 0,
+        statusCode: 0,
+        locationError: '',
+        emissionsFactorByYear: '',
+        efCo2ByYear: '',
+        efCh4ByYear: '',
+        efN2oByYear: '',
+        emissionsCo2Yearly: '',
+        emissionsCh4Yearly: '',
+        emissionsN2oYearly: '',
+        emissionsYearly: '',
+        production: 0,
+        weightedAvgYield: 0,
       },
     ]);
 
@@ -156,9 +154,8 @@ describe('GreenHouseGasEmissionsGeneratorService', () => {
 
     await service['runGhgFileGeneration'](mockFilters, 'location');
 
-    expect(loggerSpy).toHaveBeenCalledWith('(123) - Number of pages: 3');
+    expect(loggerSpy).toHaveBeenCalledWith('(123) - Number of pages: 2');
     expect(loggerSpy).toHaveBeenCalledWith('(123) - Get page of number 0 from database');
     expect(loggerSpy).toHaveBeenCalledWith('(123) - Get page of number 1 from database');
-    expect(loggerSpy).toHaveBeenCalledWith('(123) - Get page of number 2 from database');
   });
 });

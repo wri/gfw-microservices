@@ -20,6 +20,7 @@ export type UploadLocationState = {
     AFI: boolean;
   };
   isDraft?: boolean;
+  isUmlFile?: boolean;
 };
 
 type UploadLocationType = {
@@ -45,6 +46,7 @@ type UploadLocationType = {
   }) => void;
   addFile: (uploadedFile: PresignedUrl) => void;
   updateSaveMode: (isDraft: boolean) => void;
+  setIsUmlFile: (isUmlFile: boolean) => void;
 };
 
 type UploadLocationAction =
@@ -96,6 +98,12 @@ type UploadLocationAction =
       };
     }
   | {
+      type: 'SetUmlFile';
+      payload: {
+        isUmlFile: boolean;
+      };
+    }
+  | {
       type: 'UpdateSaveMode';
       payload: {
         isDraft: boolean;
@@ -128,6 +136,7 @@ const uploadLocationInitialState: UploadLocationState = {
     ALERTS: false,
   },
   isDraft: undefined,
+  isUmlFile: false,
 };
 
 export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
@@ -194,6 +203,10 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
     dispatch({ type: 'ConfigureList', payload: data });
   };
 
+  const setIsUmlFile = (isUmlFile: boolean) => {
+    dispatch({ type: 'SetUmlFile', payload: { isUmlFile } });
+  };
+
   return (
     <UploadLocationContext.Provider
       value={{
@@ -205,6 +218,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
         setUploadLocationConfigureList,
         addFile,
         updateSaveMode,
+        setIsUmlFile,
       }}
     >
       {children}
@@ -253,6 +267,9 @@ function uploadLocationReducer(
 
     case 'UpdateSaveMode':
       return { ...state, isDraft: payload.isDraft };
+
+    case 'SetUmlFile':
+      return { ...state, isUmlFile: payload.isUmlFile };
 
     case 'Clear':
       return payload;

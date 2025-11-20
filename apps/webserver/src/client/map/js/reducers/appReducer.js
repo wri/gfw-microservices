@@ -31,6 +31,8 @@ import {
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   layerOpacity,
   updateDriverOfDisturbanceAlertsFilter,
+  updateGlobalVegetationDisturbanceAlertsFilter,
+  updateGlobalIntegratedDisturbanceAlertsFilter,
 } from './mapReducer';
 import * as analysisReducer from './analysisReducer';
 
@@ -72,6 +74,8 @@ const appReducer = combineReducers({
     toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   layerOpacity: layerOpacity,
   driverOfDisturbanceAlertsFilter: updateDriverOfDisturbanceAlertsFilter,
+  globalVegetationDisturbanceAlertsFilter: updateGlobalVegetationDisturbanceAlertsFilter,
+  globalIntegratedDisturbanceAlertsFilter: updateGlobalIntegratedDisturbanceAlertsFilter,
 });
 
 const rootReducer = (state, action) => {

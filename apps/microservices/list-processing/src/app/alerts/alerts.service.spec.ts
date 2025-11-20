@@ -76,6 +76,24 @@ describe('AlertsService - buildGeojson ', () => {
       },
     ]);
 
+    result.geojson.features.forEach((feature) => {
+      expect(feature.properties.globalIntegratedDisturbanceDaily).toEqual({
+        nominal: [],
+        high: [],
+        highest: [],
+      });
+      delete feature.properties.globalIntegratedDisturbanceDaily;
+    });
+
+    result.dissolvedGeoJSON.features.forEach((feature) => {
+      expect(feature.properties.globalIntegratedDisturbanceDaily).toEqual({
+        nominal: [],
+        high: [],
+        highest: [],
+      });
+      delete feature.properties.globalIntegratedDisturbanceDaily;
+    });
+
     expect(result).toEqual({
       dissolvedGeoJSON: {
         features: [],
@@ -1532,6 +1550,15 @@ describe('AlertsService - buildGeojson ', () => {
         totalHa: 100,
       },
     ]);
+
+    result.dissolvedGeoJSON.features.forEach((feature) => {
+      expect(feature.properties.globalIntegratedDisturbanceDaily).toEqual({
+        nominal: [],
+        high: [],
+        highest: [],
+      });
+      delete feature.properties.globalIntegratedDisturbanceDaily;
+    });
 
     expect(result).toEqual({
       dissolvedGeoJSON: {
@@ -3171,38 +3198,45 @@ describe('AlertsService - formatData', () => {
     const result = alertsService.formatData(input);
 
     expect(result).toHaveLength(1);
-    expect(result[0]).toEqual({
-      list_id: 1,
-      location_id: 1,
-      gadm_id: 'IDN.12.7',
-      gadmid: 'IDN.12.7',
-      gladAlerts: true,
-      glad_alerts_daily: [{ day: '2020-01-05', count: 21 }],
-      glad_alerts_weekly: [{ day: '2020-01', count: 21 }],
-      glad_alerts_monthly: [{ day: '2020-01', count: 21 }],
-      viirs_alerts_daily: [{ day: '2020-01-05', count: 2 }],
-      tree_cover_extent_total: 100,
-      Country: 'Indonesia',
-      State: 'Test State',
-      'Sub State': 'Test Sub State',
-      name_all: 'Test Name',
-      gadmid_0: 'IDN',
-      gadmid_0_lat: 0,
-      gadmid_0_lon: 0,
-      gadmid_1: 'IDN.12',
-      gadmid_1_lat: 0,
-      gadmid_1_lon: 0,
-      gadmid_2: 'IDN.12.7',
-      gadmid_2_lat: 0,
-      gadmid_2_lon: 0,
-      location_lat: 0,
-      location_lon: 0,
-      location_name: 'Test Location',
-      totalHa: 100,
-      fire: [{ day: '2020-01-05', count: 2 }],
-      fireAlerts: true,
-      umd: 100,
-    });
+    expect(result[0]).toEqual(
+      expect.objectContaining({
+        list_id: 1,
+        location_id: 1,
+        gadm_id: 'IDN.12.7',
+        gadmid: 'IDN.12.7',
+        gladAlerts: true,
+        glad_alerts_daily: [{ day: '2020-01-05', count: 21 }],
+        glad_alerts_weekly: [{ day: '2020-01', count: 21 }],
+        glad_alerts_monthly: [{ day: '2020-01', count: 21 }],
+        viirs_alerts_daily: [{ day: '2020-01-05', count: 2 }],
+        tree_cover_extent_total: 100,
+        Country: 'Indonesia',
+        State: 'Test State',
+        'Sub State': 'Test Sub State',
+        name_all: 'Test Name',
+        gadmid_0: 'IDN',
+        gadmid_0_lat: 0,
+        gadmid_0_lon: 0,
+        gadmid_1: 'IDN.12',
+        gadmid_1_lat: 0,
+        gadmid_1_lon: 0,
+        gadmid_2: 'IDN.12.7',
+        gadmid_2_lat: 0,
+        gadmid_2_lon: 0,
+        location_lat: 0,
+        location_lon: 0,
+        location_name: 'Test Location',
+        totalHa: 100,
+        fire: [{ day: '2020-01-05', count: 2 }],
+        fireAlerts: true,
+        umd: 100,
+        globalIntegratedDisturbanceDaily: {
+          nominal: [],
+          high: [],
+          highest: [],
+        },
+      })
+    );
   });
 
   it('should format data correctly with boolean gladAlerts', () => {
@@ -3282,6 +3316,93 @@ describe('AlertsService - formatData', () => {
     const result = alertsService.formatData(input);
 
     expect(result).toHaveLength(0);
+  });
+
+  it('should build global integrated disturbance daily metrics', () => {
+    const alertsService = new AlertsService(null);
+    const input = [
+      {
+        list_id: 1,
+        location_id: 1,
+        gadm_id: 'IDN.12.7',
+        gadmid: 'IDN.12.7',
+        gladAlerts: true,
+        glad_alerts_daily: '{}',
+        glad_alerts_weekly: '{}',
+        glad_alerts_monthly: '{}',
+        viirs_alerts_daily: '{}',
+        tree_cover_extent_total: 100,
+        Country: 'Indonesia',
+        State: 'Test State',
+        'Sub State': 'Test Sub State',
+        name_all: 'Test Name',
+        gadmid_0: 'IDN',
+        gadmid_0_lat: 0,
+        gadmid_0_lon: 0,
+        gadmid_1: 'IDN.12',
+        gadmid_1_lat: 0,
+        gadmid_1_lon: 0,
+        gadmid_2: 'IDN.12.7',
+        gadmid_2_lat: 0,
+        gadmid_2_lon: 0,
+        location_lat: 0,
+        location_lon: 0,
+        location_name: 'Test Location',
+        totalHa: 100,
+        integratedAlertsDailyAllNominal: '{"2021-01-01":2,"2021-01-02":1}',
+        integratedAlertsDailySbtnNominal: '{"2021-01-01":1}',
+        integratedAlertsDailyJrcNominal: '{"2021-01-02":1}',
+        integratedAlertsDailyAllHigh: '{"2021-01-01":3}',
+        integratedAlertsDailySbtnHigh: '{"2021-01-01":2}',
+        integratedAlertsDailyJrcHigh: '{"2021-01-01":1}',
+        integratedAlertsDailyAllHighest: '{}',
+        integratedAlertsDailySbtnHighest: '{}',
+        integratedAlertsDailyJrcHighest: '{}',
+      },
+    ];
+
+    const result = alertsService.formatData(input);
+
+    expect(result[0].globalIntegratedDisturbanceDaily).toEqual({
+      nominal: [
+        {
+          day: '2021-01-01',
+          totalAlertCount: 2,
+          totalAlertHectares: 0.18,
+          sbtnNaturalForestCount: 1,
+          sbtnNaturalForestHectares: 0.09,
+          sbtnNaturalOpenEcosystemsCount: 0,
+          sbtnNaturalOpenEcosystemsHectares: 0,
+          jrcForestCount: 0,
+          jrcForestHectares: 0,
+        },
+        {
+          day: '2021-01-02',
+          totalAlertCount: 1,
+          totalAlertHectares: 0.09,
+          sbtnNaturalForestCount: 0,
+          sbtnNaturalForestHectares: 0,
+          sbtnNaturalOpenEcosystemsCount: 0,
+          sbtnNaturalOpenEcosystemsHectares: 0,
+          jrcForestCount: 1,
+          jrcForestHectares: 0.09,
+        },
+      ],
+      high: [
+        {
+          day: '2021-01-01',
+          totalAlertCount: 3,
+          totalAlertHectares: 0.27,
+          sbtnNaturalForestCount: 2,
+          sbtnNaturalForestHectares: 0.18,
+          sbtnNaturalOpenEcosystemsCount: 0,
+          sbtnNaturalOpenEcosystemsHectares: 0,
+          jrcForestCount: 1,
+          jrcForestHectares: 0.09,
+        },
+      ],
+      highest: [],
+    });
   });
 });
 

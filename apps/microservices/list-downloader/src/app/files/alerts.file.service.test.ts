@@ -6,6 +6,7 @@ import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admi
 import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
 import { AlertsSummaryService } from './alerts.summary.service';
 import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
+import { AlertsGlobalIntegratedDisturbanceDailyService } from './alerts.global.integrated.disturbance.daily.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
 import {
   AlertFieldsFileRequest,
@@ -13,8 +14,14 @@ import {
   ClientStoreConnection,
   DashboardDataType,
 } from '@wri-monorepos/sql';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 jest.mock('../shared/file.utils');
+jest.mock('@wri-monorepos/shared', () => ({
+  featureFlagsService: jest.fn(),
+}));
+
+const mockedGetAllFilesAndZip = getAllFilesAndZip as jest.MockedFunction<typeof getAllFilesAndZip>;
 
 describe('AlertsFileService', () => {
   let service: AlertsFileService;
@@ -25,17 +32,34 @@ describe('AlertsFileService', () => {
   let alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService;
   let alertsSummaryService: AlertsSummaryService;
   let alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService;
+  let alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService;
+  let clientStoreConnection: ClientStoreConnection;
+  const getClientIdByClientStoreDatabaseName = jest.fn();
+  const getFeatureFlagsForCurrentOrg = jest.fn();
 
   beforeEach(() => {
+    mockedGetAllFilesAndZip.mockReset();
+    mockedGetAllFilesAndZip.mockResolvedValue('ok');
+    (featureFlagsService as jest.Mock).mockReset();
+    getClientIdByClientStoreDatabaseName.mockReset();
+    getFeatureFlagsForCurrentOrg.mockReset();
+    (featureFlagsService as jest.Mock).mockResolvedValue({
+      getClientIdByClientStoreDatabaseName,
+      getFeatureFlagsForCurrentOrg,
+    });
+
     alertsAdminAreasLevelService = new AlertsAdminAreasLevelService();
     alertsHistoryService = new AlertsHistoryService();
     alertsLocationsLevelService = new AlertsLocationsLevelService();
     alertsPrioritiesAdminAreasLevelService = new AlertsPrioritiesAdminAreasLevelService();
     alertsPrioritiesLocationsLevelService = new AlertsPrioritiesLocationsLevelService();
     alertsSummaryService = new AlertsSummaryService();
+    clientStoreConnection = new ClientStoreConnection();
     alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService(
-      new ClientStoreConnection()
+      clientStoreConnection
     );
+    alertsGlobalIntegratedDisturbanceDailyService =
+      new AlertsGlobalIntegratedDisturbanceDailyService(new ClientStoreConnection());
 
     service = new AlertsFileService(
       alertsAdminAreasLevelService,
@@ -44,7 +68,9 @@ describe('AlertsFileService', () => {
       alertsPrioritiesAdminAreasLevelService,
       alertsPrioritiesLocationsLevelService,
       alertsSummaryService,
-      alertsIntegratedNaturalForestService
+      alertsIntegratedNaturalForestService,
+      alertsGlobalIntegratedDisturbanceDailyService,
+      clientStoreConnection
     );
   });
 
@@ -53,20 +79,57 @@ describe('AlertsFileService', () => {
   });
 
   describe('start', () => {
-    it('should call the appropriate services based on the selectedTimeframe', async () => {
-      const filters = { selectedTimeframe: AlertsTimeframes.DAY } as AlertFieldsFileRequest;
+    it('should call the appropriate services based on the selectedTimeframe when Dcf enabled', async () => {
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        organizationDatabase: 'orgDb',
+        listName: 'IntegratedAlerts_NaturalForest_Daily',
+      } as AlertFieldsFileRequest;
+
+      getClientIdByClientStoreDatabaseName.mockResolvedValue(1);
+      getFeatureFlagsForCurrentOrg.mockResolvedValue([{ flagId: 'Dcf', flagState: true }]);
 
       jest
         .spyOn(alertsIntegratedNaturalForestService, 'start')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
         .mockImplementation(() => Promise.resolve());
 
       await service.start(filters);
 
       expect(alertsIntegratedNaturalForestService.start).toHaveBeenCalledWith(filters);
+      expect(alertsGlobalIntegratedDisturbanceDailyService.start).toHaveBeenCalledWith(filters);
+    });
+
+    it('should skip Global Integrated Disturbance Daily when Dcf disabled', async () => {
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        organizationDatabase: 'orgDb',
+        listName: 'IntegratedAlerts_NaturalForest_Daily',
+      } as AlertFieldsFileRequest;
+
+      getClientIdByClientStoreDatabaseName.mockResolvedValue(1);
+      getFeatureFlagsForCurrentOrg.mockResolvedValue([{ flagId: 'Dcf', flagState: false }]);
+
+      jest
+        .spyOn(alertsIntegratedNaturalForestService, 'start')
+        .mockImplementation(() => Promise.resolve());
+      const globalStartSpy = jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
+        .mockImplementation(() => Promise.resolve());
+
+      await service.start(filters);
+
+      expect(alertsIntegratedNaturalForestService.start).toHaveBeenCalledWith(filters);
+      expect(globalStartSpy).not.toHaveBeenCalled();
     });
 
     it('should call the appropriate services for non-DAY timeframe', async () => {
-      const filters = { selectedTimeframe: AlertsTimeframes.MONTH } as AlertFieldsFileRequest;
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.MONTH,
+        listName: 'Alerts_Month',
+      } as AlertFieldsFileRequest;
 
       jest.spyOn(alertsLocationsLevelService, 'start').mockImplementation(() => Promise.resolve());
       jest
@@ -91,17 +154,65 @@ describe('AlertsFileService', () => {
   });
 
   describe('process', () => {
-    it('should call the appropriate services based on the selectedTimeframe', () => {
-      const filters = { selectedTimeframe: AlertsTimeframes.DAY } as AlertFieldsFileRequest;
+    beforeEach(() => {
+      jest.spyOn(alertsIntegratedNaturalForestService, 'start').mockImplementation(() => undefined);
+      jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
+        .mockImplementation(() => undefined);
+    });
+
+    it('should call the appropriate services based on the selectedTimeframe when Dcf enabled', async () => {
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        organizationDatabase: 'orgDb',
+        key: 'test-key',
+        listName: 'IntegratedAlerts_NaturalForest_Daily',
+      } as AlertFieldsFileRequest;
       const analysisData = [] as DashboardDataType[];
+
+      getClientIdByClientStoreDatabaseName.mockResolvedValue(1);
+      getFeatureFlagsForCurrentOrg.mockResolvedValue([{ flagId: 'Dcf', flagState: true }]);
 
       jest
         .spyOn(alertsIntegratedNaturalForestService, 'process')
         .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'process')
+        .mockImplementation(() => Promise.resolve());
 
+      await service.start(filters);
       service.process(analysisData, filters);
 
       expect(alertsIntegratedNaturalForestService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsGlobalIntegratedDisturbanceDailyService.process).toHaveBeenCalledWith(
+        analysisData
+      );
+    });
+
+    it('should skip Global Integrated Disturbance Daily process when Dcf disabled', async () => {
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        organizationDatabase: 'orgDb',
+        key: 'test-key',
+        listName: 'IntegratedAlerts_NaturalForest_Daily',
+      } as AlertFieldsFileRequest;
+      const analysisData = [] as DashboardDataType[];
+
+      getClientIdByClientStoreDatabaseName.mockResolvedValue(1);
+      getFeatureFlagsForCurrentOrg.mockResolvedValue([{ flagId: 'Dcf', flagState: false }]);
+
+      jest
+        .spyOn(alertsIntegratedNaturalForestService, 'process')
+        .mockImplementation(() => Promise.resolve());
+      const globalProcessSpy = jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'process')
+        .mockImplementation(() => Promise.resolve());
+
+      await service.start(filters);
+      service.process(analysisData, filters);
+
+      expect(alertsIntegratedNaturalForestService.process).toHaveBeenCalledWith(analysisData);
+      expect(globalProcessSpy).not.toHaveBeenCalled();
     });
 
     it('should call the appropriate services for non-DAY timeframe', () => {
@@ -135,20 +246,66 @@ describe('AlertsFileService', () => {
   });
 
   describe('finish', () => {
-    it('should call the appropriate services based on the selectedTimeframe and zip files', async () => {
+    it('should call the appropriate services based on the selectedTimeframe and zip files when Dcf enabled', async () => {
       const filters = {
         selectedTimeframe: AlertsTimeframes.DAY,
         key: 'test-key',
+        organizationDatabase: 'orgDb',
+        listName: 'IntegratedAlerts_NaturalForest_Daily',
       } as AlertFieldsFileRequest;
 
+      getClientIdByClientStoreDatabaseName.mockResolvedValue(1);
+      getFeatureFlagsForCurrentOrg.mockResolvedValue([{ flagId: 'Dcf', flagState: true }]);
+
+      jest.spyOn(alertsIntegratedNaturalForestService, 'start').mockImplementation(() => undefined);
+      jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
+        .mockImplementation(() => undefined);
       jest
         .spyOn(alertsIntegratedNaturalForestService, 'finish')
         .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'finish')
+        .mockImplementation(() => Promise.resolve());
       jest.spyOn(service, 'finishProcess').mockImplementation(() => Promise.resolve());
 
+      await service.start(filters);
       await service.finish(filters);
 
       expect(alertsIntegratedNaturalForestService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsGlobalIntegratedDisturbanceDailyService.finish).toHaveBeenCalledWith(filters);
+      expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
+      expect(service.finishProcess).toHaveBeenCalledWith(filters);
+    });
+
+    it('should skip Global Integrated Disturbance Daily finish when Dcf disabled but still zip files', async () => {
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        key: 'test-key',
+        organizationDatabase: 'orgDb',
+        listName: 'IntegratedAlerts_NaturalForest_Daily',
+      } as AlertFieldsFileRequest;
+
+      getClientIdByClientStoreDatabaseName.mockResolvedValue(1);
+      getFeatureFlagsForCurrentOrg.mockResolvedValue([{ flagId: 'Dcf', flagState: false }]);
+
+      jest.spyOn(alertsIntegratedNaturalForestService, 'start').mockImplementation(() => undefined);
+      jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
+        .mockImplementation(() => undefined);
+      jest
+        .spyOn(alertsIntegratedNaturalForestService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      const globalFinishSpy = jest
+        .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(service, 'finishProcess').mockImplementation(() => Promise.resolve());
+
+      await service.start(filters);
+      await service.finish(filters);
+
+      expect(alertsIntegratedNaturalForestService.finish).toHaveBeenCalledWith(filters);
+      expect(globalFinishSpy).not.toHaveBeenCalled();
       expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
       expect(service.finishProcess).toHaveBeenCalledWith(filters);
     });
@@ -157,6 +314,7 @@ describe('AlertsFileService', () => {
       const filters = {
         selectedTimeframe: AlertsTimeframes.MONTH,
         key: 'test-key',
+        listName: 'Alerts_Month',
       } as AlertFieldsFileRequest;
 
       jest.spyOn(alertsLocationsLevelService, 'finish').mockImplementation(() => Promise.resolve());

@@ -46,6 +46,8 @@ describe('AlertsGeneratorService', () => {
       listId: 123,
       selectedTimeframe: AlertsTimeframes.MONTH,
       selectedAlert: '',
+      key: 'example-key',
+      listName: 'Alerts_Month',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(2);
@@ -95,6 +97,8 @@ describe('AlertsGeneratorService', () => {
       listId: 123,
       selectedTimeframe: AlertsTimeframes.MONTH,
       selectedAlert: '',
+      key: 'example-key',
+      listName: 'Alerts_Month',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(3);
@@ -145,6 +149,8 @@ describe('AlertsGeneratorService', () => {
       listId: 123,
       selectedTimeframe: AlertsTimeframes.MONTH,
       selectedAlert: '',
+      key: 'example-key',
+      listName: 'Alerts_Month',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(1);

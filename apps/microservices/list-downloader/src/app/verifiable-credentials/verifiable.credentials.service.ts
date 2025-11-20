@@ -4,8 +4,9 @@ import { randomUUID } from 'crypto';
 import { GeoJson } from './types/verifiable-credential.model';
 import * as cache from 'memory-cache';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
+const shouldLoadDynamicModules = process.env.NODE_ENV !== 'test' && !process.env.JEST_WORKER_ID;
 // hack to avoid importing in test because jest does not like dynamic import
-if (process.env.NODE_ENV !== 'test') {
+if (shouldLoadDynamicModules) {
   eval("import('@digitalbazaar/vc').then(x=>vc=x)");
   eval(
     "import('@digitalbazaar/ed25519-signature-2018').then(x=>Ed25519Signature2018=x.Ed25519Signature2018)"

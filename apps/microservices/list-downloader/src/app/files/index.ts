@@ -1,6 +1,7 @@
 export * from './alerts.admin.areas.level.service';
 export * from './alerts.file.service';
 export * from './alerts.history.service';
+export * from './alerts.global.integrated.disturbance.daily.service';
 export * from './alerts.locations.level.service';
 export * from './alerts.priorities.admin.areas.level.service';
 export * from './alerts.priorities.admin.areas.level.service';

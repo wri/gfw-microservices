@@ -1565,6 +1565,25 @@ export const ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER = {
   numberLocations: '# of locations',
 } as const;
 
+export const GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_DAILY_CSV_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  locationSizeHa: 'Location Size (ha)',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub state',
+  alertType: 'Alert Type',
+  startDate: 'Start Date',
+  endDate: 'End Date',
+  date: 'Date',
+  confidenceLevel: 'Confidence Level',
+  totalAlertHectares: 'Total alert hectares',
+  hectaresSbtnNaturalForest: 'Hectares of alerts in SBTN Natural Forest',
+  hectaresSbtnNaturalOpenEcosystems: 'Hectares of alerts in SBTN Natural Open Ecosystems',
+  hectaresJrcForest: 'Hectares of alerts in JRC Forest',
+  numberOfLocations: 'Number of locations',
+} as const;
+
 export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Username',
   'List ID',

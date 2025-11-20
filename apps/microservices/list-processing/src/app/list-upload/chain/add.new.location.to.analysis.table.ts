@@ -50,7 +50,6 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       let lastYieldTimestamp = Date.now();
       for (let i = 0; i < dataToInsert.length; i += BATCH_SIZE) {
         const batch = dataToInsert.slice(i, i + BATCH_SIZE);
-
         await this.insertBatch(connection, AnalysisEntity, batch);
         lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
       }

@@ -2,6 +2,7 @@ import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
+import { yieldIfLong } from './shared';
 
 const BATCH_SIZE = 80;
 
@@ -59,12 +60,12 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
     this.convertErrorDetails(values);
 
     try {
+      let lastYieldTimestamp = Date.now();
       for (let i = 0; i < values.length; i += BATCH_SIZE) {
         const batch = values.slice(i, i + BATCH_SIZE);
 
         await this.insertBatch(connection, ListEntity, batch);
-        // sleep a bit after each batch to avoid CPU overload that may trigger AWS ECS health check failure
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
       }
 
       return request;

@@ -19,27 +19,18 @@ $sql_queries = Get-ChildItem
 foreach($query in $sql_queries)
 {
     "Processing $query" | Write-Host
-    $output_filename = $sql_output_root +"\" + $query.Name.Replace(".sql","") + "\"+ $query.Name.Replace(".sql",".txt")
+    $output_folder = Join-Path $sql_output_root $query.Name.Replace(".sql","")
+    $output_filename = Join-Path $output_folder ($query.Name.Replace(".sql",".txt"))
 
-    "Running invoke-sql command and creating temp file" | Write-Host
-    Invoke-Sqlcmd -ServerInstance localhost -InputFile $query.Fullname -QueryTimeout 0 | Export-Csv -NoTypeInformation $sql_temp_file -Encoding UTF8 -Delimiter "`t"
-
-    "Creating subfolder if it does not exsist" | Write-Host
-    if(test-path($sql_output_root +"\" + $query.Name.Replace(".sql","")))
-    {
-        #Exists. Do nothing
-    }
-    else
-    {
-        New-Item -Path ($sql_output_root +"\" + $query.Name.Replace(".sql","")) -Force -ItemType Directory
+    if(-not (Test-Path $output_folder)) {
+        New-Item -Path $output_folder -ItemType Directory | Out-Null
     }
 
-    "Striping quotes out of temp file and creating txt file" | Write-Host
-    (Get-Content $sql_temp_file -Raw).Replace('"',"").Replace("`r`n","`n") | Out-File $output_filename -Encoding utf8 -NoNewline
-
-    "Removing Temp file" | Write-Host
-    Remove-Item $sql_temp_file -Force
+    "Running SQL query and exporting to TSV with quotes" | Write-Host
+    Invoke-Sqlcmd -ServerInstance localhost -InputFile $query.Fullname -QueryTimeout 0 |
+        Export-Csv -Path $output_filename -NoTypeInformation -Encoding UTF8 -Delimiter "`t" -QuoteFields Always
 }
+
 
 "Uploading to S3" | Write-Host
 aws s3 sync $sql_output_root $s3_bucket

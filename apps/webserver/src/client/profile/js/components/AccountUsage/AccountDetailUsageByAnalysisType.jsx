@@ -18,11 +18,19 @@ import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
 import { accountProfileStrings } from '../../../../common/js/config.js';
 
+/**
+ * Posbile duplicate contents from
+ * {@link libs/constants/src/lib/analysisTypes.constants.ts}
+ *
+ * @summary libs/constants is not buildable and libs/sql complaints about
+ * not finding the contents of the filepath above
+ */
 const NORMALIZING_ANALYSIS_NAMES = {
   AFI: 'Post-2020 Risk Assessment',
   ALERTS: 'Recent Deforestation Alerts',
   FCD: 'Post-2000 Forest Change',
-  GHG: 'GHG Emissions',
+  'ALERTS-BATCH': 'Alerts - BATCH',
+  GHG: 'GHG Emissions (coming soon)',
 };
 
 function AccountDetailUsageByAnalysisType({

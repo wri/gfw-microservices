@@ -80,7 +80,7 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     });
   });
 
-  it('returns aggregated usage with numeric values for each analysis type', async () => {
+  it('returns all analysis types with actual usage data and zeros for missing types', async () => {
     mockQueryBuilder.getRawMany.mockResolvedValue([
       {
         total_area_analyzed: '12.5',
@@ -116,6 +116,9 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
       ghgChargingStartDate: new Date('2025-11-22T00:00:00.000Z'),
     });
     expect(mockQueryBuilder.getRawMany).toHaveBeenCalledTimes(1);
+
+    // Should return all 5 analysis types in the correct order
+    expect(result).toHaveLength(5);
     expect(result).toEqual([
       {
         analysis_type: 'FCD',
@@ -123,6 +126,27 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
         max_area_analyzed: 7.3,
         lists_analyzed: 2,
         locations_analyzed: 15,
+      },
+      {
+        analysis_type: 'AFI',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'ALERTS',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'ALERTS-BATCH',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
       },
       {
         analysis_type: 'GHG',
@@ -134,7 +158,7 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     ]);
   });
 
-  it('filters by date, ensures user attribution, and defaults missing values to zero', async () => {
+  it('filters by date, ensures user attribution, and returns all analysis types with defaults', async () => {
     mockQueryBuilder.getRawMany.mockResolvedValue([
       {
         total_area_analyzed: null,
@@ -170,9 +194,161 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
       orgDbName: 'another_db',
     });
 
+    // Should return all 5 analysis types, with ALERTS having null/undefined converted to 0
+    expect(result).toHaveLength(5);
     expect(result).toEqual([
       {
+        analysis_type: 'FCD',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'AFI',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
         analysis_type: 'ALERTS',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'ALERTS-BATCH',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'GHG',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+    ]);
+  });
+
+  it('maintains correct order of analysis types regardless of query results', async () => {
+    // Return results in random order
+    mockQueryBuilder.getRawMany.mockResolvedValue([
+      {
+        total_area_analyzed: '5.0',
+        max_area_analyzed: '5.0',
+        total_lists_analyzed: '1',
+        total_locations_analyzed: '3',
+        analysis_type: 'GHG',
+      },
+      {
+        total_area_analyzed: '10.0',
+        max_area_analyzed: '10.0',
+        total_lists_analyzed: '2',
+        total_locations_analyzed: '5',
+        analysis_type: 'AFI',
+      },
+      {
+        total_area_analyzed: '15.0',
+        max_area_analyzed: '15.0',
+        total_lists_analyzed: '3',
+        total_locations_analyzed: '8',
+        analysis_type: 'ALERTS-BATCH',
+      },
+    ]);
+
+    const result = await getAccountAnalysisUsageByAnalysisType({
+      startDate: '2025-11-01',
+      endDate: '2025-11-30',
+      orgDbName: 'org_db',
+    });
+
+    // Should maintain the defined order: FCD, AFI, ALERTS, ALERTS-BATCH, GHG
+    expect(result.map((r) => r.analysis_type)).toEqual([
+      'FCD',
+      'AFI',
+      'ALERTS',
+      'ALERTS-BATCH',
+      'GHG',
+    ]);
+
+    // Verify the values are correctly mapped
+    expect(result[0]).toEqual({
+      analysis_type: 'FCD',
+      hectares_analyzed: 0,
+      max_area_analyzed: 0,
+      lists_analyzed: 0,
+      locations_analyzed: 0,
+    });
+    expect(result[1]).toEqual({
+      analysis_type: 'AFI',
+      hectares_analyzed: 10.0,
+      max_area_analyzed: 10.0,
+      lists_analyzed: 2,
+      locations_analyzed: 5,
+    });
+    expect(result[3]).toEqual({
+      analysis_type: 'ALERTS-BATCH',
+      hectares_analyzed: 15.0,
+      max_area_analyzed: 15.0,
+      lists_analyzed: 3,
+      locations_analyzed: 8,
+    });
+    expect(result[4]).toEqual({
+      analysis_type: 'GHG',
+      hectares_analyzed: 5.0,
+      max_area_analyzed: 5.0,
+      lists_analyzed: 1,
+      locations_analyzed: 3,
+    });
+  });
+
+  it('returns all analysis types with zeros when query returns no results', async () => {
+    mockQueryBuilder.getRawMany.mockResolvedValue([]);
+
+    const result = await getAccountAnalysisUsageByAnalysisType({
+      startDate: '2025-11-01',
+      endDate: '2025-11-30',
+      orgDbName: 'org_db',
+    });
+
+    // Should still return all 5 analysis types with zero values
+    expect(result).toHaveLength(5);
+    expect(result).toEqual([
+      {
+        analysis_type: 'FCD',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'AFI',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'ALERTS',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'ALERTS-BATCH',
+        hectares_analyzed: 0,
+        max_area_analyzed: 0,
+        lists_analyzed: 0,
+        locations_analyzed: 0,
+      },
+      {
+        analysis_type: 'GHG',
         hectares_analyzed: 0,
         max_area_analyzed: 0,
         lists_analyzed: 0,

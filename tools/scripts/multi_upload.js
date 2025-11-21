@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
 
 const { ArgumentParser } = require('argparse');
 const parser = new ArgumentParser({
@@ -22,6 +23,10 @@ if (!API_KEY || !BASE_URL || !USER_EMAIL || !CSV_FILE) {
   console.error('Missing required arguments: --apiKey, --url, --email, --csv');
   process.exit(1);
 }
+const FILE_EXTENSION = path.extname(CSV_FILE).toLowerCase();
+const IS_GEOJSON_FILE = FILE_EXTENSION === '.geojson' || FILE_EXTENSION === '.json';
+const FILE_TYPE = IS_GEOJSON_FILE ? 'json' : 'csv';
+const CONTENT_TYPE = IS_GEOJSON_FILE ? 'application/json' : 'text/csv';
 const CONCURRENT_REQUESTS = Number(args.numUploads) || 2; // Default to 2 if not provided
 
 const ANALYSIS_IDS = ['DefReport', 'FCD', 'GHG', 'Alerts'];
@@ -104,7 +109,7 @@ async function runSingleUpload(processId) {
       `${BASE_URL}/prepare_upload`,
       {
         userEmail: USER_EMAIL,
-        fileType: 'csv',
+        fileType: FILE_TYPE,
       },
       {
         headers: {
@@ -130,29 +135,35 @@ async function runSingleUpload(processId) {
   }
   colorLog(colors.GREEN, `[Process ${processId}] Upload ID: ${UPLOAD_ID}`);
 
-  // Step 2: Upload CSV file
-  colorLog(colors.YELLOW, `[Process ${processId}] Step 2: Uploading CSV file...`);
+  // Step 2: Upload data file
+  colorLog(
+    colors.YELLOW,
+    `[Process ${processId}] Step 2: Uploading ${IS_GEOJSON_FILE ? 'GeoJSON' : 'CSV'} file...`
+  );
   if (!fs.existsSync(CSV_FILE)) {
-    colorLog(colors.RED, `[Process ${processId}] Error: CSV file not found at ${CSV_FILE}`);
+    colorLog(colors.RED, `[Process ${processId}] Error: File not found at ${CSV_FILE}`);
     return false;
   }
   try {
     const fileData = fs.readFileSync(CSV_FILE, { encoding: 'utf8', flag: 'r' });
     await axios.put(UPLOAD_URL, fileData, {
       headers: {
-        'Content-Type': 'text/csv',
+        'Content-Type': CONTENT_TYPE,
         'x-trace-id': LIST_NAME,
       },
     });
   } catch (err) {
     colorLog(
       colors.RED,
-      `[Process ${processId}] Error: Failed to upload CSV file`,
+      `[Process ${processId}] Error: Failed to upload ${IS_GEOJSON_FILE ? 'GeoJSON' : 'CSV'} file`,
       err.response?.data || err.message
     );
     return false;
   }
-  colorLog(colors.GREEN, `[Process ${processId}] CSV file uploaded successfully`);
+  colorLog(
+    colors.GREEN,
+    `[Process ${processId}] ${IS_GEOJSON_FILE ? 'GeoJSON' : 'CSV'} file uploaded successfully`
+  );
 
   // Step 3: Upload the list
   colorLog(colors.YELLOW, `[Process ${processId}] Step 3: Creating list...`);

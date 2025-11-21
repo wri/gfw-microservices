@@ -4,11 +4,15 @@
  * apps/webserver/src/config/env/analysisTypes.constants.js is intended for the client
  * Test in apps/webserver/src/config/env/analysisTypes.constants.spec.js verifies the contents
  * of the two files are identical
+ *
+ * duplicated by
+ * {@link libs/sql/src/lib/account/getAccountAnalysisUsageByAnalysisType.ts}
  */
 export enum ListAnalysisIds {
   FCD = 'FCD',
   AFI = 'AFI',
   ALERTS = 'ALERTS',
+  ALERTS_BATCH = 'ALERTS-BATCH',
   GHG = 'GHG',
 }
 

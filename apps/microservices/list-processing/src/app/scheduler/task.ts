@@ -9,8 +9,8 @@ export class Task {
 
   constructor(private unlockListService: UnlockListService) {}
 
-  // Run every day at 3 AM
-  @Cron('0 0 3 * * *')
+  // Run every day at 1 AM UTC
+  @Cron('0 0 1 * * *')
   async performingDailyTasks() {
     this.logger.log(
       `Performing daily tasks, executed at: ${moment(new Date())
@@ -18,9 +18,10 @@ export class Task {
         .format('YYYY-MM-DD HH:mm:ss')}`
     );
 
-    // Random delay between 0 and 1 hour
-    const randomDelay = Math.floor(Math.random() * 1000 * 60 * 60);
-    this.logger.log(`Random delay: ${randomDelay} ms`);
+    // Random delay between 0 and 2 hours to reduce collision probability across multiple instances
+    const randomDelay = Math.floor(Math.random() * 1000 * 60 * 60 * 2);
+    const delayMinutes = Math.floor(randomDelay / (1000 * 60));
+    this.logger.log(`Random delay: ${delayMinutes} minutes (${randomDelay} ms)`);
 
     await this.delay(randomDelay);
     await this.unlockListService.execute();

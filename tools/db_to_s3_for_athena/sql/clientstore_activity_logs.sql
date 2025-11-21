@@ -56,8 +56,17 @@ BEGIN
         @db_name AS org_database,
         AL.user_id,
         U.email,
-        AL.activity_description,
-        AL.activity_time,
+        REPLACE(
+          REPLACE(
+            REPLACE(
+              REPLACE(AL.activity_description, CHAR(9), '' ''),
+              CHAR(10), '' ''
+            ),
+            CHAR(13), '' ''
+          ),
+          CHAR(160), '' ''
+        ) AS activity_description,
+        CONVERT(varchar(19), AL.activity_time, 120) AS activity_time,
         AL.activity_type_id,
         ISNULL(AT.activity_type_name, ''Unknown'') AS activity_type,
         ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category

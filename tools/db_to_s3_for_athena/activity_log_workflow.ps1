@@ -19,39 +19,47 @@ $sql_queries = Get-ChildItem
 foreach($query in $sql_queries)
 {
     Write-Host "Processing $query"
-    $output_folder = Join-Path $sql_output_root $query.Name.Replace(".sql","")
-    $output_filename = Join-Path $output_folder ($query.Name.Replace(".sql",".txt"))
+    $output_filename = Join-Path $sql_output_root ($query.Name.Replace(".sql",""))
+    if (-not (Test-Path $output_filename)) {
+        New-Item -Path $output_filename -ItemType Directory | Out-Null
+    }
+    $output_file = Join-Path $output_filename ($query.Name.Replace(".sql",".txt"))
 
-    if(-not (Test-Path $output_folder)) {
-        New-Item -Path $output_folder -ItemType Directory | Out-Null
-    }
-
-    try {
-        $data = Invoke-Sqlcmd -ServerInstance localhost -InputFile $query.FullName -QueryTimeout 0
-    }
-    catch {
-        Write-Warning "Failed to run query $($query.Name): $_"
-        continue
-    }
+    Write-Host "Running invoke-sql command and creating temp file"
+    $data = Invoke-Sqlcmd -ServerInstance localhost -InputFile $query.FullName -QueryTimeout 0
 
     if ($null -eq $data) {
-        Write-Warning "No data returned for $($query.Name). Skipping export."
+        Write-Warning "No data returned for $($query.Name), skipping export."
         continue
     }
+    $data = @(Invoke-Sqlcmd -ServerInstance localhost -InputFile $query.FullName -QueryTimeout 0)
 
-    # Check if activity_description column exists
-    $hasActivityDesc = $data | Get-Member -Name "activity_description" -MemberType Properties
+    # If activity_description exists, sanitize tabs in it
+    if ($data.Count -gt 0 -and $data[0].PSObject.Properties.Name -contains 'activity_description') {
+        Write-Host "Applying tab sanitization on activity_description column"
 
-    if ($hasActivityDesc) {
         $data | ForEach-Object {
-            $_.activity_description = $_.activity_description -replace "`t", " "
+            if ($_.activity_description) {
+                # Replace all whitespace characters (tabs, spaces, newlines, carriage returns, non-breaking spaces, etc.) with a single space
+                $_.activity_description = ($_.activity_description -replace "\s+", " ")
+            }
             $_
-        } | Export-Csv -Path $output_filename -NoTypeInformation -Encoding UTF8 -Delimiter "`t"
+        } | Export-Csv -NoTypeInformation -Path $sql_temp_file -Encoding UTF8 -Delimiter "`t"
     }
-    else { 
-        # Export as is, no sanitization needed 
-        $data | Export-Csv -Path $output_filename -NoTypeInformation -Encoding UTF8 -Delimiter "`t" 
+    else {
+        $data | Export-Csv -NoTypeInformation -Path $sql_temp_file -Encoding UTF8 -Delimiter "`t"
+    }   
+
+    Write-Host "Creating subfolder if it does not exist"
+    if (-not (Test-Path $output_filename)) {
+        New-Item -Path $output_filename -Force -ItemType Directory | Out-Null
     }
+
+    Write-Host "Stripping quotes out of temp file and creating txt file"
+    (Get-Content $sql_temp_file -Raw).Replace('"',"").Replace("`r`n","`n") | Out-File $output_file -Encoding utf8 -NoNewline
+
+    Write-Host "Removing temp file"
+    Remove-Item $sql_temp_file -Force
 }
 
 "Uploading to S3" | Write-Host

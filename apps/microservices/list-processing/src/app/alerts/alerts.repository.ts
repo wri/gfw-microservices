@@ -45,7 +45,7 @@ export class AlertsRepository {
       const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
       const daysAgo = Math.floor((Date.now() - lastAnalysisTime) / MILLISECONDS_PER_DAY);
       this.logger.log(
-        `Fetch alerts for list ${listID} analyzed ${daysAgo} days ago.  LD: ${paginated}`
+        `Fetch alerts for list ${clientDatabase} ${listID} analyzed ${daysAgo} days ago.  LD: ${paginated}`
       );
     } catch (error) {
       // log the error but do not fail the main query

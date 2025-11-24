@@ -3,9 +3,30 @@ import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from '
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+import { HttpStatus } from '@nestjs/common';
 import { yieldIfLong } from './shared';
 
 const DEFAULT_DELAY = 1000;
+const retryableHttpStatusCodes = [
+  HttpStatus.TOO_MANY_REQUESTS,
+  HttpStatus.INTERNAL_SERVER_ERROR,
+  HttpStatus.BAD_GATEWAY,
+  HttpStatus.SERVICE_UNAVAILABLE,
+  HttpStatus.GATEWAY_TIMEOUT,
+];
+
+const isRetryableError = (error) => {
+  // Retry on network errors, timeouts, and specific HTTP status codes
+  const isNetworkError = !error.response && !!error.code;
+  const statusCode = error.response?.status || error.code;
+  const isTimeout =
+    error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET';
+  const isRetryableStatus = statusCode && retryableHttpStatusCodes.includes(statusCode);
+  return Boolean(
+    axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
+  );
+};
+
 
 axiosRetry(axios, {
   retries: 6,
@@ -14,17 +35,7 @@ axiosRetry(axios, {
     const jitter = Math.random() * DEFAULT_DELAY;
     return baseDelay + jitter;
   },
-  retryCondition: (error) => {
-    // Retry on network errors, timeouts, and specific HTTP status codes
-    const isNetworkError = !error.response && !!error.code;
-    const isTimeout = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
-    const isRetryableStatus =
-      error.response?.status && [429, 500, 502, 503, 504].includes(error.response.status);
-
-    return Boolean(
-      axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
-    );
-  },
+  retryCondition: isRetryableError,
 });
 
 export class GADMService extends AbstractHandler<ChainType> {

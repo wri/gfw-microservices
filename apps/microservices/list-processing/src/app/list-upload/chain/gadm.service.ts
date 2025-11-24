@@ -27,7 +27,6 @@ const isRetryableError = (error) => {
   );
 };
 
-
 axiosRetry(axios, {
   retries: 6,
   retryDelay: (retryCount) => {

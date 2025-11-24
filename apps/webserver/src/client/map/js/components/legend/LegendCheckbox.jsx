@@ -24,7 +24,7 @@ import {
   densityDisplayLayers,
   layerWarnings,
 } from '../../../../common/js/proLayers.config';
-import { DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY } from '../../constants/actionTypes';
+
 const {
   viirsActiveFiresID,
   aboveGroundBiomassId,
@@ -149,7 +149,9 @@ export default class LegendCheckbox extends Component {
 
   handleTclSwitchClick = () => {
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
-    store.dispatch(updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY));
+    store.dispatch(
+      updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY)
+    );
   };
 
   handleOpacityChange(opacity) {

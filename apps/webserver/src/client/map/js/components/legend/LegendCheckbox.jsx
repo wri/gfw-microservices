@@ -24,6 +24,7 @@ import {
   densityDisplayLayers,
   layerWarnings,
 } from '../../../../common/js/proLayers.config';
+import { DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY } from '../../constants/actionTypes';
 const {
   viirsActiveFiresID,
   aboveGroundBiomassId,
@@ -52,6 +53,12 @@ import {
 import './LegendCheckbox.scss';
 import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
 import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
+
+/**
+ * Default canopy density threshold (in percentage) for Tree Cover Loss layer.
+ * This value represents the minimum canopy density required for tree cover loss to be displayed.
+ */
+const DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY = 30;
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -142,7 +149,7 @@ export default class LegendCheckbox extends Component {
 
   handleTclSwitchClick = () => {
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
-    store.dispatch(updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : 10));
+    store.dispatch(updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY));
   };
 
   handleOpacityChange(opacity) {

@@ -37,7 +37,7 @@ describe('Task', () => {
 
   describe('performingDailyTasks', () => {
     it('should execute unlock list service after random delay', async () => {
-      const mockDate = new Date('2024-01-01T03:00:00Z');
+      const mockDate = new Date('2024-01-01T01:00:00Z');
       jest.setSystemTime(mockDate);
 
       const promise = service.performingDailyTasks();
@@ -51,7 +51,7 @@ describe('Task', () => {
     });
 
     it('should log execution time and random delay', async () => {
-      const mockDate = new Date('2024-01-01T03:00:00Z');
+      const mockDate = new Date('2024-01-01T01:00:00Z');
       jest.setSystemTime(mockDate);
 
       const logSpy = jest.spyOn(logger, 'log');
@@ -63,9 +63,12 @@ describe('Task', () => {
       expect(logSpy).toHaveBeenCalledTimes(2);
       expect(logSpy).toHaveBeenNthCalledWith(
         1,
-        expect.stringContaining('Performing daily tasks, executed at: 2024-01-01 03:00:00')
+        expect.stringContaining('Performing daily tasks, executed at: 2024-01-01 01:00:00')
       );
-      expect(logSpy).toHaveBeenNthCalledWith(2, expect.stringMatching(/Random delay: \d+ ms/));
+      expect(logSpy).toHaveBeenNthCalledWith(
+        2,
+        expect.stringMatching(/Random delay: \d+ minutes \(\d+ ms\)/)
+      );
     });
   });
 });

@@ -8,6 +8,7 @@ jest.mock('@nestjs/common', () => ({
     error: jest.fn(),
     debug: jest.fn(),
   })),
+  HttpStatus: [],
 }));
 
 jest.mock('@wri-monorepos/sql', () => ({

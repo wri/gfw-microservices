@@ -3,7 +3,7 @@ import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from '
 import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import { yieldIfLong } from './shared';
+import { yieldIfLong, isRetryableError } from './shared';
 
 const DEFAULT_DELAY = 1000;
 
@@ -14,17 +14,7 @@ axiosRetry(axios, {
     const jitter = Math.random() * DEFAULT_DELAY;
     return baseDelay + jitter;
   },
-  retryCondition: (error) => {
-    // Retry on network errors, timeouts, and specific HTTP status codes
-    const isNetworkError = !error.response && !!error.code;
-    const isTimeout = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
-    const isRetryableStatus =
-      error.response?.status && [429, 500, 502, 503, 504].includes(error.response.status);
-
-    return Boolean(
-      axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
-    );
-  },
+  retryCondition: isRetryableError,
 });
 
 export class GADMService extends AbstractHandler<ChainType> {

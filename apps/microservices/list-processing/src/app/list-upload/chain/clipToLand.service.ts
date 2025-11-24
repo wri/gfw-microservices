@@ -6,10 +6,9 @@ import axiosRetry from 'axios-retry';
 // We're using wkx because wellknown only handles wkt instead of wkb
 import wkx from 'wkx';
 import { Position } from 'typeorm/driver/types/GeoJsonTypes';
-import { HttpStatus } from '@nestjs/common';
-import { yieldIfLong } from './shared';
+import { yieldIfLong, isRetryableError } from './shared';
 
-const DEFAULT_DELAY = 1000;
+const DEFAULT_DELAY = 1000; // 1 second
 axiosRetry(axios, {
   retries: 6,
   retryDelay: (retryCount) => {
@@ -17,24 +16,7 @@ axiosRetry(axios, {
     const jitter = Math.random() * DEFAULT_DELAY; // Add up to 1 second of random
     return baseDelay + jitter;
   },
-  retryCondition: (error) => {
-    // Retry on network errors, timeouts, and specific HTTP status codes
-    const isNetworkError = !error.response && !!error.code;
-    const isTimeout = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT';
-    const isRetryableStatus =
-      error.response?.status &&
-      [
-        HttpStatus.TOO_MANY_REQUESTS,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        HttpStatus.BAD_GATEWAY,
-        HttpStatus.SERVICE_UNAVAILABLE,
-        HttpStatus.GATEWAY_TIMEOUT,
-      ].includes(error.response.status);
-
-    return Boolean(
-      axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
-    );
-  },
+  retryCondition: isRetryableError,
 });
 
 export class ClipToLandService extends AbstractHandler<ChainType> {
@@ -91,13 +73,11 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     } catch (error) {
       const statusCode = error.response?.status || error.code;
       // retry only for certain timeout/network errors
-      if (
-        retriesLeft > 0 &&
-        (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET')
-      ) {
+      if (retriesLeft > 0 && isRetryableError(error)) {
         this.logger.warn(
-          `Timeout error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
+          `Retryable error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
         );
+        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
         return this.retryDataAPI(retriesLeft - 1, requestData, feature);
       }
       throw error;
@@ -120,7 +100,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     };
 
     try {
-      return await this.retryDataAPI(2, requestData, feature);
+      return await this.retryDataAPI(3, requestData, feature);
     } catch (error) {
       const statusCode = error.response?.status || error.code;
 

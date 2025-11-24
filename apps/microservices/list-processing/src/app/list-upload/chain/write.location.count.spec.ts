@@ -9,6 +9,7 @@ jest.mock('@nestjs/common', () => ({
     log: jest.fn(),
     error: jest.fn(),
   })),
+  HttpStatus: [],
 }));
 
 type MockRepository = {

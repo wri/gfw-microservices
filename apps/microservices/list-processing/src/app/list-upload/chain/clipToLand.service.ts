@@ -6,29 +6,9 @@ import axiosRetry from 'axios-retry';
 // We're using wkx because wellknown only handles wkt instead of wkb
 import wkx from 'wkx';
 import { Position } from 'typeorm/driver/types/GeoJsonTypes';
-import { HttpStatus } from '@nestjs/common';
-import { yieldIfLong } from './shared';
+import { yieldIfLong, isRetryableError } from './shared';
 
 const DEFAULT_DELAY = 1000; // 1 second
-const retryableHttpStatusCodes = [
-  HttpStatus.TOO_MANY_REQUESTS,
-  HttpStatus.INTERNAL_SERVER_ERROR,
-  HttpStatus.BAD_GATEWAY,
-  HttpStatus.SERVICE_UNAVAILABLE,
-  HttpStatus.GATEWAY_TIMEOUT,
-];
-const isRetryableError = (error) => {
-  // Retry on network errors, timeouts, and specific HTTP status codes
-  const isNetworkError = !error.response && !!error.code;
-  const statusCode = error.response?.status || error.code;
-  const isTimeout =
-    error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET';
-  const isRetryableStatus = statusCode && retryableHttpStatusCodes.includes(statusCode);
-  return Boolean(
-    axiosRetry.isRetryableError(error) || isNetworkError || isTimeout || isRetryableStatus
-  );
-};
-
 axiosRetry(axios, {
   retries: 6,
   retryDelay: (retryCount) => {
@@ -95,7 +75,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       // retry only for certain timeout/network errors
       if (retriesLeft > 0 && isRetryableError(error)) {
         this.logger.warn(
-          `Timeout error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
+          `Retryable error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
         );
         await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
         return this.retryDataAPI(retriesLeft - 1, requestData, feature);

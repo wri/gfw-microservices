@@ -41,7 +41,7 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
         <Typography variant="h6">Download Reports</Typography>
         <Close
           fontSize="small"
-          onClick={onClose}
+          onClick={handleClose}
           sx={{ cursor: 'pointer' }}
           aria-label="close dialog"
         />
@@ -70,7 +70,7 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
         </Box>
       </DialogContent>
       <DialogActions>
-        <PillButton onClick={onClose} color="info">
+        <PillButton onClick={handleClose} color="info">
           Cancel
         </PillButton>
         <PillButton

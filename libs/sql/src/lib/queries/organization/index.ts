@@ -135,3 +135,4 @@ export * from './updateLocationAnalysisStringResult';
 export * from './upsertAnalysesDashboard';
 export * from './getOrganizationAnalysisUsageByAnalysisType';
 export * from './getPaginatedAlertsAnalysisByListIdSortedByFilters';
+export * from './getOrganizationYearlyUsageSinceOrgActivatedTime';

@@ -152,4 +152,16 @@ export interface DashboardDataType {
   integratedAlertsDailyJrcNominal?: string;
   integratedAlertsDailyJrcHigh?: string;
   integratedAlertsDailyJrcHighest?: string;
+  integratedAlertsAreaAllNominal?: string;
+  integratedAlertsAreaAllHigh?: string;
+  integratedAlertsAreaAllHighest?: string;
+  integratedAlertsAreaSbtnNaturalForestsNominal?: string;
+  integratedAlertsAreaSbtnNaturalForestsHigh?: string;
+  integratedAlertsAreaSbtnNaturalForestsHighest?: string;
+  integratedAlertsAreaSbtnNaturalEcosystemNominal?: string;
+  integratedAlertsAreaSbtnNaturalEcosystemHigh?: string;
+  integratedAlertsAreaSbtnNaturalEcosystemHighest?: string;
+  integratedAlertsAreaJrcNominal?: string;
+  integratedAlertsAreaJrcHigh?: string;
+  integratedAlertsAreaJrcHighest?: string;
 }

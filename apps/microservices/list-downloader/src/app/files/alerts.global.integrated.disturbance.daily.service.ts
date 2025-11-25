@@ -50,15 +50,18 @@ export class AlertsGlobalIntegratedDisturbanceDailyService extends IPipeService 
     const { listId, startDate, endDate, key, listName } = filters;
 
     const inputColumns: string[] = [
-      'integratedAlertsDailyAllNominal',
-      'integratedAlertsDailyAllHigh',
-      'integratedAlertsDailyAllHighest',
-      'integratedAlertsDailySbtnNominal',
-      'integratedAlertsDailySbtnHigh',
-      'integratedAlertsDailySbtnHighest',
-      'integratedAlertsDailyJrcNominal',
-      'integratedAlertsDailyJrcHigh',
-      'integratedAlertsDailyJrcHighest',
+      'integratedAlertsAreaAllNominal',
+      'integratedAlertsAreaAllHigh',
+      'integratedAlertsAreaAllHighest',
+      'integratedAlertsAreaSbtnNaturalForestsNominal',
+      'integratedAlertsAreaSbtnNaturalForestsHigh',
+      'integratedAlertsAreaSbtnNaturalForestsHighest',
+      'integratedAlertsAreaSbtnNaturalEcosystemNominal',
+      'integratedAlertsAreaSbtnNaturalEcosystemHigh',
+      'integratedAlertsAreaSbtnNaturalEcosystemHighest',
+      'integratedAlertsAreaJrcNominal',
+      'integratedAlertsAreaJrcHigh',
+      'integratedAlertsAreaJrcHighest',
     ];
 
     this.inputStream.removeAllListeners();

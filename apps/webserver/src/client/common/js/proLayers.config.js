@@ -1,3 +1,9 @@
+/**
+ * Default canopy density threshold (in percentage) for Tree Cover Loss layer.
+ * This value represents the minimum canopy density required for tree cover loss to be displayed.
+ */
+export const DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY = 30;
+
 // ---Layers START
 // We are using names in the api to map out the layers
 // key is universal id we use within the app, values is layer NAME in the API

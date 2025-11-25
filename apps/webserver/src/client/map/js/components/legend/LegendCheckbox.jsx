@@ -23,6 +23,7 @@ import {
   proLayers,
   densityDisplayLayers,
   layerWarnings,
+  DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY,
 } from '../../../../common/js/proLayers.config';
 
 const {
@@ -53,12 +54,6 @@ import {
 import './LegendCheckbox.scss';
 import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
 import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
-
-/**
- * Default canopy density threshold (in percentage) for Tree Cover Loss layer.
- * This value represents the minimum canopy density required for tree cover loss to be displayed.
- */
-const DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY = 30;
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -410,7 +405,7 @@ export default class LegendCheckbox extends Component {
             <span
               onClick={this.handleToggleCanopyModal}
               className="layer-legend-loss-display"
-            >{`>${this.props.canopyDensity}%`}</span>
+            >{`>30%`}</span>
             {mapPage.densityLossEnd}
           </p>
         ) : null}

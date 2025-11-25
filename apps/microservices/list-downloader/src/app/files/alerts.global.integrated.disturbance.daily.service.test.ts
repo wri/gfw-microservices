@@ -44,7 +44,7 @@ describe('AlertsGlobalIntegratedDisturbanceDailyService', () => {
     }
   });
 
-  it('should generate the Global Integrated Disturbance Alerts Daily CSV with converted hectares and totals', async () => {
+  it('should generate the Global Integrated Disturbance Alerts Daily CSV with hectares from area columns and totals', async () => {
     const mockConnection: Partial<DataSource> = {
       getRepository: jest.fn().mockReturnValue({
         createQueryBuilder: jest.fn().mockReturnValue({
@@ -69,15 +69,18 @@ describe('AlertsGlobalIntegratedDisturbanceDailyService', () => {
         Country: 'CountryX',
         State: 'StateY',
         'Sub State': 'SubZ',
-        integratedAlertsDailyAllNominal: '{"2021-01-01":2,"2021-01-02":1}',
-        integratedAlertsDailySbtnNominal: '{"2021-01-01":1,"2021-01-02":0}',
-        integratedAlertsDailyJrcNominal: '{"2021-01-01":0,"2021-01-02":1}',
-        integratedAlertsDailyAllHigh: '{"2021-01-02":3}',
-        integratedAlertsDailySbtnHigh: '{"2021-01-02":2}',
-        integratedAlertsDailyJrcHigh: '{"2021-01-02":1}',
-        integratedAlertsDailyAllHighest: '{"2021-01-01":4}',
-        integratedAlertsDailySbtnHighest: '{"2021-01-01":2}',
-        integratedAlertsDailyJrcHighest: '{"2021-01-01":1}',
+        integratedAlertsAreaAllNominal: '{"2021-01-01":"0.18","2021-01-02":"0.09"}',
+        integratedAlertsAreaSbtnNaturalForestsNominal: '{"2021-01-01":"0.09","2021-01-02":"0"}',
+        integratedAlertsAreaSbtnNaturalEcosystemNominal: '{"2021-01-01":"0","2021-01-02":"0"}',
+        integratedAlertsAreaJrcNominal: '{"2021-01-01":"0","2021-01-02":"0.09"}',
+        integratedAlertsAreaAllHigh: '{"2021-01-02":"0.27"}',
+        integratedAlertsAreaSbtnNaturalForestsHigh: '{"2021-01-02":"0.18"}',
+        integratedAlertsAreaSbtnNaturalEcosystemHigh: '{"2021-01-02":"0"}',
+        integratedAlertsAreaJrcHigh: '{"2021-01-02":"0.09"}',
+        integratedAlertsAreaAllHighest: '{"2021-01-01":"0.36"}',
+        integratedAlertsAreaSbtnNaturalForestsHighest: '{"2021-01-01":"0.18"}',
+        integratedAlertsAreaSbtnNaturalEcosystemHighest: '{"2021-01-01":"0"}',
+        integratedAlertsAreaJrcHighest: '{"2021-01-01":"0.09"}',
       },
     ];
 

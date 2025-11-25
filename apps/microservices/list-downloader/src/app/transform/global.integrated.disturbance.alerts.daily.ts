@@ -2,24 +2,25 @@ import { Transform } from 'stream';
 
 import { isEmptyObject } from '../shared/functions';
 
-const ALERT_PIXEL_SIZE_HA = 0.09;
-
 const nominal = [
-  'integratedAlertsDailyAllNominal',
-  'integratedAlertsDailySbtnNominal',
-  'integratedAlertsDailyJrcNominal',
+  'integratedAlertsAreaAllNominal',
+  'integratedAlertsAreaSbtnNaturalForestsNominal',
+  'integratedAlertsAreaSbtnNaturalEcosystemNominal',
+  'integratedAlertsAreaJrcNominal',
 ];
 
 const high = [
-  'integratedAlertsDailyAllHigh',
-  'integratedAlertsDailySbtnHigh',
-  'integratedAlertsDailyJrcHigh',
+  'integratedAlertsAreaAllHigh',
+  'integratedAlertsAreaSbtnNaturalForestsHigh',
+  'integratedAlertsAreaSbtnNaturalEcosystemHigh',
+  'integratedAlertsAreaJrcHigh',
 ];
 
 const highest = [
-  'integratedAlertsDailyAllHighest',
-  'integratedAlertsDailySbtnHighest',
-  'integratedAlertsDailyJrcHighest',
+  'integratedAlertsAreaAllHighest',
+  'integratedAlertsAreaSbtnNaturalForestsHighest',
+  'integratedAlertsAreaSbtnNaturalEcosystemHighest',
+  'integratedAlertsAreaJrcHighest',
 ];
 
 export class GlobalIntegratedDisturbanceAlertsDaily extends Transform {
@@ -70,17 +71,13 @@ export class GlobalIntegratedDisturbanceAlertsDaily extends Transform {
     const { location_name, totalHa, Country, State } = data;
     const subState = data['Sub State'];
 
+    // Parse JSON strings for area data (already in hectares)
     const all = this.getValueFromJson(data[group[0]], dateString);
-    const sbtn = this.getValueFromJson(data[group[1]], dateString);
-    const jrc = this.getValueFromJson(data[group[2]], dateString);
+    const sbtnForest = this.getValueFromJson(data[group[1]], dateString);
+    const sbtnEcosystem = this.getValueFromJson(data[group[2]], dateString);
+    const jrc = this.getValueFromJson(data[group[3]], dateString);
 
-    if (all || sbtn || jrc) {
-      const totalAlertHa = all * ALERT_PIXEL_SIZE_HA;
-      const sbtnNaturalForestHa = sbtn * ALERT_PIXEL_SIZE_HA;
-      // TODO: Replace placeholder with real data when SBTN Natural Open Ecosystems layer is available.
-      const sbtnNaturalOpenEcosystemsHa = 0;
-      const jrcForestHa = jrc * ALERT_PIXEL_SIZE_HA;
-
+    if (all || sbtnForest || sbtnEcosystem || jrc) {
       return [
         `${this.listName}_Global_Integrated_Disturbance_Alerts_Daily`,
         location_name || '',
@@ -93,10 +90,10 @@ export class GlobalIntegratedDisturbanceAlertsDaily extends Transform {
         this.endDate.toISOString().split('T')[0],
         dateString,
         confidenceLevel,
-        totalAlertHa,
-        sbtnNaturalForestHa,
-        sbtnNaturalOpenEcosystemsHa,
-        jrcForestHa,
+        all, // Already in hectares
+        sbtnForest, // Already in hectares
+        sbtnEcosystem, // Already in hectares
+        jrc, // Already in hectares
         1,
       ];
     }
@@ -111,7 +108,8 @@ export class GlobalIntegratedDisturbanceAlertsDaily extends Transform {
 
     try {
       const parsed = JSON.parse(columnValue);
-      return parsed?.[dateString] || 0;
+      const value = parsed?.[dateString];
+      return value ? parseFloat(value) : 0;
     } catch (error) {
       return 0;
     }

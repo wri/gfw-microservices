@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, Select, MenuItem, InputLabel, SelectChangeEvent } from '@mui/material';
 import { UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import {
-  globalVegetationDisturbanceAlertsDateRange,
+  dcfAlertsDateRange,
   disturbanceAlertsVegetationTypes,
 } from '../../../../../common/js/config';
 import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
@@ -98,8 +98,8 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
       <DateRangeSlider
         startDate={globalVegetationDisturbanceAlertsFilter.startDate}
         endDate={globalVegetationDisturbanceAlertsFilter.endDate}
-        minDate={globalVegetationDisturbanceAlertsDateRange[0]}
-        maxDate={globalVegetationDisturbanceAlertsDateRange[1]}
+        minDate={dcfAlertsDateRange[0]}
+        maxDate={dcfAlertsDateRange[1]}
         disabled={disabled}
         onDateChange={handleDateChange}
       />

@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { driverOfDisturbanceAlertsDateRange } from '../../../../../common/js/config';
+import { dcfAlertsDateRange } from '../../../../../common/js/config';
 import { UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER } from '../../../constants/actionTypes';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
@@ -168,8 +168,8 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
       <DateRangeSlider
         startDate={startDate}
         endDate={endDate}
-        minDate={driverOfDisturbanceAlertsDateRange[0]}
-        maxDate={driverOfDisturbanceAlertsDateRange[1]}
+        minDate={dcfAlertsDateRange[0]}
+        maxDate={dcfAlertsDateRange[1]}
         disabled={disabled}
         onDateChange={handleDateChange}
       />

@@ -21,12 +21,7 @@ import LandCoverLayer from '../layers/LandCoverLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
-import {
-  soyPlantedYearsRange,
-  driverOfDisturbanceAlertsDateRange,
-  globalVegetationDisturbanceAlertsDateRange,
-  globalIntegratedDisturbanceAlertsDateRange,
-} from '../../../common/js/config';
+import { soyPlantedYearsRange, dcfAlertsDateRange } from '../../../common/js/config';
 import { proLayers } from '../../../common/js/proLayers.config';
 const {
   viirsActiveFiresID,
@@ -68,12 +63,6 @@ export const layerFactory = function LayersFactory(layersArray, view) {
   }
 
   const defaultDefExpression = "ACQ_DATE > date'" + year + '-' + month + '-' + day + "'";
-
-  const tileLayerDateRanges = {
-    [disturbanceAlertsDriversId]: driverOfDisturbanceAlertsDateRange,
-    [globalVegetationDisturbanceAlertsId]: globalVegetationDisturbanceAlertsDateRange,
-    [globalIntegratedDisturbanceAlertsId]: globalIntegratedDisturbanceAlertsDateRange,
-  };
 
   layersArray.forEach((layer) => {
     // if ((!layer.url && layer.type !== 'graphic') || !layer.type) { throw new Error(errors.missingLayerConfig); }
@@ -125,12 +114,9 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         {
           let urlTemplate = layer.layerConfig.body.url;
 
-          const dateRange = tileLayerDateRanges[layer.id];
-          if (dateRange) {
-            urlTemplate = layer.layerConfig.body.url.concat(
-              `&start_date=${dateRange[0]}&end_date=${dateRange[1]}`
-            );
-          }
+          urlTemplate = layer.layerConfig.body.url.concat(
+            `&start_date=${dcfAlertsDateRange[0]}&end_date=${dcfAlertsDateRange[1]}`
+          );
 
           layers.push(
             new WebTileLayer({

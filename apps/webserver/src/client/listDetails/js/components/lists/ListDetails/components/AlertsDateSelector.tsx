@@ -26,14 +26,25 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
   const isDateRangeValid =
     startDateInput !== '' && endDateInput !== '' && startDateInput <= endDateInput;
 
+  const handleClose = () => {
+    setStartDateInput('');
+    setEndDateInput('');
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onClose={onClose} sx={{ '& .MuiPaper-root': { width: '450px' } }}>
+    <Dialog open={isOpen} onClose={handleClose} sx={{ '& .MuiPaper-root': { width: '450px' } }}>
       <DialogTitle
         data-cy="download-dialog"
         sx={{ display: 'flex', justifyContent: 'space-between' }}
       >
         <Typography variant="h6">Download Reports</Typography>
-        <Close fontSize="small" onClick={onClose} sx={{ cursor: 'pointer' }} />
+        <Close
+          fontSize="small"
+          onClick={onClose}
+          sx={{ cursor: 'pointer' }}
+          aria-label="close dialog"
+        />
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2">

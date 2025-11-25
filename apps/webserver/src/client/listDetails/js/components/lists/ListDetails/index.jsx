@@ -1649,7 +1649,7 @@ export default class ListDetails extends Component {
     this.downloadReport(listID, listView);
   };
 
-  handleAlertsDownloadReport = (listID, listView, date) => {
+  handleAlertsDownloadReport = (listID, listView) => {
     this.downloadReport(listID, listView);
     this.setState({ isAlertsDateSelectorOpen: false });
   };
@@ -1665,9 +1665,6 @@ export default class ListDetails extends Component {
 
       await axios.get(url, {
         withCredentials: true,
-      });
-      gtag('event', 'User downloads Deforestation Reporting KPIs diagnostics', {
-        event_category: 'Deforestation Reporting KPIs',
       });
     } catch (error) {
       this.setIsDownloadDialogOpen(false);

@@ -127,7 +127,7 @@ const MODES = {
 const DIAGNOSTICS_URLS = {
   [POST_2020_RISK_ASSESSMENT_VIEW]: '/api/afi/download?listId=[list-id]',
   [FOREST_CHANGE_VIEW]:
-    'locations/csv/[list-id]?type=everything&order=asc&aggregate=true&listView=forest_change&isGFWList=false&analysisAreaMin=0&source=diagnostics',
+    '/locations/csv/[list-id]?type=everything&order=asc&aggregate=true&listView=forest_change&isGFWList=false&analysisAreaMin=0&source=diagnostics',
   [ALERTS]: '/api/afi/download?listId=[list-id]', // change to Alerts diagnostics request url when available
 };
 
@@ -1650,7 +1650,6 @@ export default class ListDetails extends Component {
   };
 
   handleAlertsDownloadReport = (listID, listView, date) => {
-    console.log({ date });
     this.downloadReport(listID, listView);
     this.setState({ isAlertsDateSelectorOpen: false });
   };

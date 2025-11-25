@@ -13,7 +13,13 @@ import { PillButton } from '../../../../../../components';
 import { useState } from 'react';
 import { Close } from '@mui/icons-material';
 
-export const AlertsDateSelector = ({ isOpen, onClose, onDownload }) => {
+interface AlertsDateSelectorProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onDownload: (date: { startDate: string; endDate: string }) => void;
+}
+
+export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSelectorProps) => {
   const [startDateInput, setStartDateInput] = useState('');
   const [endDateInput, setEndDateInput] = useState('');
 
@@ -31,7 +37,7 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }) => {
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2">
-          Select a data range to generate your report. Your choice will only apply to this download.
+          Select a date range to generate your report. Your choice will only apply to this download.
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 2 }}>
           <Typography variant="body2">Select start date:</Typography>

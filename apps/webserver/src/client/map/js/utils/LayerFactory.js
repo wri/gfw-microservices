@@ -26,7 +26,10 @@ import { proLayers } from '../../../common/js/proLayers.config';
 const {
   viirsActiveFiresID,
   granChacoDeforestationID,
+  disturbanceAlertsDriversId,
   disturbanceAlertsDriversGeographicCoverageId,
+  globalVegetationDisturbanceAlertsId,
+  globalIntegratedDisturbanceAlertsId,
 } = proLayers;
 
 /**
@@ -111,9 +114,15 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         {
           let urlTemplate = layer.layerConfig.body.url;
 
-          urlTemplate = layer.layerConfig.body.url.concat(
-            `&start_date=${dcfAlertsDateRange[0]}&end_date=${dcfAlertsDateRange[1]}`
-          );
+          if (
+            layer.id === disturbanceAlertsDriversId ||
+            layer.id === globalVegetationDisturbanceAlertsId ||
+            layer.id === globalIntegratedDisturbanceAlertsId
+          ) {
+            urlTemplate = urlTemplate.concat(
+              `&start_date=${dcfAlertsDateRange[0]}&end_date=${dcfAlertsDateRange[1]}`
+            );
+          }
 
           layers.push(
             new WebTileLayer({

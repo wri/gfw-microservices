@@ -26,10 +26,7 @@ import { proLayers } from '../../../common/js/proLayers.config';
 const {
   viirsActiveFiresID,
   granChacoDeforestationID,
-  disturbanceAlertsDriversId,
   disturbanceAlertsDriversGeographicCoverageId,
-  globalVegetationDisturbanceAlertsId,
-  globalIntegratedDisturbanceAlertsId,
 } = proLayers;
 
 /**

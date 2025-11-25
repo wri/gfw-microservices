@@ -248,8 +248,8 @@ describe('Verifiable Credential Verification', () => {
         const { verifyCredential } = await import('@digitalbazaar/vc');
         // @ts-expect-error - ESM module without TypeScript declarations
         const { Ed25519Signature2018 } = await import('@digitalbazaar/ed25519-signature-2018');
-        // @ts-expect-error - ESM module without TypeScript declarations
         const { Ed25519VerificationKey2018 } = await import(
+          // @ts-expect-error - ESM module without TypeScript declarations
           '@digitalbazaar/ed25519-verification-key-2018'
         );
 

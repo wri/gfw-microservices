@@ -120,7 +120,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             layer.id === globalIntegratedDisturbanceAlertsId
           ) {
             urlTemplate = urlTemplate.concat(
-              `&start_date=${dcfAlertsDateRange.min}&end_date=${dcfAlertsDateRange.max}`
+              `&start_date=${dcfAlertsDateRange.initialStart}&end_date=${dcfAlertsDateRange.max}`
             );
           }
 

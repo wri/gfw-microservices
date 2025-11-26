@@ -217,7 +217,7 @@ describe('Verifiable Credential Verification', () => {
         expect(apiResponse.listId).toBe(list);
 
         // Store the VC for the verification test
-        verifiableCredential = vc;
+        verifiableCredential = vc[0];
 
         // Validate VC structure
         expect(verifiableCredential).toBeDefined();

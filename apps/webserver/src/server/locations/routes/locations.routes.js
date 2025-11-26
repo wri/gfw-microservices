@@ -112,7 +112,9 @@ module.exports = (app, limiter) => {
       .then(() => {
         return ListManager.deleteListIfEmpty(req, list_id);
       })
-      .then((isListEmpty) => {
+      .then(async (isListEmpty) => {
+        // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
+        await removeExistingVectorTileFromS3(req, list_id);
         const result = isListEmpty ? 'AllLocationsDeleted' : 'LocationDeleted';
         res.send(result);
       })
@@ -152,6 +154,8 @@ module.exports = (app, limiter) => {
       gfw_list_id
     )
       .then(async () => {
+        // Remove the existing vector tile from S3 for the destination list so it will be regenerated with the new locations
+        await removeExistingVectorTileFromS3(req, dest_list_id);
         res.send('LocationsCopied');
       })
       .catch((err) => {
@@ -174,7 +178,9 @@ module.exports = (app, limiter) => {
       geojson,
       gfw_list_id
     )
-      .then(() => {
+      .then(async () => {
+        // Remove the existing vector tile from S3 for the destination list so it will be regenerated with the new locations
+        await removeExistingVectorTileFromS3(req, dest_list_id);
         res.send('LocationsCopied');
       })
       .catch((err) => {

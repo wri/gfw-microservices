@@ -43,7 +43,12 @@ import {
   globalVegetationDisturbanceAlertsDateRange,
   globalIntegratedDisturbanceAlertsDateRange,
 } from '../../../common/js/config';
-import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
+import {
+  proLayers,
+  exclusiveLayers,
+  visibleLayers,
+  DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY,
+} from '../../../common/js/proLayers.config';
 
 const initialLocationState = {
   mapLayers: [],
@@ -65,7 +70,7 @@ const initialLocationState = {
   canopyModalVisible: false,
   treeCoverLossCanopyModalVisible: false,
   drawShapeNoteDetailsModalVisible: false,
-  canopyDensity: 10,
+  canopyDensity: DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY,
   treeCoverLossCanopyDensity: 0,
   analysisResults: {},
   selectedLists: [],

@@ -30,7 +30,7 @@ const NORMALIZING_ANALYSIS_NAMES = {
   ALERTS: 'Recent Deforestation Alerts',
   FCD: 'Post-2000 Forest Change',
   'ALERTS-BATCH': 'Alerts - BATCH',
-  GHG: 'GHG',
+  GHG: 'GHG Emissions',
 };
 
 function AccountDetailUsageByAnalysisType({

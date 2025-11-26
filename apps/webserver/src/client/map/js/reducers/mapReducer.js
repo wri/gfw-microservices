@@ -39,9 +39,7 @@ import {
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
-  driverOfDisturbanceAlertsDateRange,
-  globalVegetationDisturbanceAlertsDateRange,
-  globalIntegratedDisturbanceAlertsDateRange,
+  dcfAlertsDateRange,
 } from '../../../common/js/config';
 import {
   proLayers,
@@ -84,17 +82,17 @@ const initialLocationState = {
   showHighConfidenceAlertsOnDeforestationAlertsLayer: false,
   layerOpacity: {}, // stores layers opacity { layerId1: 0.5, layerId2: 0.8 }
   driverOfDisturbanceAlertsFilter: {
-    startDate: driverOfDisturbanceAlertsDateRange[0],
-    endDate: driverOfDisturbanceAlertsDateRange[1],
+    startDate: dcfAlertsDateRange.initialStart,
+    endDate: dcfAlertsDateRange.max,
   },
   globalVegetationDisturbanceAlertsFilter: {
-    startDate: globalVegetationDisturbanceAlertsDateRange[0],
-    endDate: globalVegetationDisturbanceAlertsDateRange[1],
+    startDate: dcfAlertsDateRange.initialStart,
+    endDate: dcfAlertsDateRange.max,
     vegetationType: 'all-vegetation',
   },
   globalIntegratedDisturbanceAlertsFilter: {
-    startDate: globalIntegratedDisturbanceAlertsDateRange[0],
-    endDate: globalIntegratedDisturbanceAlertsDateRange[1],
+    startDate: dcfAlertsDateRange.initialStart,
+    endDate: dcfAlertsDateRange.max,
     vegetationType: 'all-vegetation',
     onlyHighConfidenceAlerts: false,
   },

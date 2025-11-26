@@ -5,7 +5,7 @@ import { UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER } from '../../../con
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { toggleLayer } from '../../../actions/mapActions';
 import {
-  globalIntegratedDisturbanceAlertsDateRange,
+  dcfAlertsDateRange,
   disturbanceAlertsVegetationTypes,
 } from '../../../../../common/js/config';
 import { type MapReducerRootState } from '../../../reducers/mapReducerTypes';
@@ -193,8 +193,8 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
       <DateRangeSlider
         startDate={globalIntegratedDisturbanceAlertsFilter.startDate}
         endDate={globalIntegratedDisturbanceAlertsFilter.endDate}
-        minDate={globalIntegratedDisturbanceAlertsDateRange[0]}
-        maxDate={globalIntegratedDisturbanceAlertsDateRange[1]}
+        minDate={dcfAlertsDateRange.min}
+        maxDate={dcfAlertsDateRange.max}
         disabled={disabled}
         onDateChange={handleDateChange}
       />

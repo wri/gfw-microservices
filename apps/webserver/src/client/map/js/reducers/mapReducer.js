@@ -77,17 +77,17 @@ const initialLocationState = {
   showHighConfidenceAlertsOnDeforestationAlertsLayer: false,
   layerOpacity: {}, // stores layers opacity { layerId1: 0.5, layerId2: 0.8 }
   driverOfDisturbanceAlertsFilter: {
-    startDate: dcfAlertsDateRange[0],
-    endDate: dcfAlertsDateRange[1],
+    startDate: dcfAlertsDateRange.initialStart,
+    endDate: dcfAlertsDateRange.max,
   },
   globalVegetationDisturbanceAlertsFilter: {
-    startDate: dcfAlertsDateRange[0],
-    endDate: dcfAlertsDateRange[1],
+    startDate: dcfAlertsDateRange.initialStart,
+    endDate: dcfAlertsDateRange.max,
     vegetationType: 'all-vegetation',
   },
   globalIntegratedDisturbanceAlertsFilter: {
-    startDate: dcfAlertsDateRange[0],
-    endDate: dcfAlertsDateRange[1],
+    startDate: dcfAlertsDateRange.initialStart,
+    endDate: dcfAlertsDateRange.max,
     vegetationType: 'all-vegetation',
     onlyHighConfidenceAlerts: false,
   },

@@ -168,8 +168,8 @@ export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
       <DateRangeSlider
         startDate={startDate}
         endDate={endDate}
-        minDate={dcfAlertsDateRange[0]}
-        maxDate={dcfAlertsDateRange[1]}
+        minDate={dcfAlertsDateRange.min}
+        maxDate={dcfAlertsDateRange.max}
         disabled={disabled}
         onDateChange={handleDateChange}
       />

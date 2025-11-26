@@ -98,8 +98,8 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
       <DateRangeSlider
         startDate={globalVegetationDisturbanceAlertsFilter.startDate}
         endDate={globalVegetationDisturbanceAlertsFilter.endDate}
-        minDate={dcfAlertsDateRange[0]}
-        maxDate={dcfAlertsDateRange[1]}
+        minDate={dcfAlertsDateRange.min}
+        maxDate={dcfAlertsDateRange.max}
         disabled={disabled}
         onDateChange={handleDateChange}
       />

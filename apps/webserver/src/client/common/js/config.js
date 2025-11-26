@@ -25,10 +25,11 @@ export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
 
 export const soyPlantedYearsRange = [2001, 2024];
 
-export const dcfAlertsDateRange = [
-  `${latestTreeCoverLossYearForTclDataInMap + 1}-01-01`,
-  new Date().toISOString().split('T')[0],
-];
+export const dcfAlertsDateRange = {
+  min: '2020-01-01',
+  initialStart: `${latestTreeCoverLossYearForTclDataInMap + 1}-01-01`,
+  max: new Date().toISOString().split('T')[0],
+};
 export const disturbanceAlertsVegetationTypes = {
   AllVegetation: 'all-vegetation',
   TreeCover: 'tree-cover',

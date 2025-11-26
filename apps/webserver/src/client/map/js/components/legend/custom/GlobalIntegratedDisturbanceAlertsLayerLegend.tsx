@@ -193,8 +193,8 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
       <DateRangeSlider
         startDate={globalIntegratedDisturbanceAlertsFilter.startDate}
         endDate={globalIntegratedDisturbanceAlertsFilter.endDate}
-        minDate={dcfAlertsDateRange[0]}
-        maxDate={dcfAlertsDateRange[1]}
+        minDate={dcfAlertsDateRange.min}
+        maxDate={dcfAlertsDateRange.max}
         disabled={disabled}
         onDateChange={handleDateChange}
       />

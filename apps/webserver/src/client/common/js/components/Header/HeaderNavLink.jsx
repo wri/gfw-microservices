@@ -31,9 +31,9 @@ function HeaderNavLink({ active, link, label, className = '' }) {
       >
         <Box className={'header__nav-link header__nav-link--inactive'}>
           <Warning fontSize="small" />
-          <a className={className} aria-label={label}>
+          <span className={className} aria-label={label}>
             {label}
-          </a>
+          </span>
         </Box>
       </CustomTooltip>
     );

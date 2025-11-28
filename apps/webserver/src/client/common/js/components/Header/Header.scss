@@ -20,6 +20,17 @@
     line-height: 60px;
     border-bottom: 4px solid transparent;
 
+    &--inactive {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding-top: 0.25rem;
+      a,
+      svg {
+        color: #999;
+      }
+    }
+
     &:hover {
       text-decoration: none;
       background-color: rgba(255, 255, 255, 0.15);

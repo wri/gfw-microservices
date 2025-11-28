@@ -87,8 +87,8 @@ export class AlertsGlobalIntegratedDisturbanceDailyService extends IPipeService 
     analysisData?.forEach((data) => {
       if (data?.location_id && data.location_id !== -1) {
         this.uniqueLocationIds.add(data.location_id);
+        this.inputStream.write(data);
       }
-      this.inputStream.write(data);
     });
   }
 

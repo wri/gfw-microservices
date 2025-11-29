@@ -821,7 +821,12 @@ export const getOrganizationStatus = async (req) => {
     const [record] = recordSets;
     return record.organization_status_id;
   } catch (errorMsg) {
-    throw errorUtils.createErrorMessage(req, 'Failed to get organization status:', errorMsg);
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToCheckOrganizationName,
+      'Failed to get organization status:',
+      errorMsg
+    );
   }
 };
 

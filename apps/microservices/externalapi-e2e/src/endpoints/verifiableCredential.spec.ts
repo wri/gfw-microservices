@@ -54,6 +54,16 @@ async function pollApiUntilComplete(
           throw new Error(`Invalid or missing resultUrl: ${result.resultUrl}`);
         }
 
+        // Check if presigned URL is expired
+        const urlExpired = isPresignedUrlExpired(result.resultUrl);
+        if (urlExpired) {
+          console.error('Presigned URL has expired:', {
+            url: result.resultUrl,
+            expirationCheck: urlExpired,
+          });
+          throw new Error('Analysis result URL has expired.');
+        }
+
         const zipResponse = await fetch(result.resultUrl, {
           headers: {
             'x-api-key': process.env.API_TOKEN,
@@ -133,6 +143,49 @@ async function pollApiUntilComplete(
       });
       throw error;
     }
+  }
+}
+
+// Helper function to check URL expiration
+function isPresignedUrlExpired(presignedUrl: string): boolean {
+  try {
+    // eslint-disable-next-line no-undef
+    const url = new URL(presignedUrl);
+    const expiresParam = url.searchParams.get('X-Amz-Expires');
+    const dateParam = url.searchParams.get('X-Amz-Date');
+
+    if (!expiresParam || !dateParam) {
+      return false; // Can't determine, let the request fail naturally
+    }
+
+    // Parse the date: X-Amz-Date format is "20251128T060650Z"
+    const year = parseInt(dateParam.substring(0, 4));
+    const month = parseInt(dateParam.substring(4, 6)) - 1; // 0-indexed
+    const day = parseInt(dateParam.substring(6, 8));
+    const hour = parseInt(dateParam.substring(9, 11));
+    const minute = parseInt(dateParam.substring(11, 13));
+    const second = parseInt(dateParam.substring(13, 15));
+
+    const createdAt = new Date(Date.UTC(year, month, day, hour, minute, second));
+    const expiresInSeconds = parseInt(expiresParam);
+    const expiresAt = new Date(createdAt.getTime() + expiresInSeconds * 1000);
+
+    const now = new Date();
+    const isExpired = now > expiresAt;
+
+    if (isExpired) {
+      console.warn('URL expired:', {
+        createdAt: createdAt.toISOString(),
+        expiresAt: expiresAt.toISOString(),
+        now: now.toISOString(),
+        expiredBy: `${Math.floor((now.getTime() - expiresAt.getTime()) / 1000)} seconds`,
+      });
+    }
+
+    return isExpired;
+  } catch (error) {
+    console.error('Error parsing presigned URL expiration:', error);
+    return false; // Can't parse, let it fail naturally
   }
 }
 

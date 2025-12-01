@@ -9,6 +9,7 @@ import {
   Alert,
   IconButton,
 } from '@mui/material';
+import axios from 'axios';
 import Button from 'common/js/components/Button';
 import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -61,6 +62,7 @@ import {
   getDialogContent,
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
+import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
 
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
@@ -98,6 +100,7 @@ import {
   POST_2020_RISK_ASSESSMENT_VIEW,
   ALERTS,
 } from './listViews.constants';
+import { AlertsDateSelector } from './components/AlertsDateSelector';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
 
@@ -119,6 +122,13 @@ const getButtonLabel = (selectedMoveOrCopy) => {
 const MODES = {
   DRAFT: 'draft',
   SUBMIT: 'submit',
+};
+
+const DIAGNOSTICS_URLS = {
+  [POST_2020_RISK_ASSESSMENT_VIEW]: '/api/afi/download?listId=[list-id]',
+  [FOREST_CHANGE_VIEW]:
+    '/locations/csv/[list-id]?type=everything&order=asc&aggregate=true&listView=forest_change&isGFWList=false&analysisAreaMin=0&source=diagnostics',
+  [ALERTS]: '/api/afi/download?listId=[list-id]', // change to Alerts diagnostics request url when available
 };
 
 export default class ListDetails extends Component {
@@ -197,6 +207,8 @@ export default class ListDetails extends Component {
       isGHGActive,
       isOnlyGHGActive,
       isEudrBannerDismissed,
+      isDownloadDialogOpen: false,
+      isAlertsDateSelectorOpen: false,
     };
   }
 
@@ -1620,6 +1632,46 @@ export default class ListDetails extends Component {
     );
   }
 
+  setIsDownloadDialogOpen = (value) => {
+    this.setState({ isDownloadDialogOpen: value });
+  };
+
+  handleDownloadReport = (listID, listView) => {
+    if (!DIAGNOSTICS_URLS[listView]) {
+      return;
+    }
+
+    if (listView === ALERTS) {
+      this.setState({ isAlertsDateSelectorOpen: true });
+      return;
+    }
+
+    this.downloadReport(listID, listView);
+  };
+
+  handleAlertsDownloadReport = (listID, listView) => {
+    this.downloadReport(listID, listView);
+    this.setState({ isAlertsDateSelectorOpen: false });
+  };
+
+  downloadReport = async (listID, listView) => {
+    if (!DIAGNOSTICS_URLS[listView]) {
+      return;
+    }
+
+    try {
+      this.setIsDownloadDialogOpen(true);
+      const url = DIAGNOSTICS_URLS[listView].replace('[list-id]', listID);
+
+      await axios.get(url, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      this.setIsDownloadDialogOpen(false);
+      console.warn('Error downloading diagnostics', error);
+    }
+  };
+
   render() {
     const {
       canopyModalVisible: isFilterModalVisible,
@@ -2115,13 +2167,14 @@ export default class ListDetails extends Component {
                               </MaterialButton>
                             )}
                             <div>
-                              {listView === ALERTS && (
+                              {listView !== COMMODITY_RISK_VIEW && (
                                 <MaterialButton
                                   className="list-analysis-actions__download-reports-button"
                                   data-cy="download-reports-button"
                                   startIcon={<Download />}
+                                  onClick={() => this.handleDownloadReport(listID, listView)}
                                 >
-                                  {Transifex.live.translateText('Download Reports')}
+                                  {Transifex.live.translateText('Download Report')}
                                 </MaterialButton>
                               )}
                               <span className="list-analysis-actions__analysis-date">
@@ -2240,6 +2293,15 @@ export default class ListDetails extends Component {
             </div>
           </section>
         </div>
+        <ConfirmDialog
+          open={this.state.isDownloadDialogOpen}
+          setDialogOpen={this.setIsDownloadDialogOpen}
+        />
+        <AlertsDateSelector
+          isOpen={this.state.isAlertsDateSelectorOpen}
+          onClose={() => this.setState({ isAlertsDateSelectorOpen: false })}
+          onDownload={(date) => this.handleAlertsDownloadReport(listID, listView, date)}
+        />
       </ThemeProvider>
     );
   }

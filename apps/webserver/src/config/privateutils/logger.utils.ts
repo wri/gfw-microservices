@@ -124,7 +124,8 @@ class SqlServerTransport extends Transport {
       await sqlUtils.appendLog(config.SQLConnection.logDatabase, 'insertLog', parameters);
       callback();
     } catch (err) {
-      callback(err);
+      // if logging to database fails, we silently ignore the error
+      callback();
     }
   }
 }
@@ -213,7 +214,8 @@ export const logActivity = (req: Request, activityTypeId: Number, activityDescri
       })
       .catch((err: Error) => {
         logger.error('Activity log error', activityTypeId, err);
-        reject(err);
+        // even if logging activity fails, we don't want to block the main operation
+        resolve(true);
       });
   });
 };

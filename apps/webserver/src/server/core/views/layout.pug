@@ -3,6 +3,11 @@ html
 	head
 		//- Osano Cookie Consent Script (must be first in head to discover/block all subsequent scripts)
 		script(src='https://cmp.osano.com/AzyfddTRtqi1560Dk/9ed60354-c199-4e89-92c8-047b83aa65a3/osano.js')
+		//- Custom CSS to position Osano widget to avoid overlapping with Zendesk chat
+		style.
+			.osano-cm-widget {
+				bottom: 90px !important; /* Move up to avoid Zendesk chat bubble */
+			}
 		//- Basic Meta Tags
 		meta(charset='utf-8')
 		meta(name='viewport', content='width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1')

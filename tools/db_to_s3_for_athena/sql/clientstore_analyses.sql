@@ -17,7 +17,7 @@ CREATE TABLE #AllAnalyses
   organization_name NVARCHAR(255),
   list_id INT,
   analysis_label NVARCHAR(50),
-  analysis_datetime DATETIME,
+  analysis_datetime NVARCHAR(50),
   is_api_list BIT -- API flag (list-level)
 );
 
@@ -53,7 +53,7 @@ BEGIN
         WHEN ''GHG'' THEN ''GHG''
         ELSE ''Unknown''
       END AS analysis_label,
-      COALESCE(LP.analysis_end_time, LP.analysis_start_time) AS analysis_datetime,
+      CONVERT(VARCHAR, COALESCE(LP.analysis_end_time, LP.analysis_start_time), 126) AS analysis_datetime
       CASE WHEN EU.id IS NOT NULL THEN 1 ELSE 0 END AS is_api_list
     FROM ' + QUOTENAME(@orgDbName) + '.dbo.ListsProcessing AS LP
     LEFT JOIN ' + QUOTENAME(@orgDbName) + '.dbo.LargeLists AS LL

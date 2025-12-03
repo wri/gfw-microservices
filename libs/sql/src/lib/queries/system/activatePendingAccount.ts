@@ -250,9 +250,9 @@ SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
         [intdist_alerts_area_jrc_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
         [intdist_alerts_area_jrc_high] NVARCHAR(MAX) DEFAULT ''{}'',
         [intdist_alerts_area_jrc_highest] NVARCHAR(MAX) DEFAULT ''{}'',
-        [intdist_alerts_area_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
-        [intdist_alerts_area_high] NVARCHAR(MAX) DEFAULT ''{}'',
-        [intdist_alerts_area_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+        [intdist_alerts_area_all_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+        [intdist_alerts_area_all_high] NVARCHAR(MAX) DEFAULT ''{}'',
+        [intdist_alerts_area_all_highest] NVARCHAR(MAX) DEFAULT ''{}'',
         [status_code] INT NULL,
 
         INDEX [IX_AnalysesDashboard_1] NONCLUSTERED(list_id),

@@ -10,7 +10,7 @@ CREATE TABLE #activity_data (
   user_id INT NOT NULL,
   user_email NVARCHAR(MAX) NOT NULL,
   activity_description VARCHAR(MAX) NOT NULL,
-  activity_time DATETIME NOT NULL,
+  activity_time NVARCHAR(50) NOT NULL,
   activity_type_id INT NOT NULL,
   activity_type VARCHAR(MAX) NOT NULL,
   activity_type_category VARCHAR(MAX) NOT NULL
@@ -66,7 +66,8 @@ BEGIN
           ),
           CHAR(160), '' ''
         ) AS activity_description,
-        CONVERT(varchar(19), AL.activity_time, 120) AS activity_time,
+        -- ISO 8601 format with milliseconds (YYYY-MM-DDTHH:MM:SS.mmm)
+        CONVERT(VARCHAR, AL.activity_time, 126) AS analysis_datetime,
         AL.activity_type_id,
         ISNULL(AT.activity_type_name, ''Unknown'') AS activity_type,
         ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category

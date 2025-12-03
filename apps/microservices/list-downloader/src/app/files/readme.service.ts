@@ -59,11 +59,14 @@ export class ReadmeService {
     }
   }
 
-  alertsReadmeData(filters: AlertFieldsFileRequest) {
+  alertsReadmeData(filters: AlertFieldsFileRequest): string | string[] {
     const { selectedTimeframe } = filters;
 
+    if (selectedTimeframe === AlertsTimeframes.DAY) {
+      return ['daily_alerts_readme.csv', 'global_integrated_disturbance_alerts_daily_readme.csv'];
+    }
+
     const alertsFilesByTimeFrame = {
-      [AlertsTimeframes.DAY]: 'daily_alerts_readme.csv',
       [AlertsTimeframes.WEEK]: 'alerts_readme.csv',
       [AlertsTimeframes.MONTH]: 'alerts_readme.csv',
       [AlertsTimeframes.QUARTER]: 'alerts_readme.csv',
@@ -130,29 +133,55 @@ export class ReadmeService {
       return;
     }
 
-    const fileToCopy =
-      type === 'everything' && listView === 'forest_change'
-        ? await this.readmeMergeServices.processFiles(
-            [
-              this.getSourceDir(returnFileToCopy[type](filters)),
-              this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
-              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'argentina')),
-              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'colombia')),
-              this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'south_america')),
-            ],
-            'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
-            this.getPathDir(key),
-            listName
-          )
-        : // Format GHG readme file
-        type === 'ghg'
-        ? await this.readmeMergeServices.processFiles(
-            [this.getSourceDir(returnFileToCopy[type]())],
-            null,
-            this.getPathDir(key),
-            listName
-          )
-        : returnFileToCopy[type](filters);
+    // Handle special cases that merge multiple README files
+    if (type === 'everything' && listView === 'forest_change') {
+      await this.readmeMergeServices.processFiles(
+        [
+          this.getSourceDir(returnFileToCopy[type](filters)),
+          this.getSourceDir(returnFileToCopy['southEastAsiaTCL'](filters)),
+          this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'argentina')),
+          this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'colombia')),
+          this.getSourceDir(returnFileToCopy['genericCountryReadme'](filters, 'south_america')),
+        ],
+        'PLEASE NOTE: The contents of your zip files will vary based on the locations and commodities within your data, and the types of analysis you requested. Not all CSVs listed here may apply.',
+        this.getPathDir(key),
+        listName
+      );
+      return;
+    }
+
+    if (type === 'ghg') {
+      await this.readmeMergeServices.processFiles(
+        [this.getSourceDir(returnFileToCopy[type]())],
+        null,
+        this.getPathDir(key),
+        listName
+      );
+      return;
+    }
+
+    // Get the file(s) to copy
+    let fileToCopyResult: string | string[] | null;
+    if (type === 'alerts') {
+      const alertFilters = filters as AlertFieldsFileRequest;
+      fileToCopyResult = returnFileToCopy[type](alertFilters);
+
+      // Handle alerts with DAY timeframe - merge multiple README files
+      if (Array.isArray(fileToCopyResult)) {
+        await this.readmeMergeServices.processFiles(
+          fileToCopyResult.map((file) => this.getSourceDir(file)),
+          null,
+          this.getPathDir(key),
+          listName || ''
+        );
+        return;
+      }
+    } else {
+      fileToCopyResult = returnFileToCopy[type](filters);
+    }
+
+    // Handle single README file copy
+    const fileToCopy = fileToCopyResult as string;
 
     if (!fileToCopy) {
       return;

@@ -5,6 +5,7 @@ import isEmpty from 'lodash/isEmpty';
 import { Description, FileDownload } from '@mui/icons-material';
 
 import Page from '../../../common/js/components/Page';
+import GPDRFooter from '../../../common/js/components/GPDRFooter';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import store from '../store';
@@ -419,6 +420,7 @@ export default class Dashboard extends Component {
         <ConfirmDialog open={isOpenDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
 
         <LoadingModal isLoading={isLoading} />
+        <GPDRFooter variant="app" />
       </Page>
     );
   }

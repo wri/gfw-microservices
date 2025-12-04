@@ -7,18 +7,18 @@
   align-items: center;
   flex-shrink: 0;
   text-align: center;
-  
+
   p {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
   }
-  
+
   a {
     color: inherit;
     text-decoration: none;
     margin: 0 10px;
-    
+
     &:hover {
       text-decoration: underline;
     }
@@ -27,15 +27,15 @@
 
 // Login page variant
 .gpdr-footer--login {
-  background: var(--Neutrals-800, #3D3B3B);
+  background: var(--Neutrals-800, #3d3b3b);
   padding: var(--Spacing-300, 12px) 140px;
-  color: #FFFFFF;
+  color: #ffffff;
 
   a {
-    color: #FFFFFF;
-    
+    color: #ffffff;
+
     &:hover {
-      color: #E0E0E0;
+      color: #e0e0e0;
     }
   }
 }
@@ -44,14 +44,13 @@
 .gpdr-footer--app {
   background: transparent;
   padding: var(--Spacing-300, 12px) 140px;
-  color: #5C5959;
+  color: #5c5959;
 
   a {
-    color: #5C5959;
-    
+    color: #5c5959;
+
     &:hover {
-      color: #3D3B3B;
+      color: #3d3b3b;
     }
   }
 }
-

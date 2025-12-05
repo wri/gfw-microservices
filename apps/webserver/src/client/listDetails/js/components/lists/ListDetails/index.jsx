@@ -99,6 +99,7 @@ import {
   COMMODITY_RISK_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
   ALERTS,
+  forestDataSet,
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 
@@ -209,8 +210,29 @@ export default class ListDetails extends Component {
       isEudrBannerDismissed,
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
+      forestDataset: forestDataSet.NaturalForestMap,
     };
   }
+
+  changeDataSource = (event) => {
+    const { listView, listData, selectedLists } = this.props;
+    const newForestDataset = event.target.value;
+
+    this.setState({ forestDataset: newForestDataset }, () => {
+      // Refresh columns when forest dataset changes
+      const columnNames = getAllColumnNames(
+        listView,
+        listData[0],
+        selectedLists,
+        this.getCheckboxColumn,
+        this.areAllAnalysesDraft(),
+        newForestDataset
+      );
+      this.setState({
+        combinedColumns: columnNames.combinedColumns,
+      });
+    });
+  };
 
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
@@ -262,7 +284,8 @@ export default class ListDetails extends Component {
         listData[0],
         selectedLists,
         this.getCheckboxColumn,
-        this.areAllAnalysesDraft()
+        this.areAllAnalysesDraft(),
+        this.state.forestDataset
       );
       this.setState({
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
@@ -1103,7 +1126,8 @@ export default class ListDetails extends Component {
           locationData[0],
           selectedLists,
           this.getCheckboxColumn,
-          this.areAllAnalysesDraft()
+          this.areAllAnalysesDraft(),
+          this.state.forestDataset
         );
         const filteredIds = data.map((d) => d.location_id);
         store.dispatch(updateListData(data));
@@ -1583,7 +1607,8 @@ export default class ListDetails extends Component {
         listData[0],
         selectedLists,
         this.getCheckboxColumn,
-        this.areAllAnalysesDraft()
+        this.areAllAnalysesDraft(),
+        this.state.forestDataset
       );
       store.dispatch(changeListView(listView));
       this.clearFilters();
@@ -2215,6 +2240,8 @@ export default class ListDetails extends Component {
                             isGfwList={selectedList.isGlobalForestWatchList}
                             areAllAnalysesDraft={this.areAllAnalysesDraft()}
                             isListWithErrors={isListWithErrors}
+                            forestDataset={this.state.forestDataset}
+                            onForestDatasetChange={this.changeDataSource}
                           />
 
                           <section>

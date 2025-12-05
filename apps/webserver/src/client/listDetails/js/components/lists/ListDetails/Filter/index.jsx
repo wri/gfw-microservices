@@ -50,8 +50,7 @@ import {
 export default class Filter extends Component {
   constructor(props) {
     super(props);
-    // NOTE: forestDataset is initialized here for future use in filtering logic, but is not currently used to filter or modify data.
-    this.state = { ...defaultFilterValues, forestDataset: forestDataSet.NaturalForestMap };
+    this.state = { ...defaultFilterValues };
     this.initialState = this.state;
   }
 
@@ -75,10 +74,6 @@ export default class Filter extends Component {
     this.setState({ hasError: evt.target.checked }, () =>
       store.dispatch(updateFilters(this.state))
     );
-  };
-
-  changeDataSource = (event) => {
-    this.setState({ forestDataset: event.target.value });
   };
 
   updateValues = (state) => {
@@ -125,6 +120,8 @@ export default class Filter extends Component {
       isGfwList,
       areAllAnalysesDraft,
       isListWithErrors,
+      forestDataset,
+      onForestDatasetChange,
     } = this.props;
     const { selectedCountry, selectedState, selectedSubState } = this.state;
 
@@ -277,8 +274,8 @@ export default class Filter extends Component {
                       >
                         <InputLabel>Forest Dataset</InputLabel>
                         <Select
-                          value={this.state.forestDataset}
-                          onChange={this.changeDataSource}
+                          value={forestDataset}
+                          onChange={onForestDatasetChange}
                           label="Forest Dataset"
                         >
                           <MenuItem value={forestDataSet.NaturalForestMap}>

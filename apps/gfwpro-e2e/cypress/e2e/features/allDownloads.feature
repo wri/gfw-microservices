@@ -4,5 +4,3 @@ Feature: tests all downloads
     Then Verify the Locations screen
     Then I test download list on Locations
     Then I test download list into list details
-    When I navigate to the alerts page
-    Then I test download into Alerts

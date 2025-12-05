@@ -18,7 +18,7 @@ export default function GPDRFooter({ variant = 'default' }) {
 
   const handleCookiePreferenceClick = (e) => {
     e.preventDefault();
-    
+
     // Check if Osano is available and show the cookie consent drawer
     if (window.Osano && window.Osano.cm && typeof window.Osano.cm.showDrawer === 'function') {
       window.Osano.cm.showDrawer('purposes');

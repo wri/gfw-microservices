@@ -16,6 +16,18 @@ export default function GPDRFooter({ variant = 'default' }) {
     app: 'gpdr-footer gpdr-footer--app',
   };
 
+  const handleCookiePreferenceClick = (e) => {
+    e.preventDefault();
+    
+    // Check if Osano is available and show the cookie consent drawer
+    if (window.Osano && window.Osano.cm && typeof window.Osano.cm.showDrawer === 'function') {
+      window.Osano.cm.showDrawer('purposes');
+    } else {
+      // Fallback if Osano is not loaded - redirect to privacy policy
+      window.open('https://www.globalforestwatch.org/privacy-policy/', '_blank', 'noreferrer');
+    }
+  };
+
   return (
     <div className={variantClasses[variant] || variantClasses.default}>
       <p>
@@ -28,8 +40,8 @@ export default function GPDRFooter({ variant = 'default' }) {
         </a>{' '}
         <a
           href="https://www.globalforestwatch.org/privacy-policy/"
-          target="_blank"
-          rel="noreferrer"
+          onClick={handleCookiePreferenceClick}
+          style={{ cursor: 'pointer' }}
         >
           Cookies Preference
         </a>

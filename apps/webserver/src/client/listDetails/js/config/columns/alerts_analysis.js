@@ -3,11 +3,13 @@ import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   sortByStatus,
   normalizeColumnData,
+  calculateAndFormatTotalDeforestation,
 } from '../../../../locations/js/utils/locationsTableUtils';
 
 const transifex = Transifex.live.translateText;
 
 export const alerts_analysis = {
+  id: 'totalHa',
   Header: () => (
     <div className="react-table-tree-cover-loss">
       <span className="title-text" title={transifex(columnHeaders.treeCoverLossInHa)}>
@@ -43,6 +45,7 @@ export const alerts_analysis = {
           intdistAlertsAreaSbtnNaturalForestsNominal,
           intdistAlertsAreaSbtnNaturalForestsHigh,
           intdistAlertsAreaSbtnNaturalForestsHighest,
+          totalHa,
         } = row.value;
         const intdistAlertsAreaSbtnNaturalForestsNominalValue =
           typeof intdistAlertsAreaSbtnNaturalForestsNominal === 'number'
@@ -57,12 +60,17 @@ export const alerts_analysis = {
             ? intdistAlertsAreaSbtnNaturalForestsHighest
             : 0;
 
-        const totalHa =
+        const sumOfAllNaturalForestsValues =
           intdistAlertsAreaSbtnNaturalForestsNominalValue +
           intdistAlertsAreaSbtnNaturalForestsHighValue +
           intdistAlertsAreaSbtnNaturalForestsHighestValue;
-        const value = roundToTwoDecimals(totalHa);
-        return <span title={value}>{value}</span>;
+
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({ sumOfAllNaturalForestsValues })
+        );
+
+        return <span title={sumOfAllNaturalForestsValues}>{formattedValue}</span>;
       },
     },
     {
@@ -78,6 +86,7 @@ export const alerts_analysis = {
           intdistAlertsAreaSbtnNaturalEcosystemNominal,
           intdistAlertsAreaSbtnNaturalEcosystemHigh,
           intdistAlertsAreaSbtnNaturalEcosystemHighest,
+          totalHa,
         } = row.value;
         const intdistAlertsAreaSbtnNaturalEcosystemNominalValue =
           typeof intdistAlertsAreaSbtnNaturalEcosystemNominal === 'number'
@@ -92,12 +101,15 @@ export const alerts_analysis = {
             ? intdistAlertsAreaSbtnNaturalEcosystemHighest
             : 0;
 
-        const totalHa =
+        const sumOfAllNaturalEcosystemValues =
           intdistAlertsAreaSbtnNaturalEcosystemNominalValue +
           intdistAlertsAreaSbtnNaturalEcosystemHighValue +
           intdistAlertsAreaSbtnNaturalEcosystemHighestValue;
-        const value = roundToTwoDecimals(totalHa);
-        return <span title={value}>{value}</span>;
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({ sumOfAllNaturalEcosystemValues })
+        );
+        return <span title={sumOfAllNaturalEcosystemValues}>{formattedValue}</span>;
       },
     },
     {
@@ -113,6 +125,7 @@ export const alerts_analysis = {
           intdistAlertsAreaJrcNominal,
           intdistAlertsAreaJrcHigh,
           intdistAlertsAreaJrcHighest,
+          totalHa,
         } = row.value;
         const intdistAlertsAreaJrcNominalValue =
           typeof intdistAlertsAreaJrcNominal === 'number' ? intdistAlertsAreaJrcNominal : 0;
@@ -121,12 +134,17 @@ export const alerts_analysis = {
         const intdistAlertsAreaJrcHighestValue =
           typeof intdistAlertsAreaJrcHighest === 'number' ? intdistAlertsAreaJrcHighest : 0;
 
-        const totalHa =
+        const sumOfAllJrcValues =
           intdistAlertsAreaJrcNominalValue +
           intdistAlertsAreaJrcHighValue +
           intdistAlertsAreaJrcHighestValue;
-        const value = roundToTwoDecimals(totalHa);
-        return <span title={value}>{value}</span>;
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({
+            sumOfAllJrcValues,
+          })
+        );
+        return <span title={sumOfAllJrcValues}>{formattedValue}</span>;
       },
       sortMethod: (a, b) => {
         const sortStatus = sortByStatus(a, b);
@@ -153,6 +171,7 @@ export const alerts_analysis = {
           intdistAlertsAreaAllNominal,
           intdistAlertsAreaAllHigh,
           intdistAlertsAreaAllHighest,
+          totalHa,
         } = row.value;
         const intdistAlertsAreaAllNominalValue =
           typeof intdistAlertsAreaAllNominal === 'number' ? intdistAlertsAreaAllNominal : 0;
@@ -161,12 +180,15 @@ export const alerts_analysis = {
         const intdistAlertsAreaAllHighestValue =
           typeof intdistAlertsAreaAllHighest === 'number' ? intdistAlertsAreaAllHighest : 0;
 
-        const totalHa =
+        const sumOfAllValues =
           intdistAlertsAreaAllNominalValue +
           intdistAlertsAreaAllHighValue +
           intdistAlertsAreaAllHighestValue;
-        const value = roundToTwoDecimals(totalHa);
-        return <span title={value}>{value}</span>;
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({ sumOfAllValues })
+        );
+        return <span title={sumOfAllValues}>{formattedValue}</span>;
       },
     },
   ],

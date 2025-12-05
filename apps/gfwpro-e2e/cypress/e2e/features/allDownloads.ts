@@ -2,14 +2,9 @@ import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
-import AlertsPage from '../../pages/alertsPage';
-import BasePage from '../../pages/basePage';
-
 describe('Locations View', () => {
   const locationsPage = new LocationsPage();
   const listDetailPage = new ListDetailsPage();
-  const alertsPage = new AlertsPage();
-  const basePage = new BasePage();
 
   When('I login in the landing page', () => {
     cy.loginUI();

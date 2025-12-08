@@ -61,17 +61,6 @@ export const GlobalVegetationDisturbanceAlertsLayerLegend = ({
               <span
                 className="layer-legend-symbol"
                 style={{
-                  background: '#EEB1B1',
-                }}
-              />
-              <span className="layer-legend-label">Low confidence: detected 2-3 times</span>
-            </div>
-          </li>
-          <li>
-            <div>
-              <span
-                className="layer-legend-symbol"
-                style={{
                   background: '#895277',
                 }}
               />

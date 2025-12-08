@@ -1,138 +1,40 @@
-import InfoBubble from '../../../../common/js/components/InfoBubble';
 import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
-  checkValid,
-  formatDigit,
-  getValue,
-  getValidatedValue,
   sortByStatus,
   normalizeColumnData,
-  locationIsActive,
   calculateAndFormatTotalDeforestation,
 } from '../../../../locations/js/utils/locationsTableUtils';
-import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
 const transifex = Transifex.live.translateText;
 
 export const alerts_analysis = {
+  id: 'totalHa',
   Header: () => (
     <div className="react-table-tree-cover-loss">
       <span className="title-text" title={transifex(columnHeaders.treeCoverLossInHa)}>
         {transifex(columnHeaders.treeCoverLoss)} <span className="title-text__units">(ha)</span>
-        <InfoBubble infoBubbleId={infoBubbleConfig.lossAllYears} />
       </span>
     </div>
   ),
   columns: [
     {
-      id: 'tree_cover_loss_total_yearly',
-      Header: () => (
-        <ColumnsHeader
-          label={columnHeaders.sizeInHa}
-          infoBubbleId={infoBubbleConfig.post2000TreeCoverLoss}
-        />
-      ),
-      accessor: (d) => {
-        return d;
-      },
-      className: 'default-cell td-num',
-      show: true,
-      Cell: () => {
-        return <span>#</span>;
-      },
-      sortMethod: (a, b) => {
-        const sortStatus = sortByStatus(a, b);
-        if (sortStatus == 2) {
-          return (
-            normalizeColumnData(a.tree_cover_loss_total_yearly) -
-            normalizeColumnData(b.tree_cover_loss_total_yearly)
-          );
-        }
-
-        return sortStatus;
-      },
-      sortable: false,
-    },
-    {
-      id: 'tree_cover_extent_total',
-      Header: () => (
-        <ColumnsHeader
-          label={columnHeaders.alertsInNaturalForest}
-          infoBubbleId={infoBubbleConfig.post2000TreeCover}
-        />
-      ),
+      id: 'intdistAlertsAreaSbtnNaturalForests',
+      Header: () => <ColumnsHeader label={columnHeaders.sizeInHa} />,
       accessor: (d) => {
         return d;
       },
       className: 'default-cell td-num',
       show: true,
       Cell: (row) => {
-        return locationIsActive(row.value) && checkValid(row.value.tree_cover_extent_total) ? (
-          <span title={formatDigit(row.value.tree_cover_extent_total)}>
-            {formatDigit(row.value.tree_cover_extent_total)}
-          </span>
-        ) : (
-          '0%'
-        );
+        const { totalHa } = row.value;
+        const value = typeof totalHa === 'number' ? roundToTwoDecimals(totalHa) : 0;
+        return <span title={value}>{value}</span>;
       },
-
-      sortMethod: (a, b) => {
-        const sortStatus = sortByStatus(a, b);
-        if (sortStatus == 2) {
-          return a.tree_cover_extent_total - b.tree_cover_extent_total;
-        }
-
-        return sortStatus;
-      },
-
-      sortable: false,
     },
     {
-      id: 'tree_cover_loss_total_yearly',
-      Header: () => (
-        <ColumnsHeader
-          label={columnHeaders.alertsInNonForest}
-          infoBubbleId={infoBubbleConfig.post2000TreeCoverLoss}
-        />
-      ),
-      accessor: (d) => {
-        return d;
-      },
-      className: 'default-cell td-num',
-      show: true,
-      Cell: (row) => {
-        const { tree_cover_loss_total_yearly, tree_cover_extent_total } = row.value;
-
-        const value = getValue(tree_cover_loss_total_yearly);
-        const formattedValue = calculateAndFormatTotalDeforestation(
-          tree_cover_extent_total,
-          tree_cover_loss_total_yearly
-        );
-
-        return <span title={value}>{formattedValue}</span>;
-      },
-      sortMethod: (a, b) => {
-        const sortStatus = sortByStatus(a, b);
-        if (sortStatus == 2) {
-          return (
-            normalizeColumnData(a.tree_cover_loss_total_yearly) -
-            normalizeColumnData(b.tree_cover_loss_total_yearly)
-          );
-        }
-
-        return sortStatus;
-      },
-      sortable: false,
-    },
-    {
-      id: 'tree_cover_loss_primary_forest_yearly',
-      Header: () => (
-        <ColumnsHeader
-          label={columnHeaders.allAlerts}
-          infoBubbleId={infoBubbleConfig.post2000PrimaryForest}
-        />
-      ),
+      id: 'alerts_in_natural_forest',
+      Header: () => <ColumnsHeader label={columnHeaders.alertsInNaturalForest} />,
       accessor: (d) => {
         return d;
       },
@@ -140,37 +42,148 @@ export const alerts_analysis = {
       show: true,
       Cell: (row) => {
         const {
-          tree_cover_loss_primary_forest_yearly,
-          natural_habitat_primary,
-          tree_cover_extent_total,
+          intdistAlertsAreaSbtnNaturalForestsNominal,
+          intdistAlertsAreaSbtnNaturalForestsHigh,
+          intdistAlertsAreaSbtnNaturalForestsHighest,
+          totalHa,
         } = row.value;
-
-        const validatedValue = getValidatedValue(
-          tree_cover_loss_primary_forest_yearly,
-          natural_habitat_primary
+        const intdistAlertsAreaSbtnNaturalForestsNominalValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalForestsNominal
         );
+        const intdistAlertsAreaSbtnNaturalForestsHighValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalForestsHigh
+        );
+        const intdistAlertsAreaSbtnNaturalForestsHighestValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalForestsHighest
+        );
+
+        const sumOfAllNaturalForestsValues =
+          intdistAlertsAreaSbtnNaturalForestsNominalValue +
+          intdistAlertsAreaSbtnNaturalForestsHighValue +
+          intdistAlertsAreaSbtnNaturalForestsHighestValue;
+
         const formattedValue = calculateAndFormatTotalDeforestation(
-          tree_cover_extent_total,
-          tree_cover_loss_primary_forest_yearly,
-          natural_habitat_primary
+          totalHa,
+          JSON.stringify({ sumOfAllNaturalForestsValues })
         );
 
-        return <span title={validatedValue}>{formattedValue}</span>;
+        return <span title={sumOfAllNaturalForestsValues}>{formattedValue}</span>;
+      },
+    },
+    {
+      id: 'alerts_in_non_forest',
+      Header: () => <ColumnsHeader label={columnHeaders.alertsInNonForest} />,
+      accessor: (d) => {
+        return d;
+      },
+      className: 'default-cell td-num',
+      show: true,
+      Cell: (row) => {
+        const {
+          intdistAlertsAreaSbtnNaturalEcosystemNominal,
+          intdistAlertsAreaSbtnNaturalEcosystemHigh,
+          intdistAlertsAreaSbtnNaturalEcosystemHighest,
+          totalHa,
+        } = row.value;
+        const intdistAlertsAreaSbtnNaturalEcosystemNominalValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalEcosystemNominal
+        );
+        const intdistAlertsAreaSbtnNaturalEcosystemHighValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalEcosystemHigh
+        );
+        const intdistAlertsAreaSbtnNaturalEcosystemHighestValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalEcosystemHighest
+        );
+
+        const sumOfAllNaturalEcosystemValues =
+          intdistAlertsAreaSbtnNaturalEcosystemNominalValue +
+          intdistAlertsAreaSbtnNaturalEcosystemHighValue +
+          intdistAlertsAreaSbtnNaturalEcosystemHighestValue;
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({ sumOfAllNaturalEcosystemValues })
+        );
+        return <span title={sumOfAllNaturalEcosystemValues}>{formattedValue}</span>;
+      },
+    },
+    {
+      id: 'alerts_in_jrc',
+      Header: () => <ColumnsHeader label={columnHeaders.alertsInJrc} />,
+      accessor: (d) => {
+        return d;
+      },
+      className: 'default-cell td-num',
+      show: true,
+      Cell: (row) => {
+        const {
+          intdistAlertsAreaJrcNominal,
+          intdistAlertsAreaJrcHigh,
+          intdistAlertsAreaJrcHighest,
+          totalHa,
+        } = row.value;
+        const intdistAlertsAreaJrcNominalValue = getNumericValue(intdistAlertsAreaJrcNominal);
+        const intdistAlertsAreaJrcHighValue = getNumericValue(intdistAlertsAreaJrcHigh);
+        const intdistAlertsAreaJrcHighestValue = getNumericValue(intdistAlertsAreaJrcHighest);
+
+        const sumOfAllJrcValues =
+          intdistAlertsAreaJrcNominalValue +
+          intdistAlertsAreaJrcHighValue +
+          intdistAlertsAreaJrcHighestValue;
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({
+            sumOfAllJrcValues,
+          })
+        );
+        return <span title={sumOfAllJrcValues}>{formattedValue}</span>;
       },
       sortMethod: (a, b) => {
         const sortStatus = sortByStatus(a, b);
         if (sortStatus == 2) {
           return (
-            normalizeColumnData(a.tree_cover_loss_primary_forest_yearly) -
-            normalizeColumnData(b.tree_cover_loss_primary_forest_yearly)
+            normalizeColumnData(a.tree_cover_loss_total_yearly) -
+            normalizeColumnData(b.tree_cover_loss_total_yearly)
           );
         }
 
         return sortStatus;
       },
-      sortable: false,
+    },
+    {
+      id: 'alerts_in_all',
+      Header: () => <ColumnsHeader label={columnHeaders.allAlerts} />,
+      accessor: (d) => {
+        return d;
+      },
+      className: 'default-cell td-num',
+      show: true,
+      Cell: (row) => {
+        const {
+          intdistAlertsAreaAllNominal,
+          intdistAlertsAreaAllHigh,
+          intdistAlertsAreaAllHighest,
+          totalHa,
+        } = row.value;
+        const intdistAlertsAreaAllNominalValue = getNumericValue(intdistAlertsAreaAllNominal);
+        const intdistAlertsAreaAllHighValue = getNumericValue(intdistAlertsAreaAllHigh);
+        const intdistAlertsAreaAllHighestValue = getNumericValue(intdistAlertsAreaAllHighest);
+
+        const sumOfAllValues =
+          intdistAlertsAreaAllNominalValue +
+          intdistAlertsAreaAllHighValue +
+          intdistAlertsAreaAllHighestValue;
+        const formattedValue = calculateAndFormatTotalDeforestation(
+          totalHa,
+          JSON.stringify({ sumOfAllValues })
+        );
+        return <span title={sumOfAllValues}>{formattedValue}</span>;
+      },
     },
   ],
 };
+
+const roundToTwoDecimals = (num) => (typeof num === 'number' ? num.toFixed(2) : '0');
+
+const getNumericValue = (value) => (typeof value === 'number' ? value : 0);
 
 export default alerts_analysis;

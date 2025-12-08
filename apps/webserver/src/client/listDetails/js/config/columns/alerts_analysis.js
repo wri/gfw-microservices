@@ -19,7 +19,7 @@ export const alerts_analysis = {
   ),
   columns: [
     {
-      id: 'tree_cover_loss_total_yearly',
+      id: 'intdistAlertsAreaSbtnNaturalForests',
       Header: () => <ColumnsHeader label={columnHeaders.sizeInHa} />,
       accessor: (d) => {
         return d;
@@ -33,7 +33,7 @@ export const alerts_analysis = {
       },
     },
     {
-      id: 'tree_cover_extent_total',
+      id: 'alerts_in_natural_forest',
       Header: () => <ColumnsHeader label={columnHeaders.alertsInNaturalForest} />,
       accessor: (d) => {
         return d;
@@ -47,18 +47,15 @@ export const alerts_analysis = {
           intdistAlertsAreaSbtnNaturalForestsHighest,
           totalHa,
         } = row.value;
-        const intdistAlertsAreaSbtnNaturalForestsNominalValue =
-          typeof intdistAlertsAreaSbtnNaturalForestsNominal === 'number'
-            ? intdistAlertsAreaSbtnNaturalForestsNominal
-            : 0;
-        const intdistAlertsAreaSbtnNaturalForestsHighValue =
-          typeof intdistAlertsAreaSbtnNaturalForestsHigh === 'number'
-            ? intdistAlertsAreaSbtnNaturalForestsHigh
-            : 0;
-        const intdistAlertsAreaSbtnNaturalForestsHighestValue =
-          typeof intdistAlertsAreaSbtnNaturalForestsHighest === 'number'
-            ? intdistAlertsAreaSbtnNaturalForestsHighest
-            : 0;
+        const intdistAlertsAreaSbtnNaturalForestsNominalValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalForestsNominal
+        );
+        const intdistAlertsAreaSbtnNaturalForestsHighValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalForestsHigh
+        );
+        const intdistAlertsAreaSbtnNaturalForestsHighestValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalForestsHighest
+        );
 
         const sumOfAllNaturalForestsValues =
           intdistAlertsAreaSbtnNaturalForestsNominalValue +
@@ -74,7 +71,7 @@ export const alerts_analysis = {
       },
     },
     {
-      id: 'tree_cover_loss_total_yearly',
+      id: 'alerts_in_non_forest',
       Header: () => <ColumnsHeader label={columnHeaders.alertsInNonForest} />,
       accessor: (d) => {
         return d;
@@ -88,18 +85,15 @@ export const alerts_analysis = {
           intdistAlertsAreaSbtnNaturalEcosystemHighest,
           totalHa,
         } = row.value;
-        const intdistAlertsAreaSbtnNaturalEcosystemNominalValue =
-          typeof intdistAlertsAreaSbtnNaturalEcosystemNominal === 'number'
-            ? intdistAlertsAreaSbtnNaturalEcosystemNominal
-            : 0;
-        const intdistAlertsAreaSbtnNaturalEcosystemHighValue =
-          typeof intdistAlertsAreaSbtnNaturalEcosystemHigh === 'number'
-            ? intdistAlertsAreaSbtnNaturalEcosystemHigh
-            : 0;
-        const intdistAlertsAreaSbtnNaturalEcosystemHighestValue =
-          typeof intdistAlertsAreaSbtnNaturalEcosystemHighest === 'number'
-            ? intdistAlertsAreaSbtnNaturalEcosystemHighest
-            : 0;
+        const intdistAlertsAreaSbtnNaturalEcosystemNominalValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalEcosystemNominal
+        );
+        const intdistAlertsAreaSbtnNaturalEcosystemHighValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalEcosystemHigh
+        );
+        const intdistAlertsAreaSbtnNaturalEcosystemHighestValue = getNumericValue(
+          intdistAlertsAreaSbtnNaturalEcosystemHighest
+        );
 
         const sumOfAllNaturalEcosystemValues =
           intdistAlertsAreaSbtnNaturalEcosystemNominalValue +
@@ -113,7 +107,7 @@ export const alerts_analysis = {
       },
     },
     {
-      id: 'tree_cover_loss_total_yearly',
+      id: 'alerts_in_jrc',
       Header: () => <ColumnsHeader label={columnHeaders.alertsInJrc} />,
       accessor: (d) => {
         return d;
@@ -127,12 +121,9 @@ export const alerts_analysis = {
           intdistAlertsAreaJrcHighest,
           totalHa,
         } = row.value;
-        const intdistAlertsAreaJrcNominalValue =
-          typeof intdistAlertsAreaJrcNominal === 'number' ? intdistAlertsAreaJrcNominal : 0;
-        const intdistAlertsAreaJrcHighValue =
-          typeof intdistAlertsAreaJrcHigh === 'number' ? intdistAlertsAreaJrcHigh : 0;
-        const intdistAlertsAreaJrcHighestValue =
-          typeof intdistAlertsAreaJrcHighest === 'number' ? intdistAlertsAreaJrcHighest : 0;
+        const intdistAlertsAreaJrcNominalValue = getNumericValue(intdistAlertsAreaJrcNominal);
+        const intdistAlertsAreaJrcHighValue = getNumericValue(intdistAlertsAreaJrcHigh);
+        const intdistAlertsAreaJrcHighestValue = getNumericValue(intdistAlertsAreaJrcHighest);
 
         const sumOfAllJrcValues =
           intdistAlertsAreaJrcNominalValue +
@@ -159,7 +150,7 @@ export const alerts_analysis = {
       },
     },
     {
-      id: 'tree_cover_loss_primary_forest_yearly',
+      id: 'alerts_in_all',
       Header: () => <ColumnsHeader label={columnHeaders.allAlerts} />,
       accessor: (d) => {
         return d;
@@ -173,12 +164,9 @@ export const alerts_analysis = {
           intdistAlertsAreaAllHighest,
           totalHa,
         } = row.value;
-        const intdistAlertsAreaAllNominalValue =
-          typeof intdistAlertsAreaAllNominal === 'number' ? intdistAlertsAreaAllNominal : 0;
-        const intdistAlertsAreaAllHighValue =
-          typeof intdistAlertsAreaAllHigh === 'number' ? intdistAlertsAreaAllHigh : 0;
-        const intdistAlertsAreaAllHighestValue =
-          typeof intdistAlertsAreaAllHighest === 'number' ? intdistAlertsAreaAllHighest : 0;
+        const intdistAlertsAreaAllNominalValue = getNumericValue(intdistAlertsAreaAllNominal);
+        const intdistAlertsAreaAllHighValue = getNumericValue(intdistAlertsAreaAllHigh);
+        const intdistAlertsAreaAllHighestValue = getNumericValue(intdistAlertsAreaAllHighest);
 
         const sumOfAllValues =
           intdistAlertsAreaAllNominalValue +
@@ -194,6 +182,8 @@ export const alerts_analysis = {
   ],
 };
 
-const roundToTwoDecimals = (num) => (typeof num === 'number' ? num.toFixed(2) : 0);
+const roundToTwoDecimals = (num) => (typeof num === 'number' ? num.toFixed(2) : '0');
+
+const getNumericValue = (value) => (typeof value === 'number' ? value : 0);
 
 export default alerts_analysis;

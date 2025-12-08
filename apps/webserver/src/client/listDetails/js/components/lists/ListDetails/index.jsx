@@ -214,23 +214,25 @@ export default class ListDetails extends Component {
     };
   }
 
-  changeDataSource = (event) => {
+  refreshColumns = (newForestDataset) => {
     const { listView, listData, selectedLists } = this.props;
+    return getAllColumnNames(
+      listView,
+      listData[0],
+      selectedLists,
+      this.getCheckboxColumn,
+      this.areAllAnalysesDraft(),
+      newForestDataset || this.state.forestDataset
+    );
+  };
+
+  changeDataSource = (event) => {
     const newForestDataset = event.target.value;
 
-    this.setState({ forestDataset: newForestDataset }, () => {
-      // Refresh columns when forest dataset changes
-      const columnNames = getAllColumnNames(
-        listView,
-        listData[0],
-        selectedLists,
-        this.getCheckboxColumn,
-        this.areAllAnalysesDraft(),
-        newForestDataset
-      );
-      this.setState({
-        combinedColumns: columnNames.combinedColumns,
-      });
+    const columnNames = this.refreshColumns(newForestDataset);
+    this.setState({
+      forestDataset: newForestDataset,
+      combinedColumns: columnNames.combinedColumns,
     });
   };
 
@@ -279,14 +281,8 @@ export default class ListDetails extends Component {
   componentDidUpdate(prevProps) {
     const { listView, listData, selectedLists, filters } = this.props;
     if (listView !== prevProps.listView) {
-      const columnNames = getAllColumnNames(
-        listView,
-        listData[0],
-        selectedLists,
-        this.getCheckboxColumn,
-        this.areAllAnalysesDraft(),
-        this.state.forestDataset
-      );
+      const columnNames = this.refreshColumns();
+
       this.setState({
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,

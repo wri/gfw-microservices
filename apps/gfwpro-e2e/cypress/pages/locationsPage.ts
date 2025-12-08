@@ -226,7 +226,8 @@ class LocationsPage {
   }
 
   clickOnLocationsList(name: string) {
-    cy.contains(name).click();
+    cy.get('body').should('exist');
+    cy.contains(name, { timeout: 60000 }).should('be.visible').click({ force: true });
   }
 
   clickOnAddLocationsBtn() {

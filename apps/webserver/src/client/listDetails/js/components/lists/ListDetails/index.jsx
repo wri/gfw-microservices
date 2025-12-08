@@ -279,7 +279,7 @@ export default class ListDetails extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { listView, listData, selectedLists, filters } = this.props;
+    const { listView, selectedLists, filters } = this.props;
     if (listView !== prevProps.listView) {
       const columnNames = this.refreshColumns();
 

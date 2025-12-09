@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import Button from 'common/js/components/Button';
-import GPDRFooter from 'common/js/components/GPDRFooter';
+import GDPRFooter from 'common/js/components/GDPRFooter';
 import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
@@ -2303,7 +2303,7 @@ export default class ListDetails extends Component {
           onClose={() => this.setState({ isAlertsDateSelectorOpen: false })}
           onDownload={(date) => this.handleAlertsDownloadReport(listID, listView, date)}
         />
-        <GPDRFooter variant="app" />
+        <GDPRFooter variant="app" />
       </ThemeProvider>
     );
   }

@@ -3,7 +3,7 @@ import tmp from 'tmp';
 const buildSQSMessage = ({ request }) => {
   const { id: listId } = request.params;
 
-  const { selectedTimeframe, selectedAlert, isGFWList } = request.query;
+  const { selectedTimeframe, selectedAlert, isGFWList, startDate, endDate } = request.query;
 
   // TODO we should rename all mentions from glad to integrated.
   const alert = selectedAlert === 'GLAD' ? 'Integrated' : selectedAlert;
@@ -22,6 +22,8 @@ const buildSQSMessage = ({ request }) => {
     isGFWList,
     type: 'alerts',
     key: fileName,
+    startDate,
+    endDate,
   };
 };
 

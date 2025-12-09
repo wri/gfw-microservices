@@ -1,5 +1,12 @@
 import { Component } from 'react';
 
+/**
+ * @deprecated This component has been replaced by Osano cookie consent management.
+ * Osano script is now loaded in layout.pug and handles all cookie consent.
+ * This file is kept for reference but should not be used.
+ * Date deprecated: December 2025
+ */
+
 const PRIVACY_POLICY_LINK = 'https://www.wri.org/about/privacy-policy';
 
 export class PrivacyPolicyBanner extends Component {

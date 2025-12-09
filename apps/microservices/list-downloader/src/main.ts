@@ -31,10 +31,9 @@ async function bootstrap() {
   const port = config.get('PORT', { infer: true });
 
   // Configure HTTP Keep-Alive for better performance
-  // Set to 60 seconds to match AWS Load Balancer default idle timeout (prevents 502 errors)
   const server: http.Server = app.getHttpServer();
-  server.keepAliveTimeout = 60000; // 60 seconds keep-alive timeout (matches AWS LB)
-  server.headersTimeout = 61000; // 61 seconds headers timeout (should be slightly more than keepAliveTimeout)
+  server.keepAliveTimeout = 30000; // 30 seconds keep-alive timeout
+  server.headersTimeout = 31000; // 31 seconds headers timeout (should be slightly more than keepAliveTimeout)
 
   await app.listen(port);
   bootstrapLogger.log(

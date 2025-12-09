@@ -55,18 +55,19 @@ module.exports = (app, limiter) => {
   app.get('/api/locations', controller.locationsData);
   app.get('/getUserLists', controller.getUserLists);
 
-  app.post('/locations/rerunExistingList', (req, res) => {
+  app.post('/locations/rerunExistingList', async (req, res) => {
     console.log('POST /locations/rerunExistingList');
 
-    ListManager.rerunExistingList(req)
-      .then(() => {
-        res.send({ redirect: '/locations' });
-      })
-      .catch((err) => {
-        console.log('Error sending list for rerun');
-        ListManager.setListUnlocked(req, req.body.list_id);
-        res.send(err);
-      });
+    try {
+      // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
+      await removeExistingVectorTileFromS3(req, req.body.list_id);
+      await ListManager.rerunExistingList(req);
+      res.send({ redirect: '/locations' });
+    } catch (err) {
+      console.log('Error sending list for rerun');
+      ListManager.setListUnlocked(req, req.body.list_id);
+      res.send(err);
+    }
   });
 
   app.post('/locations/lockList', (req, res) => {
@@ -112,7 +113,9 @@ module.exports = (app, limiter) => {
       .then(() => {
         return ListManager.deleteListIfEmpty(req, list_id);
       })
-      .then((isListEmpty) => {
+      .then(async (isListEmpty) => {
+        // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
+        await removeExistingVectorTileFromS3(req, list_id);
         const result = isListEmpty ? 'AllLocationsDeleted' : 'LocationDeleted';
         res.send(result);
       })
@@ -152,6 +155,8 @@ module.exports = (app, limiter) => {
       gfw_list_id
     )
       .then(async () => {
+        // Remove the existing vector tile from S3 for the destination list so it will be regenerated with the new locations
+        await removeExistingVectorTileFromS3(req, dest_list_id);
         res.send('LocationsCopied');
       })
       .catch((err) => {
@@ -174,7 +179,9 @@ module.exports = (app, limiter) => {
       geojson,
       gfw_list_id
     )
-      .then(() => {
+      .then(async () => {
+        // Remove the existing vector tile from S3 for the destination list so it will be regenerated with the new locations
+        await removeExistingVectorTileFromS3(req, dest_list_id);
         res.send('LocationsCopied');
       })
       .catch((err) => {
@@ -992,6 +999,9 @@ module.exports = (app, limiter) => {
         analysisTypesParam ||
         extractAnalysisTypes(await getListAnalysisStatusByListId(organization_database, list_id));
 
+      // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
+      await removeExistingVectorTileFromS3(req, list_id);
+
       const payload = {
         organization_id,
         list_id,
@@ -1089,7 +1099,7 @@ module.exports = (app, limiter) => {
   /**
    * Start list copy or move operation
    */
-  app.post('/locations/cm-large-list', (req, res) => {
+  app.post('/locations/cm-large-list', async (req, res) => {
     logger.info('POST /locations/cm-large-list');
     const { listType, targetList, listId } = req.body;
     let { listName, saveAsDraft } = req.body;
@@ -1115,43 +1125,55 @@ module.exports = (app, limiter) => {
     if (listType === 'existing') {
       listName = targetList.list_name;
     }
-    getListAnalysisStatusByListId(organization_database, listId)
-      .then((listAnalysisStatusData) => {
-        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
-        const { LISTS_MICROSERVICE_URL } = process.env;
 
-        axios
-          .post(`${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, copyOrMoveRequestBody)
-          .then((response) => {
-            if (saveAsDraft) {
-              return res.send(response.data);
-            }
+    try {
+      // Remove the existing vector tile from S3 for the source list
+      await removeExistingVectorTileFromS3(req, listId);
+      // Also remove for destination list if it's an existing list
+      if (listType === 'existing' && targetList?.id) {
+        await removeExistingVectorTileFromS3(req, targetList.id);
+      }
 
-            // Send email to user that list is submitted to be analysed
-            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes)
-              .then(() => {
-                res.send(response.data);
-              })
-              .catch((err) => {
-                logger.error(`Error sendEmail__ListSubmittedForAnalysis`, err);
-              });
-          })
-          .catch(async (error) => {
-            await controller.handleListProcessingError(
-              error,
-              req,
-              res,
-              listName,
-              'Error /locations/cm-large-list',
-              `${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`,
-              config
-            );
-          });
-      })
-      .catch((err) => {
-        logger.error('Error: getListAnalysisStatusByListId', err);
-        res.status(500).send(err);
-      });
+      const listAnalysisStatusData = await getListAnalysisStatusByListId(
+        organization_database,
+        listId
+      );
+      const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+      const { LISTS_MICROSERVICE_URL } = process.env;
+
+      try {
+        const response = await axios.post(
+          `${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`,
+          copyOrMoveRequestBody
+        );
+
+        if (saveAsDraft) {
+          return res.send(response.data);
+        }
+
+        // Send email to user that list is submitted to be analysed
+        try {
+          await AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
+          res.send(response.data);
+        } catch (err) {
+          logger.error(`Error sendEmail__ListSubmittedForAnalysis`, err);
+          res.send(response.data);
+        }
+      } catch (error) {
+        await controller.handleListProcessingError(
+          error,
+          req,
+          res,
+          listName,
+          'Error /locations/cm-large-list',
+          `${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`,
+          config
+        );
+      }
+    } catch (err) {
+      logger.error('Error: getListAnalysisStatusByListId or removeExistingVectorTileFromS3', err);
+      res.status(500).send(err);
+    }
   });
 
   app.get(['/locations/upload-location', '/locations/upload-location/*'], (req, res) => {

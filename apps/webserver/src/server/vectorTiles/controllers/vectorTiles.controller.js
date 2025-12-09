@@ -172,8 +172,27 @@ exports.prepareMbtileFile = async (req, listID, mbtileFileName = null) => {
   const localMbtileFilePath = path.join(VECTOR_TILES_LOCATION, mbtileName);
 
   if (!fs.existsSync(localMbtileFilePath)) {
-    // If the file does not exist, download it
-    await getMBTileFromS3Bucket(listVectorTileS3Path);
+    // If the file does not exist locally, download it from S3
+    try {
+      await getMBTileFromS3Bucket(listVectorTileS3Path);
+    } catch (downloadError) {
+      // If download fails (e.g., file doesn't exist in S3), regenerate the tiles
+      if (
+        downloadError.message.includes('NoSuchKey') ||
+        downloadError.message.includes('does not exist')
+      ) {
+        logger.warn(
+          `MBTile file not found in S3: ${listVectorTileS3Path}. Regenerating tiles for list ${listID}...`
+        );
+        const { path: tilePath } = await generateAndStoreVectorTiles(req, listID);
+        listVectorTileS3Path = tilePath;
+        const newMbtileName = path.basename(listVectorTileS3Path);
+        const newLocalMbtileFilePath = path.join(VECTOR_TILES_LOCATION, newMbtileName);
+        return newLocalMbtileFilePath;
+      }
+      // If it's a different error, rethrow it
+      throw downloadError;
+    }
   }
 
   try {
@@ -186,6 +205,21 @@ exports.prepareMbtileFile = async (req, listID, mbtileFileName = null) => {
       await getMBTileFromS3Bucket(listVectorTileS3Path);
       await waitForMbtileReady(localMbtileFilePath);
     } catch (retryError) {
+      // If retry also fails and it's a NoSuchKey error, regenerate
+      if (
+        retryError.message &&
+        (retryError.message.includes('NoSuchKey') || retryError.message.includes('does not exist'))
+      ) {
+        logger.warn(
+          `MBTile file still not found in S3 after retry. Regenerating tiles for list ${listID}...`
+        );
+        const { path: tilePath } = await generateAndStoreVectorTiles(req, listID);
+        listVectorTileS3Path = tilePath;
+        const newMbtileName = path.basename(listVectorTileS3Path);
+        const newLocalMbtileFilePath = path.join(VECTOR_TILES_LOCATION, newMbtileName);
+        await waitForMbtileReady(newLocalMbtileFilePath);
+        return newLocalMbtileFilePath;
+      }
       console.error('Retry also failed:', retryError);
       throw retryError;
     }

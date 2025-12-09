@@ -2,6 +2,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { useContainer } from 'class-validator';
+import * as http from 'http';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
@@ -22,6 +23,12 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  // Configure HTTP Keep-Alive for better performance
+  // Set to 60 seconds to match AWS Load Balancer default idle timeout (prevents 502 errors)
+  const server: http.Server = app.getHttpServer();
+  server.keepAliveTimeout = 60000; // 60 seconds keep-alive timeout (matches AWS LB)
+  server.headersTimeout = 61000; // 61 seconds headers timeout (should be slightly more than keepAliveTimeout)
 
   await app.listen(port);
   Logger.log(

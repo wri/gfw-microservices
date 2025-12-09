@@ -6,6 +6,7 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as http from 'http';
 import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
@@ -55,6 +56,12 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     jsonDocumentUrl: '/api/profile',
   });
+
+  // Configure HTTP Keep-Alive for better performance
+  // Set to 60 seconds to match AWS Load Balancer default idle timeout (prevents 502 errors)
+  const server: http.Server = app.getHttpServer();
+  server.keepAliveTimeout = 60000; // 60 seconds keep-alive timeout (matches AWS LB)
+  server.headersTimeout = 61000; // 61 seconds headers timeout (should be slightly more than keepAliveTimeout)
 
   await app.listen(port);
   bootstrapLogger.log(

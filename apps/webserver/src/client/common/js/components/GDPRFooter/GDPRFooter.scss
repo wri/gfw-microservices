@@ -1,5 +1,5 @@
 // Base styles for GDPR Footer
-.gpdr-footer {
+.gdpr-footer {
   display: flex;
   width: 100%;
   height: 56px;
@@ -26,7 +26,7 @@
 }
 
 // Login page variant
-.gpdr-footer--login {
+.gdpr-footer--login {
   background: var(--Neutrals-800, #3d3b3b);
   padding: var(--Spacing-300, 12px) 140px;
   color: #ffffff;
@@ -41,7 +41,7 @@
 }
 
 // App pages variant (List Details, Locations, Diagnostics, etc.)
-.gpdr-footer--app {
+.gdpr-footer--app {
   background: transparent;
   padding: var(--Spacing-300, 12px) 140px;
   color: #5c5959;

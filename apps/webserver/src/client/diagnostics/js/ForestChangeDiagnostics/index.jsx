@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { connect } from 'react-redux';
 import Diagnostics from './Diagnostics';
-import GPDRFooter from '../../../common/js/components/GPDRFooter';
+import GDPRFooter from '../../../common/js/components/GDPRFooter';
 import { diagnosticsStrings } from '../../../common/js/config';
 import { useQuery } from '../../../common/js/hooks';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
@@ -128,7 +128,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
           selectedLocationData={selectedLocationData}
         />
       )}
-      <GPDRFooter variant="app" />
+      <GDPRFooter variant="app" />
     </>
   );
 }

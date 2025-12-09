@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, MenuItem, FormControl, Select } from '@mui/material';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
-import GPDRFooter from '../../../common/js/components/GPDRFooter';
+import GDPRFooter from '../../../common/js/components/GDPRFooter';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrumbs from '../common/DiagnosticsBreadCrumbs';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
@@ -179,7 +179,7 @@ function AfiDiagnostics() {
         </div>
       )}
       <ConfirmDialog open={openDownloadDialog} setDialogOpen={setOpenDownloadDialog} />
-      <GPDRFooter variant="app" />
+      <GDPRFooter variant="app" />
     </>
   );
 }

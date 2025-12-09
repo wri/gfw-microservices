@@ -1,7 +1,7 @@
-import './GPDRFooter.scss';
+import './GDPRFooter.scss';
 
 /**
- * GPDRFooter Component
+ * GDPRFooter Component
  *
  * A reusable footer component that displays Privacy Policy and Cookies Preference links.
  *
@@ -9,11 +9,11 @@ import './GPDRFooter.scss';
  * @param {string} props.variant - Style variant to apply. Options: 'default', 'login', 'app'
  *
  */
-export default function GPDRFooter({ variant = 'default' }) {
+export default function GDPRFooter({ variant = 'default' }) {
   const variantClasses = {
-    default: 'gpdr-footer',
-    login: 'gpdr-footer gpdr-footer--login',
-    app: 'gpdr-footer gpdr-footer--app',
+    default: 'gdpr-footer',
+    login: 'gdpr-footer gdpr-footer--login',
+    app: 'gdpr-footer gdpr-footer--app',
   };
 
   const handleCookiePreferenceClick = (e) => {
@@ -41,6 +41,15 @@ export default function GPDRFooter({ variant = 'default' }) {
         <a
           href="https://www.globalforestwatch.org/privacy-policy/"
           onClick={handleCookiePreferenceClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCookiePreferenceClick(e);
+            }
+          }}
+          role="button"
+          tabIndex="0"
+          aria-label="Open cookie preferences settings"
           style={{ cursor: 'pointer' }}
         >
           Cookies Preference

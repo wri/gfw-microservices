@@ -10,6 +10,7 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
+  'ALERTS-BATCH': 'ALERTS-BATCH',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
 } as const;
@@ -28,6 +29,13 @@ export const analysisTypesOptionsNewNames = [
     shortLabel: 'Alerts',
     description: 'Recent disturbance alerts, updated weekly',
     showInUI: true,
+  },
+  {
+    id: analysisTypes['ALERTS-BATCH'],
+    label: analysisTypes['ALERTS-BATCH'],
+    shortLabel: analysisTypes['ALERTS-BATCH'],
+    description: analysisTypes['ALERTS-BATCH'],
+    showInUI: false,
   },
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
@@ -52,4 +60,22 @@ export const palmRiskAnalysis = {
   label: 'Include Palm Risk Assessment',
   shortLabel: '',
   description: 'Commodity-specific risk analysis for palm oil mills',
+  showInUI: true,
+};
+
+export enum AlertsAnalysisFrequency {
+  WEEKLY = 'Weekly',
+}
+
+export const weeklyAlertsAnalysis = {
+  id: AlertsAnalysisFrequency.WEEKLY,
+  label: '',
+  shortLabel: '',
+  description: '',
+  showInUI: false,
+};
+
+export const analysisIdsOptionsMap = {
+  [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: [palmRiskAnalysis],
+  [analysisTypes.ALERTS]: [weeklyAlertsAnalysis],
 };

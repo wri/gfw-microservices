@@ -9,7 +9,7 @@ import {
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
-import { listStatus, analysisTypes } from '@wri-monorepos/constants';
+import { listStatus, analysisTypes, AlertsFrequency } from '@wri-monorepos/constants';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -434,6 +434,59 @@ export async function getListAnalysisStatus(
   );
 }
 
+export async function setListAnalysisStatus_DEPRECATE(
+  clientDatabase: string,
+  listId: number,
+  analyses: Partial<ListsAnalysisStatus>[], // ← Changed from analysisIds array
+  status: number = listStatus.Pending
+) {
+  const clientStoreConnection = new ClientStoreConnection();
+  const connection = await clientStoreConnection.getConnection(clientDatabase);
+  const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+  await Promise.all(
+    analyses.map(async ({ analysisId, options }) => {
+      // Validate analysisId
+      const normalizedAnalysisId = Object.values(analysisTypes).find(
+        (type) => type.toLowerCase() === analysisId.toLowerCase()
+      );
+
+      if (!normalizedAnalysisId) {
+        throw new Error(`Invalid analysisId: ${analysisId}`);
+      }
+
+      const value = {
+        status,
+        errorInfo: null,
+        updateTime: new Date().toISOString(),
+        s3URL: null,
+        expirationTime: null,
+        bundleCreationTime: null,
+        options: options || null, // ← Use provided options directly
+      };
+
+      // Check if record exists
+      const existingRecord = await listAnalysisStatusRepository.findOne({
+        where: { listId, analysisId: normalizedAnalysisId },
+      });
+
+      // Save or update
+      if (existingRecord) {
+        await listAnalysisStatusRepository.update(
+          { listId, analysisId: normalizedAnalysisId },
+          value
+        );
+      } else {
+        await listAnalysisStatusRepository.save({
+          listId,
+          analysisId: normalizedAnalysisId,
+          ...value,
+        });
+      }
+    })
+  );
+}
+
 export async function setListAnalysisStatus(
   clientDatabase: string,
   listId: number,
@@ -444,7 +497,8 @@ export async function setListAnalysisStatus(
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-  // Update status for all analysis types
+  // Check if ALERTS is included and if PalmRisk is included for FCD
+  const isAlertsIncluded = analysisIds.includes(analysisTypes.ALERTS);
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
 
   await Promise.all(
@@ -470,6 +524,7 @@ export async function setListAnalysisStatus(
           options: null,
         };
 
+        // Handle FCD with PalmRisk option
         if (
           isPalmRiskIncluded &&
           normalizedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
@@ -477,12 +532,17 @@ export async function setListAnalysisStatus(
           value.options = analysisTypes.PALM_RISK;
         }
 
+        // default options=Weekly for ALERTS analysis
+        if (isAlertsIncluded && normalizedAnalysisId === analysisTypes.ALERTS) {
+          value.options = AlertsFrequency.WEEKLY;
+        }
+
         // Check if record exists
         const existingRecord = await listAnalysisStatusRepository.findOne({
           where: { listId, analysisId: normalizedAnalysisId },
         });
 
-        // Save or update for ALL analysis types (including GHG)
+        // Save or update for ALL analysis types
         if (existingRecord) {
           await listAnalysisStatusRepository.update(
             { listId, analysisId: normalizedAnalysisId },

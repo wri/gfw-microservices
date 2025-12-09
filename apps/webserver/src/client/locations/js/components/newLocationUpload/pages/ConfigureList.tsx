@@ -28,12 +28,18 @@ import { useHistory } from '../hooks';
 import { PillButton, HelperTextWithPopover } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { UserList } from '../types';
+import { AnalysisConfiguration, UserList } from '../types';
 import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  analysisIdsOptionsMap,
+  analysisTypesForUI,
+  analysisTypesOptionsNewNames,
+  palmRiskAnalysis,
+} from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
 import { DATA_CY, ReusableText } from '../../../../../utils/constants';
 
@@ -112,7 +118,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     },
   } = useUploadLocation();
 
-  // Initialize form with values from context
   const {
     handleSubmit,
     control,
@@ -128,11 +133,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       commodity: (commodity as CommoditiesType) || ('' as CommoditiesType),
       newListName: newListName || '',
       existingListName: existingList?.name || '',
+      customCommodity: '',
       PalmRisk: typeOfAnalysis.PalmRisk || false,
       FCD: typeOfAnalysis.FCD || false,
       ALERTS: typeOfAnalysis.ALERTS || false,
       AFI: typeOfAnalysis.AFI || false,
-      customCommodity: '',
     },
   });
 
@@ -217,14 +222,33 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     setFormFields((v) => ({ ...v, existingListName: value }));
     field.onChange(value);
 
+    const analysisIds = [];
     const template = userLists.find((list) => list.list_name === value);
+
+    for (const analysisStatus of template.listAnalysesStatus) {
+      const { analysisId, options } = analysisStatus;
+
+      const isFCDWithPalmRisk =
+        analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+        options === analysisTypes.PALM_RISK;
+      const analysisIdsToPush = isFCDWithPalmRisk
+        ? [analysisId, analysisTypes.PALM_RISK] // FCD with PalmRisk sub-analysis
+        : [analysisId];
+
+      for (const id of analysisIdsToPush) {
+        analysisIds.push({
+          ...analysisStatus,
+          analysisId: id,
+        });
+      }
+    }
     if (template?.id) {
       existingListRef.current = {
         id: template.id,
-        analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
+        analysisIds: analysisIds.map((x) => x.analysisId) || [],
       };
       typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+        const found = analysisIds.find((x) => x.analysisId === typeOfAnalysis.id);
         setValue(typeOfAnalysis.id as keyof FormFields, !!found);
       });
     }
@@ -265,6 +289,33 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
+    // Build analyses array with options
+    const selectedAnalyses: AnalysisConfiguration[] = [];
+
+    // AFI
+    if (data.AFI) {
+      selectedAnalyses.push({
+        analysisId: analysisTypes.DEFORESTATION_KPIS,
+        options: null,
+      });
+    }
+
+    // ALERTS - Always include Weekly option
+    if (data.ALERTS) {
+      selectedAnalyses.push({
+        analysisId: analysisTypes.ALERTS,
+        options: 'Weekly', // ← Auto-select Weekly
+      });
+    }
+
+    // FCD - Include PalmRisk option if checked
+    if (data.FCD) {
+      selectedAnalyses.push({
+        analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+        options: data.PalmRisk ? analysisTypes.PALM_RISK : null,
+      });
+    }
+
     setUploadLocationConfigureList({
       commodity: (data.commodity === 'Other' ? data.customCommodity : data.commodity) as string,
       newListName: data.newListName ?? '',
@@ -277,6 +328,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         AFI: data.AFI,
         ALERTS: data.ALERTS,
       },
+      selectedAnalyses
     });
 
     history.push('SUMMARY_AND_SUBMIT');
@@ -478,16 +530,14 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
               return (
                 <Controller
-                  key={id}
+                  key={`field-controller-${id}`}
                   name={id as keyof FormFields}
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel
                       control={
                         <Checkbox
-                          sx={{
-                            py: 0,
-                          }}
+                          sx={{ py: 0 }}
                           checked={!!field.value}
                           onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}
@@ -511,8 +561,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                           }}
                           onClick={(e) => {
                             const tag = (e.target as HTMLElement).tagName;
-
-                            // dont disable propagation for link tags
                             if (tag !== 'A') {
                               e.stopPropagation();
                               e.preventDefault();
@@ -546,7 +594,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                                 </HelperTextWithPopover>
                               )}
                             </Box>
-
                             <Typography variant="caption" color="text.secondary">
                               {description}
                             </Typography>

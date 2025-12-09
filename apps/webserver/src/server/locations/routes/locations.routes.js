@@ -998,6 +998,7 @@ module.exports = (app, limiter) => {
       let analysisTypes =
         analysisTypesParam ||
         extractAnalysisTypes(await getListAnalysisStatusByListId(organization_database, list_id));
+      console.log("🚀 ~ analysisTypes:", analysisTypes)
 
       // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
       await removeExistingVectorTileFromS3(req, list_id);

@@ -17,6 +17,8 @@ export type UserList = {
   listAnalysesStatus: {
     listId: number;
     analysisId: 'FCD' | 'AFI' | 'ALERTS';
+    status?: string;
+    options?: string;
   }[];
 };
 
@@ -61,3 +63,9 @@ export enum FileAttachState {
   UnsupportedType,
   UploadFailed,
 }
+
+export type AnalysisConfiguration = {
+  analysisId: string;
+  status?: number;
+  options?: string | null;
+};

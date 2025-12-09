@@ -122,7 +122,8 @@ export function SummaryAndSubmit() {
         (key) =>
           uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
       );
-
+      console.log("🚀 ~ uploadList ~ uploadLocationState.selectedAnalyses:", uploadLocationState.selectedAnalyses)
+      
       await uploadProcessByPrevUploadedFile({
         listName,
         analysisIds,
@@ -131,6 +132,7 @@ export function SummaryAndSubmit() {
         existingList: uploadLocationState.existingList,
         saveAsDraft: isDraftUpload.current,
         commodity: uploadLocationState.commodity,
+        selectedAnalyses: uploadLocationState.selectedAnalyses
       });
       updateSaveMode(isDraftUpload.current);
 

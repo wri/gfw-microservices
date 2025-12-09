@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, ReactNode } from 'react';
 
 import { useHistory } from '../hooks';
-import { Area, Coordinate, UploadType } from '../types';
+import { AnalysisConfiguration, Area, Coordinate, UploadType } from '../types';
 import { PresignedUrl } from '../utils/upload';
 
 export type UploadLocationState = {
@@ -11,7 +11,11 @@ export type UploadLocationState = {
   area: Area;
   uploadedFile: PresignedUrl | null;
   commodity: string;
-  existingList: { id: number; name: string; analysisIds: string[] } | null;
+  existingList: {
+    id: number;
+    name: string;
+    analysisIds: string[];
+  } | null;
   newListName: string | null;
   typeOfAnalysis: {
     FCD: boolean;
@@ -21,6 +25,7 @@ export type UploadLocationState = {
   };
   isDraft?: boolean;
   isUmlFile?: boolean;
+  selectedAnalyses: AnalysisConfiguration[];
 };
 
 type UploadLocationType = {
@@ -35,7 +40,11 @@ type UploadLocationType = {
   setUploadLocationByPolygon: (data: { locationName: string; coordinates: Coordinate[] }) => void;
   setUploadLocationConfigureList: (data: {
     commodity: string;
-    existingList: { id: number; name: string; analysisIds: string[] } | null;
+    existingList: {
+      id: number;
+      name: string;
+      analysisIds: string[];
+    } | null;
     newListName: string | null;
     typeOfAnalysis: {
       PalmRisk: boolean;
@@ -43,6 +52,7 @@ type UploadLocationType = {
       AFI: boolean;
       ALERTS: boolean;
     };
+    selectedAnalyses: AnalysisConfiguration[];
   }) => void;
   addFile: (uploadedFile: PresignedUrl) => void;
   updateSaveMode: (isDraft: boolean) => void;
@@ -75,7 +85,11 @@ type UploadLocationAction =
       type: 'ConfigureList';
       payload: {
         commodity: string;
-        existingList: { id: number; name: string; analysisIds: string[] } | null;
+        existingList: {
+          id: number;
+          name: string;
+          analysisIds: string[];
+        } | null;
         newListName: string | null;
         typeOfAnalysis: {
           PalmRisk: boolean;
@@ -83,6 +97,7 @@ type UploadLocationAction =
           AFI: boolean;
           ALERTS: boolean;
         };
+        selectedAnalyses: AnalysisConfiguration[];
       };
     }
   | {
@@ -137,6 +152,7 @@ const uploadLocationInitialState: UploadLocationState = {
   },
   isDraft: undefined,
   isUmlFile: false,
+  selectedAnalyses: []
 };
 
 export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
@@ -191,7 +207,11 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
 
   const setUploadLocationConfigureList = (data: {
     commodity: string;
-    existingList: { id: number; name: string; analysisIds: string[] } | null;
+    existingList: {
+      id: number;
+      name: string;
+      analysisIds: string[];
+    } | null;
     newListName: string | null;
     typeOfAnalysis: {
       PalmRisk: boolean;
@@ -199,8 +219,12 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
       AFI: boolean;
       ALERTS: boolean;
     };
+    selectedAnalyses: AnalysisConfiguration[]
   }) => {
-    dispatch({ type: 'ConfigureList', payload: data });
+    dispatch({
+      type: 'ConfigureList',
+      payload: data,
+    });
   };
 
   const setIsUmlFile = (isUmlFile: boolean) => {
@@ -263,6 +287,7 @@ function uploadLocationReducer(
         existingList: payload.existingList,
         newListName: payload.newListName,
         typeOfAnalysis: payload.typeOfAnalysis,
+        selectedAnalyses: payload.selectedAnalyses,
       };
 
     case 'UpdateSaveMode':

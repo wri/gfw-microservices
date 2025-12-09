@@ -26,30 +26,12 @@ import { TraceIdMiddleware } from '@wri-monorepos/shared';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
 import { HealthModule } from '../health/health.module';
 import { HttpModule } from '@nestjs/axios';
-import * as http from 'http';
-import * as https from 'https';
 import { ExternalAPIKey, FeatureFlag, Organization, UserRoutes } from '@wri-monorepos/sql';
 
 @Module({
   imports: [
     envModule,
-    HttpModule.register({
-      timeout: 5000,
-      maxRedirects: 5,
-      // Enable persistent connections for better performance
-      httpAgent: new http.Agent({
-        keepAlive: true,
-        keepAliveMsecs: 1000,
-        maxSockets: 50,
-        maxFreeSockets: 10,
-      }),
-      httpsAgent: new https.Agent({
-        keepAlive: true,
-        keepAliveMsecs: 1000,
-        maxSockets: 50,
-        maxFreeSockets: 10,
-      }),
-    }),
+    HttpModule,
     createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes, FeatureFlag]),
     TokenModule,
     ListsAnalysisModule,

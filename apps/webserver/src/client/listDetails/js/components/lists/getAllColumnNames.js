@@ -7,7 +7,9 @@ import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
+  forestDataSet,
 } from './ListDetails/listViews.constants';
+import { columnHeaders } from '../../config/columns/columnHeaders.constants';
 
 /**
  * Get all column names based on List view name and location data
@@ -20,7 +22,8 @@ const getAllColumnNames = (
   locationData,
   selectedLists,
   getCheckboxColumn,
-  areAllAnalysesDraft = false
+  areAllAnalysesDraft = false,
+  forestDataset = forestDataSet.NaturalForestMap
 ) => {
   const columnNames = {};
   const gfwColumns = [];
@@ -109,10 +112,23 @@ const getAllColumnNames = (
     const { columns: alertsAnalysisColumns, ...alertsAnalysisRestOfProperties } =
       columns.alerts_analysis;
 
-    const sortableColumns = alertsAnalysisColumns.map((col) => {
+    const filteredColumns = alertsAnalysisColumns.filter((col) => {
+      if (forestDataset === forestDataSet.NaturalForestMap) {
+        return col.Header?.()?.props?.label !== columnHeaders.alertsInJrc;
+      }
+      if (forestDataset === forestDataSet.JrcForestLoss) {
+        return (
+          col.Header?.()?.props?.label !== columnHeaders.alertsInNaturalForest &&
+          col.Header?.()?.props?.label !== columnHeaders.alertsInNonForest
+        );
+      }
+      return true;
+    });
+
+    const sortableColumns = filteredColumns.map((col) => {
       return {
         ...col,
-        sortable: true,
+        sortable: false,
       };
     });
 

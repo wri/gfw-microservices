@@ -32,8 +32,14 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
     onClose();
   };
 
+  const formatDateToISO = (dateString: string): string => {
+    // dateString is in format "YYYY-MM-DD"
+    const date = new Date(dateString);
+    return date.toISOString();
+  };
+
   return (
-    <Dialog open={isOpen} onClose={handleClose} sx={{ '& .MuiPaper-root': { width: '450px' } }}>
+    <Dialog open={isOpen} onClose={handleClose} sx={{ '& .MuiPaper-root': { width: '515px' } }}>
       <DialogTitle
         data-cy="download-dialog"
         sx={{ display: 'flex', justifyContent: 'space-between' }}
@@ -75,7 +81,12 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
         </PillButton>
         <PillButton
           variant="contained"
-          onClick={() => onDownload({ startDate: startDateInput, endDate: endDateInput })}
+          onClick={() =>
+            onDownload({
+              startDate: formatDateToISO(startDateInput),
+              endDate: formatDateToISO(endDateInput),
+            })
+          }
           disabled={!isDateRangeValid}
         >
           Download

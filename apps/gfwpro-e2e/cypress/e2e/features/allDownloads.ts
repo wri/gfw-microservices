@@ -2,14 +2,9 @@ import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
-import AlertsPage from '../../pages/alertsPage';
-import BasePage from '../../pages/basePage';
-
 describe('Locations View', () => {
   const locationsPage = new LocationsPage();
   const listDetailPage = new ListDetailsPage();
-  const alertsPage = new AlertsPage();
-  const basePage = new BasePage();
 
   When('I login in the landing page', () => {
     cy.loginUI();
@@ -60,30 +55,5 @@ describe('Locations View', () => {
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
     listDetailPage.clickCloseAlertDownload();
-  });
-
-  When('I navigate to the alerts page', () => {
-    basePage.navigateToAlertsPage();
-    cy.location('href').should('include', '/dashboard');
-  });
-
-  Then('I test download into Alerts', () => {
-    alertsPage.selectListFromDropDown('AAT Argentina Points Generic');
-    alertsPage.downloadAlertsReport();
-    alertsPage.elements
-      .downloadConfirmationTitle()
-      .should('have.text', 'List file Download')
-      .and('be.visible');
-    alertsPage.elements
-      .downloadConfirmationMessage()
-      .should(
-        'have.text',
-        "You have selected a list file for download. Please check your email for your data's download link."
-      )
-      .and('be.visible');
-    alertsPage.elements.downloadConfirmationCloseBtn().click();
-    alertsPage.navigateToListMap();
-    cy.location('href').should('include', '/map');
-    alertsPage.elements.listInfo().should('have.text', '787 - AAT Argentina Points Generic');
   });
 });

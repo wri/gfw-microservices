@@ -2755,7 +2755,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'gfw_global_vegetation_disturbance_alerts_metadata',
-          url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts/v20251108/dynamic/{z}/{x}/{y}.png?render_type=true_color',
+          url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts/v20251108/dynamic/{z}/{x}/{y}.png?render_type=true_color&alert_confidence=high',
         },
       },
       legendConfig: {

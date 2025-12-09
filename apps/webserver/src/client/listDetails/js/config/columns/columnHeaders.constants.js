@@ -1,6 +1,7 @@
 export const columnHeaders = {
   alertsInNaturalForest: 'Alerts in Natural Forest',
   alertsInNonForest: 'Alerts in Non-Forest',
+  alertsInJrc: 'Alerts in JRC',
   allAlerts: 'All Alerts',
   alternativeMill: 'Alternative Mill Name',
   certification: 'Certification',

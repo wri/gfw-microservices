@@ -5,7 +5,7 @@ import { createRequest } from 'node-mocks-http'; // Import the necessary library
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
-import { BadRequestException, INestApplication } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, INestApplication } from '@nestjs/common';
 import { ListService } from '../../lists/lists.service';
 import {
   ExternalAPIKey,
@@ -18,6 +18,7 @@ import {
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
   let app: INestApplication;
+  let listAnalysisService: ListAnalysisService;
 
   const expectedResult = {
     listId: 123,
@@ -58,6 +59,13 @@ describe('ListAnalysisController', () => {
   const mockResponseDeleteList = 'User email@email has deleted list listName';
 
   beforeEach(async () => {
+    const mockListAnalysisService = {
+      getAnalysisStatus: jest.fn(() => expectedResult),
+      getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
+      deleteList: jest.fn(() => mockResponseDeleteList),
+      getLocationsErrors: jest.fn().mockResolvedValue(mockLocationsWithErrors),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -82,12 +90,7 @@ describe('ListAnalysisController', () => {
         SqlModule,
         {
           provide: ListAnalysisService,
-          useValue: {
-            getAnalysisStatus: jest.fn(() => expectedResult),
-            getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
-            deleteList: jest.fn(() => mockResponseDeleteList),
-            getLocationsErrors: jest.fn().mockResolvedValue(mockLocationsWithErrors),
-          },
+          useValue: mockListAnalysisService,
         },
         {
           provide: ListService,
@@ -99,6 +102,7 @@ describe('ListAnalysisController', () => {
     }).compile();
 
     controller = module.get<ListAnalysisController>(ListAnalysisController);
+    listAnalysisService = module.get<ListAnalysisService>(ListAnalysisService);
 
     app = module.createNestApplication();
     await app.init();
@@ -148,6 +152,53 @@ describe('ListAnalysisController', () => {
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
     expect(result).toMatchObject({});
+  });
+
+  it('should return 422 when errorsDetails contains "Exceeded Analysis Limit"', async () => {
+    const listId = 123;
+    const analysisId = 'FCD';
+
+    // Mock the request object with the 'x-api-key' header
+    const requestMock = createRequest({
+      method: 'GET',
+      url: `/api/v1/list/${listId}/analysis/FCD/status`,
+      headers: {
+        'x-api-key': 'your-api-key',
+      },
+      user: {
+        organizationId: 1,
+      },
+    });
+
+    // Mock service to return status with "Exceeded Analysis Limit" in errorsDetails
+    const mockAnalysisStatusWithLimitError = {
+      listId: '123',
+      status: 'Error',
+      errorsDetails: ['Exceeded Analysis Limit'],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    };
+
+    jest
+      .spyOn(listAnalysisService, 'getAnalysisStatusWithErrorFileStoragePath')
+      .mockResolvedValue(mockAnalysisStatusWithLimitError);
+    jest.spyOn(listAnalysisService, 'getLocationsErrors').mockResolvedValue([]);
+
+    await expect(controller.getAnalysisStatus(listId, analysisId, requestMock)).rejects.toThrow(
+      HttpException
+    );
+
+    try {
+      await controller.getAnalysisStatus(listId, analysisId, requestMock);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+      expect(error.getStatus()).toBe(HttpStatus.UNPROCESSABLE_ENTITY);
+      expect(error.getResponse()).toMatchObject({
+        ...mockAnalysisStatusWithLimitError,
+        errorsDetails: ['Exceeded Analysis Limit'],
+      });
+    }
   });
 
   it.each(['AFI', 'RandomWrongType'])(

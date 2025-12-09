@@ -88,10 +88,10 @@ export class AlertsGlobalIntegratedDisturbanceDailyService extends IPipeService 
 
   process(analysisData: DashboardDataType[]) {
     analysisData?.forEach((data) => {
-      if (data?.location_id && data.location_id !== -1) {
+      if (data?.location_id !== undefined && data.location_id !== null && data.location_id !== -1) {
         this.uniqueLocationIds.add(data.location_id);
+        this.inputStream.write(data);
       }
-      this.inputStream.write(data);
     });
   }
 

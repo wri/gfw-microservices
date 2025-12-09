@@ -99,6 +99,7 @@ import {
   COMMODITY_RISK_VIEW,
   POST_2020_RISK_ASSESSMENT_VIEW,
   ALERTS,
+  forestDataSet,
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 
@@ -128,7 +129,8 @@ const DIAGNOSTICS_URLS = {
   [POST_2020_RISK_ASSESSMENT_VIEW]: '/api/afi/download?listId=[list-id]',
   [FOREST_CHANGE_VIEW]:
     '/locations/csv/[list-id]?type=everything&order=asc&aggregate=true&listView=forest_change&isGFWList=false&analysisAreaMin=0&source=diagnostics',
-  [ALERTS]: '/api/afi/download?listId=[list-id]', // change to Alerts diagnostics request url when available
+  [ALERTS]:
+    '/locations/csv/[list-id]?listID=[list-id]&format=csv&type=alerts&selectedAlert=Integrated&selectedTimeframe=DAY&isGFWList=false&startDate=[start-date]&endDate=[end-date]',
 };
 
 export default class ListDetails extends Component {
@@ -209,8 +211,31 @@ export default class ListDetails extends Component {
       isEudrBannerDismissed,
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
+      forestDataset: forestDataSet.NaturalForestMap,
     };
   }
+
+  refreshColumns = (newForestDataset) => {
+    const { listView, listData, selectedLists } = this.props;
+    return getAllColumnNames(
+      listView,
+      listData[0],
+      selectedLists,
+      this.getCheckboxColumn,
+      this.areAllAnalysesDraft(),
+      newForestDataset || this.state.forestDataset
+    );
+  };
+
+  changeDataSource = (event) => {
+    const newForestDataset = event.target.value;
+
+    const columnNames = this.refreshColumns(newForestDataset);
+    this.setState({
+      forestDataset: newForestDataset,
+      combinedColumns: columnNames.combinedColumns,
+    });
+  };
 
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
@@ -255,15 +280,10 @@ export default class ListDetails extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { listView, listData, selectedLists, filters } = this.props;
+    const { listView, selectedLists, filters } = this.props;
     if (listView !== prevProps.listView) {
-      const columnNames = getAllColumnNames(
-        listView,
-        listData[0],
-        selectedLists,
-        this.getCheckboxColumn,
-        this.areAllAnalysesDraft()
-      );
+      const columnNames = this.refreshColumns();
+
       this.setState({
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,
@@ -1103,7 +1123,8 @@ export default class ListDetails extends Component {
           locationData[0],
           selectedLists,
           this.getCheckboxColumn,
-          this.areAllAnalysesDraft()
+          this.areAllAnalysesDraft(),
+          this.state.forestDataset
         );
         const filteredIds = data.map((d) => d.location_id);
         store.dispatch(updateListData(data));
@@ -1583,7 +1604,8 @@ export default class ListDetails extends Component {
         listData[0],
         selectedLists,
         this.getCheckboxColumn,
-        this.areAllAnalysesDraft()
+        this.areAllAnalysesDraft(),
+        this.state.forestDataset
       );
       store.dispatch(changeListView(listView));
       this.clearFilters();
@@ -1649,19 +1671,23 @@ export default class ListDetails extends Component {
     this.downloadReport(listID, listView);
   };
 
-  handleAlertsDownloadReport = (listID, listView) => {
-    this.downloadReport(listID, listView);
+  handleAlertsDownloadReport = (listID, listView, date) => {
+    this.downloadReport(listID, listView, date);
     this.setState({ isAlertsDateSelectorOpen: false });
   };
 
-  downloadReport = async (listID, listView) => {
+  downloadReport = async (listID, listView, date) => {
     if (!DIAGNOSTICS_URLS[listView]) {
       return;
     }
 
     try {
       this.setIsDownloadDialogOpen(true);
-      const url = DIAGNOSTICS_URLS[listView].replace('[list-id]', listID);
+      let url = DIAGNOSTICS_URLS[listView].replaceAll('[list-id]', listID);
+
+      if (date?.startDate && date?.endDate) {
+        url = url.replace('[start-date]', date.startDate).replace('[end-date]', date.endDate);
+      }
 
       await axios.get(url, {
         withCredentials: true,
@@ -2215,6 +2241,8 @@ export default class ListDetails extends Component {
                             isGfwList={selectedList.isGlobalForestWatchList}
                             areAllAnalysesDraft={this.areAllAnalysesDraft()}
                             isListWithErrors={isListWithErrors}
+                            forestDataset={this.state.forestDataset}
+                            onForestDatasetChange={this.changeDataSource}
                           />
 
                           <section>

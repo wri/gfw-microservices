@@ -55,23 +55,34 @@ describe('ReadmeService', () => {
     expect(fs.copyFile).toHaveBeenCalledWith(sourceDir, destFile, expect.any(Function));
   });
 
-  it('should source dir have daily_alerts_readme when the filter type is Alerts and the selectedTimeFrame is Day', async () => {
+  it('should merge daily_alerts_readme and global_integrated_disturbance_alerts_daily_readme when the filter type is Alerts and the selectedTimeFrame is Day', async () => {
     const filters: AlertFieldsFileRequest = {
       key: 'test-key',
       type: 'alerts',
       selectedTimeframe: AlertsTimeframes.DAY,
       selectedAlert: '',
+      listName: 'TestList',
     };
-    const sourceDir = '/mock/source/dir/daily_alerts_readme.csv';
-    const destFile = '/tmp/wri-test-key/README.csv';
 
-    (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
-      callback(null);
-    });
+    // Access the readmeMergeServices instance from the service
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const serviceReadmeMergeServices = (service as any).readmeMergeServices;
+    const processFilesSpy = jest
+      .spyOn(serviceReadmeMergeServices, 'processFiles')
+      .mockResolvedValue('/tmp/wri-test-key/README.csv');
 
     await service.write(filters);
 
-    expect(fs.copyFile).toHaveBeenCalledWith(sourceDir, destFile, expect.any(Function));
+    expect(processFilesSpy).toHaveBeenCalledWith(
+      [
+        '/mock/source/dir/daily_alerts_readme.csv',
+        '/mock/source/dir/global_integrated_disturbance_alerts_daily_readme.csv',
+      ],
+      null,
+      '/tmp/wri-test-key/',
+      'TestList'
+    );
+    expect(fs.copyFile).not.toHaveBeenCalled();
   });
 
   it('should not break when readme file does not exist', async () => {
@@ -97,7 +108,7 @@ describe('ReadmeService', () => {
     expect(fs.copyFile).not.toHaveBeenCalled();
   });
 
-  it('should return daily_alerts_readme.csv when selectedTimeframe is DAY', () => {
+  it('should return array with daily_alerts_readme.csv and global_integrated_disturbance_alerts_daily_readme.csv when selectedTimeframe is DAY', () => {
     const filters: AlertFieldsFileRequest = {
       key: 'test-key',
       type: 'alerts',
@@ -107,7 +118,10 @@ describe('ReadmeService', () => {
 
     const result = service.alertsReadmeData(filters);
 
-    expect(result).toBe('daily_alerts_readme.csv');
+    expect(result).toEqual([
+      'daily_alerts_readme.csv',
+      'global_integrated_disturbance_alerts_daily_readme.csv',
+    ]);
   });
 
   it('should return alerts_readme.csv when selectedTimeframe is WEEK', () => {

@@ -27,11 +27,14 @@ export const getActiveAnalysisFlags = ({
   const isOnlyGHGActive =
     analysisIds.length === 1 && analysisIds[0] === analysisTypes.GREENHOUSE_GAS_EMISSIONS;
 
+  const isAlertsActive = analysisIds.includes(analysisTypes.ALERTS);
+
   return {
     isFcdActive,
     isPalmRiskActive,
     isAfiActive,
     isGHGActive,
     isOnlyGHGActive,
+    isAlertsActive,
   };
 };

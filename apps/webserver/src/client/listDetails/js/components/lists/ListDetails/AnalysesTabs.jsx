@@ -20,7 +20,6 @@ function AnalysesTabs({
   listAnalysesStatus,
   hasLocationWithErrors,
 }) {
-  console.log({ listViewOptions });
   const getStatusIcon = (status) => {
     switch (status) {
       case listStatus.Pending:

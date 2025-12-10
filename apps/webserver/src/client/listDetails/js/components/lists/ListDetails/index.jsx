@@ -164,7 +164,7 @@ export default class ListDetails extends Component {
       isAfiActive,
       isGHGActive,
       isOnlyGHGActive,
-      isAlertsActive,
+      isDcfActive,
     } = getActiveAnalysisFlags(selectedList);
 
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
@@ -222,7 +222,7 @@ export default class ListDetails extends Component {
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
-      isAlertsActive,
+      isDcfActive,
     };
   }
 
@@ -1769,7 +1769,7 @@ export default class ListDetails extends Component {
       isAfiActive,
       isGHGActive,
       isOnlyGHGActive,
-      isAlertsActive,
+      isDcfActive,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -1854,7 +1854,7 @@ export default class ListDetails extends Component {
       listViewOptions.push(POST_2020_RISK_ASSESSMENT_VIEW);
     }
 
-    if (isAlertsActive && isDcfAvailable) {
+    if (isDcfActive && isDcfAvailable) {
       listViewOptions.push(ALERTS);
     }
 

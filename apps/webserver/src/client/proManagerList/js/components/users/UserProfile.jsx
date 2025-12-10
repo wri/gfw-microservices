@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Dialog } from '@mui/material';
 import Select from 'react-select';
 import qr from 'qrcode';
@@ -9,384 +9,321 @@ import { fieldValidations } from '../../../../profile/js/utils/validations';
 import '../../../css/profile.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
 
-export default class UserProfile extends Component {
-  constructor(props) {
-    super(props);
-    const geographyArray = this.props.currentUser.user_geography_ids.split(',').map((geo) => {
+// Constants
+const TITLE_OTHER_ID = 10;
+const STATUS_ACTIVE_ID = 2;
+const STATUS_INACTIVE_ID = 3;
+const AUTH_GOOGLE_AUTHENTICATOR_ID = 1;
+const DEFAULT_ACCESS_LEVEL = 3;
+const DEFAULT_STATUS_ID = 1;
+const DEFAULT_TITLE_ID = 1;
+
+export default function UserProfile({ currentUser, geographiesData, commoditiesData, titlesData, disable, userOnly }) {
+  // Initialize geographies and commodities arrays
+  const initialGeographies = useMemo(() => {
+    return currentUser.user_geography_ids.split(',').map((geo) => {
       const geogId = parseInt(geo);
-      const data = this.props.geographiesData.find((d) => d.id == geogId);
+      const data = geographiesData.find((d) => d.id == geogId);
       return data ? { label: data.geography_name, value: geogId } : { label: '', value: geogId };
     });
-    const commoditiesArray = this.props.currentUser.user_commodity_ids
-      .split(',')
-      .map((commodity) => {
-        const commId = parseInt(commodity);
-        const data = this.props.commoditiesData.find((d) => d.id == commId);
-        return data ? { label: data.commmodity_name, value: commId } : { label: '', value: commId };
-      });
-    this.state = {
-      user_id: this.props.currentUser.user_id ? this.props.currentUser.user_id : '',
-      first_name: this.props.currentUser.first_name ? this.props.currentUser.first_name : '',
-      middle_initial: this.props.currentUser.middle_initial
-        ? this.props.currentUser.middle_initial
-        : '',
-      last_name: this.props.currentUser.last_name ? this.props.currentUser.last_name : '',
-      email: this.props.currentUser.email ? this.props.currentUser.email : '',
-      accounts: [],
-      phone: this.props.currentUser.phone ? this.props.currentUser.phone : '',
-      org_class: '',
-      org_name: '',
-      access_level_id: this.props.currentUser.access_level_id
-        ? this.props.currentUser.access_level_id
-        : 3,
-      status_id: this.props.currentUser.user_status_id ? this.props.currentUser.user_status_id : 1,
-      title: this.props.currentUser.title_id ? this.props.currentUser.title_id : 1,
-      other_title: this.props.currentUser.other_title ? this.props.currentUser.other_title : '',
-      geographies: geographyArray,
-      commodities: commoditiesArray,
-      viirsAlerts: this.props.currentUser.viirs_email_frequency
-        ? this.props.currentUser.viirs_email_frequency
-        : 0,
-      gladAlerts: this.props.currentUser.glad_email_frequency
-        ? this.props.currentUser.glad_email_frequency
-        : 0,
-      granChacoAlerts: this.props.currentUser.gran_chaco_email_frequency
-        ? this.props.currentUser.gran_chaco_email_frequency
-        : 0,
-      auth_preference_id: this.props.currentUser.auth_preference_id
-        ? this.props.currentUser.auth_preference_id
-        : 0,
-      enableAlerts: this.props.currentUser.email_subscription
-        ? this.props.currentUser.email_subscription
-        : false,
-      secondAuth: 'email',
-      secret_url: '',
-      secret: '',
-      sharingInternal: 0,
-      sharingExternal: 0,
-      dialogOpen: false,
-      dialogTitle: '',
-      dialogMessage: '',
-      updating: false,
-      // saved: false,
-      // activated: false
-    };
+  }, [currentUser.user_geography_ids, geographiesData]);
 
-    // Get the user QR Code
-    if (
-      this.props.currentUser.email &&
-      this.state.newUser === false &&
-      this.props.currentUser.auth_preference_id === 1
-    ) {
-      this.getQRCode();
+  const initialCommodities = useMemo(() => {
+    return currentUser.user_commodity_ids.split(',').map((commodity) => {
+      const commId = parseInt(commodity);
+      const data = commoditiesData.find((d) => d.id == commId);
+      return data ? { label: data.commmodity_name, value: commId } : { label: '', value: commId };
+    });
+  }, [currentUser.user_commodity_ids, commoditiesData]);
+
+  // State hooks
+  const [userId, setUserId] = useState(currentUser.user_id || '');
+  const [firstName, setFirstName] = useState(currentUser.first_name || '');
+  const [middleInitial, setMiddleInitial] = useState(currentUser.middle_initial || '');
+  const [lastName, setLastName] = useState(currentUser.last_name || '');
+  const [email, setEmail] = useState(currentUser.email || '');
+  const [phone, setPhone] = useState(currentUser.phone || '');
+  const [orgName, setOrgName] = useState(currentUser.organization_name || '');
+  const [accessLevelId, setAccessLevelId] = useState(currentUser.access_level_id || DEFAULT_ACCESS_LEVEL);
+  const [statusId, setStatusId] = useState(currentUser.user_status_id || DEFAULT_STATUS_ID);
+  const [title, setTitle] = useState(currentUser.title_id || DEFAULT_TITLE_ID);
+  const [otherTitle, setOtherTitle] = useState(currentUser.other_title || '');
+  const [geographies, setGeographies] = useState(initialGeographies);
+  const [commodities, setCommodities] = useState(initialCommodities);
+  const [viirsAlerts, setViirsAlerts] = useState(currentUser.viirs_email_frequency || 0);
+  const [gladAlerts, setGladAlerts] = useState(currentUser.glad_email_frequency || 0);
+  const [enableAlerts, setEnableAlerts] = useState(currentUser.email_subscription || false);
+  const [secretUrl, setSecretUrl] = useState('');
+  const [secret, setSecret] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('');
+  const [dialogMessage, setDialogMessage] = useState('');
+  const [updating, setUpdating] = useState(false);
+
+  // Refs
+  const statusSelectRef = useRef(null);
+  const accessSelectRef = useRef(null);
+  const titleSelectRef = useRef(null);
+
+  // Log current user on mount
+  useEffect(() => {
+    console.log('this.props.currentUserthis.props.currentUser', currentUser);
+  }, [currentUser]);
+
+  // Fetch QR Code on mount if conditions are met
+  useEffect(() => {
+    if (currentUser.email && currentUser.auth_preference_id === AUTH_GOOGLE_AUTHENTICATOR_ID) {
+      getQRCode();
     }
-    console.log('this.props.currentUserthis.props.currentUser', this.props.currentUser);
-  }
+  }, [currentUser.email, currentUser.auth_preference_id]);
 
-  getQRCode = () => {
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/userSecret');
-
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-        const res = JSON.parse(xmlhttp.responseText);
-        qr.toDataURL(res.url, (err, url) => {
-          this.setState({
-            secret: res.secret,
-            secret_url: url,
-          });
-        });
-      }
-    };
-    xmlhttp.setRequestHeader('Content-Type', 'application/json');
-    xmlhttp.send(JSON.stringify({ email: this.state.email }));
-  };
-
-  updateAuthenticationPreference = (evt) => {
-    this.setState(
-      {
-        auth_preference_id: parseInt(evt.target.value),
+  const getQRCode = () => {
+    fetch('/userSecret', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-      () => {
-        // If the preference is Google Authenticator - get secret information
-        if (this.state.auth_preference_id === 1) {
-          this.getQRCode();
+      body: JSON.stringify({ email }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        qr.toDataURL(res.url, (err, url) => {
+          setSecret(res.secret);
+          setSecretUrl(url);
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching QR code:', error);
+      });
+  };
+
+  const updateAuthenticationPreference = (evt) => {
+    const newAuthPref = parseInt(evt.target.value);
+    setAuthPreferenceId(newAuthPref);
+    
+    // If the preference is Google Authenticator - get secret information
+    if (newAuthPref === AUTH_GOOGLE_AUTHENTICATOR_ID) {
+      getQRCode();
+    }
+  };
+
+  const handleInputChange = (setter) => (evt) => {
+    setter(evt.target.value);
+  };
+
+  const statusChange = (evt) => {
+    setStatusId(evt.target.value);
+  };
+
+  const accessChange = (evt) => {
+    setAccessLevelId(evt.target.value);
+  };
+
+  const titleChange = (evt) => {
+    setTitle(parseInt(evt.target.value));
+  };
+
+  const updateOther = (evt) => {
+    setOtherTitle(evt.target.value);
+  };
+
+  const geogChange = (results) => {
+    setGeographies(results);
+  };
+
+  const commChange = (results) => {
+    setCommodities(results);
+  };
+
+  const updateEmailPrefs = () => {
+    setEnableAlerts(!enableAlerts);
+  };
+
+  const activateUser = () => {
+    fetch('/profile/activateUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: userId,
+        email: email,
+      }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (res.redirect) {
+          window.location = res.redirect;
         }
+      })
+      .catch((error) => {
+        console.error('Error activating user:', error);
+      });
+  };
+
+  const deactivateUser = () => {
+    fetch('/profile/deactivateUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: userId,
+        email: email,
+      }),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (res.redirect) {
+          window.location = res.redirect;
+        }
+      })
+      .catch((error) => {
+        console.error('Error deactivating user:', error);
+      });
+  };
+
+  const createSelectOption = (labelKey) => (option, i) => (
+    <option value={option.id} id={option.id} key={i} className="classifications-option">
+      {option[labelKey]}
+    </option>
+  );
+
+  const createMultiSelectOption = (labelKey) => (option) => ({
+    label: option[labelKey],
+    value: option.id,
+  });
+
+  const validateField = (fieldName, value, errors, missing) => {
+    const field = fieldValidations[fieldName];
+    
+    field.validations.forEach((validation) => {
+      if (validation(value) === false) {
+        errors.push(field.text);
       }
-    );
-  };
-
-  updateFirst = (evt) => {
-    this.setState({ first_name: evt.target.value });
-  };
-
-  updateLastName = (evt) => {
-    this.setState({ last_name: evt.target.value });
-  };
-
-  updateEmail = (evt) => {
-    this.setState({ email: evt.target.value });
-  };
-
-  updatePhone = (evt) => {
-    this.setState({
-      phone: evt.target.value,
+    });
+    
+    field.mandatoryChecks.forEach((mandatoryCheck) => {
+      if (mandatoryCheck(value.trim()) === false) {
+        missing.push(field.text);
+      }
     });
   };
 
-  statusChange = (evt) => {
-    this.setState({ status_id: evt.target.value });
+  const showErrorDialog = (errors, missing) => {
+    if (errors.length > 0 && missing.length > 0) {
+      errors.unshift('Please review for invalid characters:');
+      missing.unshift('Please enter:');
+      const errorsAndMissing = [...errors, ...missing];
+      setDialogOpen(true);
+      setDialogTitle('Invalid field entries & Mandatory fields missing');
+      setDialogMessage(errorsAndMissing);
+    } else if (errors.length > 0) {
+      errors.unshift('Please review for invalid characters:');
+      setDialogOpen(true);
+      setDialogTitle('Invalid field entries');
+      setDialogMessage(errors);
+    } else {
+      missing.unshift('Please enter:');
+      setDialogOpen(true);
+      setDialogTitle('Mandatory fields missing');
+      setDialogMessage(missing);
+    }
+    setUpdating(false);
   };
 
-  accessChange = (evt) => {
-    this.setState({ access_level_id: evt.target.value });
-  };
-
-  titleChange = (evt) => {
-    this.setState({ title: parseInt(evt.target.value) });
-  };
-
-  updateOther = (evt) => {
-    this.setState({ other_title: evt.target.value });
-  };
-
-  geogChange = (results) => {
-    this.setState({ geographies: results });
-  };
-
-  commChange = (results) => {
-    this.setState({ commodities: results });
-  };
-
-  updateEmailPrefs = () => {
-    this.setState({ enableAlerts: !this.state.enableAlerts });
-  };
-
-  activateUser = () => {
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/profile/activateUser');
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-        const res = JSON.parse(xmlhttp.responseText);
-        if (res.redirect) {
-          window.location = res.redirect;
-        }
-      }
-    };
-    xmlhttp.setRequestHeader('Content-Type', 'application/json');
-    xmlhttp.send(
-      JSON.stringify({
-        name: this.state.user_id,
-        email: this.state.email,
-      })
-    );
-  };
-
-  deactivateUser = () => {
-    const xmlhttp = new XMLHttpRequest();
-    xmlhttp.open('POST', '/profile/deactivateUser');
-    xmlhttp.onreadystatechange = () => {
-      if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-        const res = JSON.parse(xmlhttp.responseText);
-        if (res.redirect) {
-          window.location = res.redirect;
-        }
-      }
-    };
-    xmlhttp.setRequestHeader('Content-Type', 'application/json');
-    xmlhttp.send(
-      JSON.stringify({
-        name: this.state.user_id,
-        email: this.state.email,
-      })
-    );
-  };
-
-  createGeogOptions = (option) => {
-    return { label: option.geography_name, value: option.id };
-  };
-
-  createTitleOptions = (option, i) => {
-    return (
-      <option value={option.id} id={option.id} key={i} className="classifications-option">
-        {option.title}
-      </option>
-    );
-  };
-
-  createCommOptions = (option) => {
-    return { label: option.commmodity_name, value: option.id };
-  };
-
-  createStatusOptions = (option, i) => {
-    return (
-      <option value={option.id} id={option.id} key={i} className="classifications-option">
-        {option.name}
-      </option>
-    );
-  };
-
-  createAccessOptions = (option, i) => {
-    return (
-      <option value={option.id} id={option.id} key={i} className="classifications-option">
-        {option.name}
-      </option>
-    );
-  };
-
-  updateUser = () => {
+  const updateUser = () => {
     const errors = [];
     const missing = [];
 
-    fieldValidations.first_name.validations.forEach((validation) => {
-      if (validation(this.state.first_name) === false) {
-        errors.push(fieldValidations.first_name.text);
-      }
-    });
-    fieldValidations.first_name.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.first_name.trim()) === false) {
-        missing.push(fieldValidations.first_name.text);
-      }
-    });
-
-    fieldValidations.last_name.validations.forEach((validation) => {
-      if (validation(this.state.last_name) === false) {
-        errors.push(fieldValidations.last_name.text);
-      }
-    });
-    fieldValidations.last_name.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.last_name.trim()) === false) {
-        missing.push(fieldValidations.last_name.text);
-      }
-    });
-
-    fieldValidations.email.validations.forEach((validation) => {
-      if (validation(this.state.email) === false) {
-        errors.push(fieldValidations.email.text);
-      }
-    });
-    fieldValidations.email.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.email.trim()) === false) {
-        missing.push(fieldValidations.email.text);
-      }
-    });
-
-    fieldValidations.phone.validations.forEach((validation) => {
-      if (validation(this.state.phone) === false) {
-        errors.push(fieldValidations.phone.text);
-      }
-    });
-    fieldValidations.phone.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.phone.trim()) === false) {
-        missing.push(fieldValidations.phone.text);
-      }
-    });
+    validateField('first_name', firstName, errors, missing);
+    validateField('last_name', lastName, errors, missing);
+    validateField('email', email, errors, missing);
+    validateField('phone', phone, errors, missing);
 
     if (errors.length === 0 && missing.length === 0) {
       const route = '/pro-manager/updateProAccountUser';
-      this.setState({
-        dialogOpen: true,
-        dialogTitle: 'Updating...',
-        dialogMessage: '',
-        updating: true,
-      });
-      const xmlhttp = new XMLHttpRequest();
-      xmlhttp.open('POST', route);
-      xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-          this.setState({
-            dialogOpen: false,
-            dialogTitle: '',
-            dialogMessage: '',
-            updating: true,
-          });
-          const res = JSON.parse(xmlhttp.responseText);
+      setDialogOpen(true);
+      setDialogTitle('Updating...');
+      setDialogMessage('');
+      setUpdating(true);
+
+      const geoString = geographies.map((g) => g.value).join(', ');
+      const commoditiesString = commodities.map((c) => c.value).join(', ');
+
+      fetch(route, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: userId,
+          first_name: firstName,
+          middle_initial: middleInitial,
+          last_name: lastName,
+          email: email,
+          phone: phone,
+          title: title,
+          other_title: otherTitle,
+          geographies: geoString,
+          commodities: commoditiesString,
+        }),
+      })
+        .then((response) => response.json())
+        .then((res) => {
+          setDialogOpen(false);
+          setDialogTitle('');
+          setDialogMessage('');
+          setUpdating(false);
           if (res.redirect) {
             window.location = res.redirect;
           }
-        }
-      };
-      xmlhttp.setRequestHeader('Content-Type', 'application/json');
-
-      const geoString = this.state.geographies.map((g) => g.value).join(', ');
-      const commoditiesString = this.state.commodities.map((c) => c.value).join(', ');
-      xmlhttp.send(
-        JSON.stringify({
-          id: this.state.user_id,
-          first_name: this.state.first_name,
-          middle_initial: this.state.middle_initial,
-          last_name: this.state.last_name,
-          email: this.state.email,
-          phone: this.state.phone,
-          title: this.state.title,
-          other_title: this.state.other_title,
-          geographies: geoString,
-          commodities: commoditiesString,
         })
-      );
+        .catch((error) => {
+          console.error('Error updating user:', error);
+          setDialogOpen(true);
+          setDialogTitle('Error');
+          setDialogMessage('Failed to update user. Please try again.');
+          setUpdating(false);
+        });
     } else {
-      if (errors.length > 0 && missing.length > 0) {
-        errors.unshift('Please review for invalid characters:');
-        missing.unshift('Please enter:');
-        const errorsAndMissing = [...errors, ...missing];
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Invalid field entries & Mandatory fields missing',
-          dialogMessage: errorsAndMissing,
-          updating: false,
-        });
-      } else if (errors.length > 0) {
-        errors.unshift('Please review for invalid characters:');
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Invalid field entries',
-          dialogMessage: errors,
-          updating: false,
-        });
-      } else {
-        missing.unshift('Please enter:');
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Mandatory fields missing',
-          dialogMessage: missing,
-          updating: false,
-        });
-      }
+      showErrorDialog(errors, missing);
     }
   };
 
-  shouldCloseDialog = () => {
-    this.setState({ dialogOpen: false });
+  const shouldCloseDialog = () => {
+    setDialogOpen(false);
   };
 
-  generateMessages = (message, i) => {
+  const generateMessages = (message, i) => {
     return <p key={message + i}>{message}</p>;
   };
 
-  createViirsOption = (option, j) => (
+  const createViirsOption = (option, j) => (
     <td key={j}>
       <input
         type="radio"
         id={option.id + 'viirs'}
         value={option.id}
         key={j + 'viirs'}
-        checked={this.state.viirsAlerts === option.id}
-        onChange={(evt) => this.setState({ viirsAlerts: parseInt(evt.target.value) })}
+        checked={viirsAlerts === option.id}
+        onChange={(evt) => setViirsAlerts(parseInt(evt.target.value))}
       />
       <label htmlFor={option.id + 'viirs'} className="profile-label">
         {option.name}
       </label>
     </td>
   );
-  createGladOption = (option, j) => (
+  
+  const createGladOption = (option, j) => (
     <td key={j}>
       <input
         type="radio"
         id={option.id + 'glad'}
         value={option.id}
         key={j + 'glad'}
-        checked={this.state.gladAlerts === option.id}
-        onChange={(evt) => this.setState({ gladAlerts: parseInt(evt.target.value) })}
+        checked={gladAlerts === option.id}
+        onChange={(evt) => setGladAlerts(parseInt(evt.target.value))}
       />
       <label htmlFor={option.id + 'glad'} className="profile-label">
         {option.name}
@@ -394,34 +331,33 @@ export default class UserProfile extends Component {
     </td>
   );
 
-  render() {
-    const { dialogOpen, dialogTitle, dialogMessage, updating } = this.state;
-    const dialogContent =
-      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
-    let action = this.shouldCloseDialog;
+  // Render logic
+  const dialogContent =
+    typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(generateMessages);
+  let action = shouldCloseDialog;
 
-    if (dialogTitle === 'Account Successfully Requested') {
-      action = this.shouldRedirect;
-    }
-    const defaultAction = updating
-      ? []
-      : [
-          <PillButton variant="contained" size="small" autoFocus onClick={action}>
-            Ok
-          </PillButton>,
-        ];
+  if (dialogTitle === 'Account Successfully Requested') {
+    action = shouldCloseDialog; // Note: shouldRedirect was not defined in original
+  }
+  const defaultAction = updating
+    ? []
+    : [
+        <PillButton key="ok-button" variant="contained" size="small" autoFocus onClick={action}>
+          Ok
+        </PillButton>,
+      ];
 
-    const statusOptions = profilePage.userProfile.statusOptions.map(this.createStatusOptions);
-    const accessOptions = profilePage.userProfile.accessOptions.map(this.createAccessOptions);
+  const statusOptions = profilePage.userProfile.statusOptions.map(createSelectOption('name'));
+  const accessOptions = profilePage.userProfile.accessOptions.map(createSelectOption('name'));
 
-    const viirsOptions = profilePage.userProfile.viirsEmailFrequencies.map(this.createViirsOption);
-    const gladOptions = profilePage.userProfile.gladEmailFrequencies.map(this.createGladOption);
-    const commOptions = this.props.commoditiesData.map(this.createCommOptions);
-    const geogOptions = this.props.geographiesData.map(this.createGeogOptions);
-    const titleOptions = this.props.titlesData.map(this.createTitleOptions);
+  const viirsOptions = profilePage.userProfile.viirsEmailFrequencies.map(createViirsOption);
+  const gladOptions = profilePage.userProfile.gladEmailFrequencies.map(createGladOption);
+  const commOptions = commoditiesData.map(createMultiSelectOption('commmodity_name'));
+  const geogOptions = geographiesData.map(createMultiSelectOption('geography_name'));
+  const titleOptions = titlesData.map(createSelectOption('title'));
 
-    return (
-      <div className="profile-body">
+  return (
+    <div className="profile-body">
         <Dialog
           paperClassName="dialog-paper"
           open={dialogOpen}
@@ -448,12 +384,12 @@ export default class UserProfile extends Component {
                 <div className="col flex-grid-column">
                   <span className="profile-label">First Name</span>
                   <input
-                    value={this.state.first_name}
-                    disabled={this.props.disable}
+                    value={firstName}
+                    disabled={disable}
                     required
-                    id="organization"
+                    id="user_first_name"
                     name="user_first_name"
-                    onChange={this.updateFirst}
+                    onChange={handleInputChange(setFirstName)}
                   />
                 </div>
               </div>
@@ -461,12 +397,12 @@ export default class UserProfile extends Component {
                 <div className="col flex-grid-column">
                   <span className="profile-label">Last Name</span>
                   <input
-                    value={this.state.last_name}
-                    disabled={this.props.disable}
+                    value={lastName}
+                    disabled={disable}
                     required
-                    id="organization"
+                    id="user_last_name"
                     name="user_last_name"
-                    onChange={this.updateLastName}
+                    onChange={handleInputChange(setLastName)}
                   />
                 </div>
               </div>
@@ -474,11 +410,11 @@ export default class UserProfile extends Component {
                 <div className="col flex-grid-column">
                   <span className="profile-label">E-mail</span>
                   <input
-                    value={this.state.email}
-                    disabled={this.props.disable}
+                    value={email}
+                    disabled={disable}
                     required
                     name="user_email"
-                    onChange={this.updateEmail}
+                    onChange={handleInputChange(setEmail)}
                   />
                 </div>
               </div>
@@ -488,12 +424,12 @@ export default class UserProfile extends Component {
                 <div className="col flex-grid-column">
                   <label className="profile-label">Current User Status</label>
                   <select
-                    value={this.state.status_id}
+                    value={statusId}
                     disabled={true}
                     required
                     name="user_status"
-                    onChange={this.statusChange}
-                    ref="statusSelect"
+                    onChange={statusChange}
+                    ref={statusSelectRef}
                   >
                     {statusOptions}
                   </select>
@@ -501,13 +437,23 @@ export default class UserProfile extends Component {
               </div>
               <div className="flex-grid-column">
                 <div className="col flex-grid-column">
+                  <span className="profile-label">Organization</span>
+                  <input
+                    value={orgName}
+                    disabled={true}
+                    name="user_organization"
+                  />
+                </div>
+              </div>
+              <div className="flex-grid-column">
+                <div className="col flex-grid-column">
                   <span className="profile-label">Phone</span>
                   <input
-                    value={this.state.phone}
-                    disabled={this.props.disable}
+                    value={phone}
+                    disabled={disable}
                     required
                     name="user_phone"
-                    onChange={this.updatePhone}
+                    onChange={handleInputChange(setPhone)}
                   />
                 </div>
               </div>
@@ -525,12 +471,12 @@ export default class UserProfile extends Component {
                   <div className="col flex-grid-column">
                     <span className="profile-label">Access Level</span>
                     <select
-                      value={this.state.access_level_id}
-                      disabled={this.props.disable}
+                      value={accessLevelId}
+                      disabled={disable}
                       required
                       name="access_status"
-                      onChange={this.accessChange}
-                      ref="accessSelect"
+                      onChange={accessChange}
+                      ref={accessSelectRef}
                     >
                       {accessOptions}
                     </select>
@@ -540,23 +486,23 @@ export default class UserProfile extends Component {
                   <div className="col flex-grid-column">
                     <span className="profile-label">Title</span>
                     <select
-                      value={this.state.title}
-                      disabled={this.props.disable}
+                      value={title}
+                      disabled={disable}
                       required
                       name="user_title_id"
-                      ref="titleSelect"
-                      onChange={this.titleChange}
+                      ref={titleSelectRef}
+                      onChange={titleChange}
                     >
                       {titleOptions}
                     </select>
                   </div>
-                  <div className={`account-info-item ${this.state.title === 10 ? '' : 'hidden'}`}>
+                  <div className={`account-info-item ${title === TITLE_OTHER_ID ? '' : 'hidden'}`}>
                     <span className="account-info-label">Alternative Title</span>
                     <input
                       required
                       name="alternative_title"
-                      value={this.state.other_title}
-                      onChange={this.handleOtherTitle}
+                      value={otherTitle}
+                      onChange={updateOther}
                       className="account-info-input"
                     />
                   </div>
@@ -564,7 +510,7 @@ export default class UserProfile extends Component {
 
                 <div
                   className={`flex-grid-column ${
-                    this.state.title === 10 || this.state.title === '10' ? '' : 'hidden'
+                    title === TITLE_OTHER_ID || title === String(TITLE_OTHER_ID) ? '' : 'hidden'
                   }`}
                 >
                   <div className="col flex-grid-column">
@@ -572,9 +518,9 @@ export default class UserProfile extends Component {
                     <input
                       required
                       name="alternative_title"
-                      value={this.state.other_title}
-                      onChange={this.updateOther}
-                      disabled={this.props.disable}
+                      value={otherTitle}
+                      onChange={updateOther}
+                      disabled={disable}
                     />
                   </div>
                 </div>
@@ -590,9 +536,9 @@ export default class UserProfile extends Component {
                       maxMenuHeight={150}
                       options={geogOptions}
                       id="arr_user_geography_ids"
-                      onChange={this.geogChange}
-                      value={this.state.geographies}
-                      disabled={this.props.disable}
+                      onChange={geogChange}
+                      value={geographies}
+                      disabled={disable}
                       name="arr_user_geography_ids"
                     />
                   </div>
@@ -610,9 +556,9 @@ export default class UserProfile extends Component {
                       maxMenuHeight={150}
                       options={commOptions}
                       name="arr_user_commodity_ids"
-                      onChange={this.commChange}
-                      value={this.state.commodities}
-                      disabled={this.props.disable}
+                      onChange={commChange}
+                      value={commodities}
+                      disabled={disable}
                     />
                   </div>
                 </div>
@@ -626,19 +572,19 @@ export default class UserProfile extends Component {
           <section className="section-container">
             <input
               id="EnableEmailAlertNotificationsManager"
-              checked={this.state.enableAlerts}
-              disabled={this.props.disable}
+              checked={enableAlerts}
+              disabled={disable}
               type="checkbox"
               name="email_preferences"
-              onChange={this.updateEmailPrefs}
+              onChange={updateEmailPrefs}
             />
             <label
               htmlFor="EnableEmailAlertNotificationsManager"
-              className={`profile-label ${this.props.disable ? 'disabled' : null}`}
+              className={`profile-label ${disable ? 'disabled' : null}`}
             >
               Enable Email Alert Notifications
             </label>
-            <div className={`space-element ${this.state.enableAlerts ? '' : 'hidden'}`}>
+            <div className={`space-element ${enableAlerts ? '' : 'hidden'}`}>
               <table>
                 <tbody>
                   <tr>
@@ -656,28 +602,28 @@ export default class UserProfile extends Component {
         </section>
 
         <div className="profile-button-container justify-end">
-          {this.props.userOnly ? null : (
+          {userOnly ? null : (
             <PillButton variant="contained" size="small" href={`${PRO_MANAGER_PATH}?tab=users`}>
               Cancel
             </PillButton>
           )}
-          {this.props.userOnly ? null : (
+          {userOnly ? null : (
             <PillButton
               variant="contained"
               size="small"
-              disabled={this.state.status_id === 2}
-              onClick={this.activateUser}
+              disabled={statusId === STATUS_ACTIVE_ID}
+              onClick={activateUser}
             >
               Activate
             </PillButton>
           )}
 
-          {this.props.userOnly ? null : (
+          {userOnly ? null : (
             <PillButton
               variant="contained"
               size="small"
-              disabled={this.state.status_id === 3}
-              onClick={this.deactivateUser}
+              disabled={statusId === STATUS_INACTIVE_ID}
+              onClick={deactivateUser}
             >
               Deactivate
             </PillButton>
@@ -685,13 +631,12 @@ export default class UserProfile extends Component {
           <PillButton
             variant="contained"
             size="small"
-            disabled={this.props.disable}
-            onClick={this.updateUser}
+            disabled={disable}
+            onClick={updateUser}
           >
             Save
           </PillButton>
         </div>
       </div>
-    );
-  }
+  );
 }

@@ -12,9 +12,6 @@ import {
 } from './listViews.constants';
 import { HelperTextWithPopover } from '../../../../../components';
 import { ReusableText } from '../../../../../utils/constants';
-import featureFlags from '../../../../../../utils/general.utils';
-
-const { isDcfAvailable } = featureFlags;
 
 function AnalysesTabs({
   listView,
@@ -90,7 +87,7 @@ function AnalysesTabs({
         />
       )}
 
-      {isDcfAvailable && (
+      {listViewOptions.includes(ALERTS) && (
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"

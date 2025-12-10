@@ -11,6 +11,7 @@ import {
 import { Campaign, Close, Info } from '@mui/icons-material';
 import { withRouter } from 'react-router-dom';
 import Banner from '../../../../common/js/components/Banners/Banner';
+import GDPRFooter from '../../../../common/js/components/GDPRFooter';
 import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
 import UsageReachedLimitBanner from '../../../../common/js/components/Banners/UsageReachedLimitBanner';
 import Button from '../../../../common/js/components/Button';
@@ -591,6 +592,7 @@ class Landing extends Component {
             </section>
           </section>
         </section>
+        <GDPRFooter variant="app" />
       </div>
     );
   }

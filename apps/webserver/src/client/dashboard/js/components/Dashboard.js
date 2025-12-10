@@ -5,6 +5,7 @@ import isEmpty from 'lodash/isEmpty';
 import { Description, FileDownload } from '@mui/icons-material';
 
 import Page from '../../../common/js/components/Page';
+import GDPRFooter from '../../../common/js/components/GDPRFooter';
 import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import store from '../store';
@@ -419,6 +420,7 @@ export default class Dashboard extends Component {
         <ConfirmDialog open={isOpenDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
 
         <LoadingModal isLoading={isLoading} />
+        <GDPRFooter variant="app" />
       </Page>
     );
   }

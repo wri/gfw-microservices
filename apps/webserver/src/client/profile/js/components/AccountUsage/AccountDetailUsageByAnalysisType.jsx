@@ -27,7 +27,7 @@ import { accountProfileStrings } from '../../../../common/js/config.js';
  */
 const NORMALIZING_ANALYSIS_NAMES = {
   AFI: 'Post-2020 Risk Assessment',
-  ALERTS: 'Recent Deforestation Alerts',
+  ALERTS: 'Recent Disturbance Alerts',
   FCD: 'Post-2000 Forest Change',
   'ALERTS-BATCH': 'Alerts - BATCH',
   GHG: 'GHG Emissions',

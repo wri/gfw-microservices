@@ -25,7 +25,7 @@ function HeaderNavLink({ active, link, label, className = '' }) {
         title={
           <Typography variant="caption">
             Alerts Dashboard has moved. To view your data, open a list with Alerts analysis applied
-            and select the 'Recent Deforestation Alerts' tab in the List Details page.
+            and select the 'Recent Disturbance Alerts' tab in the List Details page.
           </Typography>
         }
       >

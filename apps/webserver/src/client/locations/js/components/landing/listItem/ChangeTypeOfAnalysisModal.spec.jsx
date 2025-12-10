@@ -98,7 +98,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
     renderComponent();
     await userEvent.click(
       screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
+        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
       })
     );
     expect(screen.getByRole('button', { name: 'Submit Analysis' })).toBeEnabled();
@@ -110,7 +110,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
     renderComponent();
     await userEvent.click(
       screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
+        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
       })
     );
     await userEvent.click(screen.getByRole('button', { name: 'Save as Draft' }));

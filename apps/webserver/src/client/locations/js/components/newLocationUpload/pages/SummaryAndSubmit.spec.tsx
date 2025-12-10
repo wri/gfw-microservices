@@ -91,7 +91,7 @@ describe('SummaryAndSubmit', () => {
       screen.getByText(/your list will be submitted for the following analysis:/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/post-2020 risk assessment/i)).toBeInTheDocument();
-    expect(screen.getByText(/recent deforestation alerts/i)).toBeInTheDocument();
+    expect(screen.getByText(/recent disturbance alerts/i)).toBeInTheDocument();
     expect(screen.getByText(/post-2000 forest change/i)).toBeInTheDocument();
     expect(screen.getByText(/\(includes palm risk assessment\)/i)).toBeInTheDocument();
     expect(
@@ -143,7 +143,7 @@ describe('SummaryAndSubmit', () => {
       screen.getByText(/the resulting list will be submitted for the following analysis:/i)
     ).toBeInTheDocument();
     expect(screen.queryByText(/post-2020 risk assessment/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/recent deforestation alerts/i)).toBeInTheDocument();
+    expect(screen.getByText(/recent disturbance alerts/i)).toBeInTheDocument();
     expect(screen.queryByText(/post-2000 forest change/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/\(includes palm risk assessment\)/i)).not.toBeInTheDocument();
     expect(

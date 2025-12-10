@@ -437,7 +437,7 @@ describe('ConfigureList', () => {
 
     await user.click(
       screen.getByRole('checkbox', {
-        name: /recent deforestation alerts recent deforestation alerts, updated weekly/i,
+        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
       })
     );
 

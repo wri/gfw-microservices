@@ -24,9 +24,9 @@ export const analysisTypesOptionsNewNames = [
   },
   {
     id: analysisTypes.ALERTS,
-    label: 'Recent Deforestation Alerts',
+    label: 'Recent Disturbance Alerts',
     shortLabel: 'Alerts',
-    description: 'Recent deforestation alerts, updated weekly',
+    description: 'Recent disturbance alerts, updated weekly',
     showInUI: true,
   },
   {

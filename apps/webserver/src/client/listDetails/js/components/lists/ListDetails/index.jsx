@@ -78,6 +78,7 @@ import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
+import featureFlags from '../../../../../../utils/general.utils';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -134,6 +135,8 @@ const DIAGNOSTICS_URLS = {
     '/locations/csv/[list-id]?listID=[list-id]&format=csv&type=alerts&selectedAlert=Integrated&selectedTimeframe=DAY&isGFWList=false&startDate=[start-date]&endDate=[end-date]',
 };
 
+const { isDcfAvailable } = featureFlags;
+
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -155,8 +158,14 @@ export default class ListDetails extends Component {
       }
     });
 
-    const { isFcdActive, isPalmRiskActive, isAfiActive, isGHGActive, isOnlyGHGActive } =
-      getActiveAnalysisFlags(selectedList);
+    const {
+      isFcdActive,
+      isPalmRiskActive,
+      isAfiActive,
+      isGHGActive,
+      isOnlyGHGActive,
+      isDcfActive,
+    } = getActiveAnalysisFlags(selectedList);
 
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
 
@@ -213,6 +222,7 @@ export default class ListDetails extends Component {
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
+      isDcfActive,
     };
   }
 
@@ -1759,6 +1769,7 @@ export default class ListDetails extends Component {
       isAfiActive,
       isGHGActive,
       isOnlyGHGActive,
+      isDcfActive,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -1841,6 +1852,10 @@ export default class ListDetails extends Component {
 
     if (isAfiActive) {
       listViewOptions.push(POST_2020_RISK_ASSESSMENT_VIEW);
+    }
+
+    if (isDcfActive && isDcfAvailable) {
+      listViewOptions.push(ALERTS);
     }
 
     const allDialogActions = dialogActions || (

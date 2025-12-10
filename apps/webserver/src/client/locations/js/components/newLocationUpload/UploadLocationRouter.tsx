@@ -1,6 +1,7 @@
 import './index.scss';
 import { Route, Switch } from 'react-router-dom';
 import { Box } from '@mui/material';
+import GDPRFooter from '../../../../common/js/components/GDPRFooter';
 
 import {
   UploadLocationByPolygon,
@@ -62,6 +63,7 @@ export function UploadLocationRouter({
         <Route path={UploadLocationRoutes.SUMMARY_AND_SUBMIT} component={SummaryAndSubmit} />
         <Route path={UploadLocationRoutes.SUBMISSION_SUCCESS} component={SubmissionSuccess} />
       </Switch>
+      <GDPRFooter variant="app" />
     </Box>
   );
 }

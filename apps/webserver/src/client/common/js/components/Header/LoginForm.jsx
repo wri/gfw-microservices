@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Dialog from 'material-ui/Dialog';
-import Button from '../Button';
+import {
+  ClickAwayListener,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 import { signIn } from './signIn';
 import { nav } from '../../config';
 import './LoginForm.scss';
+import { PillButton } from '../../../../components';
 
 function LoginForm() {
   const [showForm, setShowForm] = useState(false);
@@ -48,21 +53,19 @@ function LoginForm() {
           {nav.login}
         </button>
         <Dialog
-          paperClassName="dialog-paper"
-          title={dialogTitle}
-          actions={[
-            <Button
-              variant="primary"
-              label="OK"
-              className="login-ok-button"
-              onClick={() => setDialogOpen(false)}
-            />,
-          ]}
-          modal={false}
           open={dialogOpen}
-          onRequestClose={() => setDialogOpen(false)}
+          onClose={() => setDialogOpen(false)}
+          PaperProps={{ className: 'dialog-paper' }}
         >
-          <div>{dialogMessage}</div>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
+            <div>{dialogMessage}</div>
+          </DialogContent>
+          <DialogActions>
+            <PillButton variant="contained" onClick={() => setDialogOpen(false)}>
+              OK
+            </PillButton>
+          </DialogActions>
         </Dialog>
         <div className={`login-form drop-down-nav__list ${showForm ? 'show' : 'hide'}`}>
           <div className="login-form__title">{nav.login}</div>
@@ -102,16 +105,15 @@ function LoginForm() {
               </a>
             </div>
             <div>
-              <Button
-                type="button"
-                disabled={!password.length || !username.length}
-                data-cy="loginButton"
-                variant="primary"
-                style={{ width: '100%', backgroundColor: 'transparent' }}
+              <PillButton
+                variant="contained"
+                color="primary"
                 onClick={handleSignIn}
+                style={{ marginLeft: 'auto' }}
+                disabled={!password.length || !username.length}
               >
                 {nav.login}
-              </Button>
+              </PillButton>
             </div>
           </div>
         </div>

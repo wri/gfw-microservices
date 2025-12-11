@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Menu from 'material-ui/Menu';
-import IconButton from 'material-ui/IconButton';
+import { IconButton } from '@mui/material';
 import Popover from 'material-ui/Popover';
 import Icon from '@material-ui/core/Icon';
 import { client } from './sanityClient';

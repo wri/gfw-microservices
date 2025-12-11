@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
-import IconButton from 'material-ui/IconButton';
+import { IconButton } from '@mui/material';
 import Icon from '@material-ui/core/Icon';
 import './DropDownNav.scss';
 

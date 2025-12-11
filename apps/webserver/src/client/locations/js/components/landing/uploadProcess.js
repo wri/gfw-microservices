@@ -150,7 +150,6 @@ export function uploadProcessByPrevUploadedFile({
   fileS3Route,
   saveAsDraft,
   commodity,
-  selectedAnalyses,
 }) {
   const processPipeline = existingList?.id
     ? promiseCompose(processListStep)
@@ -165,7 +164,6 @@ export function uploadProcessByPrevUploadedFile({
     commodity,
     list_id: existingList?.id,
     existingListAnalysisIds: existingList?.analysisIds,
-    selectedAnalyses
   });
 }
 

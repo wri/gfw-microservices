@@ -28,7 +28,7 @@ import { useHistory } from '../hooks';
 import { PillButton, HelperTextWithPopover } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { NavBar } from '../components';
-import { AnalysisConfiguration, UserList } from '../types';
+import { UserList } from '../types';
 import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/constants';
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
@@ -36,9 +36,10 @@ import { fetchListsByCommodity } from '../../../../../api/list';
 import {
   analysisTypes,
   analysisIdsOptionsMap,
-  analysisTypesForUI,
   analysisTypesOptionsNewNames,
   palmRiskAnalysis,
+  AlertsAnalysisFrequency,
+  weeklyAlertsAnalysis,
 } from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
 import { DATA_CY, ReusableText } from '../../../../../utils/constants';
@@ -57,6 +58,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       PalmRisk: z.coerce.boolean(),
       ALERTS: z.coerce.boolean(),
       AFI: z.coerce.boolean(),
+      Weekly: z.coerce.boolean(),
       customCommodity: z.string().optional(),
     })
     .superRefine((data, ctx) => {
@@ -138,6 +140,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       FCD: typeOfAnalysis.FCD || false,
       ALERTS: typeOfAnalysis.ALERTS || false,
       AFI: typeOfAnalysis.AFI || false,
+      Weekly: typeOfAnalysis.Weekly || false,
     },
   });
 
@@ -157,6 +160,20 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   });
 
   const { data: validLists, isLoading, request } = useFetch<{ id: number; name: string }[]>();
+
+  const mainAnalyses = analysisTypesOptionsNewNames.filter((a) => a.showInUI);
+
+  const getOptionDetails = (optionId: string) => {
+    if (optionId === analysisTypes.PALM_RISK) {
+      return palmRiskAnalysis;
+    }
+    // TODO: Insert featureFlag here to keep it hidden
+    if (optionId === AlertsAnalysisFrequency.WEEKLY) {
+      return weeklyAlertsAnalysis;
+    }
+
+    return null;
+  };
 
   // Restore form state from context when component mounts
   // This should only run once on mount, not when context values change
@@ -231,8 +248,14 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       const isFCDWithPalmRisk =
         analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
         options === analysisTypes.PALM_RISK;
+
+      const isWeeklyAlerts =
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
+
       const analysisIdsToPush = isFCDWithPalmRisk
         ? [analysisId, analysisTypes.PALM_RISK] // FCD with PalmRisk sub-analysis
+        : isWeeklyAlerts
+        ? [analysisId, AlertsAnalysisFrequency.WEEKLY] // Weekly with Alerts
         : [analysisId];
 
       for (const id of analysisIdsToPush) {
@@ -247,9 +270,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         id: template.id,
         analysisIds: analysisIds.map((x) => x.analysisId) || [],
       };
-      typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-        const found = analysisIds.find((x) => x.analysisId === typeOfAnalysis.id);
-        setValue(typeOfAnalysis.id as keyof FormFields, !!found);
+      Object.keys(typeOfAnalysis).forEach((typeOfAnalysis) => {
+        const found = analysisIds.find((x) => x.analysisId === typeOfAnalysis);
+        setValue(typeOfAnalysis as keyof FormFields, !!found);
       });
     }
   };
@@ -268,9 +291,24 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     field: {
       onChange: (value: boolean) => void;
     },
-    id: (typeof typeOfAnalysisMap)[number]['id']
+    id: (typeof typeOfAnalysisMap)[number]['id'] | keyof typeof typeOfAnalysis
   ) => {
     field.onChange(e.target.checked);
+
+    // Weekly requires ALERTS to be selected (it's a child analysis of ALERTS)
+    if (id === AlertsAnalysisFrequency.WEEKLY && e.target.checked) {
+      setValue(analysisTypes.ALERTS, true);
+    }
+
+    // GPV-5141 if ALERTS is selected have WEEKLY be selected by default
+    if (id === analysisTypes.ALERTS && e.target.checked) {
+      setValue(AlertsAnalysisFrequency.WEEKLY, true);
+    }
+
+    // If ALERTS is unchecked, also uncheck Weekly (parent-child relationship)
+    if (id === analysisTypes.ALERTS && !e.target.checked) {
+      setValue(AlertsAnalysisFrequency.WEEKLY, false);
+    }
 
     // Palm Risk requires FCD to be selected (it's a child analysis of FCD)
     if (id === analysisTypes.PALM_RISK && e.target.checked) {
@@ -289,33 +327,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       return;
     }
 
-    // Build analyses array with options
-    const selectedAnalyses: AnalysisConfiguration[] = [];
-
-    // AFI
-    if (data.AFI) {
-      selectedAnalyses.push({
-        analysisId: analysisTypes.DEFORESTATION_KPIS,
-        options: null,
-      });
-    }
-
-    // ALERTS - Always include Weekly option
-    if (data.ALERTS) {
-      selectedAnalyses.push({
-        analysisId: analysisTypes.ALERTS,
-        options: 'Weekly', // ← Auto-select Weekly
-      });
-    }
-
-    // FCD - Include PalmRisk option if checked
-    if (data.FCD) {
-      selectedAnalyses.push({
-        analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-        options: data.PalmRisk ? analysisTypes.PALM_RISK : null,
-      });
-    }
-
     setUploadLocationConfigureList({
       commodity: (data.commodity === 'Other' ? data.customCommodity : data.commodity) as string,
       newListName: data.newListName ?? '',
@@ -327,8 +338,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         FCD: data.FCD,
         AFI: data.AFI,
         ALERTS: data.ALERTS,
+        Weekly: data.Weekly,
       },
-      selectedAnalyses
     });
 
     history.push('SUMMARY_AND_SUBMIT');
@@ -522,15 +533,14 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           counts towards your account usage limits. See more information here.
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2, width: 'fit-content' }}>
-          {typeOfAnalysisMap
-            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
-            .map(({ id, label, description }) => {
-              const isPalmRisk = id === analysisTypes.PALM_RISK;
-              const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
+          {mainAnalyses.map(({ id, label, description }) => {
+            const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
+            const childOptions = analysisIdsOptionsMap[id] || [];
 
-              return (
+            return (
+              <Box key={id}>
+                {/* Main Analysis Checkbox */}
                 <Controller
-                  key={`field-controller-${id}`}
                   name={id as keyof FormFields}
                   control={control}
                   render={({ field }) => (
@@ -546,10 +556,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                       }
                       sx={{
                         textTransform: 'none',
-                        ml: isPalmRisk ? 2 : 0,
-                        '&:hover': {
-                          cursor: 'default',
-                        },
+                        '&:hover': { cursor: 'default' },
                       }}
                       label={
                         <Box
@@ -607,11 +614,90 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                           </HelperTextWithPopover>
                         </Box>
                       }
-                    ></FormControlLabel>
+                    />
                   )}
                 />
-              );
-            })}
+
+                {/* Child Options (nested under parent) */}
+                {childOptions.map((optionId) => {
+                  const optionDetails = getOptionDetails(optionId);
+
+                  // Skip if no details found (e.g., Weekly is not a UI checkbox yet)
+                  if (!optionDetails) {
+                    return null;
+                  }
+
+                  // commodity restriction for PalmRisk
+                  if (optionId === analysisTypes.PALM_RISK && selectedCommodity !== 'Palm oil') {
+                    return null;
+                  }
+
+                  return (
+                    <Controller
+                      key={optionId}
+                      name={optionId as keyof FormFields}
+                      control={control}
+                      render={({ field }) => (
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              sx={{ py: 0 }}
+                              checked={!!field.value}
+                              onChange={(e) => {
+                                handleAnalysisChange(e, field, optionId);
+                              }}
+                              inputRef={field.ref}
+                              data-testid={`checkbox-${optionId.toLowerCase()}`}
+                            />
+                          }
+                          sx={{
+                            textTransform: 'none',
+                            ml: 2,
+                            mt: 2,
+                            '&:hover': { cursor: 'default' },
+                            display: 'flex',
+                          }}
+                          label={
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                lineHeight: 0,
+                              }}
+                              onClick={(e) => {
+                                const tag = (e.target as HTMLElement).tagName;
+                                if (tag !== 'A') {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <Box>
+                                <Typography variant="body2">{optionDetails.label}</Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {optionDetails.description}
+                                </Typography>
+                              </Box>
+                              {listOfPopoverHelperText[optionId] && (
+                                <HelperTextWithPopover>
+                                  <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+                                    <Typography variant="caption">
+                                      {listOfPopoverHelperText[optionId]}
+                                    </Typography>
+                                  </Box>
+                                </HelperTextWithPopover>
+                              )}
+                            </Box>
+                          }
+                        />
+                      )}
+                    />
+                  );
+                })}
+              </Box>
+            );
+          })}
         </Box>
         <Box
           sx={{

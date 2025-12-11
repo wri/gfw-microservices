@@ -22,6 +22,7 @@ export const analysisTypes = {
   ALERTS: 'ALERTS',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
+  WEEKLY: 'Weekly',
 };
 
 export const analysisTypesOptionsNewNames = [
@@ -55,11 +56,11 @@ export const analysisTypesOptionsNewNames = [
   },
 ];
 
-export enum AlertsFrequency {
+export enum AlertsAnalysisFrequency {
   WEEKLY = 'Weekly',
 }
 
 export const analysisIdsOptionsMap = {
   [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: [analysisTypes.PALM_RISK],
-  [analysisTypes.ALERTS]: [AlertsFrequency.WEEKLY], // NEW
+  [analysisTypes.ALERTS]: [AlertsAnalysisFrequency.WEEKLY], // NEW
 };

@@ -14,8 +14,6 @@ import {
  * @param {Object} list - List info
  * @return {Promise} - request Promise
  */
-// ...existing code...
-
 export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisTypesToProcess) => {
   const {
     organization_user_id,
@@ -29,22 +27,11 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
   const { user_email } = req.session;
 
   const listAnalysisStatusData = await getListAnalysisStatusByListId(databaseName, listID);
-
-  // NEW: Extract base analysis IDs (remove option suffixes like _Weekly)
   const analysisIds = listAnalysisStatusData?.map(({ analysisId }) => analysisId) ?? [];
 
-  // NEW: Check if ALERTS has Weekly option from request
-  const hasAlertsWeekly =
-    analysisTypesToProcess?.includes('ALERTS') || req.body.analysisTypesParam?.ALERTS_Weekly;
-
   try {
-    // Pass analysisIds with options handled
-    const processedAnalysisTypes = analysisTypesToProcess
-      ? analysisTypesToProcess.split(',').filter((id) => !id.includes('_')) // Remove option suffixes
-      : analysisIds;
-
     const result = await handleCreateAnalysis(
-      processedAnalysisTypes.join(','),
+      analysisTypesToProcess ?? analysisIds.join(),
       listID,
       organizationId,
       databaseName,
@@ -55,9 +42,9 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
     );
 
     const analysiTypes = extractAnalysisTypes(
-      processedAnalysisTypes
+      analysisTypesToProcess
         ? listAnalysisStatusData.filter(({ analysisId }) =>
-            processedAnalysisTypes.includes(analysisId)
+            analysisTypesToProcess.includes(analysisId)
           )
         : listAnalysisStatusData
     );

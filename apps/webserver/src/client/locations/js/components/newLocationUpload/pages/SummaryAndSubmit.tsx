@@ -18,6 +18,7 @@ import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { FileValidationHelper, NavBar } from '../components';
 import {
+  AlertsAnalysisFrequency,
   analysisTypes,
   analysisTypesOptionsNewNames,
 } from '../../../../../../config/env/analysisTypes.constants';
@@ -122,8 +123,7 @@ export function SummaryAndSubmit() {
         (key) =>
           uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
       );
-      console.log("🚀 ~ uploadList ~ uploadLocationState.selectedAnalyses:", uploadLocationState.selectedAnalyses)
-      
+
       await uploadProcessByPrevUploadedFile({
         listName,
         analysisIds,
@@ -132,7 +132,6 @@ export function SummaryAndSubmit() {
         existingList: uploadLocationState.existingList,
         saveAsDraft: isDraftUpload.current,
         commodity: uploadLocationState.commodity,
-        selectedAnalyses: uploadLocationState.selectedAnalyses
       });
       updateSaveMode(isDraftUpload.current);
 
@@ -217,18 +216,31 @@ export function SummaryAndSubmit() {
             </Typography>
             <Box component="ul" sx={{ color: 'text.secondary' }}>
               {Object.entries(uploadLocationState.typeOfAnalysis)
-                .filter(([key, isChecked]) => isChecked && key !== analysisTypes.PALM_RISK)
+                .filter(
+                  ([key, isChecked]) =>
+                    isChecked &&
+                    key !== analysisTypes.PALM_RISK &&
+                    key !== AlertsAnalysisFrequency.WEEKLY
+                )
                 .map(([key]) => {
                   const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 
                   const isPalmRiskIncluded =
-                    analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
+                    analysis?.id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+                    uploadLocationState.typeOfAnalysis.PalmRisk;
+
+                  const isWeeklyAlertsIncluded =
+                    analysis?.id === analysisTypes.ALERTS &&
+                    uploadLocationState.typeOfAnalysis.Weekly;
 
                   return (
                     <li key={key}>
                       <Typography variant="caption">{analysis?.label}</Typography>
                       {isPalmRiskIncluded && (
                         <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
+                      )}
+                      {isWeeklyAlertsIncluded && (
+                        <Typography variant="caption"> (Weekly)</Typography>
                       )}
                     </li>
                   );

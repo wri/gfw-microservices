@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer, ReactNode } from 'react';
 
 import { useHistory } from '../hooks';
-import { AnalysisConfiguration, Area, Coordinate, UploadType } from '../types';
+import { Area, Coordinate, UploadType } from '../types';
 import { PresignedUrl } from '../utils/upload';
 
 export type UploadLocationState = {
@@ -22,10 +22,10 @@ export type UploadLocationState = {
     PalmRisk: boolean;
     ALERTS: boolean;
     AFI: boolean;
+    Weekly: boolean;
   };
   isDraft?: boolean;
   isUmlFile?: boolean;
-  selectedAnalyses: AnalysisConfiguration[];
 };
 
 type UploadLocationType = {
@@ -51,8 +51,8 @@ type UploadLocationType = {
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
+      Weekly: boolean;
     };
-    selectedAnalyses: AnalysisConfiguration[];
   }) => void;
   addFile: (uploadedFile: PresignedUrl) => void;
   updateSaveMode: (isDraft: boolean) => void;
@@ -96,8 +96,8 @@ type UploadLocationAction =
           FCD: boolean;
           AFI: boolean;
           ALERTS: boolean;
+          Weekly: boolean;
         };
-        selectedAnalyses: AnalysisConfiguration[];
       };
     }
   | {
@@ -149,10 +149,10 @@ const uploadLocationInitialState: UploadLocationState = {
     FCD: false,
     AFI: false,
     ALERTS: false,
+    Weekly: false,
   },
   isDraft: undefined,
   isUmlFile: false,
-  selectedAnalyses: []
 };
 
 export function UploadLocationProvider({ children }: UploadLocationProviderProps) {
@@ -218,8 +218,8 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
+      Weekly: boolean;
     };
-    selectedAnalyses: AnalysisConfiguration[]
   }) => {
     dispatch({
       type: 'ConfigureList',
@@ -287,7 +287,6 @@ function uploadLocationReducer(
         existingList: payload.existingList,
         newListName: payload.newListName,
         typeOfAnalysis: payload.typeOfAnalysis,
-        selectedAnalyses: payload.selectedAnalyses,
       };
 
     case 'UpdateSaveMode':

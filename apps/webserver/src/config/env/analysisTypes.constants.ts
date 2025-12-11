@@ -60,7 +60,6 @@ export const palmRiskAnalysis = {
   label: 'Include Palm Risk Assessment',
   shortLabel: '',
   description: 'Commodity-specific risk analysis for palm oil mills',
-  showInUI: true,
 };
 
 export enum AlertsAnalysisFrequency {
@@ -69,13 +68,12 @@ export enum AlertsAnalysisFrequency {
 
 export const weeklyAlertsAnalysis = {
   id: AlertsAnalysisFrequency.WEEKLY,
-  label: '',
-  shortLabel: '',
-  description: '',
-  showInUI: false,
+  label: 'Weekly',
+  shortLabel: AlertsAnalysisFrequency.WEEKLY,
+  description: 'Recent deforestation alerts, updated weekly',
 };
 
 export const analysisIdsOptionsMap = {
-  [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: [palmRiskAnalysis],
-  [analysisTypes.ALERTS]: [weeklyAlertsAnalysis],
+  [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: [analysisTypes.PALM_RISK],
+  [analysisTypes.ALERTS]: [AlertsAnalysisFrequency.WEEKLY],
 };

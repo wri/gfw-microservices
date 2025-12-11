@@ -3,7 +3,6 @@ import { Carousel } from 'react-responsive-carousel';
 import Dialog from 'material-ui/Dialog';
 import loginStrings from './loginStrings';
 import GDPRFooter from '../../../common/js/components/GDPRFooter';
-// import { PrivacyPolicyBanner } from './PrivacyPolicyBanner'; // DEPRECATED: Replaced by Osano cookie consent
 import Button from '../../../common/js/components/Button';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import Page from '../../../common/js/components/Page';

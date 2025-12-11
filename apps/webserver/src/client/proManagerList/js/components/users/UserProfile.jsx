@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Dialog } from '@mui/material';
 import Select from 'react-select';
 
@@ -69,11 +69,6 @@ export default function UserProfile({
   const statusSelectRef = useRef(null);
   const accessSelectRef = useRef(null);
   const titleSelectRef = useRef(null);
-
-  // Log current user on mount
-  useEffect(() => {
-    console.log('this.props.currentUserthis.props.currentUser', currentUser);
-  }, [currentUser]);
 
   const handleInputChange = (setter) => (evt) => {
     setter(evt.target.value);

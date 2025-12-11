@@ -4,7 +4,6 @@
  *   @description : A utility file to allow GFW Pro to obtain/set
  *                 list data.
  *
- * @function {createList}
  * @function {getUserLists}
  * @function {getUserListsWithAnalysisId}
  * @function {rerunExistingList}
@@ -16,7 +15,6 @@
  * @function {uploadToExistingList}
  * @function {updateIndividualLocationsStatusID}
  * @function {deleteLocations}
- * @function {deleteFilteredLocations}
  * @function {editLocations}
  * @function {copyLocations}
  * @function {moveLocations}
@@ -37,27 +35,24 @@
  *
  ******************************************************************* */
 // Imports required for this module.
-const path = require('path');
-const sql = require('mssql');
-const _ = require('lodash');
+import sql from 'mssql';
+import _ from 'lodash';
 
 // Configs
 import config from '../config';
-const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.config');
-const LIST_UPLOAD_LEGACY_VERSION = 0;
+import { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } from '../config/locations.config';
+// const LIST_UPLOAD_LEGACY_VERSION = 0;
 
 // Utils
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const listUtils = require(path.resolve('./config/privateutils/list.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
-const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
-const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
+import * as sqlUtils from '../privateutils/sql.utils';
+import * as logger from '../privateutils/logger.utils';
+import * as listUtils from '../privateutils/list.utils';
+import * as errorUtils from '../privateutils/error.utils';
+import * as analysisUtils from '../privateutils/analysis.utils';
+import * as locationUtils from '../privateutils/location.utils';
+import { listStatusOrderByWorse } from '../env/listStatuses.constants';
 import { listStatus } from '@wri-monorepos/constants';
 import {
-  SqlParamType,
   AnalysisDataType,
   ListsType,
   DeleteListTypeOrm,
@@ -65,216 +60,119 @@ import {
   getAllLists as getAllListsSql,
   getUserLists as getUsersListSql,
 } from '@wri-monorepos/sql';
-import { setSelectedAnalyses } from '@wri-monorepos/geo';
 import type { ListsAnalysisStatus } from '@wri-monorepos/sql';
 
-/** @function {createList}
- *   @summary Create a new list within Organization DB
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {String} list_name
- *   @param  {Number} template_id
- *   @param  {String} user_id
- *   @param  {Object[]} custom_attributes
- *   @param  {String} gfw_list_id
- *   @param  {Boolean} is_edit
- *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+const FIFTEEN_MINUTES_MS = 900000;
+
+/**
+ * Helper to create commodity risk filter parameters
+ * Used by getPaginatedAnalysisDataForUserList and getNumberPagesForAnalysisDataUserList
  */
-const createList = async (
-  req,
-  list_name,
-  template_id,
-  commodity = null, // ensure commodity is null if not provided
-  location_classification,
-  user_id,
-  custom_attributes,
-  gfw_list_id,
-  is_edit = false,
-  analysisIds = []
-) => {
-  let list_id = null;
-  // Tracking Stored Procedure Executions for rollbacks
-  let uspCreateListExecuted = false;
-  let uspAddListToAnalysesExecuted = false;
-  let uspCreateListTableExecuted = false;
-  let uspCreateAnalysisTableExecuted = false;
+const createCommodityRiskFilterParams = (filters) => [
+  { field: 'selectedSupplier', type: sql.NVarChar(255), value: filters.selectedSupplier || null },
+  {
+    field: 'selectedSecondSupplier',
+    type: sql.NVarChar(255),
+    value: filters.selectedSecondSupplier || null,
+  },
+  {
+    field: 'selectedParentCompany',
+    type: sql.NVarChar(255),
+    value: filters.selectedParentCompany || null,
+  },
+  { field: 'showRSPOCertified', type: sql.Bit, value: filters.showRSPOCertified || null },
+  {
+    field: 'selectedOverallThreats',
+    type: sql.NVarChar(255),
+    value: JSON.stringify(filters.selectedOverallThreats) || null,
+  },
+  {
+    field: 'selectedOverallValues',
+    type: sql.NVarChar(255),
+    value: JSON.stringify(filters.selectedOverallValues) || null,
+  },
+  {
+    field: 'selectedMillPriority',
+    type: sql.NVarChar(255),
+    value: JSON.stringify(filters.selectedMillPriority) || null,
+  },
+];
 
-  // Transform list name
-  const list = listUtils.createListNameSchema(list_name);
+const EDIT_EXCLUDED_COLUMNS = [
+  'list_id',
+  'location name',
+  'investment name',
+  'latitude',
+  'longitude',
+  'analysis area',
+  'analysis radius',
+  'commodity',
+  'location classification',
+  'total_area',
+  'list_location_id',
+  'analysis_list_id',
+  'template_id',
+];
 
-  const custom_attribute_names = custom_attributes
-    ? custom_attributes.map((a) => a.column_name).toString()
-    : [];
-  const custom_attribute_types = custom_attributes
-    ? custom_attributes.map((a) => a.column_type).toString()
-    : [];
-
-  // When creating new list, status is always pending.
-  const list_status_id = listStatus.Pending;
-
-  return new Promise((resolve, reject) => {
-    // Parameters for stored procedure
-    const parameters = [
-      { field: 'user_id', type: sql.Int, value: user_id },
-      { field: 'template_id', type: sql.Int, value: template_id },
-      { field: 'list_name', type: sql.NVarChar(150), value: list.list_name },
-      { field: 'list_table_name', type: sql.NVarChar(150), value: list.list_table },
-      { field: 'list_analysis_table_name', type: sql.NVarChar(150), value: list.analysis_table },
-      { field: 'list_status_id', type: sql.Int, value: list_status_id },
-      { field: 'location_classification', type: sql.NVarChar(150), value: location_classification },
-      { field: 'custom_attribute_names', type: sql.NVarChar(2000), value: custom_attribute_names },
-      { field: 'custom_attribute_types', type: sql.NVarChar(2000), value: custom_attribute_types },
-      { field: 'associated_gfwlist', type: sql.TinyInt, value: gfw_list_id },
-      {
-        field: 'version',
-        type: sql.Int,
-        value: LIST_UPLOAD_LEGACY_VERSION,
-      },
-      { field: 'commodity', type: sql.NVarChar(150), value: commodity },
-    ];
-
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspCreateList', parameters)
-      .then((recordsets) => {
-        // Previous Stored Procedure executed
-        uspCreateListExecuted = true;
-
-        // Grabbing list id
-        list_id = recordsets[0].list_id;
-
-        // After the list has been created, insert row into [clientstore].[dbo].[Analyses]
-        const params = [{ field: 'list_id', type: sql.Int, value: list_id }];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspAddListToAnalyses', params);
-      })
-      .then(() => {
-        // Set previously executed stored procedure to true
-        uspAddListToAnalysesExecuted = true;
-
-        // Create table query String
-        const params: SqlParamType[] = [
-          { field: 'template_id', type: sql.NVarChar(150), value: template_id },
-        ];
-        for (let i = 0; i < 3; i++) {
-          params.push({
-            field: `custom_attribute_${i + 1}`,
-            type: sql.NVarChar(50),
-            value: custom_attributes[i]?.column_name || null,
-          });
-          params.push({
-            field: `custom_attribute_${i + 1}_type`,
-            type: sql.NVarChar(50),
-            value: custom_attributes[i]?.column_type || null,
-          });
-        }
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspGetTableQueryString', params);
-      })
-      .then((recordsets) => {
-        const params = [
-          { field: 'table_name', type: sql.NVarChar(150), value: list.list_table },
-          { field: 'query_string', type: sql.NVarChar(sql.MAX), value: recordsets[0].query_string },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateListTable', params);
-      })
-      .then(() => {
-        // Previous Stored Procedure executed
-        uspCreateListTableExecuted = true;
-
-        // create the corresponding analysis table
-        const params = [
-          {
-            field: 'list_analysis_table_name',
-            type: sql.NVarChar(150),
-            value: list.analysis_table,
-          },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
-      })
-      .then(() => {
-        // Previous Stored Procedure executed
-        uspCreateAnalysisTableExecuted = true;
-        const { organization_database } = req.session;
-        return setSelectedAnalyses(organization_database, list_id, analysisIds);
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListCreated,
-          `User ID ${req.session.organization_user_id} created list with ID: ${list_id}`
-        );
-        resolve(list_id);
-      })
-
-      .catch((errorMessage) => {
-        // Call appropriate rollbacks
-        if (uspCreateListExecuted) {
-          rollbackUtils.deleteOrganizationTableRow(req, 'Lists', list_id, 'id');
-        }
-        if (uspAddListToAnalysesExecuted) {
-          rollbackUtils.deleteOrganizationTableRow(req, 'Analyses', list_id, 'list_id');
-        }
-        if (uspCreateListTableExecuted) {
-          rollbackUtils.dropOrganizationTable(req, list.list_table);
-        }
-        if (uspCreateAnalysisTableExecuted) {
-          rollbackUtils.dropOrganizationTable(req, list.analysis_table);
-          rollbackUtils.deleteOrganizationTableRow(req, 'ListsAnalysisStatus', list_id, 'ListID');
-        }
-
-        // Create Error Object and reject the error
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToCreateList,
-          `Failed to create ${list.list_name}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+/**
+ * Helper function to validate list lock status
+ * @param {Object} record - Lock status record from getListLockStatus
+ * @param {number} currentUserId - Current user's organization_user_id
+ * @returns {boolean} true if list is locked by current user, throws error otherwise
+ * @throws {{ isLocked: boolean, lock_user_id: number }} if list is locked by another user or unlocked
+ */
+const validateListLockStatus = (
+  record: { lock_status; lock_user_id },
+  currentUserId: number
+): boolean => {
+  const { lock_status, lock_user_id } = record;
+  // List is unlocked or locked by another user
+  if (lock_status === null || (lock_status !== null && lock_user_id !== currentUserId)) {
+    throw { isLocked: true, lock_user_id };
+  }
+  return true;
 };
 
-/** @function {getUserLists}
- *   @summary Function to returns list names tied to a user
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+/**
+ * Get user lists with optional filtering by list ID
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} listId - Optional list ID to filter by
+ * @returns {Promise<ListsType[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getUserLists = (req, listId = null): Promise<ListsType[]> => {
-  return new Promise((resolve, reject) => {
-    let promise;
+export const getUserLists = async (req, listId = null): Promise<ListsType[]> => {
+  try {
     const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
     // A Super Admin or an Organization Admin are able to view all lists
     if (
       req.session.ispromanager ||
       req.session.user_access_level_id === config.platformVars.accessLevel.Administrator
     ) {
-      promise = sqlUtils.executeOrganizationStoredProcedure(req, getAllListsSql, parameters);
+      return await sqlUtils.executeOrganizationStoredProcedure(req, getAllListsSql, parameters);
     } else {
       parameters.push({
         field: 'user_id',
         type: sql.Int,
         value: req.session.organization_user_id,
       });
-      promise = sqlUtils.executeOrganizationStoredProcedure(req, getUsersListSql, parameters);
+      return await sqlUtils.executeOrganizationStoredProcedure(req, getUsersListSql, parameters);
     }
-    promise
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          'Failed to get lists for user',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      'Failed to get lists for user',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 export const mergeListsWithAnalysisId = (
   lists: ListsType[],
   listAnalysisStatuses: ListsAnalysisStatus[]
 ) => {
-  lists.forEach((list) => {
+  // Mutate lists in place to maintain backward compatibility
+  for (const list of lists) {
     const listAnalysesStatus = listAnalysisStatuses.filter(
       (analysis) => analysis.listId == list.id
     );
@@ -286,25 +184,32 @@ export const mergeListsWithAnalysisId = (
     // replace the list level status with the worst from the list analysis status,
     // or continue with the one that already had.
     list.list_status_id = worstStatus ?? list.list_status_id;
-  });
+  }
 };
 
 export const setWorstStatusId = (lists: ListsType[]) => {
-  lists.forEach((list) => {
+  // Mutate lists in place to maintain backward compatibility
+  for (const list of lists) {
     const listAnalysesStatus = JSON.parse(list.listAnalysesStatus as unknown as string) || [];
     list.listAnalysesStatus = listAnalysesStatus;
     if (!listAnalysesStatus || !listAnalysesStatus.length) {
-      return;
+      continue;
     }
     const worstStatus = getWorstStatusId(listAnalysesStatus);
     if (worstStatus === undefined) {
-      return;
+      continue;
     }
     // Update status to worst analysis status if available, otherwise keep current status
     list.list_status_id = worstStatus ?? list.list_status_id;
-  });
+  }
 };
 
+/**
+ * Get user lists with analysis ID status information
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} listId - Optional list ID to filter by
+ * @returns {Promise<ListsType[]>} Returns promise with lists including analysis status
+ */
 export const getUserListsWithAnalysisId = async (req, listId = null): Promise<ListsType[]> => {
   try {
     const userLists = await getUserLists(req, listId);
@@ -324,62 +229,57 @@ export const getUserListsWithAnalysisId = async (req, listId = null): Promise<Li
  *   @summary Function to rerun location and list analyses
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const rerunExistingList = (req) => {
-  return new Promise<void>((resolve, reject) => {
-    console.log('listManager --->>> rerunExistingList');
+export const rerunExistingList = async (req) => {
+  try {
+    logger.debug('listManager --->>> rerunExistingList');
     const { list_name, list_locations_count } = req.body;
 
     // Returns list_name, list_table, analysis_table
     const list = listUtils.createListNameSchema(list_name);
-    analysisUtils
-      .analyzeList(req, list)
-      .then(async () => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListAnalyzing,
-          `User ID ${req.session.organization_user_id} started analysis rerun process for ${list_locations_count} locations`
-        );
+    await analysisUtils.analyzeList(req, list);
 
-        resolve();
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          'Failed to run the re-run stored procedure...',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.ListAnalyzing,
+      `User ID ${req.session.organization_user_id} started analysis rerun process for ${list_locations_count} locations`
+    );
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      'Failed to run the re-run stored procedure...',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
-/** @function {getAllLists}
- *   @summary Function to returns all the list names tied to the organization.
- *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+/**
+ * Get all lists for the organization
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @returns {Promise<ListsType[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getAllLists = (req): Promise<ListsType[]> => {
-  return new Promise((resolve, reject) => {
+export const getAllLists = async (req): Promise<ListsType[]> => {
+  try {
     // call organizational stored procedure to return all lists tied to the organization.
-
     const parameters = [{ field: 'list_id', type: sql.Int, value: null }];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, getAllListsSql, parameters)
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          'Failed to get all lists for the organization.',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    return await sqlUtils.executeOrganizationStoredProcedure(req, getAllListsSql, parameters);
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      'Failed to get all lists for the organization.',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
+/**
+ * Get all lists with analysis ID status information
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @returns {Promise} Returns promise with all lists including analysis status
+ */
 export const getAllListsWithAnalysisId = async (req) => {
   try {
     const orgLists = await getAllLists(req);
@@ -391,6 +291,11 @@ export const getAllListsWithAnalysisId = async (req) => {
   }
 };
 
+/**
+ * Get the worst (highest priority) status ID from list of analysis IDs
+ * @param {Array} analysisIds - Array of analysis IDs with status information
+ * @returns {Number|undefined} The worst status ID or undefined if no valid status found
+ */
 export const getWorstStatusId = (analysisIds) => {
   // get all status from the analysis list
 
@@ -412,81 +317,81 @@ export const getWorstStatusId = (analysisIds) => {
   return undefined;
 };
 
-/** @function {getListLocations}
- *   @summary Get function to return geojson of locations for a particular list.
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Number} list_id - Unique list id of the list.
- *   @param  {Array} list_id - Unique list of location IDs.
- *   @param  {Number} location_id - Unique list id of the list.
- *   @param  {Number} rowsRequested
- *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
+/**
+ * Get list locations as GeoJSON with pagination
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - Unique list id of the list.
+ * @param {Number} location_id - Location ID for pagination cursor (default: 0)
+ * @param {Number} rowsRequested - Number of rows to return (default: DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED)
+ * @returns {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
-export const getListLocations = (
+export const getListLocations = async (
   req,
   list_id,
   location_id = 0,
   rowsRequested = DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED
 ) => {
-  return new Promise<any>((resolve, reject) => {
+  try {
     const parameters = [
       { field: 'listID', type: sql.Int, value: list_id },
       { field: 'locationID', type: sql.Int, value: location_id },
       { field: 'rowsRequested', type: sql.Int, value: rowsRequested },
     ];
 
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetListLocations', parameters)
-      .then((recordsets) => {
-        if (recordsets) {
-          const geojson = locationUtils.createGeoJSON(req, recordsets);
-          resolve(geojson);
-        } else {
-          const errorObject = errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.failedToGetList,
-            `Failed to get list locations for List ${list_id}`,
-            JSON.stringify({ errorLocation: 'getListLocations()' })
-          );
-          reject(errorObject);
-        }
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          `Failed to get list locations for List ${list_id}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    const recordsets = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetListLocations',
+      parameters
+    );
+
+    if (recordsets) {
+      const geojson = locationUtils.createGeoJSON(req, recordsets);
+      return geojson;
+    } else {
+      const errorObject = errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.failedToGetList,
+        `Failed to get list locations for List ${list_id}`,
+        JSON.stringify({ errorLocation: 'getListLocations()' })
+      );
+      throw errorObject;
+    }
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      `Failed to get list locations for List ${list_id}`,
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
-/** @function {getSimplifiedListLocations}
- *   @summary Get function to return simplified geojson of locations for a particular list.
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Number} list_id - Unique list id of the list.
- *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
+/**
+ * Get simplified list locations (without full geometry details)
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - Unique list id of the list.
+ * @returns {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
-export const getSimplifiedListLocations = (req, list_id) => {
-  return new Promise((resolve, reject) => {
+export const getSimplifiedListLocations = async (req, list_id) => {
+  try {
     const parameters = [{ field: 'listID', type: sql.Int, value: list_id }];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetSimplifiedListLocations', parameters)
-      .then((recordsets) => {
-        const geojson = locationUtils.createGeoJSON(req, recordsets);
-        resolve(geojson);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          `Failed to get list locations for List ${list_id}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    const recordsets = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetSimplifiedListLocations',
+      parameters
+    );
+    const geojson = locationUtils.createGeoJSON(req, recordsets);
+    return geojson;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      `Failed to get list locations for List ${list_id}`,
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /**
@@ -497,27 +402,26 @@ export const getSimplifiedListLocations = (req, list_id) => {
  * @param {String} columnsToReturn - Comma separated list of columns to return.
  * @return {Promise<[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getListLocationsNoGeom = (req, listID, columnsToReturn = null): Promise<[]> => {
-  return new Promise((resolve, reject) => {
+export const getListLocationsNoGeom = async (req, listID, columnsToReturn = null): Promise<[]> => {
+  try {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'ColumnsToReturn', type: sql.NVarChar(255), value: columnsToReturn },
     ];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetListLocationsNoGeom', parameters)
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          `Failed to get list location (no Geom) for List ${listID}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    return await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetListLocationsNoGeom',
+      parameters
+    );
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      `Failed to get list location (no Geom) for List ${listID}`,
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /**
@@ -543,7 +447,7 @@ export const getListLocationsNoGeom = (req, listID, columnsToReturn = null): Pro
  * @param {Filters} filters - Array of filters to apply to the query.
  * @return {Promise<[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getPaginatedAnalysisDataForUserList = (
+export const getPaginatedAnalysisDataForUserList = async (
   req,
   listID,
   filters
@@ -577,7 +481,7 @@ export const getPaginatedAnalysisDataForUserList = (
     subState = null;
   }
 
-  return new Promise(async (resolve, reject) => {
+  try {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'PageNumber', type: sql.Int, value: page || null },
@@ -596,33 +500,7 @@ export const getPaginatedAnalysisDataForUserList = (
       { field: 'LocationStatement', type: sql.NVarChar(255), value: LocationStatement || null },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
       // commodity risk filters
-      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
-      {
-        field: 'selectedSecondSupplier',
-        type: sql.NVarChar(255),
-        value: selectedSecondSupplier || null,
-      },
-      {
-        field: 'selectedParentCompany',
-        type: sql.NVarChar(255),
-        value: selectedParentCompany || null,
-      },
-      { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || null },
-      {
-        field: 'selectedOverallThreats',
-        type: sql.NVarChar(255),
-        value: JSON.stringify(selectedOverallThreats) || null,
-      },
-      {
-        field: 'selectedOverallValues',
-        type: sql.NVarChar(255),
-        value: JSON.stringify(selectedOverallValues) || null,
-      },
-      {
-        field: 'selectedMillPriority',
-        type: sql.NVarChar(255),
-        value: JSON.stringify(selectedMillPriority) || null,
-      },
+      ...createCommodityRiskFilterParams(filters),
     ];
 
     const { organization_database: clientDatabase } = req.session;
@@ -634,31 +512,31 @@ export const getPaginatedAnalysisDataForUserList = (
       value: listJsondAttributes,
     });
 
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetPaginatedAnalysisDataForUserList', parameters)
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          `Failed to get paginated list location for List ${listID}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    return await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetPaginatedAnalysisDataForUserList',
+      parameters
+    );
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      `Failed to get paginated list location for List ${listID}`,
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
-/** @function {getNumberPagesForAnalysisDataUserList}
- *   @summary Get function to return the number of pages for the paginated analysis data for a user list.
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Number} list_id - Unique list id of the list.
- *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+/**
+ * Get number of pages for paginated analysis data
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - Unique list id of the list.
+ * @param {Object} filters - Filter criteria to determine page count
+ * @returns {Promise<Object>} Returns promise with numberOfPages, numberOfResults, and maximumAnalysisAreaInTheList
  */
-export const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
-  return new Promise((resolve, reject) => {
+export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filters) => {
+  try {
     const {
       pageSize,
       searchString,
@@ -684,338 +562,272 @@ export const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => 
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
       { field: 'analysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
       // commodity risk filters
-      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
-      {
-        field: 'selectedSecondSupplier',
-        type: sql.NVarChar(255),
-        value: selectedSecondSupplier || null,
-      },
-      {
-        field: 'selectedParentCompany',
-        type: sql.NVarChar(255),
-        value: selectedParentCompany || null,
-      },
-      { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || null },
-      {
-        field: 'selectedOverallThreats',
-        type: sql.NVarChar(255),
-        value: JSON.stringify(selectedOverallThreats) || null,
-      },
-      {
-        field: 'selectedOverallValues',
-        type: sql.NVarChar(255),
-        value: JSON.stringify(selectedOverallValues) || null,
-      },
-      {
-        field: 'selectedMillPriority',
-        type: sql.NVarChar(255),
-        value: JSON.stringify(selectedMillPriority) || null,
-      },
+      ...createCommodityRiskFilterParams(filters),
     ];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetAnalysisDataCountForUserList', parameters)
-      .then((recordsets) => {
-        const totalRows = recordsets.find(
-          (record) => record.statistic_type === 'Row Count'
-        ).statistic;
-        const maximumAnalysisAreaInTheList = recordsets.find(
-          (record) => record.statistic_type === 'Max Area'
-        ).statistic;
-        let numberOfPages = 2;
-        if (totalRows) {
-          numberOfPages = pageSize ? Math.ceil(totalRows / pageSize) : 1;
-        }
-        resolve({
-          numberOfPages,
-          numberOfResults: totalRows,
-          maximumAnalysisAreaInTheList,
-        });
-      })
 
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetList,
-          `Failed to get number of pages for List ${list_id}`,
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    const recordsets = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetAnalysisDataCountForUserList',
+      parameters
+    );
+
+    const totalRows = recordsets.find((record) => record.statistic_type === 'Row Count').statistic;
+    const maximumAnalysisAreaInTheList = recordsets.find(
+      (record) => record.statistic_type === 'Max Area'
+    ).statistic;
+    let numberOfPages = 2;
+    if (totalRows) {
+      numberOfPages = pageSize ? Math.ceil(totalRows / pageSize) : 1;
+    }
+    return {
+      numberOfPages,
+      numberOfResults: totalRows,
+      maximumAnalysisAreaInTheList,
+    };
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetList,
+      `Failed to get number of pages for List ${list_id}`,
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
-/** @function {getLocationsCount}
- *   @summary Get function to return geojson of list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+/**
+ * Get total locations count for user or organization
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @returns {Promise} Returns promise object with location count statistics
  */
-export const getLocationsCount = (req) => {
-  return new Promise((resolve, reject) => {
-    let promise;
+export const getLocationsCount = async (req) => {
+  try {
     // Retrieve user access level
     const { user_access_level_id, organization_database, organization_user_id } = req.session;
     const parameters = [
       { field: 'org_db', type: sql.NVarChar(255), value: req.session.organization_database },
     ];
+
+    let recordsets;
     if (user_access_level_id === config.platformVars.accessLevel.Administrator) {
-      promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetLocationsCount', parameters);
+      recordsets = await sqlUtils.executeSystemStoredProcedure(
+        req,
+        'uspGetLocationsCount',
+        parameters
+      );
     } else {
-      parameters.push({ field: 'user_id', type: sql.Int, value: organization_user_id });
-      promise = sqlUtils.executeSystemStoredProcedure(
+      parameters.push({ field: 'user_id', type: sql.Int as any, value: organization_user_id });
+      recordsets = await sqlUtils.executeSystemStoredProcedure(
         req,
         'uspGetLocationsCountEditor',
         parameters
       );
     }
-    promise
-      .then((recordsets) => {
-        const [record] = recordsets;
-        resolve(record);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetLocationsCount,
-          'Failed to get list locations count',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
 
-/** @function {uploadToExistingList}
- *   @summary Adds location and attributes to existing list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Number} list_id
- *   @param  {String} list_name
- *   @param  {Object} geojson - a geojson object with array of features that contain geometry and properties
- *   @return
- */
-export const uploadToExistingList = (req, list_id, list_name, geojson, commodity, attributes) => {
-  return new Promise((resolve, reject) => {
-    listUtils
-      .uploadBulkLocations(req, list_id, list_name, geojson, commodity, attributes)
-      .then((geojson) => {
-        resolve(geojson);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+    const [record] = recordsets;
+    return record;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetLocationsCount,
+      'Failed to get list locations count',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /**
- * Update Individual Locations Status ID
- *
+ * Add locations and attributes to existing list
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {string} list_analysis_table_name - List analysis table name (eg. "analysis-recentcocoageneric9")
- * @param {string | number | string[] | number[] } location_id - Location status id or ids - (eg. 9 || [8, 9, 10] )
- * @param {number } location_status_id - Location status ID (eg. 4)
- * @return {Promise}
+ * @param {Number} list_id - List ID to upload to
+ * @param {String} list_name - Name of the list
+ * @param {Object} geojson - A geojson object with array of features that contain geometry and properties
+ * @param {String} commodity - Commodity type
+ * @param {Object} attributes - Additional attributes for locations
+ * @returns {Promise} Returns result from uploadBulkLocations
  */
-export const updateIndividualLocationsStatusID = (
+export const uploadToExistingList = async (
+  req,
+  list_id,
+  list_name,
+  geojson,
+  commodity,
+  attributes
+) => {
+  try {
+    return await listUtils.uploadBulkLocations(
+      req,
+      list_id,
+      list_name,
+      geojson,
+      commodity,
+      attributes
+    );
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Update status ID for individual locations in bulk
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {String} list_analysis_table_name - List analysis table name (eg. "analysis-recentcocoageneric9")
+ * @param {String|Number|Array} location_id - Location status id or ids (eg. 9 || [8, 9, 10])
+ * @param {Number} location_status_id - Location status ID (eg. 4)
+ * @returns {Promise<Boolean>} Returns true if successful
+ */
+export const updateIndividualLocationsStatusID = async (
   req,
   list_analysis_table_name,
   location_id,
   location_status_id
 ) => {
-  return new Promise((resolve, reject) => {
+  try {
     const sqlParameters = [
       { field: 'analysis_table_name', type: sql.NVarChar(150), value: list_analysis_table_name },
       { field: 'location_ids_array', type: sql.NVarChar(sql.MAX), value: location_id.toString() },
       { field: 'location_status_id', type: sql.Int, value: location_status_id },
     ];
-    sqlUtils
-      .executeOrganizationStoredProcedure(
-        req,
-        'uspUpdateLocationAnalysisStatusInBulk',
-        sqlParameters
-      )
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListUpdateNew,
-          `User ID ${req.session.organization_user_id} updated list analysis table locations with status ID (${location_status_id}).`
-        );
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUploadToNewList,
-          `Updating list locations status IDs failed for analysis table (${list_analysis_table_name}).`,
-          errorMessage
-        );
-        reject('Update Individual Locations Status ID FAILED');
-      });
-  });
+    await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspUpdateLocationAnalysisStatusInBulk',
+      sqlParameters
+    );
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.ListUpdateNew,
+      `User ID ${req.session.organization_user_id} updated list analysis table locations with status ID (${location_status_id}).`
+    );
+    return true;
+  } catch (errorMessage) {
+    errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToUploadToNewList,
+      `Updating list locations status IDs failed for analysis table (${list_analysis_table_name}).`,
+      errorMessage
+    );
+    throw 'Update Individual Locations Status ID FAILED';
+  }
 };
 
 /** @function {deleteLocations}
  *   @summary Deletes locations from a list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {Number} list_id
  *   @param {Array} location_ids
  *   @param  {Number} gfw_list_id
  *   @return {Promise}
  */
-export const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
-  let promiseResolver = Promise.resolve();
-  return new Promise((resolve, reject) => {
-    // Important variables
-    let list;
-    getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // 1. List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          return listUtils.getListNameSchema(req, list_id);
-        }
-      })
-      .then((record) => {
-        // 2. Deleting list locations
-        list = record;
-        location_ids.forEach((location_id) => {
-          promiseResolver = promiseResolver.then(() => {
-            return listUtils.deleteSingleLocation(req, list, location_id);
-          });
-        });
-        return promiseResolver;
-      })
-      .then(() => {
-        // 3. Update list count of deleted location
-        const parameters = [
-          { field: 'table_name', type: sql.NVarChar(150), value: list.list_table },
-          { field: 'list_id', type: sql.Int, value: list.id },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspUpdateListCount', parameters);
-      })
-      .then(() => {
-        // 4. Unlock list to allow further interaction
-        return setListUnlocked(req, list_id);
-      })
-      .then(async () => {
-        // 5. Set list status to DRAFT
-        await resetListStatus(req, list_id, gfw_list_id, listStatus.Draft);
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.LocationDeletedFromList,
-          `Locations with IDs (${location_ids}) deleted from (${list.list_name})`
-        );
-        resolve(true);
-      })
-      .catch((err) => {
-        console.log('Error in deleting location', err);
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteList,
-          `Failed to delete locations from list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
-};
+export const deleteLocations = async (req, list_id, location_ids, gfw_list_id) => {
+  try {
+    // 1. Validate list is locked by current user
+    const record = await getListLockStatus(req, list_id);
+    validateListLockStatus(record, req.session.organization_user_id);
 
-/** @function {editLocations}
- *   @summary Deletes locations from a list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Number} list_id
- *   @param {Array} location_ids
- *   @param {Array} arrayAttributes - Array of objects containing key:value pairs of column: value
- *   @return {Promise}
- */
-export const editLocations = (req, list_id, location_ids, arrayAttributes) => {
-  const EDIT_EXCLUDED_COLUMNS = [
-    'list_id',
-    'location name',
-    'investment name',
-    'latitude',
-    'longitude',
-    'analysis area',
-    'analysis radius',
-    'commodity',
-    'location classification',
-    'total_area',
-    'list_location_id',
-    'analysis_list_id',
-    'template_id',
-  ];
+    // 2. Get list schema
+    const list = await listUtils.getListNameSchema(req, list_id);
 
-  let promiseResolver = Promise.resolve();
-  return new Promise((resolve, reject) => {
-    // Confirm length of features and src_location_ids match
-    if (location_ids.length !== arrayAttributes.length) {
-      reject(new Error('Length of arguements do not match.'));
+    // 3. Delete list locations sequentially
+    for (const location_id of location_ids) {
+      await listUtils.deleteSingleLocation(req, list, location_id);
     }
 
-    getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          location_ids.forEach((location_id, idx) => {
-            promiseResolver = promiseResolver.then(() => {
-              const location = arrayAttributes[idx];
-              const locationTransformedKeysToLowerCase = _.transform(
-                location,
-                (result, val, key) => {
-                  // eslint-disable-next-line no-param-reassign
-                  result[String(key).toLowerCase()] = val;
-                }
-              );
-              const locationAttributesFiltered = _.omit(
-                locationTransformedKeysToLowerCase,
-                EDIT_EXCLUDED_COLUMNS
-              );
-              return listUtils.editSingleLocation(
-                req,
-                list_id,
-                location_id,
-                locationAttributesFiltered
-              );
-            });
-          });
-          return promiseResolver;
-        }
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.LocationUpdatedInList,
-          'Locations have been updated.'
-        );
-        resolve(true);
-      })
-      .catch((err) => {
-        console.log('Error editing location', err);
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUpdateLists,
-          `Failed to update locations from list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    // 4. Update list count of deleted location
+    const parameters = [
+      { field: 'table_name', type: sql.NVarChar(150), value: list.list_table },
+      { field: 'list_id', type: sql.Int, value: list.id },
+    ];
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspUpdateListCount', parameters);
+
+    // 5. Unlock list to allow further interaction
+    await setListUnlocked(req, list_id);
+
+    // 6. Set list status to DRAFT
+    await resetListStatus(req, list_id, gfw_list_id, listStatus.Draft);
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.LocationDeletedFromList,
+      `Locations with IDs (${location_ids}) deleted from (${list.list_name})`
+    );
+
+    return true;
+  } catch (err) {
+    console.log('Error in deleting location', err);
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeleteList,
+      `Failed to delete locations from list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
+};
+
+/**
+ * Edit attributes for locations in a list
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - ID of list containing locations to edit
+ * @param {Array} location_ids - Array of location_ids to edit
+ * @param {Array} arrayAttributes - Array of objects containing key:value pairs of column: value
+ * @returns {Promise<Boolean>} Returns true if successful
+ */
+export const editLocations = async (req, list_id, location_ids, arrayAttributes) => {
+  // Confirm length of features and src_location_ids match
+  if (location_ids.length !== arrayAttributes.length) {
+    throw new Error('Length of arguments do not match.');
+  }
+
+  try {
+    // Validate list is locked by current user
+    const record = await getListLockStatus(req, list_id);
+    validateListLockStatus(record, req.session.organization_user_id);
+
+    // Edit locations sequentially
+    for (let idx = 0; idx < location_ids.length; idx++) {
+      const location_id = location_ids[idx];
+      const location = arrayAttributes[idx];
+
+      const locationTransformedKeysToLowerCase: Record<string, any> = _.transform(
+        location,
+        (result: Record<string, any>, val, key) => {
+          // eslint-disable-next-line no-param-reassign
+          result[String(key).toLowerCase()] = val;
+        },
+        {}
+      );
+
+      const locationAttributesFiltered = _.omit(
+        locationTransformedKeysToLowerCase,
+        EDIT_EXCLUDED_COLUMNS
+      );
+
+      await listUtils.editSingleLocation(req, list_id, location_id, locationAttributesFiltered);
+    }
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.LocationUpdatedInList,
+      'Locations have been updated.'
+    );
+
+    return true;
+  } catch (err) {
+    console.log('Error editing location', err);
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToUpdateLists,
+      `Failed to update locations from list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {copyLocations}
  *   @summary Copies location to list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Number} src_list_id
  *   @param  {Array}  src_location_ids
  *   @param  {Number} dest_list_id
@@ -1023,7 +835,7 @@ export const editLocations = (req, list_id, location_ids, arrayAttributes) => {
  *   @param  {Number} gfw_list_id
  *   @return {Promise}
  */
-export const copyLocations = (
+export const copyLocations = async (
   req,
   src_list_id,
   src_location_ids,
@@ -1031,138 +843,109 @@ export const copyLocations = (
   src_geojson,
   gfw_list_id
 ) => {
-  let promiseResolver = Promise.resolve();
-  // Return a promise for copying all locations
-  return new Promise((resolve, reject) => {
-    // Important variables
-    let src_list;
-    let dest_list;
-    let dest_location_ids;
+  // Confirm length of features and src_location_ids match
+  if (src_location_ids.length !== src_geojson.features.length) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedTocopyLocations,
+      `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
+      'Length mismatch between location IDs and GeoJSON features'
+    );
+  }
 
-    // Confirm length of features and src_location_ids match
-    if (src_location_ids.length !== src_geojson.features.length) {
-      const errorObject = errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.failedTocopyLocations,
-        `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
-        {}
-      );
-      reject(errorObject);
-      return;
-    }
-
-    Promise.all([
+  try {
+    // Get both list schemas in parallel
+    const [src_list, dest_list] = await Promise.all([
       listUtils.getListNameSchema(req, src_list_id),
       listUtils.getListNameSchema(req, dest_list_id),
-    ])
-      .then((results) => {
-        const [src, dest] = results;
-        src_list = src;
-        dest_list = dest;
+    ]);
 
-        return getListLockStatus(req, src_list_id);
-      })
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          // Lock the list from any other transactions
-          return setListLocked(req, dest_list_id);
-        }
-      })
-      .then(() => {
-        // Perform uploadBulkLocations
-        const attributes = null;
-        return listUtils.uploadBulkLocations(
-          req,
-          dest_list.id,
-          dest_list.list_name,
-          src_geojson,
-          attributes
-        );
-      })
-      .then((resultGeoJSON) => {
-        // Array of destination location ids - assumption that it is in the same order as src_locations_ids
-        dest_location_ids = resultGeoJSON.features.map((feature) => feature.properties.location_id);
+    // Validate list is locked by current user
+    const record = await getListLockStatus(req, src_list_id);
+    validateListLockStatus(record, req.session.organization_user_id);
 
-        // Get analysis columns to be copied
-        const parameters = [{ field: 'list_id', type: sql.Int, value: src_list.id }];
-        return sqlUtils.executeOrganizationStoredProcedure(
-          req,
-          'uspGetAnalysisColumns',
-          parameters
-        );
-      })
-      .then((recordsets) => {
-        const columns = recordsets.map((record) => record.COLUMN_NAME);
-        const statement = columns
-          .map((column) => `[${column}] = [${src_list.analysis_table}].[${column}]`)
-          .join(',');
+    // Lock the destination list from any other transactions
+    await setListLocked(req, dest_list_id);
 
-        // Loop copy single location analysis
-        src_location_ids.forEach((src_location_id, idx) => {
-          promiseResolver = promiseResolver.then(() => {
-            return listUtils.copySingleLocation(
-              req,
-              src_list,
-              dest_list,
-              src_location_id,
-              dest_location_ids[idx],
-              statement
-            );
-          });
-        });
-        return promiseResolver;
-      })
-      .then(() => {
-        // 3. Update list count of appended location
-        const parameters = [
-          { field: 'table_name', type: sql.NVarChar(150), value: dest_list.list_table },
-          { field: 'list_id', type: sql.Int, value: dest_list.id },
-        ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspUpdateListCount', parameters);
-      })
-      .then(() => {
-        // Unlock the list
-        return Promise.all([setListUnlocked(req, src_list_id), setListUnlocked(req, dest_list_id)]);
-      })
-      .then(() => {
-        // Set list status to processing before requesting list level analysis
-        return resetListStatus(req, dest_list_id, gfw_list_id, req.body.list_status_id);
-      })
-      .then(async () => {
-        // 4. Run analysis for entire list
-        await AnalysisManager.requestAnalysis(req, dest_list.list_name, {}, true);
+    // Perform uploadBulkLocations
+    const commodity = null;
+    const attributes = null;
+    const resultGeoJSON = await listUtils.uploadBulkLocations(
+      req,
+      dest_list.id,
+      dest_list.list_name,
+      src_geojson,
+      commodity,
+      attributes
+    );
 
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.LocationCopiedToList,
-          `User ID ${req.session.organization_user_id} copied locations between lists`
-        );
+    // Array of destination location ids - assumption that it is in the same order as src_locations_ids
+    const dest_location_ids = resultGeoJSON.features.map(
+      (feature) => feature.properties.location_id
+    );
 
-        resolve(true);
-      })
-      .catch((err) => {
-        console.log('Error copying location', err);
-        Promise.all([setListUnlocked(req, dest_list_id), setListUnlocked(req, src_list_id)]).then(
-          () => {
-            const errorObject = errorUtils.createErrorMessage(
-              req,
-              errorUtils.ERROR_CODES.failedTocopyLocations,
-              `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
-              err
-            );
-            reject(errorObject);
-          }
-        );
-      });
-  });
+    // Get analysis columns to be copied
+    const parameters = [{ field: 'list_id', type: sql.Int, value: src_list.id }];
+    const recordsets = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetAnalysisColumns',
+      parameters
+    );
+
+    const columns = recordsets.map((record) => record.COLUMN_NAME);
+    const statement = columns
+      .map((column) => `[${column}] = [${src_list.analysis_table}].[${column}]`)
+      .join(',');
+
+    // Copy single location analysis sequentially
+    for (let idx = 0; idx < src_location_ids.length; idx++) {
+      const src_location_id = src_location_ids[idx];
+      await listUtils.copySingleLocation(
+        req,
+        src_list,
+        dest_list,
+        src_location_id,
+        dest_location_ids[idx],
+        statement
+      );
+    }
+
+    // Update list count of appended location
+    const updateParams = [
+      { field: 'table_name', type: sql.NVarChar(150), value: dest_list.list_table },
+      { field: 'list_id', type: sql.Int, value: dest_list.id },
+    ];
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspUpdateListCount', updateParams);
+
+    // Unlock both lists in parallel
+    await Promise.all([setListUnlocked(req, src_list_id), setListUnlocked(req, dest_list_id)]);
+
+    // Set list status to processing before requesting list level analysis
+    await resetListStatus(req, dest_list_id, gfw_list_id, req.body.list_status_id);
+
+    // Run analysis for entire list
+    await AnalysisManager.requestAnalysis(req, dest_list.list_name, {});
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.LocationCopiedToList,
+      `User ID ${req.session.organization_user_id} copied locations between lists`
+    );
+
+    return true;
+  } catch (err) {
+    console.log('Error copying location', err);
+    // Unlock both lists in parallel on error
+    await Promise.all([setListUnlocked(req, dest_list_id), setListUnlocked(req, src_list_id)]);
+
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedTocopyLocations,
+      `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {moveLocations}
@@ -1176,7 +959,7 @@ export const copyLocations = (
  *   @param  {Boolean} delete_src_list - Delete list signal (TRUE/FALSE)
  *   @return {Promise} - Returns resolve TRUE or reject error message
  */
-export const moveLocations = (
+export const moveLocations = async (
   req,
   src_list_id,
   src_location_ids,
@@ -1185,94 +968,80 @@ export const moveLocations = (
   gfw_list_id,
   delete_src_list
 ) => {
-  return new Promise((resolve, reject) => {
-    // Important Variables
-    let src_list;
-    let dest_list;
-
-    Promise.all([
+  try {
+    // Get both list schemas in parallel
+    const [src_list, dest_list] = await Promise.all([
       listUtils.getListNameSchema(req, src_list_id),
       listUtils.getListNameSchema(req, dest_list_id),
-    ])
-      .then((record) => {
-        const [src, dest] = record;
-        src_list = src;
-        dest_list = dest;
-        // 1. Run copy location
-        return copyLocations(
-          req,
-          src_list_id,
-          src_location_ids,
-          dest_list_id,
-          geojson,
-          gfw_list_id
-        );
-      })
-      .then(() => {
-        return setListLocked(req, src_list_id);
-      })
-      .then(() => {
-        if (delete_src_list) {
-          return deleteList(req, src_list_id);
-        }
-        return deleteLocations(req, src_list_id, src_location_ids, gfw_list_id);
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.LocationMovedFromList,
-          `Locations moved from (${src_list.list_name})`
-        );
+    ]);
 
-        if (delete_src_list) {
-          logger.logActivity(
-            req,
-            logger.listActivityTypes.List.ListDeleted,
-            `(${src_list.list_name}) was deleted due to all locations having been moved to (${dest_list.list_name})`
-          );
-        }
+    // 1. Run copy location
+    await copyLocations(req, src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id);
 
-        resolve(true);
-      })
-      .catch((err) => {
-        console.log('Error moving location', err);
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToMoveLocations,
-          `Failed to move locations from list id ${src_list_id} to list id ${dest_list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    // 2. Lock source list
+    await setListLocked(req, src_list_id);
+
+    // 3. Delete source list or locations
+    if (delete_src_list) {
+      await deleteList(req, src_list_id);
+    } else {
+      await deleteLocations(req, src_list_id, src_location_ids, gfw_list_id);
+    }
+
+    // 4. Log activities
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.LocationMovedFromList,
+      `Locations moved from (${src_list.list_name})`
+    );
+
+    if (delete_src_list) {
+      logger.logActivity(
+        req,
+        logger.listActivityTypes.List.ListDeleted,
+        `(${src_list.list_name}) was deleted due to all locations having been moved to (${dest_list.list_name})`
+      );
+    }
+
+    return true;
+  } catch (err) {
+    console.log('Error moving location', err);
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToMoveLocations,
+      `Failed to move locations from list id ${src_list_id} to list id ${dest_list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };
 
 /** @function {getListLockStatus}
  *   @summary Gets current lock status of specified list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {Number} list_id - id of list to be locked
  *   @return {Promise}
  */
-export const getListLockStatus = (req, list_id): Promise<{ lock_status; lock_user_id }> => {
-  return new Promise((resolve, reject) => {
+export const getListLockStatus = async (req, list_id): Promise<{ lock_status; lock_user_id }> => {
+  try {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetListLockStatus', parameters)
-      .then((recordsets) => {
-        const [record] = recordsets;
-        resolve(record);
-      })
-      .catch((err) => {
-        console.log('Issue getting list lock status', err);
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetLockStatus,
-          `Failed to get lock state for list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    const recordsets = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetListLockStatus',
+      parameters
+    );
+    const [record] = recordsets;
+    return record;
+  } catch (err) {
+    console.log('Issue getting list lock status', err);
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetLockStatus,
+      `Failed to get lock state for list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };
 
 /**
@@ -1292,11 +1061,10 @@ export const getListByListName = async (req, list_name) => {
 };
 
 /**
- * @function {getListByIdWithAnalysisId}
- * @summary Get List by List Name
+ * Get list by ID with analysis status
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {string} listId - List Name
- * @return {Promise<*>} - Filtered list from array of all lists
+ * @param {Number} listId - List ID to retrieve
+ * @returns {Promise<Object|Array>} Returns single list if listId provided, otherwise array of lists
  */
 export const getListByIdWithAnalysisId = async (req, listId) => {
   try {
@@ -1307,138 +1075,109 @@ export const getListByIdWithAnalysisId = async (req, listId) => {
   }
 };
 
-/** @function {checkListLockStatus}
- *   @summary Checks the status of the locked list status and performs actions accordingly
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Number} list_id - id of list to be locked
- *   @param {Object} record - Result of ListManager.getListLockStatus
- *   @return {Promise}
+/**
+ * Check list lock status and auto-unlock if expired (>15 min)
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - ID of list to check lock status
+ * @param {Object} record - Result of getListLockStatus containing lock_status and lock_user_id
+ * @returns {Promise<Object>} Returns object with isLocked boolean and lock_user_id
  */
-export const checkListLockStatus = (req, list_id, record) => {
-  return new Promise((resolve, reject) => {
+export const checkListLockStatus = async (req, list_id, record) => {
+  try {
     const { lock_status, lock_user_id } = record;
+
     // List is unlocked
     if (lock_status === null) {
-      setListLocked(req, list_id)
-        .then(() => {
-          resolve({
-            isLocked: false,
-            lock_user_id,
-          });
-        })
-        .catch((err) => {
-          const errorMessage = errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.failedToGetLockStatus,
-            `Failed to set lock list ${list_id}`,
-            err
-          );
-          reject({ error: true, errorMessage });
-        });
-      // List is locked
-    } else {
-      // Check if the list has be locked for more than 15 minutes (in ms)
-      const fifteenMinutes = 900000;
-      const now = new Date().getTime();
-      const pastFifteen = now - lock_status > fifteenMinutes;
-      if (pastFifteen) {
-        setListUnlocked(req, list_id)
-          .then(() => {
-            return setListLocked(req, list_id);
-          })
-          .then(() => {
-            resolve({
-              isLocked: false,
-              lock_user_id,
-            });
-          })
-          .catch((err) => {
-            errorUtils.createErrorMessage(
-              req,
-              errorUtils.ERROR_CODES.failedToGetLockStatus,
-              `Failed to set lock list ${list_id}`,
-              err
-            );
-            reject({ error: true });
-          });
-      } else {
-        resolve({
-          isLocked: true,
-          lock_user_id,
-        });
-      }
+      await setListLocked(req, list_id);
+      return {
+        isLocked: false,
+        lock_user_id,
+      };
     }
-  });
+
+    // Check if lock expired (>15 minutes)
+    const now = new Date().getTime();
+    const pastFifteen = now - lock_status > FIFTEEN_MINUTES_MS;
+
+    if (pastFifteen) {
+      await setListUnlocked(req, list_id);
+      await setListLocked(req, list_id);
+      return {
+        isLocked: false,
+        lock_user_id,
+      };
+    } else {
+      return {
+        isLocked: true,
+        lock_user_id,
+      };
+    }
+  } catch (err) {
+    const errorMessage = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetLockStatus,
+      `Failed to set lock list ${list_id}`,
+      err
+    );
+    throw { error: true, errorMessage };
+  }
 };
 
-/** @function {setListLocked}
- *   @summary Performs copy to destination list and delete on source list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Number} list_id - id of list to be locked
- *   @return {Promise}
+/**
+ * Lock a list for the current user
  */
-export const setListLocked = (req, list_id) => {
-  return new Promise((resolve, reject) => {
+export const setListLocked = async (req, list_id) => {
+  try {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
       { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
     ];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspSetListLocked', parameters)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetLockStatus,
-          `Failed to lock list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspSetListLocked', parameters);
+    return true;
+  } catch (err) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetLockStatus,
+      `Failed to lock list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };
 
-/** @function {setListUnlocked}
- *   @summary Performs copy to destination list and delete on source list
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Number} list_id - id of list to be unlocked
- *   @return {Promise}
+/**
+ * Unlock a list
  */
-export const setListUnlocked = (req, list_id) => {
-  return new Promise((resolve, reject) => {
+export const setListUnlocked = async (req, list_id) => {
+  try {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
       { field: 'user_id', type: sql.NVarChar(150), value: undefined },
     ];
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspSetListUnlocked', parameters)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetLockStatus,
-          `Failed to unlock list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspSetListUnlocked', parameters);
+    return true;
+  } catch (err) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetLockStatus,
+      `Failed to unlock list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };
 
-/** @function {resetListStatus}
- *   @summary Sets list status to pending.
- *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param {number} list_id - ID of list to be unlocked
- *   @param {number} gfw_list_id - The ID of the GFW List that this new list is associated with
- *   @param {number} [list_status_id = listStatus.Draft] list_status_id - List status ID (eg. 2, 4)
- *   @return {Promise} A promise object that returns true, otherwise error object
+/**
+ * Reset list status (default: Draft)
  */
-export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = listStatus.Draft) => {
-  return new Promise(async (resolve, reject) => {
+export const resetListStatus = async (
+  req,
+  list_id,
+  gfw_list_id,
+  list_status_id = listStatus.Draft
+) => {
+  let list_name = '';
+  try {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
       { field: 'status_id', type: sql.Int, value: list_status_id },
@@ -1446,77 +1185,58 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
     ];
 
     const listStatusCommonName = getListStatusCommonName(list_status_id);
-    const { list_name } = await listUtils.getListNameSchema(req, list_id);
+    const listInfo = await listUtils.getListNameSchema(req, list_id);
+    list_name = listInfo.list_name;
 
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspResetListStatus', parameters)
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListUpdate,
-          `${list_name} is now ${listStatusCommonName}`
-        );
-        resolve(true);
-      })
-      .catch((error) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetLockStatus,
-          `Error sending ${list_name} to analysis: ${error}`
-        );
-        reject(errorObject);
-      });
-  });
-};
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspResetListStatus', parameters);
 
-/** @function {deleteList}
- *   @summary Deletes a list from Lists table, and list's attribute and analysis table
- *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Number} list_id - id of list
- *   @return {Promise}
- */
-export const deleteList = (req, list_id) => {
-  return new Promise((resolve, reject) => {
-    deleteListSqlLib(req, list_id)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteList,
-          `Failed to delete list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  }); // end promisse
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.ListUpdate,
+      `${list_name} is now ${listStatusCommonName}`
+    );
+    return true;
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetLockStatus,
+      `Error sending ${list_name} to analysis`,
+      error
+    );
+    throw errorObject;
+  }
 };
 
 /**
- * Get list status Common Name
- *
- * @param {number} statusId - Status ID
- * @return {string} - List status Common Name
+ * Delete a list and its associated data
+ */
+export const deleteList = async (req, list_id) => {
+  try {
+    await deleteListSqlLib(req, list_id);
+    return true;
+  } catch (err) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeleteList,
+      `Failed to delete list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
+};
+
+/**
+ * Get list status common name from status ID
  */
 export const getListStatusCommonName = (statusId) => {
-  let listStatusCommonName;
-
-  for (const item in listStatus) {
-    if (listStatus[item] === statusId) {
-      listStatusCommonName = item;
-    }
-  }
-
-  return listStatusCommonName;
+  const entry = Object.entries(listStatus).find(([key, value]) => value === statusId);
+  return entry ? entry[0] : undefined;
 };
 
 /**
- * @description - Get List Location Geometry
- *
- * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * Get location geometry from list
  */
-export function getListLocationGeometry(req) {
+export async function getListLocationGeometry(req) {
   const { listTableName, locationID } = req.body;
 
   const parameters = [
@@ -1524,148 +1244,106 @@ export function getListLocationGeometry(req) {
     { field: 'location_id', type: sql.Int, value: locationID },
   ];
 
-  return new Promise((resolve, reject) => {
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetLocation', parameters)
-      .then((results) => {
-        resolve(results);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
+  try {
+    return await sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetLocation', parameters);
+  } catch (error) {
+    throw error;
+  }
 }
 
 /**
- * @function {deleteListIfEmpty}
- * @summary - Delete if the list is empty. Checks first if the list is empty, runs deleteList
- * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {number} listID - List Id to be deleted if empty
+ * Delete list if it contains no locations
  */
-export function deleteListIfEmpty(req, listID) {
-  return new Promise((resolve, reject) => {
+export async function deleteListIfEmpty(req, listID) {
+  try {
     const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
+    const records = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspCheckIfListIsEmpty',
+      parameters
+    );
 
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspCheckIfListIsEmpty', parameters)
-      .then(async (records) => {
-        const [resultset] = records;
-        const { isListEmpty } = resultset;
+    const [resultset] = records;
+    const { isListEmpty } = resultset;
 
-        if (isListEmpty) {
-          deleteListSqlLib(req, listID)
-            .then(() => {
-              logger.logActivity(
-                req,
-                logger.listActivityTypes.List.ListDeleted,
-                `Deleted empty list with id (${listID}).`
-              );
-              resolve(true);
-            })
-            .catch((error) => {
-              const errorObject = errorUtils.createErrorMessage(
-                req,
-                errorUtils.ERROR_CODES.failedToDeleteList,
-                `Failed to delete list with id (${listID}). List not empty`,
-                error
-              );
-              reject(errorObject);
-            });
-        }
-        resolve(isListEmpty);
-      })
-      .catch((error) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteListIsNotEmpty,
-          `Failed to delete list is not empty ${listID}`,
-          error
-        );
-        reject(errorObject);
-      });
-  });
+    if (isListEmpty) {
+      await deleteListSqlLib(req, listID);
+      logger.logActivity(
+        req,
+        logger.listActivityTypes.List.ListDeleted,
+        `Deleted empty list with id (${listID}).`
+      );
+      return true;
+    }
+
+    return isListEmpty;
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeleteListIsNotEmpty,
+      `Failed to delete list is not empty ${listID}`,
+      error
+    );
+    throw errorObject;
+  }
 }
 
 /**
- * @function {getListAdminAreasOrderedByCountry}
- * @summary - Gets lists locations for filter values
- * @param {Object} request - Mandatory express request
- * @return {Promise<>}
+ * Get list admin areas grouped by country
  */
-export const getListAdminAreasOrderedByCountry = (request, listId) => {
-  return new Promise((resolve, reject) => {
+export const getListAdminAreasOrderedByCountry = async (request, listId) => {
+  try {
     const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
-    sqlUtils
-      .executeOrganizationStoredProcedure(request, 'uspGetAdminAreas', parameters)
-      .then((recordsets) => resolve(recordsets))
-      .catch((error) => {
-        const errorObject = errorUtils.createErrorMessage(
-          request,
-          errorUtils.ERROR_CODES.failedToGetList,
-          `Failed to Get list admin areas ordered by country for list ${listId}`,
-          error
-        );
-        reject(errorObject);
-      });
-  });
+    return await sqlUtils.executeOrganizationStoredProcedure(
+      request,
+      'uspGetAdminAreas',
+      parameters
+    );
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      request,
+      errorUtils.ERROR_CODES.failedToGetList,
+      `Failed to Get list admin areas ordered by country for list ${listId}`,
+      error
+    );
+    throw errorObject;
+  }
 };
-// Require after modules have been exported so the module can be fully loaded
-const AnalysisManager = require('./analysisManager.utils');
+
+import * as AnalysisManager from './analysisManager.utils';
+
 /**
- * @function {deleteListSqlLib}
- * @summary Deletes a list from Lists table, list's attribute and analysis table using a promise
- * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {Number} list_id - id of list
- * @return {Promise} - Returns a promise that resolves or rejects with an error
+ * Delete list with validation and logging (internal implementation)
  */
-export const deleteListSqlLib = (req, list_id) => {
-  const { organization_user_id, organization_database: organizationDatabase } = req.session;
-  const deleteListTypeOrm = new DeleteListTypeOrm();
-  return new Promise((resolve, reject) => {
-    getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          return listUtils.getListNameSchema(req, list_id);
-        }
-      })
-      .then((result) => {
-        const list = result;
-        deleteListTypeOrm
-          .delete(organizationDatabase, list_id, organization_user_id)
-          .then(() => {
-            logger.logActivity(
-              req,
-              logger.listActivityTypes.List.ListDeleted,
-              `User ID '${req.session.organization_user_id}' has deleted list (${list.list_name}).`
-            );
-            resolve(true);
-          })
-          .catch((err) => {
-            const errorObject = errorUtils.createErrorMessage(
-              req,
-              errorUtils.ERROR_CODES.failedToDeleteList,
-              `Failed to delete list id ${list_id}`,
-              err
-            );
-            reject(errorObject);
-          });
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteList,
-          `Failed to delete list id ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
+export const deleteListSqlLib = async (req, list_id) => {
+  try {
+    const { organization_user_id, organization_database: organizationDatabase } = req.session;
+    const deleteListTypeOrm = new DeleteListTypeOrm();
+
+    // Validate list is locked by current user
+    const record = await getListLockStatus(req, list_id);
+    validateListLockStatus(record, organization_user_id);
+
+    // Get list schema
+    const list = await listUtils.getListNameSchema(req, list_id);
+
+    // Delete the list
+    await deleteListTypeOrm.delete(organizationDatabase, list_id, organization_user_id);
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.List.ListDeleted,
+      `User ID '${req.session.organization_user_id}' has deleted list (${list.list_name}).`
+    );
+
+    return true;
+  } catch (err) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeleteList,
+      `Failed to delete list id ${list_id}`,
+      err
+    );
+    throw errorObject;
+  }
 };

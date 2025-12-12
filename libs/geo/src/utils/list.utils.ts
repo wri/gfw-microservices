@@ -444,7 +444,6 @@ export async function setListAnalysisStatus(
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-  const isAlertsWithWeekly = analysisIds.includes(AlertsAnalysisFrequency.WEEKLY);
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
 
   await Promise.all(
@@ -482,7 +481,7 @@ export async function setListAnalysisStatus(
         }
 
         // GPV-5141 default options=Weekly for ALERTS analysis
-        if (isAlertsWithWeekly && normalizedAnalysisId === analysisTypes.ALERTS) {
+        if (normalizedAnalysisId === analysisTypes.ALERTS) {
           value.options = AlertsAnalysisFrequency.WEEKLY;
         }
 

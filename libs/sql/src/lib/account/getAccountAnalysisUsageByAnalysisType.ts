@@ -64,7 +64,7 @@ export async function getAccountAnalysisUsageByAnalysisType({
     )
     .addSelect('COUNT(DISTINCT lp.listId)', 'total_lists_analyzed')
     .addSelect(
-      `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType THEN 0 ELSE lp.locationsAnalyzed END), 0)`,
+      `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 ELSE lp.locationsAnalyzed END), 0)`,
       'total_locations_analyzed'
     )
     .addSelect('lp.analysisType', 'analysis_type')

@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import Menu from 'material-ui/Menu';
-import { IconButton } from '@mui/material';
-import Popover from 'material-ui/Popover';
+import { IconButton, Popover } from '@mui/material';
 import Icon from '@material-ui/core/Icon';
 import { client } from './sanityClient';
 import Notification from './Notification';
@@ -106,9 +104,9 @@ const NewFeatureNotifications = () => {
         className="new-feature-notifications"
         open={showList}
         anchorEl={anchorEl}
-        onRequestClose={handleClose}
+        onClose={handleClose}
       >
-        <Menu onClose={handleClose}>
+        <div>
           <div className="new-feature-notifications__header">
             <div>What&apos;s new</div>
             <IconButton onClick={handleClose}>
@@ -121,7 +119,7 @@ const NewFeatureNotifications = () => {
             </button>
           </div>
           {notificationsList}
-        </Menu>
+        </div>
       </Popover>
     </div>
   );

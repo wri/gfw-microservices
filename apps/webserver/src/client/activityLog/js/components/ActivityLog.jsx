@@ -1,25 +1,14 @@
 import { useEffect, useState } from 'react';
-import DatePicker from 'material-ui/DatePicker';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { Box, TextField } from '@mui/material';
+
 import { saveAs } from 'file-saver';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import { profilePage, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import IconArrowLeft from '../../../common/js/components/icon/IconArrowLeft';
 import IconSearch from '../../../common/js/components/icon/IconSearch';
-import LinkButton from '../../../common/js/components/LinkButton';
-import Button from '../../../common/js/components/Button';
 import '../../css/activityLog.scss';
-
-const primaryColor = '#8bae3b';
-const muiTheme = getMuiTheme({
-  palette: {
-    primary1Color: primaryColor,
-    primary2Color: primaryColor,
-  },
-});
-muiTheme.fontFamily = 'Fira Sans, sans-serif';
+import { Link, PillButton } from '../../../components';
 
 function ActivityLog() {
   const [displayLoader, setDisplayLoader] = useState(true);
@@ -99,14 +88,10 @@ function ActivityLog() {
     <div className="activity-log">
       <ModalLoader open={displayLoader} />
 
-      <LinkButton
-        className="profile-page__back-button back-button"
-        onClick={() => {
-          window.location.href = '/profile';
-        }}
-        icon={<IconArrowLeft height="10px" />}
-        label={profilePage.profileManager.backButton}
-      />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <IconArrowLeft height="10px" />
+        <Link href="/profile">{profilePage.profileManager.backButton}</Link>
+      </Box>
 
       <h1 className="profile-page__title">{profilePage.profileManager.activityLogTitle}</h1>
 
@@ -128,42 +113,53 @@ function ActivityLog() {
           <label htmlFor="profile-timeframe-start" className="block-label">
             {locationsPage.add.startDate}
           </label>
-          <MuiThemeProvider muiTheme={muiTheme}>
-            <DatePicker
-              id="profile-timeframe-start"
-              hintText="yyyy-mm-dd"
-              className="profile-timeframe-start gfw-datepicker"
-              value={startDate}
-              onChange={(evt, date) => {
-                setStartDate(date);
-              }}
-            />
-          </MuiThemeProvider>
+
+          <TextField
+            id="profile-timeframe-start"
+            type="date"
+            className="profile-timeframe-start gfw-datepicker"
+            value={
+              startDate && startDate instanceof Date && !isNaN(startDate)
+                ? startDate.toISOString().split('T')[0]
+                : ''
+            }
+            onChange={(evt) => {
+              setStartDate(evt.target.value ? new Date(evt.target.value) : {});
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            size="small"
+          />
         </div>
 
         <div className="input-field__inline-container">
           <label htmlFor="profile-timeframe-end" className="block-label">
             {locationsPage.add.endDate}
           </label>
-          <MuiThemeProvider muiTheme={muiTheme}>
-            <DatePicker
-              id="profile-timeframe-end"
-              hintText="yyyy-mm-dd"
-              className="profile-timeframe-end gfw-datepicker"
-              value={endDate}
-              onChange={(evt, date) => {
-                setEndDate(date);
-              }}
-            />
-          </MuiThemeProvider>
+
+          <TextField
+            id="profile-timeframe-end"
+            type="date"
+            className="profile-timeframe-end gfw-datepicker"
+            value={
+              endDate && endDate instanceof Date && !isNaN(endDate)
+                ? endDate.toISOString().split('T')[0]
+                : ''
+            }
+            onChange={(evt) => {
+              setEndDate(evt.target.value ? new Date(evt.target.value) : {});
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            size="small"
+          />
         </div>
 
-        <Button
-          className="activity-log__action-button"
-          variant="primary"
-          onClick={() => download()}
-          label="Download"
-        />
+        <PillButton variant="contained" onClick={download} sx={{ marginLeft: 'auto' }}>
+          Download
+        </PillButton>
       </div>
       {rows.length > 0 && (
         <div className="gfw-table-container">
@@ -186,15 +182,17 @@ function ActivityLog() {
           <p className="activity-log__no-results-prompt">
             {locationsPage.lists.listsFilterNoMatch}
           </p>
-          <LinkButton
-            className="activity-log__no-results-clear"
-            label={locationsPage.lists.listsFilterClear}
+          <PillButton
+            color="info"
             onClick={() => {
               setFilterStr('');
               setStartDate({});
               setEndDate({});
             }}
-          />
+            sx={{ margin: 'auto' }}
+          >
+            {locationsPage.lists.listsFilterClear}
+          </PillButton>
         </div>
       )}
     </div>

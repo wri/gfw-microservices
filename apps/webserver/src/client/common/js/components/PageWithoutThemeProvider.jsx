@@ -2,7 +2,7 @@ import Header from './Header';
 
 const noHeaderPages = ['verify', 'forgot', 'reset', 'admin', 'select']; // TODO: use this and figure out who else does not want it:
 
-function Page(props) {
+function PageWithoutThemeProvider(props) {
   const { active, children } = props;
   return (
     <div className="app">
@@ -14,4 +14,4 @@ function Page(props) {
   );
 }
 
-export default Page;
+export default PageWithoutThemeProvider;

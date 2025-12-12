@@ -539,7 +539,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
             return (
               <Box key={id}>
-                {/* Main Analysis Checkbox */}
                 <Controller
                   name={id as keyof FormFields}
                   control={control}

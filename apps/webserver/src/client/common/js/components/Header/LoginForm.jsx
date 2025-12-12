@@ -111,6 +111,7 @@ function LoginForm() {
                 onClick={handleSignIn}
                 style={{ marginLeft: 'auto' }}
                 disabled={!password.length || !username.length}
+                data-cy="loginButton"
               >
                 {nav.login}
               </PillButton>

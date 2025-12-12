@@ -1244,11 +1244,7 @@ export async function getListLocationGeometry(req) {
     { field: 'location_id', type: sql.Int, value: locationID },
   ];
 
-  try {
-    return await sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetLocation', parameters);
-  } catch (error) {
-    throw error;
-  }
+  return await sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetLocation', parameters);
 }
 
 /**

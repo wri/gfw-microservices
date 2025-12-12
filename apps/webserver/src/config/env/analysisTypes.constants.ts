@@ -13,6 +13,7 @@ export const analysisTypes = {
   'ALERTS-BATCH': 'ALERTS-BATCH',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
+  WEEKLY: 'Weekly',
 } as const;
 
 export const analysisTypesOptionsNewNames = [

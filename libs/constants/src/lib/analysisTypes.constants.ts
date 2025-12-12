@@ -20,6 +20,7 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
+  'ALERTS-BATCH': 'ALERTS-BATCH',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
   WEEKLY: 'Weekly',
@@ -39,6 +40,13 @@ export const analysisTypesOptionsNewNames = [
     shortLabel: 'Alerts',
     description: 'Recent disturbance alerts, updated weekly',
     showInUI: true,
+  },
+  {
+    description: 'ALERTS-BATCH',
+    id: 'ALERTS-BATCH',
+    label: 'ALERTS-BATCH',
+    shortLabel: 'ALERTS-BATCH',
+    showInUI: false,
   },
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,

@@ -924,7 +924,7 @@ export const copyLocations = async (
     await resetListStatus(req, dest_list_id, gfw_list_id, req.body.list_status_id);
 
     // Run analysis for entire list
-    await AnalysisManager.requestAnalysis(req, dest_list.list_name, {});
+    await AnalysisManager.requestAnalysis(req, dest_list.list_name, {}, true);
 
     logger.logActivity(
       req,

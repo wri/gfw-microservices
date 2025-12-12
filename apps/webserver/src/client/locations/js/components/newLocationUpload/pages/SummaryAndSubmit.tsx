@@ -18,7 +18,6 @@ import { LoadingModal, PillButton } from '../../../../../components';
 import { useUploadLocation } from '../contexts';
 import { FileValidationHelper, NavBar } from '../components';
 import {
-  AlertsAnalysisFrequency,
   analysisTypes,
   analysisTypesOptionsNewNames,
 } from '../../../../../../config/env/analysisTypes.constants';
@@ -216,31 +215,18 @@ export function SummaryAndSubmit() {
             </Typography>
             <Box component="ul" sx={{ color: 'text.secondary' }}>
               {Object.entries(uploadLocationState.typeOfAnalysis)
-                .filter(
-                  ([key, isChecked]) =>
-                    isChecked &&
-                    key !== analysisTypes.PALM_RISK &&
-                    key !== AlertsAnalysisFrequency.WEEKLY
-                )
+                .filter(([key, isChecked]) => isChecked && key !== analysisTypes.PALM_RISK)
                 .map(([key]) => {
                   const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 
                   const isPalmRiskIncluded =
-                    analysis?.id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
-                    uploadLocationState.typeOfAnalysis.PalmRisk;
-
-                  const isWeeklyAlertsIncluded =
-                    analysis?.id === analysisTypes.ALERTS &&
-                    uploadLocationState.typeOfAnalysis.Weekly;
+                    analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
 
                   return (
                     <li key={key}>
                       <Typography variant="caption">{analysis?.label}</Typography>
                       {isPalmRiskIncluded && (
                         <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
-                      )}
-                      {isWeeklyAlertsIncluded && (
-                        <Typography variant="caption"> (Weekly)</Typography>
                       )}
                     </li>
                   );

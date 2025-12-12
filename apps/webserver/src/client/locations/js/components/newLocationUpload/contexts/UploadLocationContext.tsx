@@ -11,18 +11,13 @@ export type UploadLocationState = {
   area: Area;
   uploadedFile: PresignedUrl | null;
   commodity: string;
-  existingList: {
-    id: number;
-    name: string;
-    analysisIds: string[];
-  } | null;
+  existingList: { id: number; name: string; analysisIds: string[] } | null;
   newListName: string | null;
   typeOfAnalysis: {
     FCD: boolean;
     PalmRisk: boolean;
     ALERTS: boolean;
     AFI: boolean;
-    Weekly: boolean;
   };
   isDraft?: boolean;
   isUmlFile?: boolean;
@@ -40,18 +35,13 @@ type UploadLocationType = {
   setUploadLocationByPolygon: (data: { locationName: string; coordinates: Coordinate[] }) => void;
   setUploadLocationConfigureList: (data: {
     commodity: string;
-    existingList: {
-      id: number;
-      name: string;
-      analysisIds: string[];
-    } | null;
+    existingList: { id: number; name: string; analysisIds: string[] } | null;
     newListName: string | null;
     typeOfAnalysis: {
       PalmRisk: boolean;
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
-      Weekly: boolean;
     };
   }) => void;
   addFile: (uploadedFile: PresignedUrl) => void;
@@ -85,18 +75,13 @@ type UploadLocationAction =
       type: 'ConfigureList';
       payload: {
         commodity: string;
-        existingList: {
-          id: number;
-          name: string;
-          analysisIds: string[];
-        } | null;
+        existingList: { id: number; name: string; analysisIds: string[] } | null;
         newListName: string | null;
         typeOfAnalysis: {
           PalmRisk: boolean;
           FCD: boolean;
           AFI: boolean;
           ALERTS: boolean;
-          Weekly: boolean;
         };
       };
     }
@@ -149,7 +134,6 @@ const uploadLocationInitialState: UploadLocationState = {
     FCD: false,
     AFI: false,
     ALERTS: false,
-    Weekly: false,
   },
   isDraft: undefined,
   isUmlFile: false,
@@ -207,24 +191,16 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
 
   const setUploadLocationConfigureList = (data: {
     commodity: string;
-    existingList: {
-      id: number;
-      name: string;
-      analysisIds: string[];
-    } | null;
+    existingList: { id: number; name: string; analysisIds: string[] } | null;
     newListName: string | null;
     typeOfAnalysis: {
       PalmRisk: boolean;
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
-      Weekly: boolean;
     };
   }) => {
-    dispatch({
-      type: 'ConfigureList',
-      payload: data,
-    });
+    dispatch({ type: 'ConfigureList', payload: data });
   };
 
   const setIsUmlFile = (isUmlFile: boolean) => {

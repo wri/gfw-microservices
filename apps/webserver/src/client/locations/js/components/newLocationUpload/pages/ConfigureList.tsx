@@ -33,14 +33,7 @@ import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/cons
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
-import {
-  analysisTypes,
-  analysisIdsOptionsMap,
-  analysisTypesOptionsNewNames,
-  palmRiskAnalysis,
-  AlertsAnalysisFrequency,
-  weeklyAlertsAnalysis,
-} from '../../../../../../config/env/analysisTypes.constants';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
 import { DATA_CY, ReusableText } from '../../../../../utils/constants';
 
@@ -58,7 +51,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       PalmRisk: z.coerce.boolean(),
       ALERTS: z.coerce.boolean(),
       AFI: z.coerce.boolean(),
-      Weekly: z.coerce.boolean(),
       customCommodity: z.string().optional(),
     })
     .superRefine((data, ctx) => {
@@ -120,6 +112,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     },
   } = useUploadLocation();
 
+  // Initialize form with values from context
   const {
     handleSubmit,
     control,
@@ -135,12 +128,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       commodity: (commodity as CommoditiesType) || ('' as CommoditiesType),
       newListName: newListName || '',
       existingListName: existingList?.name || '',
-      customCommodity: '',
       PalmRisk: typeOfAnalysis.PalmRisk || false,
       FCD: typeOfAnalysis.FCD || false,
       ALERTS: typeOfAnalysis.ALERTS || false,
       AFI: typeOfAnalysis.AFI || false,
-      Weekly: typeOfAnalysis.Weekly || false,
+      customCommodity: '',
     },
   });
 
@@ -160,20 +152,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   });
 
   const { data: validLists, isLoading, request } = useFetch<{ id: number; name: string }[]>();
-
-  const mainAnalyses = analysisTypesOptionsNewNames.filter((a) => a.showInUI);
-
-  const getOptionDetails = (optionId: string) => {
-    if (optionId === analysisTypes.PALM_RISK) {
-      return palmRiskAnalysis;
-    }
-    // TODO: Insert featureFlag here to keep it hidden
-    if (optionId === AlertsAnalysisFrequency.WEEKLY) {
-      return weeklyAlertsAnalysis;
-    }
-
-    return null;
-  };
 
   // Restore form state from context when component mounts
   // This should only run once on mount, not when context values change
@@ -239,40 +217,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     setFormFields((v) => ({ ...v, existingListName: value }));
     field.onChange(value);
 
-    const analysisIds = [];
     const template = userLists.find((list) => list.list_name === value);
-
-    for (const analysisStatus of template.listAnalysesStatus) {
-      const { analysisId, options } = analysisStatus;
-
-      const isFCDWithPalmRisk =
-        analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
-        options === analysisTypes.PALM_RISK;
-
-      const isWeeklyAlerts =
-        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
-
-      const analysisIdsToPush = isFCDWithPalmRisk
-        ? [analysisId, analysisTypes.PALM_RISK] // FCD with PalmRisk sub-analysis
-        : isWeeklyAlerts
-        ? [analysisId, AlertsAnalysisFrequency.WEEKLY] // Weekly with Alerts
-        : [analysisId];
-
-      for (const id of analysisIdsToPush) {
-        analysisIds.push({
-          ...analysisStatus,
-          analysisId: id,
-        });
-      }
-    }
     if (template?.id) {
       existingListRef.current = {
         id: template.id,
-        analysisIds: analysisIds.map((x) => x.analysisId) || [],
+        analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
       };
-      Object.keys(typeOfAnalysis).forEach((typeOfAnalysis) => {
-        const found = analysisIds.find((x) => x.analysisId === typeOfAnalysis);
-        setValue(typeOfAnalysis as keyof FormFields, !!found);
+      typeOfAnalysisMap.forEach((typeOfAnalysis) => {
+        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+        setValue(typeOfAnalysis.id as keyof FormFields, !!found);
       });
     }
   };
@@ -291,24 +244,9 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     field: {
       onChange: (value: boolean) => void;
     },
-    id: (typeof typeOfAnalysisMap)[number]['id'] | keyof typeof typeOfAnalysis
+    id: (typeof typeOfAnalysisMap)[number]['id']
   ) => {
     field.onChange(e.target.checked);
-
-    // Weekly requires ALERTS to be selected (it's a child analysis of ALERTS)
-    if (id === AlertsAnalysisFrequency.WEEKLY && e.target.checked) {
-      setValue(analysisTypes.ALERTS, true);
-    }
-
-    // GPV-5141 if ALERTS is selected have WEEKLY be selected by default
-    if (id === analysisTypes.ALERTS && e.target.checked) {
-      setValue(AlertsAnalysisFrequency.WEEKLY, true);
-    }
-
-    // If ALERTS is unchecked, also uncheck Weekly (parent-child relationship)
-    if (id === analysisTypes.ALERTS && !e.target.checked) {
-      setValue(AlertsAnalysisFrequency.WEEKLY, false);
-    }
 
     // Palm Risk requires FCD to be selected (it's a child analysis of FCD)
     if (id === analysisTypes.PALM_RISK && e.target.checked) {
@@ -338,7 +276,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         FCD: data.FCD,
         AFI: data.AFI,
         ALERTS: data.ALERTS,
-        Weekly: data.Weekly,
       },
     });
 
@@ -533,20 +470,24 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
           counts towards your account usage limits. See more information here.
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2, width: 'fit-content' }}>
-          {mainAnalyses.map(({ id, label, description }) => {
-            const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
-            const childOptions = analysisIdsOptionsMap[id] || [];
+          {typeOfAnalysisMap
+            .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
+            .map(({ id, label, description }) => {
+              const isPalmRisk = id === analysisTypes.PALM_RISK;
+              const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
 
-            return (
-              <Box key={id}>
+              return (
                 <Controller
+                  key={id}
                   name={id as keyof FormFields}
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel
                       control={
                         <Checkbox
-                          sx={{ py: 0 }}
+                          sx={{
+                            py: 0,
+                          }}
                           checked={!!field.value}
                           onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}
@@ -555,7 +496,10 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                       }
                       sx={{
                         textTransform: 'none',
-                        '&:hover': { cursor: 'default' },
+                        ml: isPalmRisk ? 2 : 0,
+                        '&:hover': {
+                          cursor: 'default',
+                        },
                       }}
                       label={
                         <Box
@@ -567,6 +511,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                           }}
                           onClick={(e) => {
                             const tag = (e.target as HTMLElement).tagName;
+
+                            // dont disable propagation for link tags
                             if (tag !== 'A') {
                               e.stopPropagation();
                               e.preventDefault();
@@ -600,6 +546,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                                 </HelperTextWithPopover>
                               )}
                             </Box>
+
                             <Typography variant="caption" color="text.secondary">
                               {description}
                             </Typography>
@@ -613,90 +560,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                           </HelperTextWithPopover>
                         </Box>
                       }
-                    />
+                    ></FormControlLabel>
                   )}
                 />
-
-                {/* Child Options (nested under parent) */}
-                {childOptions.map((optionId) => {
-                  const optionDetails = getOptionDetails(optionId);
-
-                  // Skip if no details found (e.g., Weekly is not a UI checkbox yet)
-                  if (!optionDetails) {
-                    return null;
-                  }
-
-                  // commodity restriction for PalmRisk
-                  if (optionId === analysisTypes.PALM_RISK && selectedCommodity !== 'Palm oil') {
-                    return null;
-                  }
-
-                  return (
-                    <Controller
-                      key={optionId}
-                      name={optionId as keyof FormFields}
-                      control={control}
-                      render={({ field }) => (
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              sx={{ py: 0 }}
-                              checked={!!field.value}
-                              onChange={(e) => {
-                                handleAnalysisChange(e, field, optionId);
-                              }}
-                              inputRef={field.ref}
-                              data-testid={`checkbox-${optionId.toLowerCase()}`}
-                            />
-                          }
-                          sx={{
-                            textTransform: 'none',
-                            ml: 2,
-                            mt: 2,
-                            '&:hover': { cursor: 'default' },
-                            display: 'flex',
-                          }}
-                          label={
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                                lineHeight: 0,
-                              }}
-                              onClick={(e) => {
-                                const tag = (e.target as HTMLElement).tagName;
-                                if (tag !== 'A') {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                }
-                              }}
-                            >
-                              <Box>
-                                <Typography variant="body2">{optionDetails.label}</Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                  {optionDetails.description}
-                                </Typography>
-                              </Box>
-                              {listOfPopoverHelperText[optionId] && (
-                                <HelperTextWithPopover>
-                                  <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
-                                    <Typography variant="caption">
-                                      {listOfPopoverHelperText[optionId]}
-                                    </Typography>
-                                  </Box>
-                                </HelperTextWithPopover>
-                              )}
-                            </Box>
-                          }
-                        />
-                      )}
-                    />
-                  );
-                })}
-              </Box>
-            );
-          })}
+              );
+            })}
         </Box>
         <Box
           sx={{

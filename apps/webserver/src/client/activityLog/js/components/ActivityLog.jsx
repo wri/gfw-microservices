@@ -14,8 +14,8 @@ function ActivityLog() {
   const [displayLoader, setDisplayLoader] = useState(true);
   const [activities, setActivities] = useState([]);
   const [filterStr, setFilterStr] = useState('');
-  const [startDate, setStartDate] = useState({});
-  const [endDate, setEndDate] = useState({});
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   const getActivityLog = () => {
     httpRequest
@@ -67,11 +67,9 @@ function ActivityLog() {
   };
 
   // startDate is initialized to 0 if no date is selected
-  const start = isNaN(new Date(startDate)) ? 0 : new Date(startDate).setHours(0, 0, 0, 0);
+  const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : 0;
   // endDate is initialized to 12/31/9999 if no date is selected
-  const end = isNaN(new Date(endDate))
-    ? new Date('12/31/9999')
-    : new Date(endDate).setHours(23, 59, 59, 999);
+  const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : new Date('12/31/9999');
   const filteredElements = activities.filter((activity) => {
     return (
       ((activity.email ? activity.email.toLowerCase().indexOf(filterStr.toLowerCase()) > -1 : '') ||
@@ -118,13 +116,9 @@ function ActivityLog() {
             id="profile-timeframe-start"
             type="date"
             className="profile-timeframe-start gfw-datepicker"
-            value={
-              startDate && startDate instanceof Date && !isNaN(startDate)
-                ? startDate.toISOString().split('T')[0]
-                : ''
-            }
+            value={startDate ? startDate.toISOString().split('T')[0] : ''}
             onChange={(evt) => {
-              setStartDate(evt.target.value ? new Date(evt.target.value) : {});
+              setStartDate(evt.target.value ? new Date(evt.target.value) : null);
             }}
             InputLabelProps={{
               shrink: true,
@@ -142,13 +136,9 @@ function ActivityLog() {
             id="profile-timeframe-end"
             type="date"
             className="profile-timeframe-end gfw-datepicker"
-            value={
-              endDate && endDate instanceof Date && !isNaN(endDate)
-                ? endDate.toISOString().split('T')[0]
-                : ''
-            }
+            value={endDate ? endDate.toISOString().split('T')[0] : ''}
             onChange={(evt) => {
-              setEndDate(evt.target.value ? new Date(evt.target.value) : {});
+              setEndDate(evt.target.value ? new Date(evt.target.value) : null);
             }}
             InputLabelProps={{
               shrink: true,
@@ -186,8 +176,8 @@ function ActivityLog() {
             color="info"
             onClick={() => {
               setFilterStr('');
-              setStartDate({});
-              setEndDate({});
+              setStartDate(null);
+              setEndDate(null);
             }}
             sx={{ margin: 'auto' }}
           >

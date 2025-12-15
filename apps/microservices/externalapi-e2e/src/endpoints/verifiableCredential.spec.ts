@@ -13,6 +13,7 @@ interface ApiResponse {
   status: string;
   listId?: string;
   resultUrl?: string;
+  creationDate?: string;
 }
 
 interface PollResult {
@@ -24,7 +25,8 @@ async function pollApiUntilComplete(
   url: string,
   options = {},
   pollIntervalMs = 1000,
-  timeoutMs = 10000
+  timeoutMs = 10000,
+  minCreationDate?: Date
 ): Promise<PollResult> {
   const startTime = Date.now();
 
@@ -47,6 +49,22 @@ async function pollApiUntilComplete(
       }
 
       const result: ApiResponse = await response.json();
+
+      // Check if result is from a stale analysis (older than minCreationDate)
+      if (minCreationDate && result.creationDate) {
+        // ← Changed from createdAt
+        const resultCreationDate = new Date(result.creationDate);
+        if (resultCreationDate < minCreationDate) {
+          console.log('Result is stale, waiting for fresh analysis...', {
+            resultCreationDate: resultCreationDate.toISOString(),
+            minCreationDate: minCreationDate.toISOString(),
+            status: result.status,
+          });
+          // Continue polling, don't return stale result
+          await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+          continue;
+        }
+      }
 
       if (result.status === 'Completed') {
         if (!result.resultUrl || !/^https?:\/\//.test(result.resultUrl)) {
@@ -201,6 +219,12 @@ describe('Verifiable Credential Verification', () => {
     'should download and extract the Verifiable Credential from the analysis result',
     async () => {
       try {
+        // Set minCreationDate to 10 seconds before current time
+        // This ensures we only accept results created after the analysis was triggered
+        const minCreationDate = new Date(Date.now() - 10 * 1000); // 10 seconds ago
+
+        console.log('Polling for analysis results created after:', minCreationDate.toISOString());
+
         const { apiResponse, verifiableCredential: vc } = await pollApiUntilComplete(
           `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/status`,
           {
@@ -210,7 +234,8 @@ describe('Verifiable Credential Verification', () => {
             },
           },
           2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
+          60000, // Timeout after 60 seconds
+          minCreationDate // Pass the minimum creation date
         );
 
         expect(apiResponse.status).toBe('Completed');

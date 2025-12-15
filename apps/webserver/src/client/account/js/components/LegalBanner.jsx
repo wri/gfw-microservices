@@ -1,5 +1,5 @@
-import Card from '@material-ui/core/Card';
-import CardContent from '@mui/material/CardContent';
+import { Card, CardContent } from '@mui/material';
+
 import { licenseAgreement, priceSheet } from '../../../common/js/config';
 
 export default function LegalBanner() {

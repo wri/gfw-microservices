@@ -1,8 +1,7 @@
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { render } from 'react-dom';
 import { useEffect, useState } from 'react';
+
+import { ThemeProvider } from '../styles';
 import About from './component/About';
 import { GFW_PRO_USER_GUIDE } from '../common/js/config';
 import { BrowserRouter } from 'react-router-dom';
@@ -10,6 +9,7 @@ import { BrowserRouter } from 'react-router-dom';
 const App = () => {
   const [languageCode, setLanguageCode] = useState('en');
   const [userGuideLink, setUserGuideLink] = useState(GFW_PRO_USER_GUIDE);
+
   useEffect(() => {
     if (Transifex) {
       Transifex.live.onReady(() => {
@@ -18,14 +18,14 @@ const App = () => {
         setUserGuideLink(GFW_PRO_USER_GUIDE);
       });
     }
-  });
+  }, []);
 
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <ThemeProvider>
       <BrowserRouter>
         <About key={languageCode} userGuideLink={userGuideLink} />
       </BrowserRouter>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 };
 

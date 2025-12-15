@@ -7,7 +7,7 @@ import Header from './Header';
 lightBaseTheme.userAgent = 'all';
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
-const noHeaderPages = ['verify', 'forgot', 'reset', 'admin', 'select']; // TODO: use this and figure out who else does not want it:
+const noHeaderPages = ['verify', 'forgot', 'reset', 'admin', 'select'];
 
 function Page(props) {
   const { active, children } = props;

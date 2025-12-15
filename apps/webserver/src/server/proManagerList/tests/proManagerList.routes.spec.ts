@@ -85,7 +85,7 @@ const UserManager = require('../../../config/publicutils/userManager.utils');
 const GFWListManager = require('../../../config/publicutils/gfwListManager.utils');
 const controller = require('../controllers/proManagerList.controller');
 
-const registerRoutes = require('./proManagerList.routes');
+const registerRoutes = require('../routes/proManagerList.routes');
 
 const buildApp = () => {
   const app = express();

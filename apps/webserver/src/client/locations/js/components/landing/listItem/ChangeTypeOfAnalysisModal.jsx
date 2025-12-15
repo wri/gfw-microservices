@@ -117,14 +117,12 @@ function ChangeTypeOfAnalysisModal({
             >
               <Icon>close</Icon>
             </IconButton>
-            <div className="change-type-of-analysis-modal__header">
-              <AnalysisTypesSelector
-                selectedAnalyses={selectedAnalysis}
-                setSelectedAnalyses={setSelectedAnalysis}
-                commodity={commodity}
-                isPalmRiskActive={isPalmRiskActive}
-              />
-            </div>
+            <AnalysisTypesSelector
+              selectedAnalyses={selectedAnalysis}
+              setSelectedAnalyses={setSelectedAnalysis}
+              commodity={commodity}
+              isPalmRiskActive={isPalmRiskActive}
+            />
           </CardContent>
           <CardActions>
             {isLoading ? (

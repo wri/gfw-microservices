@@ -1,12 +1,18 @@
 import { Component } from 'react';
 import Select from 'react-select';
-import Dialog from 'material-ui/Dialog';
-import { Box, Grid, Link, Typography } from '@mui/material';
+import {
+  Box,
+  Grid,
+  Link,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from '@mui/material';
 
-import Page from '../../../common/js/components/Page';
+import PageWithoutThemeProvider from '../../../common/js/components/PageWithoutThemeProvider';
 import SubHeader from '../../../common/js/components/SubHeader';
-import Button from '../../../common/js/components/Button';
-import LinkButton from '../../../common/js/components/LinkButton';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import countries from '../../../common/js/utils/countries.utils';
 import {
@@ -20,6 +26,7 @@ import '../../css/account.scss';
 import { fieldValidations } from '../../../profile/js/utils/validations';
 import requestAccountStrings from './requestAccountStrings';
 import LegalBanner from './LegalBanner';
+import { Link as LinkButton, PillButton } from '../../../components';
 
 export default class Account extends Component {
   constructor(props) {
@@ -375,7 +382,11 @@ export default class Account extends Component {
 
     const defaultAction = creatingAccount
       ? []
-      : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
+      : [
+          <PillButton variant="contained" autoFocus onClick={action}>
+            OK
+          </PillButton>,
+        ];
 
     const options = this.props.classificationsData.map(this.createClassOptions);
     const countryOptions = countries.map(this.createCountryOptions);
@@ -390,7 +401,7 @@ export default class Account extends Component {
     });
 
     return (
-      <Page>
+      <PageWithoutThemeProvider>
         <SubHeader
           header={requestAccountStrings.requestAccount.title}
           subHeader={requestAccountStrings.requestAccount.subHeader}
@@ -693,32 +704,25 @@ export default class Account extends Component {
                 </div>
               </section>
               <section>
-                <Box sx={{ display: 'flex', gap: 4 }}>
-                  <Button variant="primary" onClick={this.submitOrg} label="Submit" />
-                  <LinkButton
-                    onClick={() => {
-                      window.location.href = '/';
-                    }}
-                    label="Cancel"
-                  />
+                <Box sx={{ display: 'flex', gap: 4, alignItems: 'center', marginTop: 2 }}>
+                  <PillButton variant="contained" onClick={this.submitOrg}>
+                    Submit
+                  </PillButton>
+                  <LinkButton href="/">Cancel</LinkButton>
                 </Box>
               </section>
             </Grid>
             <Grid item xs={5}>
               <LegalBanner />
             </Grid>
-            <Dialog
-              paperClassName="dialog-paper"
-              open={dialogOpen}
-              title={dialogTitle}
-              actions={defaultAction}
-              onRequestClose={action}
-            >
-              {dialogContent}
+            <Dialog open={dialogOpen} onClose={action} PaperProps={{ className: 'dialog-paper' }}>
+              <DialogTitle>{dialogTitle}</DialogTitle>
+              <DialogContent>{dialogContent}</DialogContent>
+              <DialogActions>{defaultAction}</DialogActions>
             </Dialog>
           </Grid>
         </div>
-      </Page>
+      </PageWithoutThemeProvider>
     );
   }
 }

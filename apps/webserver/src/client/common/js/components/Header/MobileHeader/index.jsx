@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import IconButton from '@mui/material/IconButton';
+import { IconButton, MenuList, ListItemText, Divider, MenuItem } from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import MenuList from '@mui/material/MenuList';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
 import LanguageDropdownMenuMobile from './LanguageDropdownMenuMobile';
 import OtherAppsAccordion from './OtherAppsAccordion';
 import HeaderNavLink from '../HeaderNavLink';

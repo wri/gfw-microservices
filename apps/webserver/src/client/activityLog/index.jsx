@@ -1,11 +1,8 @@
 import { render } from 'react-dom';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import Page from '../common/js/components/Page';
-import ActivityLog from './js/components/ActivityLog';
 
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
+import { ThemeProvider } from '../styles';
+import PageWithoutThemeProvider from '../common/js/components/PageWithoutThemeProvider';
+import ActivityLog from './js/components/ActivityLog';
 
 const pageOptions = {
   links: {
@@ -15,11 +12,11 @@ const pageOptions = {
 
 function App() {
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <Page links={pageOptions.links} active="profile">
+    <ThemeProvider>
+      <PageWithoutThemeProvider links={pageOptions.links} active="profile">
         <ActivityLog />
-      </Page>
-    </MuiThemeProvider>
+      </PageWithoutThemeProvider>
+    </ThemeProvider>
   );
 }
 

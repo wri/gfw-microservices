@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardActions, Modal } from '@mui/material';
+import { Card, CardContent, CardActions, Modal, IconButton, Icon } from '@mui/material';
 import isEqual from 'lodash/isEqual';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
@@ -111,12 +111,20 @@ function ChangeTypeOfAnalysisModal({
       >
         <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
           <CardContent>
-            <AnalysisTypesSelector
-              selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={setSelectedAnalysis}
-              commodity={commodity}
-              isPalmRiskActive={isPalmRiskActive}
-            />
+            <IconButton
+              onClick={() => setIsChangeTypeOfAnalysisModalOpen(false)}
+              className="change-type-of-analysis-modal__close-button"
+            >
+              <Icon>close</Icon>
+            </IconButton>
+            <div className="change-type-of-analysis-modal__header">
+              <AnalysisTypesSelector
+                selectedAnalyses={selectedAnalysis}
+                setSelectedAnalyses={setSelectedAnalysis}
+                commodity={commodity}
+                isPalmRiskActive={isPalmRiskActive}
+              />
+            </div>
           </CardContent>
           <CardActions>
             {isLoading ? (

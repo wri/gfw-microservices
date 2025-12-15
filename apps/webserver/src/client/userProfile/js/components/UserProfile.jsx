@@ -830,7 +830,7 @@ export default function UserProfile(props) {
             href="/profile"
             style={{ marginRight: '10px' }}
           >
-            {profilePage.profileManager.backButton}
+            {profilePage.profileManager.cancel}
           </PillButton>
         )}
 

@@ -219,6 +219,12 @@ describe('Verifiable Credential Verification', () => {
     'should download and extract the Verifiable Credential from the analysis result',
     async () => {
       try {
+        // Set minCreationDate to 10 seconds before current time
+        // This ensures we only accept results created after the analysis was triggered
+        const minCreationDate = new Date(Date.now() - 10 * 1000); // 10 seconds ago
+
+        console.log('Polling for analysis results created after:', minCreationDate.toISOString());
+
         const { apiResponse, verifiableCredential: vc } = await pollApiUntilComplete(
           `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/status`,
           {
@@ -228,7 +234,8 @@ describe('Verifiable Credential Verification', () => {
             },
           },
           2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
+          60000, // Timeout after 60 seconds
+          minCreationDate // Pass the minimum creation date
         );
 
         expect(apiResponse.status).toBe('Completed');

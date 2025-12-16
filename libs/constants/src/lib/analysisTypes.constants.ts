@@ -55,6 +55,11 @@ export const analysisTypesOptionsNewNames = [
   },
 ];
 
+export enum AlertsAnalysisFrequency {
+  WEEKLY = 'Weekly',
+}
+
 export const analysisIdsOptionsMap = {
-  [ListAnalysisIds.FCD]: ['PalmRisk'],
+  [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: [analysisTypes.PALM_RISK],
+  [analysisTypes.ALERTS]: [AlertsAnalysisFrequency.WEEKLY],
 };

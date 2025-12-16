@@ -10,10 +10,8 @@ export const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
   ALERTS: 'ALERTS',
-  'ALERTS-BATCH': 'ALERTS-BATCH',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
-  WEEKLY: 'Weekly',
 } as const;
 
 export const analysisTypesOptionsNewNames = [
@@ -30,13 +28,6 @@ export const analysisTypesOptionsNewNames = [
     shortLabel: 'Alerts',
     description: 'Recent disturbance alerts, updated weekly',
     showInUI: true,
-  },
-  {
-    id: analysisTypes['ALERTS-BATCH'],
-    label: analysisTypes['ALERTS-BATCH'],
-    shortLabel: analysisTypes['ALERTS-BATCH'],
-    description: analysisTypes['ALERTS-BATCH'],
-    showInUI: false,
   },
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
@@ -71,7 +62,7 @@ export const weeklyAlertsAnalysis = {
   id: AlertsAnalysisFrequency.WEEKLY,
   label: 'Weekly',
   shortLabel: AlertsAnalysisFrequency.WEEKLY,
-  description: 'Recent deforestation alerts, updated weekly',
+  description: 'Recent disturbance alerts, updated weekly',
 };
 
 export const analysisIdsOptionsMap = {

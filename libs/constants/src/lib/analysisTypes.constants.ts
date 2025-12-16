@@ -22,7 +22,6 @@ export const analysisTypes = {
   ALERTS: 'ALERTS',
   GREENHOUSE_GAS_EMISSIONS: 'GHG',
   PALM_RISK: 'PalmRisk',
-  WEEKLY: 'Weekly',
 };
 
 export const analysisTypesOptionsNewNames = [

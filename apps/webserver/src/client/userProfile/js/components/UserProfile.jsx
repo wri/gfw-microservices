@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Select from 'react-select';
 import qr from 'qrcode';
-import Dialog from 'material-ui/Dialog';
-import { Divider } from '@mui/material';
+import { Box, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import fetch from '../../../common/js/utils/fetch';
 import { fieldValidations } from '../../../profile/js/utils/validations';
@@ -17,11 +16,11 @@ import { USER_STATUS, USER_STATUS_LABELS } from '../../../../config/env/userStat
 
 import { profilePage } from '../../../common/js/config';
 import httpRequest from '../../../common/js/utils/httpRequest';
-import Button from '../../../common/js/components/Button';
+import { Link, PillButton } from '../../../components';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import IconArrowLeft from '../../../common/js/components/icon/IconArrowLeft';
-import LinkButton from '../../../common/js/components/LinkButton';
+
 import store from '../../../profile/js/store';
 import '../../css/userProfile.scss';
 import forgotStrings from '../../../forgot/js/components/forgotStrings';
@@ -523,11 +522,6 @@ export default function UserProfile(props) {
     }
   }, [state.email, updateState]);
 
-  // Navigation back
-  const navigateBack = useCallback(() => {
-    window.location.href = '/profile';
-  }, []);
-
   // Messages array mapping for dialog
   const generateMessages = useCallback(
     (message, i) => <p key={`${message}-${i}`}>{message}</p>,
@@ -616,29 +610,27 @@ export default function UserProfile(props) {
 
   const defaultAction = updating
     ? []
-    : [<Button key="ok" variant="primary" label="OK" keyboardFocused onClick={closeDialog} />];
+    : [
+        <PillButton key="ok" variant="contained" autoFocus onClick={closeDialog}>
+          OK
+        </PillButton>,
+      ];
 
   return (
     <div id="Profile__UserProfile" className="user-profile-page">
       <ModalLoader open={showModalLoader} />
 
-      <Dialog
-        paperClassName="dialog-paper"
-        open={dialogOpen}
-        title={dialogTitle}
-        actions={defaultAction}
-        onRequestClose={closeDialog}
-      >
-        {dialogContent}
+      <Dialog PaperProps={{ className: 'dialog-paper' }} open={dialogOpen} onClose={closeDialog}>
+        <DialogTitle>{dialogTitle}</DialogTitle>
+        <DialogContent>{dialogContent}</DialogContent>
+        <DialogActions>{defaultAction}</DialogActions>
       </Dialog>
 
       <div className={`${userOnly ? 'hidden' : ''}`}>
-        <LinkButton
-          className="profile-page__back-button back-button"
-          onClick={navigateBack}
-          icon={<IconArrowLeft height="10px" />}
-          label={profilePage.profileManager.backButton}
-        />
+        <IconArrowLeft height="10px" />
+        <Link href="/profile" sx={{ ml: 1 }}>
+          {profilePage.profileManager.backButton}
+        </Link>
       </div>
 
       <h1 className="profile-page__title">{profilePage.profileManager.userProfileTitle}</h1>
@@ -826,63 +818,70 @@ export default function UserProfile(props) {
 
       <Divider sx={{ mb: '20px', mt: '20px' }} />
 
-      <div className="profile-button-container justify-end">
-        <Button
-          variant="primary"
-          onClick={saveUser}
-          style={{ marginRight: '10px' }}
-          label={profilePage.profileManager.save}
-        />
+      <Box sx={{ display: 'flex' }}>
+        <PillButton variant="contained" onClick={saveUser} style={{ marginRight: '10px' }}>
+          {profilePage.profileManager.save}
+        </PillButton>
 
         {userOnly ? null : (
-          <Button
-            onClick={navigateBack}
+          <PillButton
+            variant="contained"
+            color="info"
+            href="/profile"
             style={{ marginRight: '10px' }}
-            label={profilePage.profileManager.cancel}
-          />
+          >
+            {profilePage.profileManager.cancel}
+          </PillButton>
         )}
 
         {userOnly || newUser ? null : (
-          <Button
-            variant="primary"
+          <PillButton
+            variant="contained"
             className={`${status_id === USER_STATUS.Active ? 'button-disabled' : ''}`}
             disabled={status_id === USER_STATUS.Active}
             onClick={activateUser}
             style={{ marginRight: '10px' }}
-            label={profilePage.profileManager.activate}
-          />
+          >
+            {profilePage.profileManager.activate}
+          </PillButton>
         )}
 
         {(userOnly || userInfo.email === email) && !newUser ? (
-          <Button
+          <PillButton
+            variant="contained"
             onClick={() => (window.location.href = '/changeExist')}
             style={{ marginRight: '10px' }}
-            label={profilePage.profileManager.changePassword}
-          />
+          >
+            {profilePage.profileManager.changePassword}
+          </PillButton>
         ) : null}
 
         {userOnly ||
         newUser ||
         !(status_id === 2) ||
         (userInfo.email === email && !newUser) ? null : (
-          <Button
+          <PillButton
+            variant="contained"
             onClick={adminResetPassword}
             style={{ marginRight: '10px' }}
-            label={profilePage.profileManager.resetPassword}
-          />
+          >
+            {profilePage.profileManager.resetPassword}
+          </PillButton>
         )}
 
         {userOnly || newUser ? null : (
-          <Button
-            variant="danger"
+          <PillButton
+            variant="contained"
+            color="error"
             className={`${status_id === USER_STATUS.Inactive ? 'button-disabled' : ''}`}
             disabled={status_id === USER_STATUS.Inactive}
             onClick={deactivateUser}
             style={{ marginRight: '10px' }}
-            label={profilePage.profileManager.deactivate}
-          />
+          >
+            {profilePage.profileManager.deactivate}
+          </PillButton>
         )}
-      </div>
+      </Box>
     </div>
   );
 }

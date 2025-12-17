@@ -116,9 +116,7 @@ Cypress.Commands.add('forceEnglishLanguage', () => {
 });
 
 Cypress.Commands.add('dismissCookieBanner', () => {
-  // Wait for the cookie banner to appear and dismiss it
   cy.get('body', { timeout: 10000 }).then(() => {
-    // Try to find and click the accept button directly
     cy.get('body').then(($body) => {
       const acceptButton = $body.find('button:contains("Accept"), button:contains("accept")');
       if (acceptButton.length > 0) {
@@ -138,7 +136,7 @@ Cypress.on('uncaught:exception', (err) => {
   if (err.message.includes('Cannot read properties of undefined')) {
     return false;
   }
-  // Ignore AbortError from navigation issues
+
   if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }

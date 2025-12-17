@@ -185,7 +185,7 @@ SELECT
     ISNULL(agg.integrated_alerts_daily_jrc_high, 0) AS integratedAlertsDailyJrcHigh,
     ISNULL(agg.integrated_alerts_daily_jrc_highest, 0) AS integratedAlertsDailyJrcHighest,
     alerts.status_code AS location_status_id,
-    alerts.location_error AS analysisError,
+    REPLACE(alerts.location_error, ''n.n'', '''') AS analysisError,
     ISNULL(agg.intdist_alerts_area_sbtn_natural_forests_nominal, 0) AS intdistAlertsAreaSbtnNaturalForestsNominal,
     ISNULL(agg.intdist_alerts_area_sbtn_natural_forests_high, 0) AS intdistAlertsAreaSbtnNaturalForestsHigh,
     ISNULL(agg.intdist_alerts_area_sbtn_natural_forests_highest, 0) AS intdistAlertsAreaSbtnNaturalForestsHighest,

@@ -12,7 +12,6 @@ describe('Maps View', () => {
 
   When('I navigate to Map view', () => {
     cy.visit('/map');
-    cy.dismissCookieBanner();
   });
 
   Then('I should be redirected to Map view', () => {

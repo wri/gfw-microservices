@@ -63,6 +63,7 @@ Cypress.Commands.add('loginUI', () => {
   cy.get('[data-cy="loginButton"]').first().click();
   cy.get('[data-cy="verifyToken"]').type(credentials.password);
   cy.contains('Verify').click();
+  cy.dismissCookieBanner();
   cy.location('href').should('include', '/locations');
 });
 
@@ -116,25 +117,20 @@ Cypress.Commands.add('forceEnglishLanguage', () => {
 
 Cypress.Commands.add('dismissCookieBanner', () => {
   // Wait for the cookie banner to appear and dismiss it
-  cy.get('body', { timeout: 10000 }).then(($body) => {
-    // Check if Osano cookie banner exists and is visible
-    const $banner = $body.find('.osano-cm-dialog, .osano-cm-window');
-    if ($banner.length > 0 && $banner.is(':visible')) {
-      cy.log('Cookie banner detected, attempting to dismiss...');
-      // Wait a moment for the banner to fully render
-      cy.wait(500);
-      // Try multiple selectors for the dismiss/accept button
-      cy.get('.osano-cm-accept-all, .osano-cm-accept, .osano-cm-close, .osano-cm-save', {
-        timeout: 5000,
-      })
-        .first()
-        .click({ force: true, multiple: true });
-      cy.log('Cookie banner dismissed');
-      // Wait for the banner to disappear
-      cy.get('.osano-cm-dialog, .osano-cm-window', { timeout: 5000 }).should('not.be.visible');
-    } else {
-      cy.log('No cookie banner found or already dismissed');
-    }
+  cy.get('body', { timeout: 10000 }).then(() => {
+    // Try to find and click the accept button directly
+    cy.get('body').then(($body) => {
+      const acceptButton = $body.find('button:contains("Accept"), button:contains("accept")');
+      if (acceptButton.length > 0) {
+        cy.log('Accept button found, clicking...');
+        cy.contains('button', /accept/i, { timeout: 5000 })
+          .should('be.visible')
+          .click({ force: true });
+        cy.log('Accept button clicked');
+      } else {
+        cy.log('No cookie banner accept button found');
+      }
+    });
   });
 });
 

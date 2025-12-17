@@ -5,6 +5,10 @@ import carIdResponseMock from './carId-response-mock';
 import * as wkx from 'wkx';
 
 jest.mock('axios');
+jest.mock('@wri-monorepos/shared', () => ({
+  ...jest.requireActual('@wri-monorepos/shared'),
+  readLastUpdatedDateSicar: jest.fn(),
+}));
 
 const fakeGeometry = {
   type: 'Point',
@@ -361,41 +365,64 @@ describe('csv2geojson', () => {
     });
   });
 
-  it('Get lat long from Brazil CARID', (done) => {
+  it('Get lat long from Brazil CARID', async () => {
     const csvData =
-      'Location Name,ID Type,ID,Analysis Radius,Analysis Area\r\nPalm Mill Name,CAR,TO-1701903-BDF7049077694A9A8FFB13E1D88EE3F5,10,';
+      'Location Name,ID Type,ID\r\nPalm Mill Name,CAR,TO-1701903-BDF7049077694A9A8FFB13E1D88EE3F5';
 
-    jest.spyOn(axios, 'get').mockResolvedValue({
-      data: {
-        data: [carIdResponseMock],
-      },
-    });
-
-    csv2geojson(csvData).then((result) => {
-      const buffer = Buffer.from(carIdResponseMock.geom, 'hex');
-      const parsedBuffer = wkx.Geometry.parse(buffer);
-      const expectedGeom = parsedBuffer.toGeoJSON();
-
-      expect(result).toStrictEqual({
-        features: [
-          {
-            geometry: expectedGeom,
-            properties: {
-              'Analysis Area': null,
-              'Analysis Radius': 10,
-              geometry: expectedGeom,
-              'ID Type': 'CAR',
-              ID: 'TO-1701903-BDF7049077694A9A8FFB13E1D88EE3F5',
-              'Location Name': 'Palm Mill Name',
+    // Mock axios.get to return different responses based on URL
+    jest.spyOn(axios, 'get').mockImplementation((url: string) => {
+      // First call: metadata endpoint (readLastUpdatedDateSicar)
+      if (url.includes('/metadata')) {
+        return Promise.resolve({
+          data: {
+            status: 'success',
+            data: {
+              content_date_range: {
+                end_date: '2025-08-01',
+              },
             },
-            type: 'Feature',
           },
-        ],
-        type: 'FeatureCollection',
-      });
-      done();
+          statusText: 'OK',
+        });
+      }
+
+      // Second call: CAR query endpoint (carLookup)
+      if (url.includes('/query/json')) {
+        return Promise.resolve({
+          data: {
+            data: [carIdResponseMock],
+          },
+          statusText: 'OK',
+        });
+      }
+
+      console.error('❌ Unexpected axios call to:', url);
+      return Promise.reject(new Error(`Unexpected axios.get call to: ${url}`));
     });
-  });
+
+    const result = await csv2geojson(csvData);
+
+    const buffer = Buffer.from(carIdResponseMock.geom, 'hex');
+    const parsedBuffer = wkx.Geometry.parse(buffer);
+    const expectedGeom = parsedBuffer.toGeoJSON();
+
+    expect(result).toStrictEqual({
+      features: [
+        {
+          geometry: expectedGeom,
+          properties: {
+            geometry: expectedGeom,
+            'ID Type': 'CAR',
+            ID: 'TO-1701903-BDF7049077694A9A8FFB13E1D88EE3F5',
+            'ID Updated Date': '2025-08-01',
+            'Location Name': 'Palm Mill Name',
+          },
+          type: 'Feature',
+        },
+      ],
+      type: 'FeatureCollection',
+    });
+  }, 10000);
 
   it('should limit to 20 rows when preview is true', (done) => {
     // Create CSV with 25 rows

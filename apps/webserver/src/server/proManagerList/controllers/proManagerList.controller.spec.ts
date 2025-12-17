@@ -214,14 +214,6 @@ jest.mock('../../../config/config', () => ({
   },
 }));
 
-jest.mock('../../../config/privateutils/error.utils', () => ({
-  ERROR_CODES: {
-    failedToActivateAccount: 'failedToActivateAccount',
-    userNotProManager: 'userNotProManager',
-    invalidStatusTransition: 'invalidStatusTransition',
-  },
-}));
-
 jest.mock(
   '@wri-monorepos/shared',
   () => ({

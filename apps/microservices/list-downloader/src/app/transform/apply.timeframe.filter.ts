@@ -27,8 +27,10 @@ export class ApplyTimeframeFilter extends Transform {
   }
 
   _transform(data: DashboardDataType, _, next) {
-    const momentStart = new Date(this.startDate);
-    const momentEnd = new Date(this.endDate);
+    // Parse dates as UTC to match alert data timestamps (which are date strings without time)
+    // When comparing dates without time components, we need inclusive end date
+    const momentStart = new Date(this.startDate + 'T00:00:00.000Z');
+    const momentEnd = new Date(this.endDate + 'T00:00:00.000Z');
     let groupedGlad = [];
 
     // Week timeframe

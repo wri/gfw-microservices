@@ -11,14 +11,20 @@ import {
 export function getGladDaily(feature, momentStart: Date, momentEnd: Date) {
   return feature.glad_alerts_daily.filter((date) => {
     // Parse date string as UTC to match how momentStart/momentEnd are parsed
-    return isWithinInterval(new Date(date.day + 'T00:00:00.000Z'), { start: momentStart, end: momentEnd });
+    return isWithinInterval(new Date(date.day + 'T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
 export function getGladMonthlyMonth(feature, momentStart: Date, momentEnd: Date) {
   return feature.glad_alerts_monthly.filter((date) => {
     // Parse date string as UTC - monthly data is in 'yyyy-MM' format, so add '-01' for first day of month
-    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), { start: momentStart, end: momentEnd });
+    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
@@ -30,7 +36,10 @@ export function getGladMonthlyQuarter(feature, momentEnd: Date) {
 
   return feature.glad_alerts_monthly.filter((date) => {
     // Parse date string as UTC - monthly data is in 'yyyy-MM' format, so add '-01' for first day of month
-    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), { start: momentStart, end: momentEnd });
+    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
@@ -43,7 +52,10 @@ export function getGladMonthlyYear(feature, momentEnd: Date) {
 
   return feature.glad_alerts_monthly.filter((date) => {
     // Parse date string as UTC - monthly data is in 'yyyy-MM' format, so add '-01' for first day of month
-    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), { start: momentStart, end: momentEnd });
+    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 

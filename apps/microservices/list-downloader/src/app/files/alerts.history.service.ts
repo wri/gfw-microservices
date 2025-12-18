@@ -79,7 +79,7 @@ class EventEmitterTransform extends Transform {
       // For period calculation, work in UTC
       const periodStart = currentMoment;
       let periodEnd;
-      
+
       if (selectedTimePeriod === 'day' || selectedTimePeriod === 'week') {
         // For day/week, start and end are the same
         periodEnd = currentMoment;
@@ -89,7 +89,7 @@ class EventEmitterTransform extends Transform {
         const nextMonth = addMonths(currentMoment, 1);
         periodEnd = subDays(nextMonth, 1);
       }
-      
+
       selectedTimeframe_StartEndGroupings.push([
         formatInTimeZone(periodStart, 'UTC', DATE_FORMAT_CSV),
         formatInTimeZone(periodEnd, 'UTC', DATE_FORMAT_CSV),
@@ -129,7 +129,7 @@ class EventEmitterTransform extends Transform {
       // Parse dates using same approach as Moment.js did - parse formatted strings
       const dateStart = parse(startBound, DATE_FORMAT_CSV, new Date());
       const dateEnd = parse(endBound, DATE_FORMAT_CSV, new Date());
-      
+
       let total = 0;
       filtered.forEach((countObj) => {
         const { count, day } = countObj;
@@ -138,10 +138,12 @@ class EventEmitterTransform extends Transform {
         // Detect format based on string length
         const dayFormat = day.length === 7 ? 'yyyy-MM' : DATE_FORMAT;
         const currentM = parse(day, dayFormat, new Date());
-        
+
         // Use same logic as original: isSameOrAfter && isSameOrBefore
-        if ((isAfter(currentM, dateStart) || isEqual(currentM, dateStart)) &&
-            (isBefore(currentM, dateEnd) || isEqual(currentM, dateEnd))) {
+        if (
+          (isAfter(currentM, dateStart) || isEqual(currentM, dateStart)) &&
+          (isBefore(currentM, dateEnd) || isEqual(currentM, dateEnd))
+        ) {
           total += count;
         }
       });

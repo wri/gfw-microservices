@@ -130,17 +130,11 @@ Cypress.Commands.add('dismissCookieBanner', () => {
     } else {
       // Fallback: Look for any button with "Accept" text using cy.contains
       cy.log('Attempting to find cookie banner accept button by text...');
-      cy.get('body').then(($b) => {
-        if ($b.find('button').length > 0) {
-          cy.contains('button', /accept/i, { timeout: 5000 })
-            .first()
-            .should('be.visible')
-            .click();
-          cy.log('Cookie banner dismissed');
-        } else {
-          cy.log('No cookie banner accept button found');
-        }
-      });
+      cy.contains('button', /accept/i, { timeout: 5000 })
+        .first()
+        .should('be.visible')
+        .click();
+      cy.log('Cookie banner dismissed');
     }
   });
 });

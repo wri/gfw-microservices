@@ -69,6 +69,9 @@ export default function UserProfile({
   const [updating, setUpdating] = useState(false);
 
   // Refs
+  const statusSelectRef = useRef(null);
+  const accessSelectRef = useRef(null);
+  const titleSelectRef = useRef(null);
 
   const handleInputChange = (setter) => (evt) => {
     setter(evt.target.value);

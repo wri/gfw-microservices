@@ -752,11 +752,7 @@ export default function UserProfile(props) {
         )}
 
         {userOnly || newUser || status_id === USER_STATUS.Inactive ? null : (
-          <PillButton
-            variant="contained"
-            onClick={deactivateUser}
-            style={{ marginRight: '10px' }}
-          >
+          <PillButton variant="contained" onClick={deactivateUser} style={{ marginRight: '10px' }}>
             {profilePage.profileManager.deactivate}
           </PillButton>
         )}

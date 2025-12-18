@@ -12,6 +12,8 @@ import { checkListSizeLimit } from '../common/check.listSizelimit';
 import { ListSizeLimitException } from '../common/listSizeLimit.exception';
 import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
 import { ListTemplate, updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import { traceContext } from '@wri-monorepos/shared';
+import { ServerConfigType } from '../../validators/server-config';
 
 // Mock ConvertPoint2Polygon to avoid dynamic import requirements
 jest.mock('./chain/convert.point.2.polygon', () => {
@@ -203,6 +205,9 @@ describe('StartAnalysisService', () => {
   afterEach(() => {
     sandbox.restore();
     jest.clearAllMocks();
+    // Clear any trace context after each test
+    // Note: traceContext doesn't have a clear method, but we ensure
+    // tests run in clean state by not having active contexts
   });
 
   it('should be defined', () => {
@@ -336,5 +341,178 @@ describe('StartAnalysisService', () => {
     await new Promise((r) => setTimeout(r, 0));
     await new Promise((r) => setTimeout(r, 0));
     expect(uploadStatusSpy).toHaveBeenCalled();
+  });
+
+  describe('Trace ID preservation', () => {
+    it('should preserve trace ID when queuing request', async () => {
+      const testTraceId = 'test-trace-id-preservation';
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      // Get the queue push mock to inspect what was passed
+      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+
+      // Run within a trace context
+      await traceContext.run(testTraceId, async () => {
+        await service.run(request);
+      });
+
+      // Verify that trace ID was passed to the queue
+      expect(queuePushSpy).toHaveBeenCalled();
+      const queuedData = queuePushSpy.mock.calls[0][0] as {
+        traceId?: string;
+        request: RequestLargeListProcess;
+        config: ConfigService<ServerConfigType, true>;
+        emailService: EmailService;
+      };
+      expect(queuedData.traceId).toBe(testTraceId);
+      expect(queuedData.request).toEqual(request);
+    });
+
+    it('should generate new trace ID if none exists when queuing', async () => {
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+      const generateTraceIdSpy = jest.spyOn(traceContext, 'generateTraceId');
+
+      // Run without trace context
+      await service.run(request);
+
+      // Should generate a new trace ID
+      expect(generateTraceIdSpy).toHaveBeenCalled();
+      expect(queuePushSpy).toHaveBeenCalled();
+      const queuedData = queuePushSpy.mock.calls[0][0] as {
+        traceId?: string;
+        request: RequestLargeListProcess;
+        config: ConfigService<ServerConfigType, true>;
+        emailService: EmailService;
+      };
+      expect(queuedData.traceId).toBeDefined();
+      expect(queuedData.traceId).not.toBe('');
+    });
+
+    it('should maintain correct trace ID in worker for different concurrent requests', async () => {
+      // Simulate the bug scenario: two concurrent requests with different trace IDs
+      const traceId1 = 'test_multi_upload_1_11_11__08_49';
+      const traceId2 = 'test_multi_upload_2_11_11__08_49';
+
+      const request1: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file-1.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      const request2: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 2,
+        path: 's3://test-bucket/test-file-2.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+      const capturedTraceIds: string[] = [];
+
+      // Mock the worker to capture trace IDs
+      const originalPush = (service as any).queue.push;
+      (service as any).queue.push = jest.fn((data: any) => {
+        // Simulate worker execution with trace context
+        return traceContext.run(data.traceId, async () => {
+          capturedTraceIds.push(traceContext.getTraceId());
+          return originalPush.call((service as any).queue, data);
+        });
+      });
+
+      // Process both requests concurrently
+      await Promise.all([
+        traceContext.run(traceId1, async () => {
+          await service.run(request1);
+        }),
+        traceContext.run(traceId2, async () => {
+          await service.run(request2);
+        }),
+      ]);
+
+      // Verify each request maintained its correct trace ID
+      expect(capturedTraceIds).toHaveLength(2);
+      expect(capturedTraceIds).toContain(traceId1);
+      expect(capturedTraceIds).toContain(traceId2);
+      expect(capturedTraceIds[0]).not.toBe(capturedTraceIds[1]);
+    });
+
+    it('should preserve trace ID through async worker execution', async () => {
+      const testTraceId = 'test-trace-id-worker';
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      let traceIdInWorker = '';
+
+      // Mock the worker to capture trace ID during execution
+      const originalPush = (service as any).queue.push;
+      (service as any).queue.push = jest.fn((data: any) => {
+        return traceContext.run(data.traceId, async () => {
+          // Simulate async work in worker
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          traceIdInWorker = traceContext.getTraceId();
+          return originalPush.call((service as any).queue, data);
+        });
+      });
+
+      await traceContext.run(testTraceId, async () => {
+        await service.run(request);
+      });
+
+      // Allow async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Verify trace ID was preserved in worker
+      expect(traceIdInWorker).toBe(testTraceId);
+    });
   });
 });

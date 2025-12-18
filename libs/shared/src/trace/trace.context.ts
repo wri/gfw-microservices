@@ -16,7 +16,6 @@ interface TraceContext {
 class TraceContextService {
   private static instance: TraceContextService;
   private als = new AsyncLocalStorage<TraceContext>();
-  private fallbackTraceId = '';
 
   static getInstance(): TraceContextService {
     if (!TraceContextService.instance) {
@@ -41,13 +40,10 @@ class TraceContextService {
     try {
       return this.als.run(context, fn);
     } catch (error) {
-      // Fallback: if AsyncLocalStorage fails, set a temporary fallback
-      this.fallbackTraceId = traceId;
-      try {
-        return fn();
-      } finally {
-        this.fallbackTraceId = '';
-      }
+      // If AsyncLocalStorage fails, log warning and continue without trace context
+      // This prevents shared state issues that could cause trace ID leakage between requests
+      console.warn('AsyncLocalStorage failed, continuing without trace context:', error);
+      return fn();
     }
   }
 
@@ -62,15 +58,11 @@ class TraceContextService {
         return context.traceId;
       }
 
-      // Fallback to temporary trace ID if available
-      if (this.fallbackTraceId) {
-        return this.fallbackTraceId;
-      }
-
       return '';
     } catch (error) {
-      // In case of any AsyncLocalStorage errors, return fallback or empty
-      return this.fallbackTraceId || '';
+      // In case of any AsyncLocalStorage errors, return empty string
+      // This ensures we don't leak trace IDs between concurrent requests
+      return '';
     }
   }
 
@@ -93,9 +85,9 @@ class TraceContextService {
    */
   hasActiveContext(): boolean {
     try {
-      return !!this.als.getStore() || !!this.fallbackTraceId;
+      return !!this.als.getStore();
     } catch (error) {
-      return !!this.fallbackTraceId;
+      return false;
     }
   }
 
@@ -106,7 +98,7 @@ class TraceContextService {
     try {
       return this.als.getStore() || null;
     } catch (error) {
-      return this.fallbackTraceId ? { traceId: this.fallbackTraceId } : null;
+      return null;
     }
   }
 }

@@ -114,7 +114,6 @@ describe('TraceContextService', () => {
       let innerTraceIdInInner = '';
 
       traceContext.run(outerTraceId, () => {
-        const outerInOuter = traceContext.getTraceId();
 
         traceContext.run(innerTraceId, () => {
           outerTraceIdInInner = outerTraceId;

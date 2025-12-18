@@ -1,17 +1,17 @@
 import BaseTileLayer from '@arcgis/core/layers/BaseTileLayer';
 import esriRequest from '@arcgis/core/request';
-import moment from 'moment';
+import { getYear, differenceInDays, parse, format, subYears } from 'date-fns';
 
 // Modify the JS Date object
 Date.prototype.getJulian = function () {
-  // Convert date into moment Object
-  const date = moment(this);
+  // Convert date into Date Object
+  const date = new Date(this);
   // Get the year
-  const year = date.year();
-  // Create a moment object of the beginning of the year
-  const startOfYear = moment(`${year}/01/01`, 'YYYY/MM/DD');
+  const year = getYear(date);
+  // Create a date object of the beginning of the year
+  const startOfYear = parse(`${year}/01/01`, 'yyyy/MM/dd', new Date());
   // Find number of days passed
-  const daysPassed = date.diff(startOfYear, 'days');
+  const daysPassed = differenceInDays(date, startOfYear);
   // Append leading zeros if needed
   let daysPassedFormatted = daysPassed.toString();
   if (daysPassedFormatted.length < 3) {
@@ -20,13 +20,13 @@ Date.prototype.getJulian = function () {
     }
   }
   // Return the correct Julian
-  return `${date.format('YY')}${daysPassedFormatted}`;
+  return `${format(date, 'yy')}${daysPassedFormatted}`;
 };
 
 const RaddLayer = BaseTileLayer.createSubclass({
   properties: {
     julianTo: parseInt(new Date().getJulian()),
-    julianFrom: parseInt(moment().subtract(2, 'years').toDate().getJulian()),
+    julianFrom: parseInt(subYears(new Date(), 2).getJulian()),
     showHighConfidenceConfirmed: false,
   },
 

@@ -3,7 +3,25 @@ import { AlertFieldsFileRequest, CountObj, DashboardDataType } from '@wri-monore
 import { IPipeService } from '../pipe/i.pipe.service';
 import { EventEmitter, PassThrough, Transform } from 'stream';
 import * as fs from 'fs';
-import * as moment from 'moment';
+import {
+  parse,
+  format,
+  startOfDay,
+  startOfWeek,
+  startOfMonth,
+  endOfDay,
+  endOfWeek,
+  endOfMonth,
+  addDays,
+  addWeeks,
+  addMonths,
+  isWithinInterval,
+  isBefore,
+  isEqual,
+  differenceInCalendarDays,
+  subDays,
+  isAfter,
+} from 'date-fns';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 import { dictionary } from '../shared/alert.utils';
@@ -54,16 +72,33 @@ class EventEmitterTransform extends Transform {
   ) {
     const selectedTimeframe_StartEndGroupings = [];
     const selectedTimePeriod = dictionary.timeframe_dateGroupBy[selectedTimeframe];
-    const startMoment = moment(startDate);
-    const endMoment = moment(endDate);
+    const startMoment = new Date(startDate);
+    const endMoment = new Date(endDate);
+
+    const startOfFn =
+      selectedTimePeriod === 'day'
+        ? startOfDay
+        : selectedTimePeriod === 'week'
+        ? startOfWeek
+        : startOfMonth;
+    const endOfFn =
+      selectedTimePeriod === 'day'
+        ? endOfDay
+        : selectedTimePeriod === 'week'
+        ? endOfWeek
+        : endOfMonth;
+    const addFn =
+      selectedTimePeriod === 'day' ? addDays : selectedTimePeriod === 'week' ? addWeeks : addMonths;
 
     let currentMoment = startMoment;
-    while (currentMoment.isSameOrBefore(endMoment)) {
+    while (isBefore(currentMoment, endMoment) || isEqual(currentMoment, endMoment)) {
+      const periodStart = startOfFn(currentMoment);
+      const periodEnd = endOfFn(currentMoment);
       selectedTimeframe_StartEndGroupings.push([
-        currentMoment.startOf(selectedTimePeriod).format(DATE_FORMAT_CSV),
-        currentMoment.endOf(selectedTimePeriod).format(DATE_FORMAT_CSV),
+        format(periodStart, DATE_FORMAT_CSV),
+        format(periodEnd, DATE_FORMAT_CSV),
       ]);
-      currentMoment = currentMoment.add(1, selectedTimePeriod).startOf('day');
+      currentMoment = startOfDay(addFn(currentMoment, 1));
     }
 
     return selectedTimeframe_StartEndGroupings;
@@ -95,14 +130,14 @@ class EventEmitterTransform extends Transform {
 
     return selectedTimeframe_StartEndGroupings.map((dateBounds) => {
       const [startBound, endBound] = dateBounds;
-      const dateStart = moment(startBound, DATE_FORMAT_CSV);
-      const dateEnd = moment(endBound, DATE_FORMAT_CSV);
+      const dateStart = parse(startBound, DATE_FORMAT_CSV, new Date());
+      const dateEnd = parse(endBound, DATE_FORMAT_CSV, new Date());
       let total = 0;
       filtered.forEach((countObj) => {
         const { count, day } = countObj;
 
-        const currentM = moment(day, DATE_FORMAT);
-        if (currentM.isSameOrAfter(dateStart) && currentM.isSameOrBefore(dateEnd)) {
+        const currentM = parse(day, DATE_FORMAT, new Date());
+        if (isWithinInterval(currentM, { start: dateStart, end: dateEnd })) {
           total += count;
         }
       });
@@ -189,9 +224,9 @@ export class AlertsHistoryService extends IPipeService {
     fs.writeFileSync(filePath, `${this.headers.join(',')}\n`);
 
     const momentSort = (a: AlertHistory, b: AlertHistory) => {
-      const momentA = moment(a.start, DATE_FORMAT_CSV);
-      const momentB = moment(b.start, DATE_FORMAT_CSV);
-      return momentA.diff(momentB);
+      const momentA = parse(a.start, DATE_FORMAT_CSV, new Date());
+      const momentB = parse(b.start, DATE_FORMAT_CSV, new Date());
+      return differenceInCalendarDays(momentA, momentB);
     };
 
     const accumulateHistory = this.accumulateHistory.getHistory();
@@ -216,10 +251,10 @@ export class AlertsHistoryService extends IPipeService {
 
     const rows = sorted.map((timeframe) => {
       const { start, total } = timeframe;
-      const endDate = moment(start, DATE_FORMAT_CSV)
-        .add(1, endDateSchema[selectedAlert][selectedTimeframe])
-        .subtract(1, 'days')
-        .format(DATE_FORMAT_CSV);
+      const startDate = parse(start, DATE_FORMAT_CSV, new Date());
+      const period = endDateSchema[selectedAlert][selectedTimeframe];
+      const addFn = period === 'DAY' ? addDays : addMonths;
+      const endDate = format(subDays(addFn(startDate, 1), 1), DATE_FORMAT_CSV);
 
       return [listName, selectedAlertText, selectedTimeframe, total, start, endDate];
     });

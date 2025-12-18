@@ -1,6 +1,16 @@
-import moment from 'moment';
+import {
+  subDays,
+  subWeeks,
+  subMonths,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  endOfDay,
+  format,
+} from 'date-fns';
 
-const DATE_FORMAT = 'DD MMM YYYY';
+const DATE_FORMAT = 'dd MMM yyyy';
 
 /**
  * Get start - end timeframe Boundaries based on selected Timeframe
@@ -11,34 +21,39 @@ export const getTimeframeBoundaries = (selectedTimeframe) => {
   switch (selectedTimeframe) {
     case 'DAY': {
       return {
-        // start: moment().startOf('day').format(DATE_FORMAT),
-        // end: moment().endOf('day').format(DATE_FORMAT),
-        start: moment().subtract(1, 'days').format(DATE_FORMAT),
-        end: moment().endOf('day').format(DATE_FORMAT),
+        // start: format(startOfDay(new Date()), DATE_FORMAT),
+        start: format(subDays(new Date(), 1), DATE_FORMAT),
+        end: format(endOfDay(new Date()), DATE_FORMAT),
       };
     }
     case 'WEEK': {
+      const lastWeek = subWeeks(new Date(), 1);
       return {
-        start: moment().subtract(1, 'week').startOf('week').format(DATE_FORMAT),
-        end: moment().subtract(1, 'week').endOf('week').format(DATE_FORMAT),
+        start: format(startOfWeek(lastWeek), DATE_FORMAT),
+        end: format(endOfWeek(lastWeek), DATE_FORMAT),
       };
     }
     case 'MONTH': {
+      const lastMonth = subMonths(new Date(), 1);
       return {
-        start: moment().subtract(1, 'month').startOf('month').format(DATE_FORMAT),
-        end: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+        start: format(startOfMonth(lastMonth), DATE_FORMAT),
+        end: format(endOfMonth(lastMonth), DATE_FORMAT),
       };
     }
     case 'QUARTER': {
+      const threeMonthsAgo = subMonths(new Date(), 3);
+      const oneMonthAgo = subMonths(new Date(), 1);
       return {
-        start: moment().subtract(3, 'month').startOf('month').format(DATE_FORMAT),
-        end: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+        start: format(startOfMonth(threeMonthsAgo), DATE_FORMAT),
+        end: format(endOfMonth(oneMonthAgo), DATE_FORMAT),
       };
     }
     case 'YEAR': {
+      const twelveMonthsAgo = subMonths(new Date(), 12);
+      const oneMonthAgo = subMonths(new Date(), 1);
       return {
-        start: moment().subtract(12, 'month').startOf('month').format(DATE_FORMAT),
-        end: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+        start: format(startOfMonth(twelveMonthsAgo), DATE_FORMAT),
+        end: format(endOfMonth(oneMonthAgo), DATE_FORMAT),
       };
     }
   }

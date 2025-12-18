@@ -2,7 +2,7 @@ import { Inject, Logger } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
-import * as moment from 'moment';
+import { addDays } from 'date-fns';
 
 import {
   BasicFieldsFileRequest,
@@ -110,7 +110,7 @@ export abstract class IPipeService {
     }
     const parameters = toSqlParameter({
       location,
-      expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
+      expirationDate: addDays(new Date(), this.EXPIRE_IN_FIVE_DAYS),
       bundleCreationTime: new Date(),
       listId,
       analysisId: formattedAnalysisId,

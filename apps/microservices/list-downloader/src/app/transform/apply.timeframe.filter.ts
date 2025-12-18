@@ -1,5 +1,4 @@
 import { Transform } from 'stream';
-import * as moment from 'moment';
 import {
   getGladDaily,
   getGladMonthlyMonth,
@@ -28,8 +27,8 @@ export class ApplyTimeframeFilter extends Transform {
   }
 
   _transform(data: DashboardDataType, _, next) {
-    const momentStart = moment(this.startDate);
-    const momentEnd = moment(this.endDate);
+    const momentStart = new Date(this.startDate);
+    const momentEnd = new Date(this.endDate);
     let groupedGlad = [];
 
     // Week timeframe

@@ -3,10 +3,8 @@ import { Logger } from '@nestjs/common';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { AlertsDataService } from '../data/alerts.data.service';
 import { AlertsFileService } from '../files/alerts.file.service';
-import * as moment from 'moment';
+import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { AlertFieldsFileRequest, AlertsTimeframes } from '@wri-monorepos/sql';
-
-jest.mock('moment', () => jest.fn(() => jest.requireActual('moment')()));
 
 describe('AlertsGeneratorService', () => {
   let service: AlertsGeneratorService;
@@ -188,11 +186,8 @@ describe('AlertsGeneratorService', () => {
 
     await service.makeFile(mockFilters);
 
-    expect(mockFilters.startDate).toEqual(
-      moment().subtract(1, 'month').startOf('month').format('YYYY-MM-DD 00:00:00')
-    );
-    expect(mockFilters.endDate).toEqual(
-      moment().subtract(1, 'month').endOf('month').format('YYYY-MM-DD 23:59:59')
-    );
+    const lastMonth = subMonths(new Date(), 1);
+    expect(mockFilters.startDate).toEqual(format(startOfMonth(lastMonth), 'yyyy-MM-dd 00:00:00'));
+    expect(mockFilters.endDate).toEqual(format(endOfMonth(lastMonth), 'yyyy-MM-dd 23:59:59'));
   });
 });

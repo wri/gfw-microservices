@@ -1,7 +1,7 @@
-import moment from 'moment';
+import { format } from 'date-fns';
 
 const getFormattedDateTime = (DateTime = new Date()) => {
-  return moment(DateTime).format('ddd D MMM YYYY h:mm:ss A');
+  return format(new Date(DateTime), 'EEE d MMM yyyy h:mm:ss a');
 };
 
 export { getFormattedDateTime };

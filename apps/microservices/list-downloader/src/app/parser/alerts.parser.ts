@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import * as moment from 'moment';
+import { isWithinInterval, isBefore, isAfter, subMonths, subYears } from 'date-fns';
 import {
   dictionary,
   COLUMN_LOCATION_NAME,
@@ -8,38 +8,38 @@ import {
   COLUMN_COUNTRY,
 } from '../shared/alert.utils';
 
-export function getGladDaily(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
+export function getGladDaily(feature, momentStart: Date, momentEnd: Date) {
   return feature.glad_alerts_daily.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'days', '[]');
+    return isWithinInterval(new Date(date.day), { start: momentStart, end: momentEnd });
   });
 }
 
-export function getGladMonthlyMonth(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
+export function getGladMonthlyMonth(feature, momentStart: Date, momentEnd: Date) {
   return feature.glad_alerts_monthly.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'month', '[]');
+    return isWithinInterval(new Date(date.day), { start: momentStart, end: momentEnd });
   });
 }
 
-export function getGladMonthlyQuarter(feature, momentEnd: moment.Moment) {
-  const momentStart = moment(momentEnd).subtract(2, 'month');
-
-  return feature.glad_alerts_monthly.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'month', '[]');
-  });
-}
-
-export function getGladMonthlyYear(feature, momentEnd: moment.Moment) {
-  const momentStart = moment(momentEnd).subtract(1, 'years');
+export function getGladMonthlyQuarter(feature, momentEnd: Date) {
+  const momentStart = subMonths(momentEnd, 2);
 
   return feature.glad_alerts_monthly.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'month', '[]');
+    return isWithinInterval(new Date(date.day), { start: momentStart, end: momentEnd });
   });
 }
 
-export function getViirsGrouped(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
+export function getGladMonthlyYear(feature, momentEnd: Date) {
+  const momentStart = subYears(momentEnd, 1);
+
+  return feature.glad_alerts_monthly.filter((date) => {
+    return isWithinInterval(new Date(date.day), { start: momentStart, end: momentEnd });
+  });
+}
+
+export function getViirsGrouped(feature, momentStart: Date, momentEnd: Date) {
   return groupBy(feature.viirs_alerts_daily, (alert) => {
-    const alertMoment = moment(alert.day);
-    if (alertMoment.isBefore(momentStart) || alertMoment.isAfter(momentEnd)) {
+    const alertMoment = new Date(alert.day);
+    if (isBefore(alertMoment, momentStart) || isAfter(alertMoment, momentEnd)) {
       return 'delete';
     } else {
       return alert.day;

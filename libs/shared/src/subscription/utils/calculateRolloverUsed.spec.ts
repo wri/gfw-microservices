@@ -1,11 +1,11 @@
 import { calculateRolloverUsed, RolloverAnalysisAmounts } from './calculateRolloverUsed';
-import moment = require('moment');
+import { differenceInCalendarDays } from 'date-fns';
 
 describe('calculateRolloverUsed', () => {
   test('adds all amounts except current year to rollover', () => {
-    const renewalMoment = moment('2020-01-01');
-    const now = moment();
-    const currentYear = Math.floor(moment.duration(now.diff(renewalMoment)).asYears());
+    const renewalMoment = new Date('2020-01-01');
+    const now = new Date();
+    const currentYear = Math.floor(differenceInCalendarDays(now, renewalMoment) / 365.25);
     const yearlyUsageSinceActivation = [
       {
         years_since_activation: 1,

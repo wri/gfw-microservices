@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ClientStoreConnection, Lists, Organization } from '@wri-monorepos/sql';
-import moment from 'moment';
+import { subDays } from 'date-fns';
 
 @Injectable()
 export class ListService {
@@ -14,7 +14,7 @@ export class ListService {
   }
 
   async unlockLists(organization: Organization) {
-    const yesterday = moment().add(-1, 'days').toDate();
+    const yesterday = subDays(new Date(), 1);
 
     const connection = await this.createOrganizationConnection(organization);
 

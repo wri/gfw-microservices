@@ -1,4 +1,4 @@
-const moment = require('moment');
+const { format: formatDate } = require('date-fns');
 const sql = require('mssql');
 const fs = require('fs');
 const path = require('path');
@@ -68,6 +68,5 @@ exports.removeExistingVectorTileFromS3 = async (req, listID) => {
  * @return {string}
  */
 exports.getCurrentDateTimeFormatted = () => {
-  const isoDateString = moment().toISOString();
-  return moment(isoDateString).format('YYYYMMDD_HHmmss');
+  return formatDate(new Date(), 'yyyyMMdd_HHmmss');
 };

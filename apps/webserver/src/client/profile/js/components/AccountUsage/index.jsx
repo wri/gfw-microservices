@@ -19,7 +19,7 @@ import AccountUsageDropMenu from './AccountUsageDropMenu';
 import { formatNumber } from '../../../../common/js/utils/format';
 import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
 import AccountDetailUsageByAnalysisType from './AccountDetailUsageByAnalysisType';
-import moment from 'moment';
+import { subMonths, format } from 'date-fns';
 
 const HeaderTableCell = styled(TableCell)(() => ({
   backgroundColor: 'rgba(0, 0, 0, 0.04)',
@@ -43,8 +43,8 @@ export default function AccountUsageContainer() {
   const [usageDataperUser, setUsageDataperUser] = useState([]);
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
-  const oneMonthAgoDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
-  const endDayIncludingToday = moment().format('YYYY-MM-DD');
+  const oneMonthAgoDate = format(subMonths(new Date(), 1), 'yyyy-MM-dd');
+  const endDayIncludingToday = format(new Date(), 'yyyy-MM-dd');
   const [startDateAnalysis, setStartDateAnalysis] = useState(oneMonthAgoDate);
   const [endDateAnalysis, setEndDateAnalysis] = useState(endDayIncludingToday);
   const [analysisUsageByType, setAnalysisUsageByType] = useState([]);

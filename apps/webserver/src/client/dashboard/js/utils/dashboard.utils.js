@@ -1,4 +1,3 @@
-import moment from 'moment';
 import isEmpty from 'lodash/isEmpty';
 
 import store from '../store';
@@ -131,13 +130,13 @@ function applyLocationFilter(geojson, locationFilters, selectedAlert) {
 function applyTimeframeFilter(geojson, selectedTimeframe) {
   const propertyFilter = dictionary.timeframe_dateGroupBy[selectedTimeframe];
   const { start, end } = getTimeframeBoundaries(selectedTimeframe);
-  const momentStart = moment(start);
-  const momentEnd = moment(end);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
 
   for (let idx = 0; idx < geojson.features.length; idx++) {
     const feature = geojson.features[idx];
     const groupedGlad = getGladByTimeFrame(selectedTimeframe, feature);
-    const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
+    const groupedViirs = getViirsGrouped(feature, startDate, endDate, propertyFilter);
 
     delete groupedGlad.delete;
     delete groupedViirs.delete;
@@ -152,14 +151,14 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
 function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
   const propertyFilter = dictionary.timeframe_dateGroupBy[selectedTimeframe];
   const { start, end } = getTimeframeBoundaries(selectedTimeframe);
-  const momentStart = moment(start);
-  const momentEnd = moment(end);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
 
   const placeholderArray = [];
   for (let idx = 0; idx < geojson.features.length; idx++) {
     const feature = geojson.features[idx];
     const groupedGlad = getGladByTimeFrame(selectedTimeframe, feature);
-    const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
+    const groupedViirs = getViirsGrouped(feature, startDate, endDate, propertyFilter);
 
     delete groupedGlad.delete;
     delete groupedViirs.delete;

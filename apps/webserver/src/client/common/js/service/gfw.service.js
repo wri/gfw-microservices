@@ -9,7 +9,6 @@ export async function fetchGfwProLayers() {
     [proLayers.degradedPastureID]: !isDegradedPastureLayerAvailable,
     [proLayers.globalVegetationDisturbanceAlertsId]: !isDcfAvailable,
     [proLayers.globalIntegratedDisturbanceAlertsId]: !isDcfAvailable,
-    [proLayers.integratedDeforestationAlertsID]: isDcfAvailable,
   };
 
   const shouldHideLayer = (layerName) => hideRules[layerName] ?? false;

@@ -844,17 +844,4 @@ button:focus {
 }
 
 // DEPRECATED: Replaced by Osano cookie consent management (December 2025)
-// This styling is no longer used but kept for reference
-#PrivacyPolicyBanner {
-  position: fixed;
-  z-index: 1000;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  color: #fff;
-  font-size: 1em;
-  line-height: 1.8em;
-  text-align: center;
-  padding: 10px 5px;
-  background-color: #000;
-}
+// #PrivacyPolicyBanner {}

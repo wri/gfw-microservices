@@ -9,7 +9,7 @@ import {
 } from '@wri-monorepos/sql';
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
-import { listStatus, analysisTypes } from '@wri-monorepos/constants';
+import { listStatus, analysisTypes, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -444,12 +444,14 @@ export async function setListAnalysisStatus(
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-  // Update status for all analysis types
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
 
   await Promise.all(
     analysisIds
-      .filter((analysisId) => analysisId !== analysisTypes.PALM_RISK)
+      .filter(
+        (analysisId) =>
+          analysisId !== analysisTypes.PALM_RISK && analysisId !== AlertsAnalysisFrequency.WEEKLY
+      )
       .map(async (analysisId) => {
         // Ensuring analysisId is a valid analysis type
         const normalizedAnalysisId = Object.values(analysisTypes).find(
@@ -470,6 +472,7 @@ export async function setListAnalysisStatus(
           options: null,
         };
 
+        // Handle FCD with PalmRisk option
         if (
           isPalmRiskIncluded &&
           normalizedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
@@ -477,12 +480,16 @@ export async function setListAnalysisStatus(
           value.options = analysisTypes.PALM_RISK;
         }
 
-        // Check if record exists
+        // GPV-5141 default options=Weekly for ALERTS analysis
+        if (normalizedAnalysisId === analysisTypes.ALERTS) {
+          value.options = AlertsAnalysisFrequency.WEEKLY;
+        }
+
         const existingRecord = await listAnalysisStatusRepository.findOne({
           where: { listId, analysisId: normalizedAnalysisId },
         });
 
-        // Save or update for ALL analysis types (including GHG)
+        // Save or update for ALL analysis types
         if (existingRecord) {
           await listAnalysisStatusRepository.update(
             { listId, analysisId: normalizedAnalysisId },

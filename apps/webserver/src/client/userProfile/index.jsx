@@ -1,14 +1,11 @@
 /* global userID */
 import { useEffect, useState } from 'react';
 import { render } from 'react-dom';
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import CircularProgress from '@mui/material/CircularProgress';
-import UserProfile from './js/components/UserProfile';
-import Page from '../common/js/components/Page';
+import { CircularProgress } from '@mui/material';
 
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
+import UserProfile from './js/components/UserProfile';
+import PageWithoutThemeProvider from '../common/js/components/PageWithoutThemeProvider';
+import { ThemeProvider } from '../styles';
 
 const pageOptions = {
   links: {
@@ -61,7 +58,7 @@ function App() {
   } = userProfileData ?? {};
 
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <ThemeProvider>
       {isLoading ? (
         <div
           style={{
@@ -75,7 +72,7 @@ function App() {
           <CircularProgress color="success" />
         </div>
       ) : (
-        <Page links={pageOptions.links} active="profile">
+        <PageWithoutThemeProvider links={pageOptions.links} active="profile">
           <UserProfile
             users={users}
             userInfo={userInfo}
@@ -86,9 +83,9 @@ function App() {
             titlesData={titles}
             currentUser={userToEdit}
           />
-        </Page>
+        </PageWithoutThemeProvider>
       )}
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 }
 

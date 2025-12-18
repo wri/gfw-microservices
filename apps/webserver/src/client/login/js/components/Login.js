@@ -1,12 +1,11 @@
 import { Component } from 'react';
 import { Carousel } from 'react-responsive-carousel';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import loginStrings from './loginStrings';
 import GDPRFooter from '../../../common/js/components/GDPRFooter';
-// import { PrivacyPolicyBanner } from './PrivacyPolicyBanner'; // DEPRECATED: Replaced by Osano cookie consent
-import Button from '../../../common/js/components/Button';
+
 import httpRequest from '../../../common/js/utils/httpRequest';
-import Page from '../../../common/js/components/Page';
+import PageWithoutThemeProvider from '../../../common/js/components/PageWithoutThemeProvider';
 import gfwHeroVideo from '../../images/gfw_pro_hero_video.mp4';
 import gfwInAction from '../../images/gfw_pro_in_action.mp4';
 import gfwInActionEs from '../../images/gfw_pro_in_action_es_test.mp4';
@@ -30,6 +29,7 @@ import photoTrader from '../../images/trader.jpg';
 /* eslint-enable no-unused-vars, @typescript-eslint/no-unused-vars */
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { PillButton } from '../../../components';
 
 export default class Login extends Component {
   constructor(props) {
@@ -261,28 +261,29 @@ export default class Login extends Component {
     const isEnglishLanguage = languageCode === 'en';
 
     return (
-      <Page active="login">
+      <PageWithoutThemeProvider active="login">
         <Dialog
-          paperClassName="dialog-paper"
-          title={dialogTitle}
-          actions={[
-            <Button
-              variant="primary"
-              label="OK"
-              className="login-ok-button"
-              onClick={this.handleDialogClose}
-            />,
-          ]}
-          modal={false}
+          PaperProps={{ className: 'dialog-paper' }}
           open={dialogOpen}
-          onRequestClose={this.handleDialogClose}
-          children={
+          onClose={this.handleDialogClose}
+        >
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
             <div
               className="dialog-content-email"
               dangerouslySetInnerHTML={{ __html: dialogMessage }}
             />
-          }
-        />
+          </DialogContent>
+          <DialogActions>
+            <PillButton
+              variant="contained"
+              className="login-ok-button"
+              onClick={this.handleDialogClose}
+            >
+              OK
+            </PillButton>
+          </DialogActions>
+        </Dialog>
         <div className={`hero videoHidden-${videoHidden}`}>
           <div className="hero__content container">
             <div className="hero__title">
@@ -484,7 +485,7 @@ export default class Login extends Component {
           </div>
         </section>
         <GDPRFooter variant="login" />
-      </Page>
+      </PageWithoutThemeProvider>
     );
   }
 }

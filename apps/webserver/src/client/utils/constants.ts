@@ -63,7 +63,8 @@ export const DATA_CY = {
 
 export const ExternalLinks = {
   ZendeskSupport: 'https://gfwpro.zendesk.com/hc/en-us/requests/new',
-  UploadListHelpCenter: 'https://globalforestwatch.org/help/gfw-pro/guides/upload-locations-lists',
+  UploadListHelpCenter:
+    'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads',
   HowToFormatLocationData:
     'https://globalforestwatch.org/help/gfw-pro/guides/complete-selected-template',
   UploadStepByStepInstructions: 'https://globalforestwatch.org/help/gfw-pro/guides',

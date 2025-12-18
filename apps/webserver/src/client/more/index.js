@@ -1,10 +1,9 @@
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { render } from 'react-dom';
 import { useEffect, useState } from 'react';
+
 import More from './component/More';
 import { GFW_PRO_HELP_CENTER__LINK } from '../common/js/config';
+import { ThemeProvider } from '../styles';
 
 const App = () => {
   const [languageCode, setLanguageCode] = useState('en');
@@ -20,9 +19,9 @@ const App = () => {
   });
 
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <ThemeProvider>
       <More languageCode={languageCode} userGuideLink={userGuideLink} />
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 };
 

@@ -18,6 +18,7 @@ declare namespace Cypress {
     uploadFile(fileName: string): Chainable<void>;
     waitForLoadingMessage(checkExist?: boolean, locator?: string): void;
     forceEnglishLanguage(): void;
+    dismissCookieBanner(): void;
   }
 }
 
@@ -62,6 +63,7 @@ Cypress.Commands.add('loginUI', () => {
   cy.get('[data-cy="loginButton"]').first().click();
   cy.get('[data-cy="verifyToken"]').type(credentials.password);
   cy.contains('Verify').click();
+  cy.dismissCookieBanner();
   cy.location('href').should('include', '/locations');
 });
 
@@ -113,8 +115,36 @@ Cypress.Commands.add('forceEnglishLanguage', () => {
   cy.log('Forced English language settings applied');
 });
 
+Cypress.Commands.add('dismissCookieBanner', () => {
+  // NOTE: This handles third-party Osano cookie consent banner
+  // We cannot add data-cy attributes to third-party components
+  // Using Osano's stable class names as primary selectors with text fallback
+  cy.get('body', { timeout: 10000 }).then(($body) => {
+    // Try to find Osano accept button with specific class names first
+    const osanoAcceptButton = $body.find('.osano-cm-accept, .osano-cm-accept-all');
+
+    if (osanoAcceptButton.length > 0) {
+      cy.log('Osano cookie banner accept button found by class, clicking...');
+      cy.get('.osano-cm-accept, .osano-cm-accept-all').first().should('be.visible').click();
+      cy.log('Cookie banner dismissed');
+    } else {
+      // Fallback: Look for any button with "Accept" text using cy.contains
+      cy.log('Attempting to find cookie banner accept button by text...');
+      cy.contains('button', /accept/i, { timeout: 5000 })
+        .first()
+        .should('be.visible')
+        .click();
+      cy.log('Cookie banner dismissed');
+    }
+  });
+});
+
 Cypress.on('uncaught:exception', (err) => {
   if (err.message.includes('Cannot read properties of undefined')) {
+    return false;
+  }
+
+  if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }
   return true;

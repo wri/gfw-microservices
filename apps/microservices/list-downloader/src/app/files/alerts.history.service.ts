@@ -20,7 +20,6 @@ import {
   isEqual,
   differenceInCalendarDays,
   subDays,
-  isAfter,
 } from 'date-fns';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';

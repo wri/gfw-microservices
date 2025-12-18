@@ -59,6 +59,9 @@ export default function UserProfile({
   const [commodities, setCommodities] = useState(initialCommodities);
   const [viirsAlerts, setViirsAlerts] = useState(currentUser.viirs_email_frequency || 0);
   const [gladAlerts, setGladAlerts] = useState(currentUser.glad_email_frequency || 0);
+  const [granChacoAlerts, setGranChacoAlerts] = useState(
+    currentUser.gran_chaco_email_frequency || 0
+  );
   const [enableAlerts, setEnableAlerts] = useState(currentUser.email_subscription || false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState('');
@@ -295,6 +298,22 @@ export default function UserProfile({
     </td>
   );
 
+  const createGranChacoOption = (option, j) => (
+    <td key={j}>
+      <input
+        type="radio"
+        id={option.id + 'granChaco'}
+        value={option.id}
+        key={j + 'granChaco'}
+        checked={granChacoAlerts === option.id}
+        onChange={(evt) => setGranChacoAlerts(parseInt(evt.target.value))}
+      />
+      <label htmlFor={option.id + 'granChaco'} className="profile-label">
+        {option.name}
+      </label>
+    </td>
+  );
+
   // Render logic
   const dialogContent =
     typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(generateMessages);
@@ -316,6 +335,8 @@ export default function UserProfile({
 
   const viirsOptions = profilePage.userProfile.viirsEmailFrequencies.map(createViirsOption);
   const gladOptions = profilePage.userProfile.gladEmailFrequencies.map(createGladOption);
+  const granChacoOptions =
+    profilePage.userProfile.granChacoEmailFrequencies.map(createGranChacoOption);
   const commOptions = commoditiesData.map(createMultiSelectOption('commmodity_name'));
   const geogOptions = geographiesData.map(createMultiSelectOption('geography_name'));
   const titleOptions = titlesData.map(createSelectOption('title'));
@@ -554,6 +575,10 @@ export default function UserProfile({
                 <tr>
                   <td>GLAD Alerts</td>
                   {gladOptions}
+                </tr>
+                <tr>
+                  <td>Gran Chaco Deforestation Alerts</td>
+                  {granChacoOptions}
                 </tr>
               </tbody>
             </table>

@@ -1,30 +1,25 @@
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import * as PropTypes from 'prop-types';
-import Button from '../../../../common/js/components/Button';
 
+import { PillButton } from '../../../../components';
 import './FailedPopupDialog.scss';
 
 export function FailedPopupDialog(props) {
   return (
     <Dialog
-      title={props.title || ''}
       open={props.open}
-      modal={false}
-      bodyClassName="FailedPopupDialog dialog__body"
-      contentClassName="dialog__content"
-      onRequestClose={props.onRequestClose}
-      actions={
-        <div className="dialog__footer FailedPopupDialog__dialog-buttons">
-          <Button
-            variant="primary"
-            className="FailedPopupDialog__button"
-            label="OK"
-            onClick={props.onOkButtonPress}
-          />
-        </div>
-      }
+      onClose={props.onRequestClose}
+      classes={{
+        paper: 'dialog__content',
+      }}
     >
-      {props.message}
+      {props.title && <DialogTitle>{props.title}</DialogTitle>}
+      <DialogContent className="FailedPopupDialog dialog__body">{props.message}</DialogContent>
+      <DialogActions className="dialog__footer FailedPopupDialog__dialog-buttons">
+        <PillButton variant="contained" onClick={props.onOkButtonPress}>
+          OK
+        </PillButton>
+      </DialogActions>
     </Dialog>
   );
 }

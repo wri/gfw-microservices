@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import fetch from '../../../../common/js/utils/fetch';
-import Button from '../../../../common/js/components/Button';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
+import { PillButton } from '../../../../components';
 
 import { locationsPage } from '../../../../common/js/config';
 
@@ -146,9 +146,8 @@ export default class ManageListFolderDialog extends Component {
           </>
         }
         dialogActionConfirm={
-          <Button
-            className="dialog__primary-action"
-            label={strings.confirm}
+          <PillButton
+            variant="contained"
             disabled={confirmDisabled}
             onClick={() => {
               gtag('event', 'User Added List to Folder on Landing Page', {
@@ -156,8 +155,9 @@ export default class ManageListFolderDialog extends Component {
               });
               this._confirm();
             }}
-            variant="primary"
-          />
+          >
+            {strings.confirm}
+          </PillButton>
         }
       />
     );

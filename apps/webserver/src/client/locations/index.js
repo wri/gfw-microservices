@@ -8,7 +8,6 @@ import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 import LocationsPage from './js/components/landing/LocationsPage';
 
 import { NO_MESSAGE } from './js/utils/history.utils';
-import './polyfills';
 
 const App = () => (
   <ThemeProvider>

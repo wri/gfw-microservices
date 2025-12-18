@@ -1,8 +1,7 @@
 import { isValidElement } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
-import Button from '../Button';
-import LinkButton from '../LinkButton';
+import { PillButton, Link } from '../../../../components';
 import './CustomDialog.scss';
 
 export default function CustomDialog({
@@ -14,32 +13,30 @@ export default function CustomDialog({
 }) {
   return (
     <Dialog
-      paperClassName="list-diagnostics-dialog dialog-paper"
+      PaperProps={{ className: 'list-diagnostics-dialog dialog-paper' }}
       open={open}
-      title={dialogTitle}
-      contentStyle={{ opacity: 1 }}
-      actions={[
+      onClose={closeAction}
+    >
+      <DialogTitle>{dialogTitle}</DialogTitle>
+      <DialogContent sx={{ opacity: 1 }}>
+        {isValidElement(dialogMessage) ? (
+          <>{dialogMessage}</>
+        ) : (
+          <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>
+        )}
+      </DialogContent>
+      <DialogActions>
         <div className="list-diagnostics-dialog__actions">
           {isValidElement(dialogActionConfirm) ? (
             <>{dialogActionConfirm}</>
           ) : (
-            <Button
-              className="dialog__primary-action"
-              variant="primary"
-              label={'OK'}
-              onClick={dialogActionConfirm}
-            />
+            <PillButton variant="contained" onClick={dialogActionConfirm}>
+              OK
+            </PillButton>
           )}
-          {closeAction && <LinkButton onClick={closeAction} label={'Cancel'} />}
-        </div>,
-      ]}
-      onRequestClose={closeAction}
-    >
-      {isValidElement(dialogMessage) ? (
-        <>{dialogMessage}</>
-      ) : (
-        <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>
-      )}
+          {closeAction && <Link onClick={closeAction}>Cancel</Link>}
+        </div>
+      </DialogActions>
     </Dialog>
   );
 }

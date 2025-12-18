@@ -445,7 +445,6 @@ describe('StartAnalysisService', () => {
 
       (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
 
-      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
       const capturedTraceIds: string[] = [];
 
       // Mock the worker to capture trace IDs

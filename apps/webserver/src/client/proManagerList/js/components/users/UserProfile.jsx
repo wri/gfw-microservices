@@ -477,16 +477,6 @@ export default function UserProfile({
                     {titleOptions}
                   </select>
                 </div>
-                <div className={`account-info-item ${title === TITLE_OTHER_ID ? '' : 'hidden'}`}>
-                  <span className="account-info-label">Alternative Title</span>
-                  <input
-                    required
-                    name="alternative_title"
-                    value={otherTitle}
-                    onChange={updateOther}
-                    className="account-info-input"
-                  />
-                </div>
               </div>
 
               <div

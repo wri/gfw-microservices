@@ -5,24 +5,16 @@ import { EventEmitter, PassThrough, Transform } from 'stream';
 import * as fs from 'fs';
 import {
   parse,
-  format,
-  startOfDay,
-  startOfWeek,
-  startOfMonth,
-  endOfDay,
-  endOfWeek,
-  endOfMonth,
   addDays,
   addWeeks,
   addMonths,
-  isWithinInterval,
   isBefore,
   isAfter,
   isEqual,
   differenceInCalendarDays,
   subDays,
 } from 'date-fns';
-import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+import { formatInTimeZone } from 'date-fns-tz';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 import { dictionary } from '../shared/alert.utils';

@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import { isWithinInterval, isBefore, isAfter, addMonths, addYears } from 'date-fns';
+import { isWithinInterval, isBefore, isAfter } from 'date-fns';
 import {
   dictionary,
   COLUMN_LOCATION_NAME,

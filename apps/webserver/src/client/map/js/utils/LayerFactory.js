@@ -1,5 +1,6 @@
 // Put back in error handling when all layers have a type in config
 
+import errorLogger from '../../../common/js/utils/errorLogger';
 import ImageLayer from '@arcgis/core/layers/ImageryLayer';
 import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import TiledLayer from '@arcgis/core/layers/TileLayer';
@@ -408,7 +409,11 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         break;
 
       default:
-        console.log('no matching layer type: ', layer.id);
+        errorLogger.warn('No matching layer type found', {
+          component: 'LayerFactory',
+          action: 'createLayers',
+          layerId: layer.id
+        });
     }
   });
   return layers;

@@ -1,5 +1,6 @@
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { mySharedLists } from '../../utils/sharedListMock';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const getLists = async (url) => {
   try {
@@ -8,7 +9,12 @@ const getLists = async (url) => {
 
     return parsedResponse;
   } catch (error) {
-    console.error(error);
+    errorLogger.error('Error fetching shared lists', {
+      component: 'getSharedLists',
+      action: 'getLists',
+      error,
+      url,
+    });
     return mySharedLists;
   }
 };

@@ -2,6 +2,7 @@ import { executeForExtent } from '@arcgis/core/rest/query';
 import Query from '@arcgis/core/rest/support/Query';
 import IdentifyParameters from '@arcgis/core/rest/support/IdentifyParameters';
 import { identify } from '@arcgis/core/rest/identify';
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 export const queryExtent = (url, defQuery = '1=1') => {
   return new Promise((resolve) => {
@@ -19,7 +20,12 @@ export const queryExtent = (url, defQuery = '1=1') => {
         }
       },
       function (error) {
-        console.log(error);
+        errorLogger.error('Failed to query extent', {
+          component: 'LayerUtils',
+          action: 'queryExtent',
+          url,
+          error
+        });
         resolve(false);
       }
     );
@@ -56,7 +62,12 @@ export const identifyPoints = (layer, evt, view) => {
         });
       },
       function (error) {
-        console.log(error);
+        errorLogger.error('Failed to identify points', {
+          component: 'LayerUtils',
+          action: 'identifyPoints',
+          layerId: layer.id,
+          error
+        });
         resolve(false);
       }
     );

@@ -11,7 +11,7 @@ const logger = require('../../../config/privateutils/logger.utils');
  */
 const validateClientLog = (logData) => {
   const { level, message, timestamp, ...context } = logData;
-  
+
   // Validate required fields
   if (!level || !message) {
     return { isValid: false, error: 'Missing required fields: level, message' };
@@ -25,7 +25,7 @@ const validateClientLog = (logData) => {
 
   // Sanitize and limit context size (prevent DOS)
   const sanitizedContext = JSON.stringify(context).substring(0, 5000);
-  
+
   return {
     isValid: true,
     sanitizedLog: {
@@ -51,7 +51,7 @@ module.exports = (app) => {
   app.post('/api/client-logs', (req, res) => {
     try {
       const validation = validateClientLog(req.body);
-      
+
       if (!validation.isValid) {
         return res.status(400).json({ error: validation.error });
       }
@@ -104,10 +104,10 @@ module.exports = (app) => {
 
       logsToProcess.forEach((logData) => {
         const validation = validateClientLog(logData);
-        
+
         if (validation.isValid) {
           const { level, message, timestamp, context } = validation.sanitizedLog;
-          
+
           logger[level](`[CLIENT] ${message}`, {
             source: 'client',
             timestamp,
@@ -115,7 +115,7 @@ module.exports = (app) => {
             ip: req.ip || req.connection.remoteAddress,
             ...context,
           });
-          
+
           processedCount++;
         } else {
           errorCount++;

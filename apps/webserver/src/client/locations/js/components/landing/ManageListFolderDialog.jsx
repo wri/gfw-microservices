@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import fetch from '../../../../common/js/utils/fetch';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import Button from '../../../../common/js/components/Button';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 
@@ -231,7 +232,12 @@ export default class ManageListFolderDialog extends Component {
         }
       })
       .catch((err) => {
-        console.log('Error creating folder', err);
+        errorLogger.error('Error creating folder', {
+          component: 'ManageListFolderDialog',
+          action: 'createFolder',
+          error: err,
+          folderName: this.state.folderName,
+        });
         this.setState({
           error: locationsPage.lists.manageFolderDialog.errorFolder,
         });
@@ -262,7 +268,13 @@ export default class ManageListFolderDialog extends Component {
         this.setState({
           error: locationsPage.lists.manageFolderDialog.errorList,
         });
-        console.log('Error adding list to folder', err);
+        errorLogger.error('Error adding list to folder', {
+          component: 'ManageListFolderDialog',
+          action: 'addList',
+          error: err,
+          folderId: this.props.currentFolderId,
+          listId: this.props.listId,
+        });
       });
   };
 
@@ -292,7 +304,13 @@ export default class ManageListFolderDialog extends Component {
         this.setState({
           error: locationsPage.lists.manageFolderDialog.errorRemove,
         });
-        console.log('Error removing list from folder', err);
+        errorLogger.error('Error removing list from folder', {
+          component: 'ManageListFolderDialog',
+          action: 'removeFromFolder',
+          error: err,
+          folderId: this.props.currentFolderId,
+          listId: this.props.listId,
+        });
       });
   };
 }

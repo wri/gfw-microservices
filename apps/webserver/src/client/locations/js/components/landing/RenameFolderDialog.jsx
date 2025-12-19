@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import fetch from '../../../../common/js/utils/fetch';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import IconButton from '../../../../common/js/components/IconButton';
@@ -96,7 +97,13 @@ export default class RenameFolderDialog extends Component {
         }
       })
       .catch((err) => {
-        console.log('Error renaming folder', err);
+        errorLogger.error('Error renaming folder', {
+          component: 'RenameFolderDialog',
+          action: 'renameFolder',
+          error: err,
+          folderId: this.props.folder?.id,
+          newName,
+        });
         this.setState({
           error: locationsPage.lists.renameFolderError,
         });

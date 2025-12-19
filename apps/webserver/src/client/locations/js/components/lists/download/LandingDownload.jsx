@@ -3,6 +3,7 @@ import MenuItem from 'material-ui/MenuItem';
 import ArrowRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import { locationsPage } from 'common/js/config';
 import downloadRequest from './downloadRequest';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import DownloadIcon from '@mui/icons-material/Download';
 
 function LandingDownload({
@@ -23,7 +24,14 @@ function LandingDownload({
     setConfirmDialog(true);
 
     downloadRequest({ listID, format, type, source: 'landing' }).catch((err) => {
-      console.warn('err', err);
+      errorLogger.warn('Error downloading list from landing page', {
+        component: 'LandingDownload',
+        action: 'localHandleDownload',
+        error: err,
+        listID,
+        format,
+        type,
+      });
     });
 
     if (downloadRequestedFromFolder) {

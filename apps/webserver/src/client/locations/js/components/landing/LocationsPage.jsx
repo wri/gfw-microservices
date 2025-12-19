@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import Locations from '../Locations';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const LocationsPage = ({ userInfo }) => {
   const [locationsData, setLocationsData] = useState({});
@@ -40,7 +41,12 @@ const LocationsPage = ({ userInfo }) => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching initial locations data', {
+          component: 'LocationsPage',
+          action: 'fetchInitialData',
+          error,
+        });
+        setIsLoading(false);
       });
   }, []);
 

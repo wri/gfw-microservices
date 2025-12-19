@@ -26,8 +26,6 @@ const pageOptions = {
   },
 };
 
-import errorLogger from '../../../common/js/utils/errorLogger';
-
 class Locations extends Component {
   unloadHistory = undefined;
 
@@ -226,7 +224,12 @@ class Locations extends Component {
         }
       })
       .catch((err) => {
-        console.warn('Error fetching GFW location data', err);
+        errorLogger.warn('Error fetching GFW location data', {
+          component: 'Locations',
+          action: 'fetchGFWListData',
+          error: err,
+          gfwListId: gfwList.id,
+        });
         this.setState({ isLoading: false });
       });
   };
@@ -269,7 +272,13 @@ class Locations extends Component {
         this.props.history.replace('/upload-location/by-polygon');
       })
       .catch((err) => {
-        console.warn('Error fetching GFW location geometry', err);
+        errorLogger.warn('Error fetching GFW location geometry', {
+          component: 'Locations',
+          action: 'processGFWLocationData',
+          error: err,
+          listId,
+          locationIds,
+        });
         this.setState({ isLoading: false });
       });
   };

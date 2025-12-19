@@ -7,6 +7,7 @@ import {
   updatePopoverAnchorEl,
 } from '../actions/locationActions';
 import store from '../store';
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 // Configs
 import { DATA_API_URL } from '../../../common/js/config';
@@ -44,7 +45,11 @@ export const togglePopover = (evt, infoBubbleCache) => {
   });
 
   request.onerror = () => {
-    console.error(`Error requesting InfoBubble data. InfoBubble ID: ${infoBubbleId}`);
+    errorLogger.error('Error requesting InfoBubble data', {
+      component: 'togglePopover',
+      action: 'togglePopoverWith',
+      infoBubbleId,
+    });
   };
 
   request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);

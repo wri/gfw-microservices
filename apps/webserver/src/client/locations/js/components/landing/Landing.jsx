@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { Campaign, Close, Info } from '@mui/icons-material';
 import { withRouter } from 'react-router-dom';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import Banner from '../../../../common/js/components/Banners/Banner';
 import GDPRFooter from '../../../../common/js/components/GDPRFooter';
 import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
@@ -123,7 +124,11 @@ class Landing extends Component {
     } else if (choice === CHOICES.MULTIPLE) {
       this.uploadLocations();
     } else {
-      console.error('Invalid choice chosen for AddLocationsChooser:', choice);
+      errorLogger.error('Invalid choice chosen for AddLocationsChooser', {
+        component: 'Landing',
+        action: 'onAddLocationsChooserChoice',
+        choice,
+      });
       this.setState({ addLocationDialogOpen: false });
     }
   };

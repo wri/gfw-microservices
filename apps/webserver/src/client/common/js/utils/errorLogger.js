@@ -19,7 +19,7 @@ const LOG_LEVELS = {
 const isDevelopment = () => {
   return (
     process.env.NODE_ENV === 'development' ||
-    typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    (typeof window !== 'undefined' && window.location.hostname === 'localhost')
   );
 };
 
@@ -139,7 +139,7 @@ const log = (level, error, context = {}) => {
   if (!isDevelopment()) {
     // Send to backend logging endpoint (async, non-blocking)
     sendToBackend(formattedError, level);
-    
+
     // Send to monitoring services
     sendToMonitoring(formattedError, level);
   } else {

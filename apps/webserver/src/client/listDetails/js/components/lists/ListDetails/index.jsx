@@ -1793,7 +1793,8 @@ export default class ListDetails extends Component {
         component: 'ListDetails',
         action: 'downloadDiagnostics',
         error,
-        locationId: hoveredLocationId,
+        listID,
+        listView,
       });
     }
   };

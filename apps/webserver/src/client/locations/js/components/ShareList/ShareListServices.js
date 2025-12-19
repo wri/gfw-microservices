@@ -1,5 +1,6 @@
 import fetch from '../../../../common/js/utils/fetch';
 import { getFormattedDateTime } from '../../../../common/js/utils/dateTime';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const REQUEST_METHOD = 'POST';
 const REQUEST_HEADERS = { 'Content-type': 'application/json' };
@@ -45,7 +46,12 @@ const updateSharedListUsersService = (self) => {
       });
     })
     .catch((err) => {
-      console.log('Error when executing update Shared List Users: ', err);
+      errorLogger.error('Error when executing update Shared List Users', {
+        component: 'ShareListServices',
+        action: 'updateSharedListUsersService',
+        error: err,
+        listId: selectedList.id,
+      });
     });
 };
 
@@ -68,8 +74,13 @@ const addUserToSharedListService = (selectedUser, updatedNotAdminsOwner, self) =
       list: selectedList,
     },
   })
-    .then((response) => {
-      console.log(response);
+    .then(() => {
+      errorLogger.info('User added to shared list successfully', {
+        component: 'ShareListServices',
+        action: 'addUserToSharedListService',
+        userId: selectedUser.user_id,
+        listId: selectedList.id,
+      });
 
       self.setState({
         SharedListUsers: SharedListUsers,
@@ -78,7 +89,13 @@ const addUserToSharedListService = (selectedUser, updatedNotAdminsOwner, self) =
       });
     })
     .catch((err) => {
-      console.log('Error when executing add User to Shared List: ', err);
+      errorLogger.error('Error when executing add User to Shared List', {
+        component: 'ShareListServices',
+        action: 'addUserToSharedListService',
+        error: err,
+        userId: selectedUser.user_id,
+        listId: selectedList.id,
+      });
     });
 };
 
@@ -107,8 +124,12 @@ const removeUserFromSharedListService = (
       list: selectedList,
     },
   })
-    .then((response) => {
-      console.log(response);
+    .then(() => {
+      errorLogger.info('User removed from shared list successfully', {
+        component: 'ShareListServices',
+        action: 'removeUserFromSharedListService',
+        userId: userToRemove.user_id,
+      });
 
       self.setState({
         SharedListUsers: updateSharedListUsers,
@@ -118,7 +139,12 @@ const removeUserFromSharedListService = (
       });
     })
     .catch((err) => {
-      console.log('Error when executing remove User From Shared List: ', err);
+      errorLogger.error('Error when executing remove User From Shared List', {
+        component: 'ShareListServices',
+        action: 'removeUserFromSharedListService',
+        error: err,
+        userId: userToRemove.user_id,
+      });
     });
 };
 
@@ -142,8 +168,13 @@ const removeAllUsersFromSharedListService = (self) => {
       list: selectedList,
     },
   })
-    .then((response) => {
-      console.log(response);
+    .then(() => {
+      errorLogger.info('All users removed from shared list successfully', {
+        component: 'ShareListServices',
+        action: 'removeAllUsersFromSharedListService',
+        listId: selectedList.id,
+        userCount: allSharedListUsersID.length,
+      });
 
       const updatedNotAdminsOwner = NotAdminsOwner.map((user) => {
         if (allSharedListUsersID.includes(user.user_id)) {
@@ -161,7 +192,12 @@ const removeAllUsersFromSharedListService = (self) => {
       });
     })
     .catch((err) => {
-      console.log('Error when executing remove User From Shared List: ', err);
+      errorLogger.error('Error when executing remove all users from Shared List', {
+        component: 'ShareListServices',
+        action: 'removeAllUsersFromSharedListService',
+        error: err,
+        listId: selectedList.id,
+      });
     });
 };
 

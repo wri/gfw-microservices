@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { locationsPage } from '../../../../common/js/config';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import './ExistingListSelector.scss';
 
 function ExistingListSelector({ templateId, existingListSelectionHandler }) {
@@ -23,7 +24,12 @@ function ExistingListSelector({ templateId, existingListSelectionHandler }) {
         setLists(userLists);
       })
       .catch((error) => {
-        console.error(error);
+        errorLogger.error('Error fetching user lists for template', {
+          component: 'ExistingListSelector',
+          action: 'fetchUserLists',
+          error,
+          templateId,
+        });
       });
   }, [templateId]);
 

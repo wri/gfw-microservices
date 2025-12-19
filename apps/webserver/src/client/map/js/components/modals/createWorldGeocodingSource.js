@@ -3,6 +3,7 @@ import { showMapLoader } from '../../actions/mapActions';
 import Locator from '@arcgis/core/tasks/Locator';
 import SearchSource from '@arcgis/core/widgets/Search/SearchSource';
 import store from '../../store';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const locator = new Locator({
   url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
@@ -27,7 +28,11 @@ function createWorldGeocodingSource(sourceIndex = 999) {
           sourceIndex, // Needed to distinguish source
         }));
       } catch (err) {
-        console.error('Error getting suggestions from geocoder:', err);
+        errorLogger.error('Error getting suggestions from geocoder', {
+          component: 'createWorldGeocodingSource',
+          action: 'getSuggestions',
+          error: err
+        });
         return [];
       }
     },
@@ -39,7 +44,11 @@ function createWorldGeocodingSource(sourceIndex = 999) {
         const address = params.suggestResult?.key?.text || params.suggestResult?.text;
 
         if (!address) {
-          console.warning('No address found');
+          errorLogger.warn('No address found in geocoding request', {
+            component: 'createWorldGeocodingSource',
+            action: 'getResults',
+            params
+          });
           return [];
         }
 
@@ -76,7 +85,11 @@ function createWorldGeocodingSource(sourceIndex = 999) {
           };
         });
       } catch (err) {
-        console.error('Error getting results from geocoder:', err);
+        errorLogger.error('Error getting results from geocoder', {
+          component: 'createWorldGeocodingSource',
+          action: 'getResults',
+          error: err
+        });
         return [];
       } finally {
         store.dispatch(showMapLoader(false));

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -40,7 +41,14 @@ function AccountsListUsage({ setIsLoading }) {
         setIsFetching(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching accounts usage data', {
+          component: 'AccountsListUsage',
+          action: 'fetchUsageData',
+          error,
+          startDate,
+          endDate,
+        });
+        setIsFetching(false);
       });
   }, [startDate, endDate]);
 

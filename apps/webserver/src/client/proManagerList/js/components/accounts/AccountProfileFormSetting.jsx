@@ -1,5 +1,6 @@
 import { Fragment, useState, useEffect } from 'react';
 import Select from 'react-select';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import {
   Grid,
   TextField,
@@ -230,7 +231,12 @@ export default function AccountProfileFormSetting() {
         setDialogError?.('Could not update organization name. Please try again.');
       }
     } catch (err) {
-      console.error(err);
+      errorLogger.error('Error updating organization name', {
+        component: 'AccountProfileFormSetting',
+        action: 'handleAccountNameSave',
+        error: err,
+        newName,
+      });
       setDialogError?.('Something went wrong. Please try again.');
     }
   };

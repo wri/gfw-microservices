@@ -67,7 +67,8 @@ export function AddressSelector({ onResultSelect, onClearValue, error }: Address
       }
     } catch (error) {
       errorLogger.apiError(error, {
-        endpoint: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates',
+        endpoint:
+          'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates',
         method: 'GET',
         component: 'AddressSelector',
         action: 'fetchCoordinates',

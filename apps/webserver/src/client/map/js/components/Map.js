@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
+import errorLogger from '../../../common/js/utils/errorLogger';
 // ESRI Imports
 import EsriMap from '@arcgis/core/Map';
 import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
@@ -1268,7 +1269,14 @@ class Map extends Component {
         const features = await fetch(featureAPIURL)
           .then((res) => res.json())
           .then((data) => data.data)
-          .catch((e) => console.log(e));
+          .catch((e) => {
+            errorLogger.error('Failed to fetch vector layer popup data', {
+              component: 'Map',
+              action: 'showCustomPopupForAllVectorLayers',
+              layerId: layerID,
+              error: e
+            });
+          });
 
         if (features.length === 0) {
           continue;
@@ -1290,7 +1298,11 @@ class Map extends Component {
           });
           openPopup(popFeats, evt.mapPoint);
         } else {
-          console.log(`Popup info not defined for layer ${layerID}`);
+          errorLogger.warn('Popup info not defined for vector layer', {
+            component: 'Map',
+            action: 'showCustomPopupForAllVectorLayers',
+            layerId: layerID
+          });
         }
         featuresExist = true;
         break;
@@ -1579,7 +1591,12 @@ class Map extends Component {
           store.dispatch(updateAnalysis(analysisResults));
         })
         .catch((err) => {
-          console.log('Request Error:', err);
+          errorLogger.error('Analysis call failed on custom feature', {
+            component: 'Map',
+            action: 'analysisCustomFeature',
+            type,
+            error: err
+          });
           const details = {
             dialogTitle: 'Analysis Failure',
             dialogMessage: 'The analysis call on this custom feature failed.',
@@ -1617,7 +1634,11 @@ class Map extends Component {
           store.dispatch(updateAnalysis(analysisResults));
         })
         .catch((err) => {
-          console.log('Request Error:', err);
+          errorLogger.error('GLAD analysis call failed on custom feature', {
+            component: 'Map',
+            action: 'gladAnalysisCustomFeature',
+            error: err
+          });
           const details = {
             dialogTitle: 'Analysis Failure',
             dialogMessage: 'The analysis call on this custom feature failed.',
@@ -1665,7 +1686,11 @@ class Map extends Component {
             );
           });
       } catch (e) {
-        console.log('Request Error:', e);
+        errorLogger.error('Failed to fetch biomass data for custom feature', {
+          component: 'Map',
+          action: 'analysisCustomFeature_biomass',
+          error: e
+        });
       }
 
       const analysisResults = {
@@ -1715,7 +1740,11 @@ class Map extends Component {
             return data && data.data[SQL_SUM__FIELD];
           });
       } catch (e) {
-        console.log('Request Error:', e);
+        errorLogger.error('Failed to fetch tree cover gain data for custom feature', {
+          component: 'Map',
+          action: 'analysisCustomFeature_gain',
+          error: e
+        });
       }
       const analysisResults = {
         data: {
@@ -1909,7 +1938,13 @@ class Map extends Component {
         .then((adminData) => {
           return adminData.data;
         })
-        .catch((e) => console.log(e));
+        .catch((e) => {
+          errorLogger.error('Failed to fetch geostore admin data', {
+            component: 'Map',
+            action: 'analysisHandlerAdmin',
+            error: e
+          });
+        });
       this.geostoreAnalysisCall(
         geostoreResponse.attributes.areaHa,
         analysisType,
@@ -1944,7 +1979,12 @@ class Map extends Component {
           currentAnalysisCall = '';
         };
         currentAnalysisCall.onerror = (err) => {
-          console.log('Request Error:', err);
+          errorLogger.error('Analysis call failed on administrative area', {
+            component: 'Map',
+            action: 'analysisHandlerAdmin',
+            microserviceUrl,
+            error: err
+          });
           const details = {
             dialogTitle: 'Analysis Failure',
             dialogMessage: 'The analysis call on this Administrative Area failed.',
@@ -1955,7 +1995,11 @@ class Map extends Component {
         currentAnalysisCall.open('GET', microserviceUrl);
         currentAnalysisCall.send();
       } else {
-        console.log('No microservice');
+        errorLogger.warn('No microservice URL available for admin analysis', {
+          component: 'Map',
+          action: 'analysisHandlerAdmin',
+          data
+        });
         this.setState({ spinnerOn: false });
         store.dispatch(updateAnalysis({}));
       }
@@ -2099,7 +2143,11 @@ class Map extends Component {
           this.safeGoTo(mapCenter);
         }
       } catch (e) {
-        console.log(e);
+        errorLogger.error('Failed to fetch zoom/BBOX values for GFW List locations', {
+          component: 'Map',
+          action: '_zoomToExtentOfList',
+          error: e
+        });
         throw new Error('Fetching Zoom in BBOX values for GFW List locations failed.');
       }
     };
@@ -2193,7 +2241,11 @@ class Map extends Component {
       const request = new XMLHttpRequest();
       request.onload = () => {
         if (request.responseText === '') {
-          console.log('LIST DATA IS NOT AVAILABLE');
+          errorLogger.warn('List data not available for selected locations', {
+            component: 'Map',
+            action: 'showSelectedLocations',
+            listId: userList.id
+          });
         } else {
           const selectedListData = JSON.parse(request.responseText);
           if (selectedLocations?.length) {
@@ -2218,7 +2270,12 @@ class Map extends Component {
                 store.dispatch(addList(userList));
               })
               .catch((error) => {
-                console.error('Error loading vector tile layer:', error);
+                errorLogger.error('Error loading vector tile layer for filtered list', {
+                  component: 'Map',
+                  action: 'showSelectedLocations',
+                  listId: userList.id,
+                  error
+                });
 
                 const message =
                   error?.response?.data?.message || error?.message || 'Error loading map data';
@@ -2253,7 +2310,12 @@ class Map extends Component {
         }
       };
       request.onerror = (err) => {
-        console.log(`Error: ${err}`);
+        errorLogger.error('Failed to get user list location data', {
+          component: 'Map',
+          action: 'showSelectedLocations',
+          listId,
+          error: err
+        });
         store.dispatch(showMapLoader(false));
       };
       request.open('POST', '/map/getUserListLocationData-map', true);
@@ -2436,7 +2498,12 @@ class Map extends Component {
           listNotAccessible: true,
         });
         store.dispatch(showMapLoader(false));
-        console.log('LIST DATA IS NOT AVAILABLE');
+        errorLogger.warn('List data not available or not accessible', {
+          component: 'Map',
+          action: 'showListDetails',
+          listIds: list_ids,
+          errorCode: 604
+        });
       } else {
         const listData = JSON.parse(request.responseText);
         const { transitionListData } = this.state;
@@ -2450,7 +2517,12 @@ class Map extends Component {
     };
     request.onerror = (err) => {
       store.dispatch(showMapLoader(false));
-      console.log(`Error: ${err}`);
+      errorLogger.error('Failed to get user list location data for full list', {
+        component: 'Map',
+        action: 'showListDetails',
+        listIds: list_ids,
+        error: err
+      });
     };
     request.open('POST', '/map/getUserListLocationData-map', true);
     request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');

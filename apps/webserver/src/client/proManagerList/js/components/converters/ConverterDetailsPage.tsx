@@ -1,5 +1,6 @@
 import { useEffect, useState, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import {
   Box,
   Chip,
@@ -35,7 +36,11 @@ export default function ConverterDetailsPage() {
       setJobId(idAsNumber);
       fetchConverterInfo(request, idAsNumber);
     } else {
-      console.warn('Invalid or missing ID in URL:', idParam);
+      errorLogger.warn('Invalid or missing ID in URL', {
+        component: 'ConverterDetailsPage',
+        action: 'useEffect',
+        idParam,
+      });
     }
   }, [idAsNumber, request, idParam]);
 

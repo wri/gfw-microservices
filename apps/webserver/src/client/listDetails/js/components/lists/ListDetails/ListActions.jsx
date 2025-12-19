@@ -404,7 +404,7 @@ const ListActions = ({
                 component: 'ListActions',
                 action: 'submitListForAnalysis',
                 error,
-                listId: selectedLists[0]?.id,
+                listId: selectedList?.id,
               });
             })
             .finally(() => {

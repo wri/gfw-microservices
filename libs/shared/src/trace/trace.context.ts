@@ -5,6 +5,8 @@ interface TraceContext {
   traceId: string;
   requestId?: string;
   timestamp?: number;
+  organizationId?: number;
+  userId?: number;
 }
 
 /**
@@ -28,13 +30,17 @@ class TraceContextService {
    * Run a function with a trace context
    * @param traceId The trace ID to use for this context
    * @param fn The function to run within the trace context
+   * @param organizationId Optional organization ID to include in context
+   * @param userId Optional user ID to include in context
    * @returns The result of the function
    */
-  run<T>(traceId: string, fn: () => T): T {
+  run<T>(traceId: string, fn: () => T, organizationId?: number, userId?: number): T {
     const context: TraceContext = {
       traceId,
       requestId: this.generateRequestId(),
       timestamp: Date.now(),
+      ...(organizationId !== undefined && { organizationId }),
+      ...(userId !== undefined && { userId }),
     };
 
     try {
@@ -99,6 +105,32 @@ class TraceContextService {
       return this.als.getStore() || null;
     } catch (error) {
       return null;
+    }
+  }
+
+  /**
+   * Get the current organization ID from the async local storage
+   * @returns The organization ID if available, undefined otherwise
+   */
+  getOrganizationId(): number | undefined {
+    try {
+      const context = this.als.getStore();
+      return context?.organizationId;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  /**
+   * Get the current user ID from the async local storage
+   * @returns The user ID if available, undefined otherwise
+   */
+  getUserId(): number | undefined {
+    try {
+      const context = this.als.getStore();
+      return context?.userId;
+    } catch (error) {
+      return undefined;
     }
   }
 }

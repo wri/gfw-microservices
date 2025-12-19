@@ -38,14 +38,18 @@ export class ConsoleLog extends ConsoleLogger {
     level: LogLevel,
     message: unknown,
     context: string,
-    traceId?: string
+    traceId?: string,
+    organizationId?: number,
+    userId?: number
   ): string {
     if (this.isDevelopment) {
       // Use readable format for development
       const timestamp = this.formatTimestamp();
       const tracePrefix = traceId ? `[traceId:${traceId}] ` : '';
+      const orgPrefix = organizationId !== undefined ? `[orgId:${organizationId}] ` : '';
+      const userPrefix = userId !== undefined ? `[userId:${userId}] ` : '';
       const contextStr = context ? `[${context}] ` : '';
-      return `${timestamp} [${level.toUpperCase()}] ${contextStr}${tracePrefix}${message}`;
+      return `${timestamp} [${level.toUpperCase()}] ${contextStr}${tracePrefix}${orgPrefix}${userPrefix}${message}`;
     } else {
       // Use JSON format for non-development (CloudWatch)
       const logEntry = {
@@ -55,6 +59,8 @@ export class ConsoleLog extends ConsoleLogger {
         message: String(message),
         pid: process.pid,
         ...(traceId && { traceId }),
+        ...(organizationId !== undefined && { organization_id: organizationId }),
+        ...(userId !== undefined && { user_id: userId }),
       };
       return JSON.stringify(logEntry);
     }
@@ -76,12 +82,21 @@ export class ConsoleLog extends ConsoleLogger {
   ) {
     messages.forEach((message) => {
       const traceId = traceContext.getTraceId();
+      const organizationId = traceContext.getOrganizationId();
+      const userId = traceContext.getUserId();
 
       let formattedMessage: string;
 
       if (!this.isDevelopment) {
         // For non-development, use structured logging
-        formattedMessage = this.createStructuredLog(logLevel, message, context, traceId);
+        formattedMessage = this.createStructuredLog(
+          logLevel,
+          message,
+          context,
+          traceId,
+          organizationId,
+          userId
+        );
       } else {
         // For development, use NestJS default but handle colors intelligently
         const pidMessage = this.formatPid(process.pid);
@@ -90,7 +105,9 @@ export class ConsoleLog extends ConsoleLogger {
         const formattedLogLevel = logLevel.toUpperCase().padStart(7, ' ');
 
         const tracePrefix = traceId ? `[traceId:${traceId}] ` : '';
-        const enhancedMessage = `${tracePrefix}${message}`;
+        const orgPrefix = organizationId !== undefined ? `[orgId:${organizationId}] ` : '';
+        const userPrefix = userId !== undefined ? `[userId:${userId}] ` : '';
+        const enhancedMessage = `${tracePrefix}${orgPrefix}${userPrefix}${message}`;
 
         formattedMessage = this.formatMessage(
           logLevel,

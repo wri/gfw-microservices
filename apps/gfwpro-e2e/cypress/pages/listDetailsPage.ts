@@ -220,7 +220,7 @@ class ListDetailsPage {
       .children('[role="gridcell"]')
       .eq(4)
       .trigger('mouseover');
-    this.elements.locationDiagnosticsBtnOnHover().click();
+    this.elements.locationDiagnosticsBtnOnHover().first().click();
   }
 
   clickOnFullListMapBtn() {

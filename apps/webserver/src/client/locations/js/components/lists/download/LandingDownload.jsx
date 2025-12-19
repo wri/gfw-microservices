@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import MenuItem from 'material-ui/MenuItem';
-import ArrowRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
+import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { ChevronRight as ArrowRightIcon, Download as DownloadIcon } from '@mui/icons-material';
 import { locationsPage } from 'common/js/config';
 import downloadRequest from './downloadRequest';
-import DownloadIcon from '@mui/icons-material/Download';
 
 function LandingDownload({
   downloadRequestedFromFolder,
@@ -16,6 +15,8 @@ function LandingDownload({
   setConfirmDialog,
 }) {
   const [menuItems, setMenuItems] = useState([]);
+  const [submenuAnchorEl, setSubmenuAnchorEl] = useState(null);
+  const submenuOpen = Boolean(submenuAnchorEl);
 
   const localHandleDownload = (selectedOption) => {
     const { format, type } = selectedOption;
@@ -45,30 +46,39 @@ function LandingDownload({
 
     if (locations > 0) {
       newMenuItem.push(
-        <MenuItem
-          leftIcon={<DownloadIcon />}
-          primaryText={locationsPage.lists.csv}
-          onClick={() => localHandleDownload({ format: 'csv', type: 'input' })}
-        />
+        <MenuItem key="csv" onClick={() => localHandleDownload({ format: 'csv', type: 'input' })}>
+          <ListItemIcon>
+            <DownloadIcon />
+          </ListItemIcon>
+          <ListItemText>{locationsPage.lists.csv}</ListItemText>
+        </MenuItem>
       );
       newMenuItem.push(
         <MenuItem
-          leftIcon={<DownloadIcon />}
-          primaryText={locationsPage.lists.shapefile}
+          key="shapefile"
           onClick={() => localHandleDownload({ format: 'shapefile', type: 'input' })}
-        />
+        >
+          <ListItemIcon>
+            <DownloadIcon />
+          </ListItemIcon>
+          <ListItemText>{locationsPage.lists.shapefile}</ListItemText>
+        </MenuItem>
       );
     }
 
     if (isLargeList && hasErrorFile && error_file_storage_path !== 'None') {
       newMenuItem.push(
         <MenuItem
-          leftIcon={<DownloadIcon />}
-          primaryText="Download Error File"
+          key="error-file"
+          component="a"
           href={`/locations/downloadErrorFile?fileKey=${error_file_storage_path}`}
           target="_blank"
-          component="a"
-        />
+        >
+          <ListItemIcon>
+            <DownloadIcon />
+          </ListItemIcon>
+          <ListItemText>Download Error File</ListItemText>
+        </MenuItem>
       );
     }
 
@@ -78,11 +88,27 @@ function LandingDownload({
   return (
     <>
       <MenuItem
-        leftIcon={<DownloadIcon />}
-        primaryText={locationsPage.lists.download}
-        menuItems={menuItems}
-        rightIcon={<ArrowRightIcon />}
-      />
+        onClick={(e) => {
+          e.stopPropagation();
+          setSubmenuAnchorEl(submenuOpen ? null : e.currentTarget);
+        }}
+      >
+        <ListItemIcon>
+          <DownloadIcon />
+        </ListItemIcon>
+        <ListItemText>{locationsPage.lists.download}</ListItemText>
+        <ArrowRightIcon fontSize="small" />
+      </MenuItem>
+      <Menu
+        anchorEl={submenuAnchorEl}
+        open={submenuOpen}
+        onClose={() => setSubmenuAnchorEl(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        sx={{ svg: { fontSize: '1.25rem', color: 'text.primary' } }}
+      >
+        {menuItems}
+      </Menu>
     </>
   );
 }

@@ -67,7 +67,7 @@ export default class Folder extends Component {
               onClose={this.closeMenu}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <MenuList>
+              <MenuList sx={{ '.MuiListItemIcon-root': { minWidth: '1.25rem' } }}>
                 <MenuItem
                   onClick={() => {
                     this.setState({ isRenameDialogOpen: true });

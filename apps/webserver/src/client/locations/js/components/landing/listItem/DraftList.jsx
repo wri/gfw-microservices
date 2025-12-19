@@ -1,6 +1,14 @@
 import { useState } from 'react';
-import { Chip } from '@mui/material';
-import { Popover, Divider, Menu, MenuItem } from 'material-ui';
+import {
+  Chip,
+  Popover,
+  Divider,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import {
   Public as PublicIcon,
   Groups as GroupsIcon,
@@ -152,7 +160,7 @@ function DraftList({
           )}
         </div>
 
-        <div className="locations-list__menu-container">
+        <div className="locations-list__menu-container" onClick={(e) => e.stopPropagation()}>
           <IconButton
             icon={<IconMenuDots />}
             title={nav.more}
@@ -169,25 +177,35 @@ function DraftList({
             anchorEl={menuAnchorEl}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             open={isMenuOpen}
-            onRequestClose={() => setIsMenuOpen(false)}
-            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+            onClose={() => setIsMenuOpen(false)}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <Menu className="context-menu">
+            <MenuList
+              className="context-menu"
+              sx={{
+                '.MuiMenuItem-root': { gap: 1 },
+                svg: { fontSize: '1.25rem', color: 'text.primary' },
+              }}
+            >
               {isDiagnosticAvailable && (
                 <MenuItem
-                  primaryText={locationsPage.lists.diagnostic}
-                  leftIcon={<QueryStatsIcon />}
                   onClick={() => {
                     window.location = `/diagnostics?listId=${id}`;
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <QueryStatsIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.diagnostic}</ListItemText>
+                </MenuItem>
               )}
               {showMapOpt && (
-                <MenuItem
-                  leftIcon={<PlaceIcon />}
-                  primaryText={locationsPage.lists.map}
-                  onClick={() => viewMap()}
-                />
+                <MenuItem onClick={() => viewMap()}>
+                  <ListItemIcon>
+                    <PlaceIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.map}</ListItemText>
+                </MenuItem>
               )}
               {showDownloadOpt && (
                 <LandingDownload
@@ -202,61 +220,74 @@ function DraftList({
                 />
               )}
               {userIsAdmin && (
-                <MenuItem
-                  primaryText={locationsPage.lists.share}
-                  leftIcon={<ShareIcon />}
-                  onClick={(e) => shareList(e, list)}
-                />
+                <MenuItem onClick={(e) => shareList(e, list)}>
+                  <ListItemIcon>
+                    <ShareIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.share}</ListItemText>
+                </MenuItem>
               )}
 
               {showRerunOpt && (
                 <MenuItem
-                  leftIcon={<KeyboardArrowUpIcon />}
-                  primaryText="Submit Analysis"
                   onClick={() => {
                     setIsMenuOpen(false);
                     setShowSubmitModal(true);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <KeyboardArrowUpIcon />
+                  </ListItemIcon>
+                  <ListItemText>Submit Analysis</ListItemText>
+                </MenuItem>
               )}
               <Divider />
 
               {showRerunOpt && !hasErrorFile && (
                 <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
                   onClick={() => {
                     setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
+                </MenuItem>
               )}
 
               <MenuItem
-                primaryText={
-                  isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
-                }
-                leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
                 }}
-              />
+              >
+                <ListItemIcon>
+                  <FolderIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+                </ListItemText>
+              </MenuItem>
               {showDelete && (
                 <>
                   <Divider />
                   <MenuItem
-                    primaryText={locationsPage.lists.delete}
-                    className="MenuItem--danger"
-                    leftIcon={<DeleteIcon />}
                     onClick={() => {
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                  />
+                    sx={{ '& .MuiSvgIcon-root, p': { color: 'error.main' } }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon />
+                    </ListItemIcon>
+                    <Typography variant="body1">{locationsPage.lists.delete}</Typography>
+                  </MenuItem>
                 </>
               )}
-            </Menu>
+            </MenuList>
           </Popover>
           {showSubmitModal && (
             <CustomDialog

@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { Chip } from '@mui/material';
-import { Divider, Menu, MenuItem, Popover } from 'material-ui';
+import {
+  Chip,
+  Divider,
+  MenuList,
+  MenuItem,
+  Popover,
+  ListItemIcon,
+  Typography,
+} from '@mui/material';
 import {
   Public as PublicIcon,
   Groups as GroupsIcon,
@@ -159,7 +166,7 @@ function ActiveList({
           )}
         </div>
 
-        <div className="locations-list__menu-container">
+        <div className="locations-list__menu-container" onClick={(e) => e.stopPropagation()}>
           <IconButton
             icon={<IconMenuDots />}
             title={nav.more}
@@ -176,26 +183,36 @@ function ActiveList({
             anchorEl={menuAnchorEl}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             open={isMenuOpen}
-            onRequestClose={() => setIsMenuOpen(false)}
-            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+            onClose={() => setIsMenuOpen(false)}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <Menu className="context-menu">
+            <MenuList
+              className="context-menu"
+              sx={{
+                '.MuiMenuItem-root': { gap: 1 },
+                svg: { fontSize: '1.25rem', color: 'text.primary' },
+              }}
+            >
               {showDiagnosticOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.diagnostic}
-                  leftIcon={<QueryStatsIcon />}
                   onClick={() => {
                     const diagnosticsType = getActiveAnalysisType(listAnalysesStatus);
                     window.location = `/diagnostics?listId=${id}&type=${diagnosticsType}`;
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <QueryStatsIcon />
+                  </ListItemIcon>
+                  <Typography variant="body1">{locationsPage.lists.diagnostic}</Typography>
+                </MenuItem>
               )}
               {showMapOpt && (
-                <MenuItem
-                  primaryText={locationsPage.lists.map}
-                  leftIcon={<PlaceIcon />}
-                  onClick={viewMap}
-                />
+                <MenuItem onClick={viewMap}>
+                  <ListItemIcon>
+                    <PlaceIcon />
+                  </ListItemIcon>
+                  <Typography variant="body1">{locationsPage.lists.map}</Typography>
+                </MenuItem>
               )}
               {showDownloadOpt && (
                 <LandingDownload
@@ -210,58 +227,75 @@ function ActiveList({
                 />
               )}
               {userIsAdmin && (
-                <MenuItem
-                  primaryText={locationsPage.lists.share}
-                  leftIcon={<ShareIcon />}
-                  onClick={(e) => shareList(e, list)}
-                />
+                <MenuItem onClick={(e) => shareList(e, list)}>
+                  <ListItemIcon>
+                    <ShareIcon />
+                  </ListItemIcon>
+                  <Typography variant="body1">{locationsPage.lists.share}</Typography>
+                </MenuItem>
               )}
               {showRerunOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.update}
-                  leftIcon={<RefreshIcon />}
                   onClick={(e) => {
                     setIsMenuOpen(false);
                     handleRerunDialogState(e);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <RefreshIcon />
+                  </ListItemIcon>
+                  <Typography variant="body1">{locationsPage.lists.update}</Typography>
+                </MenuItem>
               )}
 
               <Divider />
               <MenuItem
-                primaryText={folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
                 }}
-              />
+              >
+                <ListItemIcon>
+                  <FolderIcon />
+                </ListItemIcon>
+                <Typography variant="body1">
+                  {folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+                </Typography>
+              </MenuItem>
 
               {showDiagnosticOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
                   onClick={() => {
                     setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <Typography variant="body1">
+                    {locationsPage.lists.changeTypeOfAnalysis}
+                  </Typography>
+                </MenuItem>
               )}
               {showDelete && (
                 <>
                   <Divider />
                   <MenuItem
-                    primaryText={locationsPage.lists.delete}
-                    leftIcon={<DeleteIcon />}
-                    className="MenuItem--danger"
                     onClick={() => {
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                  />
+                    sx={{ '& .MuiSvgIcon-root, p': { color: 'error.main' } }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon />
+                    </ListItemIcon>
+                    <Typography variant="body1">{locationsPage.lists.delete}</Typography>
+                  </MenuItem>
                 </>
               )}
-            </Menu>
+            </MenuList>
           </Popover>
         </div>
       </li>

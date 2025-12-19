@@ -1,8 +1,7 @@
 import { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import fetch from '../../../../common/js/utils/fetch';
-import Button from '../../../../common/js/components/Button';
-import LinkButton from '../../../../common/js/components/LinkButton';
+import { PillButton } from '../../../../components';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 
@@ -31,42 +30,44 @@ export default class RenameFolderDialog extends Component {
     return (
       <Dialog
         open={isOpen}
-        modal={true}
-        bodyClassName="dialog__body"
-        contentClassName="dialog__content"
-        onRequestClose={() => onCancel()}
-        actions={
-          <div className="dialog__footer">
-            <Button
-              className="dialog__primary-action"
-              label={strings.confirm}
-              disabled={confirmDisabled}
-              onClick={() => {
-                gtag('event', 'User Renamed Folder on Landing Page', {
-                  event_category: 'Landing Page Click',
-                });
-                this._renameFolder(folder.id, folderName);
-              }}
-              variant="primary"
-            />
-            <LinkButton label={strings.cancel} onClick={() => onCancel()} />
-          </div>
-        }
+        onClose={() => onCancel()}
+        classes={{
+          paper: 'dialog__content',
+        }}
       >
-        <div className="dialog__header">
+        <DialogTitle className="dialog__header">
           <h1 className="dialog__title">{strings.renameFolderTitle}</h1>
           <IconButton icon={<IconTimes />} onClick={() => onCancel()} size="large" />
-        </div>
-        <div className="dialog__prompt">{strings.renameFolderPrompt}</div>
-        <div className="RenameFolder__dialog-options">
-          <div className="RenameFolder__dialog-options__option">
-            <input
-              value={folderName}
-              onChange={(evt) => this.setState({ folderName: evt.target.value })}
-            />
+        </DialogTitle>
+        <DialogContent className="dialog__body">
+          <div className="dialog__prompt">{strings.renameFolderPrompt}</div>
+          <div className="RenameFolder__dialog-options">
+            <div className="RenameFolder__dialog-options__option">
+              <input
+                value={folderName}
+                onChange={(evt) => this.setState({ folderName: evt.target.value })}
+              />
+            </div>
           </div>
-        </div>
-        <div className="RenameFolder__dialog-error">{error}</div>
+          <div className="RenameFolder__dialog-error">{error}</div>
+        </DialogContent>
+        <DialogActions className="dialog__footer" sx={{ display: 'flex', justifyContent: 'start' }}>
+          <PillButton
+            variant="contained"
+            disabled={confirmDisabled}
+            onClick={() => {
+              gtag('event', 'User Renamed Folder on Landing Page', {
+                event_category: 'Landing Page Click',
+              });
+              this._renameFolder(folder.id, folderName);
+            }}
+          >
+            {strings.confirm}
+          </PillButton>
+          <PillButton variant="text" color="info" label={strings.cancel} onClick={onCancel}>
+            {strings.cancel}
+          </PillButton>
+        </DialogActions>
       </Dialog>
     );
   }

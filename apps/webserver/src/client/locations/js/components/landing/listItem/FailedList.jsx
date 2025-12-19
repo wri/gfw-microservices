@@ -6,7 +6,15 @@ import {
   Settings as SettingsIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { Dialog, Popover, Divider, Menu, MenuItem } from 'material-ui';
+import {
+  Dialog,
+  Popover,
+  Divider,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  Typography,
+} from '@mui/material';
 
 import DownloadLargeListFile from '../DownloadLargeListFile';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
@@ -98,7 +106,7 @@ function FailedList({
           </span>
         </div>
 
-        <div className="locations-list__menu-container">
+        <div className="locations-list__menu-container" onClick={(e) => e.stopPropagation()}>
           <IconButton
             icon={<IconMenuDots />}
             title={nav.more}
@@ -115,45 +123,61 @@ function FailedList({
             anchorEl={menuAnchorEl}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             open={isMenuOpen}
-            onRequestClose={() => setIsMenuOpen(false)}
-            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+            onClose={() => setIsMenuOpen(false)}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <Menu className="context-menu">
+            <MenuList
+              className="context-menu"
+              sx={{
+                '.MuiMenuItem-root': { gap: 1 },
+                svg: { fontSize: '1.25rem', color: 'text.primary' },
+              }}
+            >
               {showRerun && (
                 <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
                   onClick={() => {
                     setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <Typography variant="body1">
+                    {locationsPage.lists.changeTypeOfAnalysis}
+                  </Typography>
+                </MenuItem>
               )}
               <MenuItem
-                primaryText={
-                  isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
-                }
-                leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
                 }}
-              />
+              >
+                <ListItemIcon>
+                  <FolderIcon />
+                </ListItemIcon>
+                <Typography variant="body1">
+                  {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+                </Typography>
+              </MenuItem>
               {showDelete && (
                 <>
                   <Divider />
                   <MenuItem
-                    primaryText={locationsPage.lists.delete}
-                    className="MenuItem--danger"
-                    leftIcon={<DeleteIcon />}
                     onClick={() => {
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                  />
+                  >
+                    <ListItemIcon sx={{ '& .MuiSvgIcon-root': { color: 'error.main' } }}>
+                      <DeleteIcon />
+                    </ListItemIcon>
+                    <Typography variant="body1">{locationsPage.lists.delete}</Typography>
+                  </MenuItem>
                 </>
               )}
-            </Menu>
+            </MenuList>
           </Popover>
         </div>
       </li>

@@ -10,6 +10,7 @@ import { userAccessLevel } from '../../../../../common/js/config';
 import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils/lists.utils';
 import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
 import downloadRequest from '../../../../../locations/js/components/lists/download/downloadRequest';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 interface ListDownloadMenuProps {
   combinedColumns: any[];
@@ -83,7 +84,12 @@ function ListDownloadMenu({
       });
       isLoading(false);
     } catch (err) {
-      console.warn('Error during download request:', err);
+      errorLogger.warn('Error during download request', {
+        component: 'ListDownloadMenu',
+        action: 'handleDownload',
+        error: err,
+        format,
+      });
     }
 
     // Analytics tracking

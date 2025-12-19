@@ -56,7 +56,7 @@ module.exports = (app, limiter) => {
   app.get('/getUserLists', controller.getUserLists);
 
   app.post('/locations/rerunExistingList', async (req, res) => {
-    console.log('POST /locations/rerunExistingList');
+    logger.info('POST /locations/rerunExistingList');
 
     try {
       // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
@@ -64,14 +64,14 @@ module.exports = (app, limiter) => {
       await ListManager.rerunExistingList(req);
       res.send({ redirect: '/locations' });
     } catch (err) {
-      console.log('Error sending list for rerun');
+      logger.error('Error sending list for rerun', err);
       ListManager.setListUnlocked(req, req.body.list_id);
       res.send(err);
     }
   });
 
   app.post('/locations/lockList', (req, res) => {
-    console.log('POST /locations/lockList');
+    logger.info('POST /locations/lockList');
     const { list_id } = req.body;
     ListManager.getListLockStatus(req, list_id)
       .then((record) => {
@@ -86,7 +86,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/unlockList', (req, res) => {
-    console.log('POST /locations/unlockList');
+    logger.info('POST /locations/unlockList');
 
     const { list_id } = req.body;
     ListManager.getListLockStatus(req, list_id)
@@ -106,7 +106,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/deleteLocations', (req, res) => {
-    console.log('POST /locations/deleteLocations');
+    logger.info('POST /locations/deleteLocations');
     const { list_id, location_ids, gfw_list_id } = req.body;
 
     ListManager.deleteLocations(req, list_id, location_ids, gfw_list_id)
@@ -120,14 +120,14 @@ module.exports = (app, limiter) => {
         res.send(result);
       })
       .catch((err) => {
-        console.log('Error /locations/deleteLocations', err);
+        logger.error('Error /locations/deleteLocations', err);
         ListManager.setListUnlocked(req, list_id);
         res.send(err);
       });
   });
 
   app.post('/locations/deleteList', (req, res) => {
-    console.log('POST /locations/deleteList');
+    logger.info('POST /locations/deleteList');
     const { list_id } = req.body;
 
     ListManager.deleteList(req, list_id)
@@ -136,14 +136,14 @@ module.exports = (app, limiter) => {
         res.send('ListDeleted');
       })
       .catch((err) => {
-        console.log('Error /locations/deleteList', err);
+        logger.error('Error /locations/deleteList', err);
         ListManager.setListUnlocked(req, list_id);
         res.send(err);
       });
   });
 
   app.post('/locations/copyLocations', (req, res) => {
-    console.log('POST /locations/copyLocations');
+    logger.info('POST /locations/copyLocations');
     const { src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id } = req.body;
 
     ListManager.copyLocations(
@@ -160,14 +160,14 @@ module.exports = (app, limiter) => {
         res.send('LocationsCopied');
       })
       .catch((err) => {
-        console.log('Error /locations/copyLocations', err);
+        logger.error('Error /locations/copyLocations', err);
         ListManager.setListUnlocked(req, src_list_id);
         res.send(err);
       });
   });
 
   app.get('/locations/copyLocationsByQuery', (req, res) => {
-    console.log('POST /locations/copyLocationsByQuery');
+    logger.info('GET /locations/copyLocationsByQuery');
     // const { src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id } = req.body;
     const { src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id } = req.query;
 
@@ -185,14 +185,14 @@ module.exports = (app, limiter) => {
         res.send('LocationsCopied');
       })
       .catch((err) => {
-        console.log('Error /locations/copyLocations', err);
+        logger.error('Error /locations/copyLocations', err);
         ListManager.setListUnlocked(req, src_list_id);
         res.send(err);
       });
   });
 
   app.post('/locations/getUserListLocationSpatialData', (req, res) => {
-    console.log('POST /locations/getUserListLocationSpatialData');
+    logger.info('POST /locations/getUserListLocationSpatialData');
     const { list_ids, location_id, rowsRequested } = req.body;
     const parsed_ids = list_ids.map((id) => parseInt(id, 10));
     const promises = parsed_ids.map((id) =>
@@ -203,7 +203,7 @@ module.exports = (app, limiter) => {
         res.send(listData);
       })
       .catch((error) => {
-        console.log('Error /locations/getUserListLocationSpatialData', error);
+        logger.error('Error /locations/getUserListLocationSpatialData', error);
         res.send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',
@@ -212,7 +212,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/getSimplifiedUserListLocationSpatialData', (req, res) => {
-    console.log('POST /locations/getSimplifiedUserListLocationSpatialData');
+    logger.info('POST /locations/getSimplifiedUserListLocationSpatialData');
     const { list_ids } = req.body;
     const parsed_ids = list_ids.map((id) => parseInt(id, 10));
     const promises = parsed_ids.map((id) => ListManager.getSimplifiedListLocations(req, id));
@@ -221,7 +221,7 @@ module.exports = (app, limiter) => {
         res.send(listData);
       })
       .catch((error) => {
-        console.log('Error /locations/getSimplifiedUserListLocationSpatialData', error);
+        logger.error('Error /locations/getSimplifiedUserListLocationSpatialData', error);
         res.send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',
@@ -230,7 +230,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/getGFWListLocationSpatialData', (req, res) => {
-    console.log('POST /locations/getGFWListLocationSpatialData');
+    logger.info('POST /locations/getGFWListLocationSpatialData');
     const { list_ids } = req.body;
     const parsed_ids = list_ids.split(',').map((id) => parseInt(id, 10));
     const promises = parsed_ids.map((id) => GFWListManager.getGFWListLocations(req, id));
@@ -239,7 +239,7 @@ module.exports = (app, limiter) => {
         res.send(listData);
       })
       .catch((error) => {
-        console.log('Error /locations/getGFWListLocationSpatialData', error);
+        logger.error('Error /locations/getGFWListLocationSpatialData', error);
         res.send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',
@@ -249,7 +249,7 @@ module.exports = (app, limiter) => {
 
   // Deprecated
   app.post('/locations/getLists', async (req, res) => {
-    console.log('POST /locations/getLists');
+    logger.info('POST /locations/getLists');
     const { list_ids } = req.body;
     const list_id = list_ids[0];
 
@@ -268,13 +268,13 @@ module.exports = (app, limiter) => {
         location_analyses: [locationAttributeList, locationAnalysisArray],
       });
     } catch (err) {
-      console.log('Failed', err);
+      logger.error('Error /locations/getLists', err);
       res.send(false);
     }
   });
 
   app.get('/locations/getListsPaginated', async (req, res) => {
-    console.log('GET /locations/getListsPaginated');
+    logger.info('GET /locations/getListsPaginated');
     const {
       listID,
       page,
@@ -453,13 +453,13 @@ module.exports = (app, limiter) => {
         });
       }
     } catch (err) {
-      console.log('Failed', err);
+      logger.error('Error /locations/getListsPaginated', err);
       res.status(err.status || 500).send({ msg: err.message });
     }
   });
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
-    console.log('POST /locations/getGFWListLocationData');
+    logger.info('POST /locations/getGFWListLocationData');
     const { list_id, pageNum, pageSize, filters, filterString, tableSortedBy, tableSortedDesc } =
       req.body;
     const listAnalyses = [];
@@ -517,12 +517,12 @@ module.exports = (app, limiter) => {
             });
           })
           .catch((err) => {
-            console.log('Error /locations/getGFWListLocationData', err);
+            logger.error('Error /locations/getGFWListLocationData', err);
             res.status(err.status || 500).send(err.message);
           });
       })
       .catch((err) => {
-        console.log('Error /locations/getGFWListLocationData', err);
+        logger.error('Error /locations/getGFWListLocationData', err);
         res.status(err.status || 500).send(err.message);
       });
   });
@@ -557,32 +557,32 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/getAdministrativeAreasInfo', (req, res) => {
-    console.log('POST /locations/getAdministrativeAreasInfo');
+    logger.info('POST /locations/getAdministrativeAreasInfo');
     GFWListManager.getAdministrativeAreasInfo(req)
       .then((recordset) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(recordset));
       })
       .catch((err) => {
-        console.log('Error /locations/getAdministrativeAreasInfo', err);
+        logger.error('Error /locations/getAdministrativeAreasInfo', err);
         res.send(err);
       });
   });
 
   app.post('/locations/getProtectedAreasInfo', (req, res) => {
-    console.log('POST /getProtectedAreasInfo');
+    logger.info('POST /locations/getProtectedAreasInfo');
     GFWListManager.getProtectedAreasInfo(req)
       .then((recordset) => {
         res.send(recordset);
       })
       .catch((err) => {
-        console.log('Error /locations/getProtectedAreasInfo', err);
+        logger.error('Error /locations/getProtectedAreasInfo', err);
         res.send(err);
       });
   });
 
   app.post('/locations/getAdministrativeAreasData', async (req, res) => {
-    console.log('POST /getAdministrativeAreasData');
+    logger.info('POST /locations/getAdministrativeAreasData');
     const { selectedCountry, selectedStates, selectedSubStates, hasError } = req.body.filters;
     const filters = {
       selectedCountry,
@@ -646,13 +646,13 @@ module.exports = (app, limiter) => {
         numberOfResults: count,
       });
     } catch (error) {
-      console.log('Error /getAdministrativeAreasData', error);
+      logger.error('Error /locations/getAdministrativeAreasData', error);
       res.status(error.status || 500).send(error.message);
     }
   });
 
   app.post('/locations/getProtectedAreasData', (req, res) => {
-    console.log('POST /getProtectedAreasData');
+    logger.info('POST /locations/getProtectedAreasData');
     const {
       selectedCountry,
       selectedState,
@@ -712,12 +712,12 @@ module.exports = (app, limiter) => {
               });
             })
             .catch((err) => {
-              console.log('Error /getProtectedAreasData', err);
+              logger.error('Error /locations/getProtectedAreasData', err);
               res.status(err.status || 500).send(err.message);
             });
         })
         .catch((err) => {
-          console.log('Error /getProtectedAreasData', err);
+          logger.error('Error /locations/getProtectedAreasData', err);
           res.status(err.status || 500).send(err.message);
         });
     } else {
@@ -730,14 +730,14 @@ module.exports = (app, limiter) => {
           });
         })
         .catch((err) => {
-          console.log('Error /getProtectedAreasData', err);
+          logger.error('Error /locations/getProtectedAreasData', err);
           res.send(err);
         });
     }
   });
 
   app.post('/locations/getGFWListLocationsGlobalId', (req, res) => {
-    console.log('POST /locations/getGFWListLocationsGlobalId');
+    logger.info('POST /locations/getGFWListLocationsGlobalId');
     const { list_id, global_ids } = req.body;
     GFWListManager.getGFWListLocationsGlobalId(req, list_id, JSON.parse(global_ids))
       .then((result) => {
@@ -748,13 +748,13 @@ module.exports = (app, limiter) => {
         });
       })
       .catch((e) => {
-        console.log('Error /locations/getGFWListLocationsGlobalId', e);
+        logger.error('Error /locations/getGFWListLocationsGlobalId', e);
         res.send(e);
       });
   });
 
   app.get('/locations/downloadShape', (req, res) => {
-    console.log('GET: /locations/downloadShape');
+    logger.info('GET /locations/downloadShape');
     const { list_id, list_name, locations_ids, isGFWList, includedColumns } = req.query;
     const isGFWListBoolean = JSON.parse(isGFWList); // Convert true/false string to Boolean value
 
@@ -771,7 +771,7 @@ module.exports = (app, limiter) => {
 
     // on stream closed we can end the request
     archive.on('end', () => {
-      console.log('Downloading shapefile size %d bytes', archive.pointer());
+      logger.info(`Downloading shapefile size ${archive.pointer()} bytes`);
     });
 
     // set the archive name
@@ -794,7 +794,7 @@ module.exports = (app, limiter) => {
           );
         })
         .catch((e) => {
-          console.log(e);
+          logger.error('Error downloading GFW list shapefile', e);
           res.send(false);
         });
     } else {
@@ -811,7 +811,7 @@ module.exports = (app, limiter) => {
           );
         })
         .catch((e) => {
-          console.log(e);
+          logger.error('Error downloading user list shapefile', e);
           res.send(false);
         });
     }
@@ -826,7 +826,7 @@ module.exports = (app, limiter) => {
         res.send(response);
       })
       .catch((err) => {
-        console.log(err);
+        logger.error('Error /locations/shareList/getAllUsers', err);
         res.send(err);
       });
   });
@@ -847,7 +847,7 @@ module.exports = (app, limiter) => {
         res.send({ message: 'User Added to internal share table.' });
       })
       .catch((err) => {
-        console.log(err);
+        logger.error('Error /locations/shareList/addUser', err);
         res.send(err);
       });
   });
@@ -868,7 +868,7 @@ module.exports = (app, limiter) => {
         res.send({ message: 'User Removed from internal share table.' });
       })
       .catch((err) => {
-        console.log(err);
+        logger.error('Error /locations/shareList/removeUser', err);
         res.send(err);
       });
   });
@@ -890,7 +890,7 @@ module.exports = (app, limiter) => {
         res.send({ message: 'Users removed from internal shared table.' });
       })
       .catch((err) => {
-        console.log(err);
+        logger.error('Error /locations/shareList/removeAllUsersFromSharedList', err);
         res.send(err);
       });
   });

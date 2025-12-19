@@ -1,5 +1,6 @@
 // External
 import { useEffect, useState } from 'react';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 // Styles
 import '../../../css/proManagerList.scss';
@@ -37,7 +38,11 @@ function AccountsListSection({ isLoading, setIsLoading }) {
         const data = await res.json();
         setPromanagerData(data);
       } catch (error) {
-        console.error('❌ Failed to fetch accounts:', error);
+        errorLogger.apiError(error, {
+          endpoint: '/pro-manager-list/accounts',
+          method: 'GET',
+          component: 'AccountsListSection',
+        });
       } finally {
         setIsLoading(false);
       }

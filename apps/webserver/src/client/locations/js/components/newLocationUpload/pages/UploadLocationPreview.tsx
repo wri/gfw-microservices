@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, ChangeEvent, useMemo } from 'react';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import {
   Box,
   Card,
@@ -60,7 +61,11 @@ export function UploadLocationPreview() {
       const uploadedData = await uploadFileToS3(selectedFile);
       addFile(uploadedData);
     } catch (err) {
-      console.error('❌ Upload error:', err);
+      errorLogger.error(err, {
+        component: 'UploadLocationPreview',
+        action: 'handleFileUpload',
+        fileName: selectedFile?.name,
+      });
       setApiRequestError({ errors: [''] });
     } finally {
       setIsLoadingFileUpload(false);

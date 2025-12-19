@@ -15,6 +15,7 @@ import {
   Add,
 } from '@mui/icons-material/';
 import redirectToMap from '../../../../../common/js/utils/redirect';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 import ListDownloadMenu from '../download/ListDownloadMenu';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -399,7 +400,12 @@ const ListActions = ({
               setIsListSubmittedForAnalysis(true);
             })
             .catch((error) => {
-              console.log(error);
+              errorLogger.error('Error submitting list for analysis', {
+                component: 'ListActions',
+                action: 'submitListForAnalysis',
+                error,
+                listId: selectedLists[0]?.id,
+              });
             })
             .finally(() => {
               setDraftSubmitDialogOpen(false);

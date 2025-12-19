@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 import Page from '../../../common/js/components/Page';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
@@ -24,6 +25,8 @@ const pageOptions = {
     logout: true,
   },
 };
+
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 class Locations extends Component {
   unloadHistory = undefined;
@@ -123,7 +126,12 @@ class Locations extends Component {
       return;
     }
 
-    console.warn('Insufficient data to process getGeomFromMap');
+    errorLogger.warn('Insufficient data to process getGeomFromMap', {
+      component: 'Locations',
+      hasMapData: !!mapData,
+      hasGfwData: !!gfwData,
+      hasDrawData: !!drawData,
+    });
   };
 
   handleMapData = (isAddingLocationFromMap) => {
@@ -150,7 +158,11 @@ class Locations extends Component {
         this.setState({ drawnGeom: finalMapData, isLoading: false });
         history.replace('/upload-location/by-polygon');
       } else {
-        console.warn('Failed to find list to add to');
+        errorLogger.warn('Failed to find list to add to', {
+          component: 'Locations',
+          listID: mapData.listID,
+          userListsCount: userLists?.length,
+        });
       }
     }
   };
@@ -172,7 +184,11 @@ class Locations extends Component {
       if (gfwList) {
         this.fetchGFWListData(gfwList, gfwInfoFromMap);
       } else {
-        console.warn('gfwList not found');
+        errorLogger.warn('gfwList not found', {
+          component: 'Locations',
+          listName,
+          gfwListsCount: gfwLists?.length,
+        });
       }
     }
   };
@@ -189,7 +205,10 @@ class Locations extends Component {
 
       this.props.history.replace('/upload-location/by-polygon');
     } else {
-      console.warn('Did not get draw data to use on add location page');
+      errorLogger.warn('Did not get draw data to use on add location page', {
+        component: 'Locations',
+        locationName,
+      });
       this.setState({ isLoading: false });
     }
   };

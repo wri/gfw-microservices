@@ -10,6 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import axios from 'axios';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import Button from 'common/js/components/Button';
 import GDPRFooter from 'common/js/components/GDPRFooter/index';
 import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
@@ -474,7 +475,11 @@ export default class ListDetails extends Component {
                 window.location.href = '/locations';
               }
             } else {
-              console.warn('Got unrecognized location delete response', response);
+              errorLogger.warn('Got unrecognized location delete response', {
+                component: 'ListDetails',
+                action: 'handleDeleteAllLocations',
+                response,
+              });
               this.setState({
                 dialogOpen: true,
                 dialogTitle: locationsPage.lists.deleteLocationsMessages.error.title,
@@ -489,11 +494,18 @@ export default class ListDetails extends Component {
               deleteListFailed: true,
               isLoading: false,
             });
-            console.log('DeleteList action error', err);
+            errorLogger.error('DeleteList action error', {
+              component: 'ListDetails',
+              action: 'handleDeleteAllLocations',
+              error: err,
+            });
           });
       })
       .catch((err) => {
-        console.error(err);
+        errorLogger.error(err, {
+          component: 'ListDetails',
+          action: 'handleDeleteAllLocations',
+        });
         this.setState({
           dialogOpen: true,
           dialogTitle: locationsPage.lists.deleteLocationsMessages.error.title,
@@ -512,7 +524,12 @@ export default class ListDetails extends Component {
     const { isEveryRowSelected } = this.state;
 
     if (!selectedLists.length || !selectedLocations.length) {
-      console.warn('Attempting to delete locations without selecting any');
+      errorLogger.warn('Attempting to delete locations without selecting any', {
+        component: 'ListDetails',
+        action: 'deleteSelectedLocations',
+        selectedListsCount: selectedLists.length,
+        selectedLocationsCount: selectedLocations.length,
+      });
       return;
     }
 
@@ -561,7 +578,11 @@ export default class ListDetails extends Component {
               isLoading: false,
             });
           } else {
-            console.warn('Got unrecognized location delete response', response);
+            errorLogger.warn('Got unrecognized location delete response', {
+              component: 'ListDetails',
+              action: 'deleteSelectedLocations',
+              response,
+            });
             this.setState({
               dialogOpen: true,
               dialogTitle: locationsPage.lists.deleteLocationsMessages.error.title,
@@ -571,7 +592,10 @@ export default class ListDetails extends Component {
           }
         })
         .catch((err) => {
-          console.error(err);
+          errorLogger.error(err, {
+            component: 'ListDetails',
+            action: 'deleteSelectedLocations',
+          });
           this.setState({
             dialogOpen: true,
             dialogTitle: locationsPage.lists.deleteLocationsMessages.error.title,
@@ -603,7 +627,11 @@ export default class ListDetails extends Component {
   };
 
   handleMoveError = (moveError) => {
-    console.warn('locations move/copy failed with error', moveError);
+    errorLogger.warn('locations move/copy failed with error', {
+      component: 'ListDetails',
+      action: 'handleMoveError',
+      moveError,
+    });
     if (moveError === 'listNotAccessible') {
       this.setState({
         isLoading: false,
@@ -649,7 +677,12 @@ export default class ListDetails extends Component {
     } = this.state;
 
     if (!selectedLists.length || !selectedLocations.length) {
-      console.warn('Attempting to move locations without selecting any');
+      errorLogger.warn('Attempting to move locations without selecting any', {
+        component: 'ListDetails',
+        action: 'moveSelectedLocations',
+        selectedListsCount: selectedLists.length,
+        selectedLocationsCount: selectedLocations.length,
+      });
       return;
     }
 
@@ -732,7 +765,11 @@ export default class ListDetails extends Component {
         const dialog = getCopyMoveDialogContent({ action: selectedMoveOrCopy, selectedLocations });
         this.setState({ ...dialog, dialogOpen: true, refreshPage: true, isLoading: false });
       } catch (error) {
-        console.warn('/locations/cm-large-list', error);
+        errorLogger.error('/locations/cm-large-list error', {
+          component: 'ListDetails',
+          action: 'moveSelectedLocations',
+          error,
+        });
         const dialog = getCopyMoveDialogContent({ type: 'error' });
         this.setState({ ...dialog, dialogOpen: true, refreshPage: true, isLoading: false });
       }
@@ -768,7 +805,11 @@ export default class ListDetails extends Component {
             dialogContent,
           });
         } else {
-          console.warn('Location(s) copy/move completed with unrecognized response', response);
+          errorLogger.warn('Location(s) copy/move completed with unrecognized response', {
+            component: 'ListDetails',
+            action: 'moveSelectedLocations',
+            response,
+          });
           const { title, message } = locationsPage.lists.copyMoveMessages.serverError;
           this.setState({
             dialogOpen: true,
@@ -1188,7 +1229,11 @@ export default class ListDetails extends Component {
         stopLoading();
       })
       .catch((err) => {
-        console.warn('error with grabbing GFW List location data', err);
+        errorLogger.warn('error with grabbing GFW List location data', {
+          component: 'ListDetails',
+          action: 'getGFWLocationData',
+          error: err,
+        });
         this.setState({ isLoading: false });
         store.dispatch(updateListData([]));
         store.dispatch(updateFilteredData([]));
@@ -1254,7 +1299,13 @@ export default class ListDetails extends Component {
         this.processListData(listData);
       })
       .catch((err) => {
-        console.warn('err', err);
+        errorLogger.warn('Error fetching user location data', {
+          component: 'ListDetails',
+          action: 'getUserLocationData',
+          error: err,
+          listId: list_id,
+          page,
+        });
         this.setState({ isLoading: false });
         stopLoading();
         store.dispatch(updateListData([]));
@@ -1294,7 +1345,11 @@ export default class ListDetails extends Component {
         this.processListData(response);
       })
       .catch((err) => {
-        console.warn('err', err);
+        errorLogger.warn('Error fetching filtered location data', {
+          component: 'ListDetails',
+          action: 'getFilteredLocationData',
+          error: err,
+        });
         store.dispatch(updateListData([]));
         store.dispatch(updateFilteredData([]));
       });
@@ -1450,7 +1505,11 @@ export default class ListDetails extends Component {
         });
       })
       .catch((err) => {
-        console.warn('Error when re-running a list', err);
+        errorLogger.warn('Error when re-running a list', {
+          component: 'ListDetails',
+          action: 'rerunAnalysis',
+          error: err,
+        });
         this.setState({
           isLoading: false,
         });
@@ -1506,7 +1565,11 @@ export default class ListDetails extends Component {
         });
       })
       .catch((err) => {
-        console.warn('error with grabbing admin areas info', err);
+        errorLogger.warn('error with grabbing admin areas info', {
+          component: 'ListDetails',
+          action: 'getAdminAreasInfo',
+          error: err,
+        });
         this.setState({
           dialogOpen: true,
           dialogTitle: 'Administrative Areas is not available',
@@ -1535,7 +1598,11 @@ export default class ListDetails extends Component {
         });
       })
       .catch((err) => {
-        console.warn('error with grabbing protected areas info', err);
+        errorLogger.warn('error with grabbing protected areas info', {
+          component: 'ListDetails',
+          action: 'getProtectedAreasInfo',
+          error: err,
+        });
         this.setState({
           dialogOpen: true,
           dialogTitle: 'Protected Areas is not available',
@@ -1566,7 +1633,14 @@ export default class ListDetails extends Component {
       })
       .catch((err) => {
         this.setState({ isLoading: false });
-        console.warn('Error fetching admin areas data', err);
+        errorLogger.warn('Error fetching admin areas data', {
+          component: 'ListDetails',
+          action: 'getAdminAreasData',
+          error: err,
+          filters,
+          id,
+          page,
+        });
       });
   };
 
@@ -1591,7 +1665,14 @@ export default class ListDetails extends Component {
       })
       .catch((err) => {
         this.setState({ isLoading: false });
-        console.warn('Error fetching protected areas data', err);
+        errorLogger.warn('Error fetching protected areas data', {
+          component: 'ListDetails',
+          action: 'getProtectedAreasData',
+          error: err,
+          filters,
+          id,
+          page,
+        });
       });
   };
 
@@ -1645,7 +1726,10 @@ export default class ListDetails extends Component {
         this.getGFWLocationData(selectedLists[0].id);
       }
     } else {
-      console.warn('attempting to load location view without a selected list');
+      errorLogger.warn('attempting to load location view without a selected list', {
+        component: 'ListDetails',
+        action: 'getLocationData',
+      });
     }
   }
 
@@ -1705,7 +1789,12 @@ export default class ListDetails extends Component {
       });
     } catch (error) {
       this.setIsDownloadDialogOpen(false);
-      console.warn('Error downloading diagnostics', error);
+      errorLogger.warn('Error downloading diagnostics', {
+        component: 'ListDetails',
+        action: 'downloadDiagnostics',
+        error,
+        locationId: hoveredLocationId,
+      });
     }
   };
 

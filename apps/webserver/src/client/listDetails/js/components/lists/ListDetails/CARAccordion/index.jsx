@@ -1,6 +1,7 @@
 import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import { ExpandMore, DateRange } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import errorLogger from '../../../../../../common/js/utils/errorLogger';
 
 // STYLES
 const StyledAccordion = styled(Accordion)(({ theme }) => ({
@@ -64,7 +65,11 @@ const CARAccordion = ({ carLastUpdateDate }) => {
       });
       return formattedDate;
     } catch {
-      console.error('Error converting the date: ', carDateString);
+      errorLogger.error('Error converting the date', {
+        component: 'CARAccordion',
+        action: 'formatCarDate',
+        carDateString,
+      });
       return 'N/A';
     }
   };

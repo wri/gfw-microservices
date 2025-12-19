@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import axios from 'axios';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import {
   Box,
   Card,
@@ -142,9 +143,15 @@ export function SummaryAndSubmit() {
             listID: existingListId,
           })
           .catch((error) => {
-            console.error('Error generating tiles:', error);
+            errorLogger.apiError(error, {
+              endpoint: '/vectorTile/deleteTiles',
+              method: 'POST',
+              component: 'SummaryAndSubmit',
+              action: 'deleteTiles',
+              listID: existingListId,
+            });
           });
-        console.log('Tile deletion response:', response);
+        errorLogger.info('Tile deletion response', { response });
       }
 
       history.push('SUBMISSION_SUCCESS');

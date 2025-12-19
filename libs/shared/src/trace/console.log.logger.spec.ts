@@ -1,6 +1,5 @@
 import { ConsoleLog } from './console.log.logger';
 import { traceContext } from './trace.context';
-import { LogLevel } from '@nestjs/common';
 
 describe('ConsoleLog', () => {
   let logger: ConsoleLog;
@@ -29,9 +28,14 @@ describe('ConsoleLog', () => {
       const testOrgId = 123;
       const testUserId = 456;
 
-      traceContext.run(testTraceId, () => {
-        logger.log('Test message', 'TestContext');
-      }, testOrgId, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          logger.log('Test message', 'TestContext');
+        },
+        testOrgId,
+        testUserId
+      );
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const logCall = consoleLogSpy.mock.calls[0][0];
@@ -50,9 +54,13 @@ describe('ConsoleLog', () => {
       const testTraceId = 'test-trace-id-org-only';
       const testOrgId = 789;
 
-      traceContext.run(testTraceId, () => {
-        logger.log('Test message', 'TestContext');
-      }, testOrgId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          logger.log('Test message', 'TestContext');
+        },
+        testOrgId
+      );
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const logCall = consoleLogSpy.mock.calls[0][0];
@@ -69,9 +77,14 @@ describe('ConsoleLog', () => {
       const testTraceId = 'test-trace-id-user-only';
       const testUserId = 101112;
 
-      traceContext.run(testTraceId, () => {
-        logger.log('Test message', 'TestContext');
-      }, undefined, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          logger.log('Test message', 'TestContext');
+        },
+        undefined,
+        testUserId
+      );
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const logCall = consoleLogSpy.mock.calls[0][0];
@@ -108,9 +121,14 @@ describe('ConsoleLog', () => {
       const testOrgId = 2001;
       const testUserId = 2002;
 
-      traceContext.run(testTraceId, () => {
-        logger.log('Test message', 'TestContext');
-      }, testOrgId, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          logger.log('Test message', 'TestContext');
+        },
+        testOrgId,
+        testUserId
+      );
 
       expect(consoleLogSpy).toHaveBeenCalled();
       const logCall = consoleLogSpy.mock.calls[0][0];
@@ -130,17 +148,27 @@ describe('ConsoleLog', () => {
       const originalUserId = 3002;
 
       // Simulate background task scenario
-      await traceContext.run(originalTraceId, async () => {
-        const traceIdForWorker = traceContext.getTraceId();
-        const orgIdForWorker = traceContext.getOrganizationId();
-        const userIdForWorker = traceContext.getUserId();
+      await traceContext.run(
+        originalTraceId,
+        async () => {
+          const traceIdForWorker = traceContext.getTraceId();
+          const orgIdForWorker = traceContext.getOrganizationId();
+          const userIdForWorker = traceContext.getUserId();
 
-        // Simulate worker execution
-        await traceContext.run(traceIdForWorker, async () => {
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          logger.log('Background task log', 'WorkerContext');
-        }, orgIdForWorker, userIdForWorker);
-      }, originalOrgId, originalUserId);
+          // Simulate worker execution
+          await traceContext.run(
+            traceIdForWorker,
+            async () => {
+              await new Promise((resolve) => setTimeout(resolve, 10));
+              logger.log('Background task log', 'WorkerContext');
+            },
+            orgIdForWorker,
+            userIdForWorker
+          );
+        },
+        originalOrgId,
+        originalUserId
+      );
 
       // Wait for async operations
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -162,9 +190,14 @@ describe('ConsoleLog', () => {
       const testOrgId = 4001;
       const testUserId = 4002;
 
-      traceContext.run(testTraceId, () => {
-        logger.error('Error message', 'ErrorContext');
-      }, testOrgId, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          logger.error('Error message', 'ErrorContext');
+        },
+        testOrgId,
+        testUserId
+      );
 
       expect(consoleErrorSpy).toHaveBeenCalled();
       const logCall = consoleErrorSpy.mock.calls[0][0];
@@ -189,14 +222,24 @@ describe('ConsoleLog', () => {
       const userId2 = 5004;
 
       await Promise.all([
-        traceContext.run(traceId1, async () => {
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          logger.log('Message from request 1', 'Context1');
-        }, orgId1, userId1),
-        traceContext.run(traceId2, async () => {
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          logger.log('Message from request 2', 'Context2');
-        }, orgId2, userId2),
+        traceContext.run(
+          traceId1,
+          async () => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            logger.log('Message from request 1', 'Context1');
+          },
+          orgId1,
+          userId1
+        ),
+        traceContext.run(
+          traceId2,
+          async () => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            logger.log('Message from request 2', 'Context2');
+          },
+          orgId2,
+          userId2
+        ),
       ]);
 
       await new Promise((resolve) => setTimeout(resolve, 50));

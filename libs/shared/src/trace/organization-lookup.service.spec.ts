@@ -1,13 +1,13 @@
 import { OrganizationLookupService } from './organization-lookup.service';
 import { SQLUtils } from '@wri-monorepos/sql';
-import { Request } from 'express';
 
 // Mock the SQLUtils module
 jest.mock('@wri-monorepos/sql', () => ({
   SQLUtils: {
     queryDBFirstRow: jest.fn(),
   },
-  getVerifiedUserRouteInfo: 'SELECT UR.user_email, US.user_secret, UR.organization_id, UR.organization_user_id, UR.organization_user_status_id, OG.organization_name, OG.organization_db, OG.organization_status_id, OG.subscription_status_id FROM UserRoutes UR LEFT JOIN UserSecrets US ON UR.user_email = US.user_email LEFT JOIN Organizations OG ON UR.organization_id = OG.id WHERE UR.user_email = @userEmail AND UR.organization_user_status_id <> 3',
+  getVerifiedUserRouteInfo:
+    'SELECT UR.user_email, US.user_secret, UR.organization_id, UR.organization_user_id, UR.organization_user_status_id, OG.organization_name, OG.organization_db, OG.organization_status_id, OG.subscription_status_id FROM UserRoutes UR LEFT JOIN UserSecrets US ON UR.user_email = US.user_email LEFT JOIN Organizations OG ON UR.organization_id = OG.id WHERE UR.user_email = @userEmail AND UR.organization_user_status_id <> 3',
 }));
 
 describe('OrganizationLookupService', () => {
@@ -37,7 +37,9 @@ describe('OrganizationLookupService', () => {
 
       (SQLUtils.queryDBFirstRow as jest.Mock).mockResolvedValue(mockUserRouteInfo);
 
-      const result = await OrganizationLookupService.lookupOrganizationIdByEmail('test@example.com');
+      const result = await OrganizationLookupService.lookupOrganizationIdByEmail(
+        'test@example.com'
+      );
 
       expect(result).toBe(123);
       expect(SQLUtils.queryDBFirstRow).toHaveBeenCalledWith(
@@ -56,7 +58,9 @@ describe('OrganizationLookupService', () => {
       delete process.env.MSSQL_DATABASE;
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
-      const result = await OrganizationLookupService.lookupOrganizationIdByEmail('test@example.com');
+      const result = await OrganizationLookupService.lookupOrganizationIdByEmail(
+        'test@example.com'
+      );
 
       expect(result).toBeUndefined();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
@@ -70,7 +74,9 @@ describe('OrganizationLookupService', () => {
     it('should return undefined when user not found', async () => {
       (SQLUtils.queryDBFirstRow as jest.Mock).mockResolvedValue(undefined);
 
-      const result = await OrganizationLookupService.lookupOrganizationIdByEmail('notfound@example.com');
+      const result = await OrganizationLookupService.lookupOrganizationIdByEmail(
+        'notfound@example.com'
+      );
 
       expect(result).toBeUndefined();
     });
@@ -83,7 +89,9 @@ describe('OrganizationLookupService', () => {
     });
 
     it('should return undefined when email is null', async () => {
-      const result = await OrganizationLookupService.lookupOrganizationIdByEmail(null as unknown as string);
+      const result = await OrganizationLookupService.lookupOrganizationIdByEmail(
+        null as unknown as string
+      );
 
       expect(result).toBeUndefined();
       expect(SQLUtils.queryDBFirstRow).not.toHaveBeenCalled();
@@ -93,7 +101,9 @@ describe('OrganizationLookupService', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
       (SQLUtils.queryDBFirstRow as jest.Mock).mockRejectedValue(new Error('Database error'));
 
-      const result = await OrganizationLookupService.lookupOrganizationIdByEmail('test@example.com');
+      const result = await OrganizationLookupService.lookupOrganizationIdByEmail(
+        'test@example.com'
+      );
 
       expect(result).toBeUndefined();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
@@ -227,7 +237,7 @@ describe('OrganizationLookupService', () => {
       expect(result).toBe(456);
     });
 
-    it('should prefer req.body over req.headers', () => {
+    it('should prefer req.headers over req.body (for inter-service communication)', () => {
       const req = {
         body: {
           user_id: 789,
@@ -239,7 +249,7 @@ describe('OrganizationLookupService', () => {
 
       const result = OrganizationLookupService.extractUserId(req);
 
-      expect(result).toBe(789);
+      expect(result).toBe(456);
     });
 
     it('should return undefined when user_id not found', () => {
@@ -312,7 +322,7 @@ describe('OrganizationLookupService', () => {
       expect(result).toBe(789);
     });
 
-    it('should prefer req.body over req.headers', () => {
+    it('should prefer req.headers over req.body (for inter-service communication)', () => {
       const req = {
         body: {
           organization_id: 123,
@@ -324,7 +334,7 @@ describe('OrganizationLookupService', () => {
 
       const result = OrganizationLookupService.extractOrganizationId(req);
 
-      expect(result).toBe(123);
+      expect(result).toBe(789);
     });
 
     it('should return undefined when organization_id not found', () => {

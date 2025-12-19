@@ -93,7 +93,7 @@ export class OrganizationLookupService {
 
   /**
    * Extract user_id from request object
-   * Checks req.body and req.headers
+   * Checks req.headers first (for inter-service calls), then req.body (for direct client requests)
    * @param req - Express request object
    * @returns User ID if found, undefined otherwise
    */
@@ -104,7 +104,22 @@ export class OrganizationLookupService {
 
     const request = req as Record<string, unknown>;
 
-    // Check req.body first (primary source)
+    // Check req.headers first (for inter-service communication)
+    if (request.headers && typeof request.headers === 'object') {
+      const headers = request.headers as Record<string, unknown>;
+      const userIdHeader = headers['x-user-id'] || headers['user-id'];
+      if (typeof userIdHeader === 'number') {
+        return userIdHeader;
+      }
+      if (typeof userIdHeader === 'string') {
+        const parsed = parseInt(userIdHeader, 10);
+        if (!isNaN(parsed)) {
+          return parsed;
+        }
+      }
+    }
+
+    // Check req.body (for direct client requests)
     if (request.body && typeof request.body === 'object') {
       const body = request.body as Record<string, unknown>;
       if (typeof body.user_id === 'number') {
@@ -128,27 +143,12 @@ export class OrganizationLookupService {
       }
     }
 
-    // Check req.headers (alternative source)
-    if (request.headers && typeof request.headers === 'object') {
-      const headers = request.headers as Record<string, unknown>;
-      const userIdHeader = headers['x-user-id'] || headers['user-id'];
-      if (typeof userIdHeader === 'number') {
-        return userIdHeader;
-      }
-      if (typeof userIdHeader === 'string') {
-        const parsed = parseInt(userIdHeader, 10);
-        if (!isNaN(parsed)) {
-          return parsed;
-        }
-      }
-    }
-
     return undefined;
   }
 
   /**
    * Extract organization_id from request object
-   * Checks req.body and req.headers
+   * Checks req.headers first (for inter-service calls), then req.body (for direct client requests)
    * @param req - Express request object
    * @returns Organization ID if found, undefined otherwise
    */
@@ -159,7 +159,22 @@ export class OrganizationLookupService {
 
     const request = req as Record<string, unknown>;
 
-    // Check req.body first (primary source)
+    // Check req.headers first (for inter-service communication)
+    if (request.headers && typeof request.headers === 'object') {
+      const headers = request.headers as Record<string, unknown>;
+      const orgIdHeader = headers['x-organization-id'] || headers['organization-id'];
+      if (typeof orgIdHeader === 'number') {
+        return orgIdHeader;
+      }
+      if (typeof orgIdHeader === 'string') {
+        const parsed = parseInt(orgIdHeader, 10);
+        if (!isNaN(parsed)) {
+          return parsed;
+        }
+      }
+    }
+
+    // Check req.body (for direct client requests)
     if (request.body && typeof request.body === 'object') {
       const body = request.body as Record<string, unknown>;
       if (typeof body.organization_id === 'number') {
@@ -177,21 +192,6 @@ export class OrganizationLookupService {
       }
       if (typeof body.organizationId === 'string') {
         const parsed = parseInt(body.organizationId, 10);
-        if (!isNaN(parsed)) {
-          return parsed;
-        }
-      }
-    }
-
-    // Check req.headers (alternative source)
-    if (request.headers && typeof request.headers === 'object') {
-      const headers = request.headers as Record<string, unknown>;
-      const orgIdHeader = headers['x-organization-id'] || headers['organization-id'];
-      if (typeof orgIdHeader === 'number') {
-        return orgIdHeader;
-      }
-      if (typeof orgIdHeader === 'string') {
-        const parsed = parseInt(orgIdHeader, 10);
         if (!isNaN(parsed)) {
           return parsed;
         }

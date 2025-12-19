@@ -114,7 +114,6 @@ describe('TraceContextService', () => {
       let innerTraceIdInInner = '';
 
       traceContext.run(outerTraceId, () => {
-
         traceContext.run(innerTraceId, () => {
           outerTraceIdInInner = outerTraceId;
           innerTraceIdInInner = traceContext.getTraceId();
@@ -174,7 +173,7 @@ describe('TraceContextService', () => {
 
     it('should return context info when active', () => {
       const testTraceId = 'test-trace-id-info';
-      let contextInfo: any = null;
+      let contextInfo: ReturnType<typeof traceContext.getContextInfo> = null;
 
       traceContext.run(testTraceId, () => {
         contextInfo = traceContext.getContextInfo();
@@ -256,9 +255,13 @@ describe('TraceContextService', () => {
       const testOrgId = 123;
       let capturedOrgId: number | undefined;
 
-      traceContext.run(testTraceId, () => {
-        capturedOrgId = traceContext.getOrganizationId();
-      }, testOrgId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          capturedOrgId = traceContext.getOrganizationId();
+        },
+        testOrgId
+      );
 
       expect(capturedOrgId).toBe(testOrgId);
     });
@@ -268,9 +271,14 @@ describe('TraceContextService', () => {
       const testUserId = 456;
       let capturedUserId: number | undefined;
 
-      traceContext.run(testTraceId, () => {
-        capturedUserId = traceContext.getUserId();
-      }, undefined, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          capturedUserId = traceContext.getUserId();
+        },
+        undefined,
+        testUserId
+      );
 
       expect(capturedUserId).toBe(testUserId);
     });
@@ -282,10 +290,15 @@ describe('TraceContextService', () => {
       let capturedOrgId: number | undefined;
       let capturedUserId: number | undefined;
 
-      traceContext.run(testTraceId, () => {
-        capturedOrgId = traceContext.getOrganizationId();
-        capturedUserId = traceContext.getUserId();
-      }, testOrgId, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          capturedOrgId = traceContext.getOrganizationId();
+          capturedUserId = traceContext.getUserId();
+        },
+        testOrgId,
+        testUserId
+      );
 
       expect(capturedOrgId).toBe(testOrgId);
       expect(capturedUserId).toBe(testUserId);
@@ -322,11 +335,16 @@ describe('TraceContextService', () => {
       const testTraceId = 'test-trace-id-context-info';
       const testOrgId = 999;
       const testUserId = 888;
-      let contextInfo: any = null;
+      let contextInfo: ReturnType<typeof traceContext.getContextInfo> = null;
 
-      traceContext.run(testTraceId, () => {
-        contextInfo = traceContext.getContextInfo();
-      }, testOrgId, testUserId);
+      traceContext.run(
+        testTraceId,
+        () => {
+          contextInfo = traceContext.getContextInfo();
+        },
+        testOrgId,
+        testUserId
+      );
 
       expect(contextInfo).not.toBeNull();
       expect(contextInfo?.organizationId).toBe(testOrgId);
@@ -348,22 +366,32 @@ describe('TraceContextService', () => {
       }> = [];
 
       await Promise.all([
-        traceContext.run(traceId1, async () => {
-          await new Promise((resolve) => setTimeout(resolve, 20));
-          results.push({
-            traceId: traceContext.getTraceId(),
-            orgId: traceContext.getOrganizationId(),
-            userId: traceContext.getUserId(),
-          });
-        }, orgId1, userId1),
-        traceContext.run(traceId2, async () => {
-          await new Promise((resolve) => setTimeout(resolve, 20));
-          results.push({
-            traceId: traceContext.getTraceId(),
-            orgId: traceContext.getOrganizationId(),
-            userId: traceContext.getUserId(),
-          });
-        }, orgId2, userId2),
+        traceContext.run(
+          traceId1,
+          async () => {
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            results.push({
+              traceId: traceContext.getTraceId(),
+              orgId: traceContext.getOrganizationId(),
+              userId: traceContext.getUserId(),
+            });
+          },
+          orgId1,
+          userId1
+        ),
+        traceContext.run(
+          traceId2,
+          async () => {
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            results.push({
+              traceId: traceContext.getTraceId(),
+              orgId: traceContext.getOrganizationId(),
+              userId: traceContext.getUserId(),
+            });
+          },
+          orgId2,
+          userId2
+        ),
       ]);
 
       expect(results).toHaveLength(2);
@@ -384,27 +412,32 @@ describe('TraceContextService', () => {
       const innerOrgId = 777;
       const innerUserId = 888;
 
-      let outerOrgIdInInner: number | undefined;
-      let outerUserIdInInner: number | undefined;
       let innerOrgIdInInner: number | undefined;
       let innerUserIdInInner: number | undefined;
 
-      traceContext.run(outerTraceId, () => {
-        traceContext.run(innerTraceId, () => {
-          // Inner context should have inner values
-          innerOrgIdInInner = traceContext.getOrganizationId();
-          innerUserIdInInner = traceContext.getUserId();
-          // Capture outer values before inner context
-          outerOrgIdInInner = outerOrgId;
-          outerUserIdInInner = outerUserId;
-        }, innerOrgId, innerUserId);
+      traceContext.run(
+        outerTraceId,
+        () => {
+          traceContext.run(
+            innerTraceId,
+            () => {
+              // Inner context should have inner values
+              innerOrgIdInInner = traceContext.getOrganizationId();
+              innerUserIdInInner = traceContext.getUserId();
+            },
+            innerOrgId,
+            innerUserId
+          );
 
-        // After inner context, should return to outer
-        const outerOrgAfterInner = traceContext.getOrganizationId();
-        const outerUserAfterInner = traceContext.getUserId();
-        expect(outerOrgAfterInner).toBe(outerOrgId);
-        expect(outerUserAfterInner).toBe(outerUserId);
-      }, outerOrgId, outerUserId);
+          // After inner context, should return to outer
+          const outerOrgAfterInner = traceContext.getOrganizationId();
+          const outerUserAfterInner = traceContext.getUserId();
+          expect(outerOrgAfterInner).toBe(outerOrgId);
+          expect(outerUserAfterInner).toBe(outerUserId);
+        },
+        outerOrgId,
+        outerUserId
+      );
 
       expect(innerOrgIdInInner).toBe(innerOrgId);
       expect(innerUserIdInInner).toBe(innerUserId);
@@ -421,21 +454,31 @@ describe('TraceContextService', () => {
       let backgroundTaskTraceId: string;
 
       // Simulate original request context
-      await traceContext.run(originalTraceId, async () => {
-        // Extract context values before queuing
-        const traceIdForWorker = traceContext.getTraceId();
-        const orgIdForWorker = traceContext.getOrganizationId();
-        const userIdForWorker = traceContext.getUserId();
+      await traceContext.run(
+        originalTraceId,
+        async () => {
+          // Extract context values before queuing
+          const traceIdForWorker = traceContext.getTraceId();
+          const orgIdForWorker = traceContext.getOrganizationId();
+          const userIdForWorker = traceContext.getUserId();
 
-        // Simulate background task execution (worker)
-        await traceContext.run(traceIdForWorker, async () => {
-          // Simulate async work in background task
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          backgroundTaskOrgId = traceContext.getOrganizationId();
-          backgroundTaskUserId = traceContext.getUserId();
-          backgroundTaskTraceId = traceContext.getTraceId();
-        }, orgIdForWorker, userIdForWorker);
-      }, originalOrgId, originalUserId);
+          // Simulate background task execution (worker)
+          await traceContext.run(
+            traceIdForWorker,
+            async () => {
+              // Simulate async work in background task
+              await new Promise((resolve) => setTimeout(resolve, 10));
+              backgroundTaskOrgId = traceContext.getOrganizationId();
+              backgroundTaskUserId = traceContext.getUserId();
+              backgroundTaskTraceId = traceContext.getTraceId();
+            },
+            orgIdForWorker,
+            userIdForWorker
+          );
+        },
+        originalOrgId,
+        originalUserId
+      );
 
       // Verify background task preserved organization and user IDs
       expect(backgroundTaskOrgId).toBe(originalOrgId);
@@ -452,26 +495,31 @@ describe('TraceContextService', () => {
         userId: number | undefined;
       }> = [];
 
-      await traceContext.run(testTraceId, async () => {
-        capturedValues.push({
-          orgId: traceContext.getOrganizationId(),
-          userId: traceContext.getUserId(),
-        });
+      await traceContext.run(
+        testTraceId,
+        async () => {
+          capturedValues.push({
+            orgId: traceContext.getOrganizationId(),
+            userId: traceContext.getUserId(),
+          });
 
-        await new Promise((resolve) => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
 
-        capturedValues.push({
-          orgId: traceContext.getOrganizationId(),
-          userId: traceContext.getUserId(),
-        });
+          capturedValues.push({
+            orgId: traceContext.getOrganizationId(),
+            userId: traceContext.getUserId(),
+          });
 
-        await new Promise((resolve) => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
 
-        capturedValues.push({
-          orgId: traceContext.getOrganizationId(),
-          userId: traceContext.getUserId(),
-        });
-      }, testOrgId, testUserId);
+          capturedValues.push({
+            orgId: traceContext.getOrganizationId(),
+            userId: traceContext.getUserId(),
+          });
+        },
+        testOrgId,
+        testUserId
+      );
 
       // All async operations should maintain the same organization and user IDs
       expect(capturedValues).toHaveLength(3);

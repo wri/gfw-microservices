@@ -539,9 +539,14 @@ describe('StartAnalysisService', () => {
       const queuePushSpy = jest.spyOn((service as any).queue, 'push');
 
       // Run within a trace context with organization and user IDs
-      await traceContext.run(testTraceId, async () => {
-        await service.run(request);
-      }, testOrgId, testUserId);
+      await traceContext.run(
+        testTraceId,
+        async () => {
+          await service.run(request);
+        },
+        testOrgId,
+        testUserId
+      );
 
       // Verify that organization ID and user ID were passed to the queue
       expect(queuePushSpy).toHaveBeenCalled();
@@ -582,18 +587,28 @@ describe('StartAnalysisService', () => {
       // Mock the worker to capture organization and user IDs
       const originalPush = (service as any).queue.push;
       (service as any).queue.push = jest.fn((data: any) => {
-        return traceContext.run(data.traceId, async () => {
-          // Simulate async work in worker
-          await new Promise((resolve) => setTimeout(resolve, 10));
-          orgIdInWorker = traceContext.getOrganizationId();
-          userIdInWorker = traceContext.getUserId();
-          return originalPush.call((service as any).queue, data);
-        }, data.organizationId, data.userId);
+        return traceContext.run(
+          data.traceId,
+          async () => {
+            // Simulate async work in worker
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            orgIdInWorker = traceContext.getOrganizationId();
+            userIdInWorker = traceContext.getUserId();
+            return originalPush.call((service as any).queue, data);
+          },
+          data.organizationId,
+          data.userId
+        );
       });
 
-      await traceContext.run(testTraceId, async () => {
-        await service.run(request);
-      }, testOrgId, testUserId);
+      await traceContext.run(
+        testTraceId,
+        async () => {
+          await service.run(request);
+        },
+        testOrgId,
+        testUserId
+      );
 
       // Allow async operations to complete
       await new Promise((resolve) => setTimeout(resolve, 50));

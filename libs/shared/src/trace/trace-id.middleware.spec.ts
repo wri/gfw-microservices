@@ -67,7 +67,9 @@ describe('TraceIdMiddleware', () => {
       (OrganizationLookupService.extractUserEmail as jest.Mock).mockReturnValue(undefined);
       (OrganizationLookupService.extractUserId as jest.Mock).mockReturnValue(undefined);
       (OrganizationLookupService.extractOrganizationId as jest.Mock).mockReturnValue(undefined);
-      (OrganizationLookupService.lookupOrganizationIdByEmail as jest.Mock).mockResolvedValue(undefined);
+      (OrganizationLookupService.lookupOrganizationIdByEmail as jest.Mock).mockResolvedValue(
+        undefined
+      );
     });
 
     it('should extract organizationId and userId from req.body', async () => {
@@ -184,7 +186,9 @@ describe('TraceIdMiddleware', () => {
       // No organization_id in user or session
 
       (OrganizationLookupService.extractUserEmail as jest.Mock).mockReturnValue(testUserEmail);
-      (OrganizationLookupService.lookupOrganizationIdByEmail as jest.Mock).mockResolvedValue(lookedUpOrgId);
+      (OrganizationLookupService.lookupOrganizationIdByEmail as jest.Mock).mockResolvedValue(
+        lookedUpOrgId
+      );
 
       let contextOrgId: number | undefined;
       const testNext = jest.fn(() => {
@@ -194,7 +198,9 @@ describe('TraceIdMiddleware', () => {
       await middleware.use(mockRequest as Request, mockResponse as Response, testNext);
 
       expect(OrganizationLookupService.extractUserEmail).toHaveBeenCalledWith(mockRequest);
-      expect(OrganizationLookupService.lookupOrganizationIdByEmail).toHaveBeenCalledWith(testUserEmail);
+      expect(OrganizationLookupService.lookupOrganizationIdByEmail).toHaveBeenCalledWith(
+        testUserEmail
+      );
       expect(contextOrgId).toBe(lookedUpOrgId);
       expect(testNext).toHaveBeenCalled();
     });

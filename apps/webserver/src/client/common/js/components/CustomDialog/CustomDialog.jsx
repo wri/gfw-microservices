@@ -1,7 +1,7 @@
 import { isValidElement } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
-import { PillButton, Link } from '../../../../components';
+import { PillButton } from '../../../../components';
 import './CustomDialog.scss';
 
 export default function CustomDialog({
@@ -16,6 +16,7 @@ export default function CustomDialog({
       PaperProps={{ className: 'list-diagnostics-dialog dialog-paper' }}
       open={open}
       onClose={closeAction}
+      sx={{ a: { color: 'primary.main', textDecoration: 'underline' } }}
     >
       <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent sx={{ opacity: 1 }}>
@@ -30,11 +31,15 @@ export default function CustomDialog({
           {isValidElement(dialogActionConfirm) ? (
             <>{dialogActionConfirm}</>
           ) : (
-            <PillButton variant="contained" onClick={dialogActionConfirm}>
+            <PillButton variant="contained" size="small" onClick={dialogActionConfirm}>
               OK
             </PillButton>
           )}
-          {closeAction && <Link onClick={closeAction}>Cancel</Link>}
+          {closeAction && (
+            <PillButton variant="text" size="small" color="info" onClick={closeAction}>
+              Cancel
+            </PillButton>
+          )}
         </div>
       </DialogActions>
     </Dialog>

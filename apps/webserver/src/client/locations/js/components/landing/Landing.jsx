@@ -1,22 +1,24 @@
 import { Component } from 'react';
-import { Dialog } from 'material-ui';
+import { withRouter } from 'react-router-dom';
 import {
   Alert,
   AlertTitle,
   Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   IconButton as IconButtonMui,
   Typography,
   Popover,
 } from '@mui/material';
 import { Campaign, Close, Info } from '@mui/icons-material';
-import { withRouter } from 'react-router-dom';
+
 import Banner from '../../../../common/js/components/Banners/Banner';
 import GDPRFooter from '../../../../common/js/components/GDPRFooter';
 import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
 import UsageReachedLimitBanner from '../../../../common/js/components/Banners/UsageReachedLimitBanner';
-import Button from '../../../../common/js/components/Button';
 import { ExternalHelperResource, PillButton } from '../../../../components';
-import LinkButton from '../../../../common/js/components/LinkButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import { locationsPage } from '../../../../common/js/config';
 import IconButton from '../../../../common/js/components/IconButton';
@@ -349,23 +351,30 @@ class Landing extends Component {
         )}
 
         <Dialog
-          paperClassName="dialog-paper"
-          title={dialogTitle}
-          actions={[<Button variant="primary" label="OK" onClick={this.handleDialogClose} />]}
-          modal={false}
+          classes={{ paper: 'dialog-paper' }}
           open={dialogOpen}
-          onRequestClose={this.handleDialogClose}
+          onClose={this.handleDialogClose}
         >
-          <div
-            className="dialog-content-email"
-            dangerouslySetInnerHTML={{ __html: dialogContent }}
-          />
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
+            <div
+              className="dialog-content-email"
+              dangerouslySetInnerHTML={{ __html: dialogContent }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <PillButton variant="contained" onClick={this.handleDialogClose}>
+              OK
+            </PillButton>
+          </DialogActions>
         </Dialog>
 
         <Dialog
-          modal
           open={addLocationDialogOpen}
-          contentStyle={{ width: '60%', maxWidth: '1200px', transform: 'none' }}
+          maxWidth={false}
+          PaperProps={{
+            sx: { width: '60%', maxWidth: '1200px' },
+          }}
         >
           <AddLocationChooser
             onCancel={() => this.setState({ addLocationDialogOpen: false })}
@@ -582,11 +591,15 @@ class Landing extends Component {
                     <p className="no-search-results__message">
                       {locationsPage.landing.noSearchResults}
                     </p>
-                    <LinkButton
-                      className="no-search-results__clear"
-                      label={locationsPage.landing.clearSearch}
+                    <PillButton
+                      variant="contained"
+                      color="info"
+                      size="small"
                       onClick={() => this.setState({ userListFilterText: '' })}
-                    />
+                      sx={{ mx: 'auto', mt: 1 }}
+                    >
+                      {locationsPage.landing.clearSearch}
+                    </PillButton>
                   </div>
                 )}
             </section>

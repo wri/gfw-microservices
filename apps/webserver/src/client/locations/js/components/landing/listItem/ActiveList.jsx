@@ -35,6 +35,7 @@ import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
+import { PillButton } from '../../../../../components';
 
 function ActiveList({
   list,
@@ -156,13 +157,16 @@ function ActiveList({
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           {showRerun && (
-            <Button
+            <PillButton
               className="locations-list__update-button"
               onClick={handleRerunDialogState}
-              label={locationsPage.lists.update}
               size="small"
-              variant="secondary"
-            />
+              variant="contained"
+              color="info"
+              sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
+            >
+              {locationsPage.lists.update}
+            </PillButton>
           )}
         </div>
 

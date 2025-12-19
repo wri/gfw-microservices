@@ -40,6 +40,8 @@ type WorkerType = {
   config: ConfigService<ServerConfigType, true>;
   emailService: EmailService;
   traceId?: string;
+  organizationId?: number;
+  userId?: number;
 };
 
 const LIST_UPLOAD_QUEUE_CONCURRENCY = 1;
@@ -97,13 +99,15 @@ async function worker(input: WorkerType, cb: done) {
   const { organization_database: organizationDatabase, list_id: listId } = input.request;
 
   // Re-establish trace context for the worker
-  // This preserves the trace ID from the original HTTP request even though
-  // the worker runs asynchronously outside the original request context
+  // This preserves the trace ID, organization ID, and user ID from the original HTTP request
+  // even though the worker runs asynchronously outside the original request context
   const workerTraceId =
     input.traceId || traceContext.getTraceId() || traceContext.generateTraceId();
+  const workerOrgId = input.organizationId;
+  const workerUserId = input.userId;
 
   // Run the entire worker in the trace context to ensure all logs and operations
-  // are associated with the correct trace ID
+  // are associated with the correct trace ID, organization ID, and user ID
   await traceContext.run(workerTraceId, async () => {
     // Clear any existing error file before starting analysis
     await clearErrorFile(organizationDatabase, listId);
@@ -231,7 +235,7 @@ async function worker(input: WorkerType, cb: done) {
         );
       }
     }
-  });
+  }, workerOrgId, workerUserId);
 }
 
 @Injectable()
@@ -284,15 +288,19 @@ export class StartAnalysisService {
       }
     }
 
-    // Extract trace ID before queuing to preserve it in the async worker
-    // If no trace ID exists, generate a new one to ensure proper tracing
+    // Extract trace ID, organization ID, and user ID before queuing to preserve them
+    // in the async worker. If no trace ID exists, generate a new one to ensure proper tracing
     const traceId = traceContext.getTraceId() || traceContext.generateTraceId();
+    const organizationId = traceContext.getOrganizationId();
+    const userId = traceContext.getUserId();
 
     this.queue.push({
       request,
       config: this.config,
       emailService: this.emailService,
       traceId,
+      organizationId,
+      userId,
     });
 
     return {

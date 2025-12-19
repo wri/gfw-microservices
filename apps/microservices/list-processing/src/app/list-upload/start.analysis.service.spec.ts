@@ -372,6 +372,8 @@ describe('StartAnalysisService', () => {
       expect(queuePushSpy).toHaveBeenCalled();
       const queuedData = queuePushSpy.mock.calls[0][0] as {
         traceId?: string;
+        organizationId?: number;
+        userId?: number;
         request: RequestLargeListProcess;
         config: ConfigService<ServerConfigType, true>;
         emailService: EmailService;
@@ -406,6 +408,8 @@ describe('StartAnalysisService', () => {
       expect(queuePushSpy).toHaveBeenCalled();
       const queuedData = queuePushSpy.mock.calls[0][0] as {
         traceId?: string;
+        organizationId?: number;
+        userId?: number;
         request: RequestLargeListProcess;
         config: ConfigService<ServerConfigType, true>;
         emailService: EmailService;
@@ -512,6 +516,129 @@ describe('StartAnalysisService', () => {
 
       // Verify trace ID was preserved in worker
       expect(traceIdInWorker).toBe(testTraceId);
+    });
+
+    it('should preserve organizationId and userId when queuing request', async () => {
+      const testTraceId = 'test-trace-id-org-user';
+      const testOrgId = 123;
+      const testUserId = 456;
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+
+      // Run within a trace context with organization and user IDs
+      await traceContext.run(testTraceId, async () => {
+        await service.run(request);
+      }, testOrgId, testUserId);
+
+      // Verify that organization ID and user ID were passed to the queue
+      expect(queuePushSpy).toHaveBeenCalled();
+      const queuedData = queuePushSpy.mock.calls[0][0] as {
+        traceId?: string;
+        organizationId?: number;
+        userId?: number;
+        request: RequestLargeListProcess;
+        config: ConfigService<ServerConfigType, true>;
+        emailService: EmailService;
+      };
+      expect(queuedData.traceId).toBe(testTraceId);
+      expect(queuedData.organizationId).toBe(testOrgId);
+      expect(queuedData.userId).toBe(testUserId);
+    });
+
+    it('should preserve organizationId and userId in background worker execution', async () => {
+      const testTraceId = 'test-trace-id-worker-org-user';
+      const testOrgId = 789;
+      const testUserId = 101112;
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      let orgIdInWorker: number | undefined;
+      let userIdInWorker: number | undefined;
+
+      // Mock the worker to capture organization and user IDs
+      const originalPush = (service as any).queue.push;
+      (service as any).queue.push = jest.fn((data: any) => {
+        return traceContext.run(data.traceId, async () => {
+          // Simulate async work in worker
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          orgIdInWorker = traceContext.getOrganizationId();
+          userIdInWorker = traceContext.getUserId();
+          return originalPush.call((service as any).queue, data);
+        }, data.organizationId, data.userId);
+      });
+
+      await traceContext.run(testTraceId, async () => {
+        await service.run(request);
+      }, testOrgId, testUserId);
+
+      // Allow async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Verify organization and user IDs were preserved in worker
+      expect(orgIdInWorker).toBe(testOrgId);
+      expect(userIdInWorker).toBe(testUserId);
+    });
+
+    it('should handle missing organizationId and userId gracefully', async () => {
+      const testTraceId = 'test-trace-id-no-org-user';
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+
+      // Run without organization and user IDs
+      await traceContext.run(testTraceId, async () => {
+        await service.run(request);
+      });
+
+      // Verify that undefined values are passed (not errors)
+      expect(queuePushSpy).toHaveBeenCalled();
+      const queuedData = queuePushSpy.mock.calls[0][0] as {
+        traceId?: string;
+        organizationId?: number;
+        userId?: number;
+        request: RequestLargeListProcess;
+        config: ConfigService<ServerConfigType, true>;
+        emailService: EmailService;
+      };
+      expect(queuedData.traceId).toBe(testTraceId);
+      expect(queuedData.organizationId).toBeUndefined();
+      expect(queuedData.userId).toBeUndefined();
     });
   });
 });

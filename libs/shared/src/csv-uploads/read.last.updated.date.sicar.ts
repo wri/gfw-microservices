@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 
 const logger = new Logger('read.last.updated.date.sicar');
 
-const DATA_API_URL = `${process.env.GFW_DATASET_API_URL}/sfb_bra_sicar/v202401/metadata`;
+const DATA_API_URL = `${process.env.GFW_DATASET_API_URL}/sfb_bra_sicar/v202508/metadata`;
 
 export type LastUpdatedDateSicarResponse = {
   idDataUpdated?: string;

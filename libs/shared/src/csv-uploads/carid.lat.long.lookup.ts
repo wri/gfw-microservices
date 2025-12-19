@@ -6,7 +6,7 @@ import { readLastUpdatedDateSicar } from './read.last.updated.date.sicar';
 
 const logger = new Logger('car.lat.long.lookup');
 
-const DATA_API_URL = `${process.env.GFW_DATASET_API_URL}/sfb_bra_sicar/v202401/query/json`;
+const DATA_API_URL = `${process.env.GFW_DATASET_API_URL}/sfb_bra_sicar/v202508/query/json`;
 
 export const carLookup: IdLookupFn = async (ids) => {
   const result = {};
@@ -26,20 +26,20 @@ export const carLookup: IdLookupFn = async (ids) => {
         'Content-Type': 'application/json',
       },
       params: {
-        sql: `SELECT cd_imovel,geom FROM mytable WHERE cd_imovel IN (${sqlIds})`,
+        sql: `SELECT property_c,geom FROM mytable WHERE property_c IN (${sqlIds})`,
       },
     });
 
     if (response.data.data.length > 0) {
       response.data.data.forEach((found) => {
-        if (result[found.cd_imovel]) {
+        if (result[found.property_c]) {
           const buffer = Buffer.from(found.geom, 'hex');
           const parsedBuffer = wkx.Geometry.parse(buffer);
-          result[found.cd_imovel] = {
+          result[found.property_c] = {
             geometry: parsedBuffer.toGeoJSON(),
           };
           if (sicarLastUpdated.idDataUpdated) {
-            result[found.cd_imovel]['ID Updated Date'] = sicarLastUpdated.idDataUpdated;
+            result[found.property_c]['ID Updated Date'] = sicarLastUpdated.idDataUpdated;
           }
         }
       });

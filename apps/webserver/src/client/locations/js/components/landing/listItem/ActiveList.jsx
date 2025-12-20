@@ -20,7 +20,7 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import Button from '../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../components';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
@@ -35,7 +35,6 @@ import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
-import { PillButton } from '../../../../../components';
 
 function ActiveList({
   list,

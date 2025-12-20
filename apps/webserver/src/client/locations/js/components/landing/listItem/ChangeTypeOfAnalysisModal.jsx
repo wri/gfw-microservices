@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardActions, Modal } from '@mui/material';
 import isEqual from 'lodash/isEqual';
-import Button from '../../../../../common/js/components/Button';
+
+import { PillButton } from '../../../../../components';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
@@ -135,22 +136,26 @@ function ChangeTypeOfAnalysisModal({
                   />
                 ) : (
                   <>
-                    <Button
-                      variant="primary"
+                    <PillButton
+                      variant="contained"
+                      size="small"
                       disabled={
                         !selectedAnalysis.length || (isSelectionUnchanged && !hasDraftInSelection)
                       }
                       onClick={submitSelectedAnalysis}
-                      label="Submit Analysis"
-                    />
+                    >
+                      Submit Analysis
+                    </PillButton>
                   </>
                 )}
-                <Button
-                  variant="primary"
+                <PillButton
+                  variant="contained"
+                  size="small"
                   disabled={isSelectionUnchanged}
                   onClick={saveAsDraft}
-                  label="Save as Draft"
-                />
+                >
+                  Save as Draft
+                </PillButton>
               </>
             )}
           </CardActions>
@@ -177,12 +182,14 @@ function ButtonWithConfirmationPrompt(props) {
 
   return (
     <>
-      <Button
-        variant="primary"
-        label={buttonLabel}
+      <PillButton
+        variant="contained"
+        size="small"
         disabled={disabled}
         onClick={() => setIsThisModalOpen(true)}
-      />
+      >
+        {buttonLabel}
+      </PillButton>
       <Modal
         open={isThisModalOpen}
         onClose={onCloseCancel}
@@ -192,14 +199,12 @@ function ButtonWithConfirmationPrompt(props) {
         <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
           <CardContent>{confirmationMessage}</CardContent>
           <CardActions>
-            <Button variant="primary" onClick={onConfirm} label={confirmationButtonLabel} />
-            <Button
-              className="dialog__primary-cancel"
-              variant="clear"
-              label="cancel"
-              labelStyle={{ textTransform: 'initial', textDecoration: 'underline' }}
-              onClick={onCloseCancel}
-            />
+            <PillButton variant="contained" size="small" onClick={onConfirm}>
+              {confirmationButtonLabel}
+            </PillButton>
+            <PillButton className="dialog__primary-cancel" variant="clear" onClick={onCloseCancel}>
+              Cancel
+            </PillButton>
           </CardActions>
         </Card>
       </Modal>

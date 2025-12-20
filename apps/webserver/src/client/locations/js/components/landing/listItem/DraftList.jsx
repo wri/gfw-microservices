@@ -140,7 +140,7 @@ function DraftList({
           </div>
         )}
 
-        <div className="locations-list__controls">
+        <div className="locations-list__controls" onClick={(e) => e.stopPropagation()}>
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           <ListDiagnosticStatusDraft

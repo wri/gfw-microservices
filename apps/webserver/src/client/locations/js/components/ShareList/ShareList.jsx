@@ -9,8 +9,8 @@ import {
   removeAllUsersFromSharedListService,
 } from './ShareListServices';
 import './ShareList.scss';
-import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
+import { PillButton } from '../../../../components';
 
 const ADMIN_ACCESS_LEVEL = 1;
 
@@ -175,29 +175,31 @@ class ShareList extends Component {
               />
               <div className="users-search">
                 {selectedUser && !selectedUserInSharedList.length > 0 ? (
-                  <Button
-                    variant="primary"
+                  <PillButton
+                    variant="contained"
                     onClick={() => this._handleAddUserToSharedListDialogMessage()}
                     icon={<IconPlus height="10px" />}
-                    label="Add user"
-                  />
+                  >
+                    Add user
+                  </PillButton>
                 ) : (
-                  <Button
-                    variant="primary"
-                    disabled
-                    icon={<IconPlus height="10px" />}
-                    label="Add user"
-                  />
+                  <PillButton variant="contained" disabled icon={<IconPlus height="10px" />}>
+                    Add user
+                  </PillButton>
                 )}
 
                 {SharedListUsers.length > 0 ? (
-                  <Button
-                    variant="danger"
+                  <PillButton
+                    variant="contained"
+                    color="error"
                     onClick={() => this._handleStopSharingWithAllDialog()}
-                    label="STOP SHARING WITH ALL"
-                  />
+                  >
+                    STOP SHARING WITH ALL
+                  </PillButton>
                 ) : (
-                  <Button variant="danger" disabled label="STOP SHARING WITH ALL" />
+                  <PillButton variant="contained" color="error" disabled>
+                    STOP SHARING WITH ALL
+                  </PillButton>
                 )}
               </div>
             </section>

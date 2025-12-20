@@ -20,7 +20,7 @@ import DownloadLargeListFile from '../DownloadLargeListFile';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
-import Button from '../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../components';
 import sharedColumnText from './sharedColumnText';
 import FailedTooltip from '../../../../../common/js/components/CustomTooltip/FailedTooltip';
 import { locationsPage, nav } from '../../../../../common/js/config';
@@ -84,13 +84,15 @@ function FailedList({
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           {showRerun && (
-            <Button
-              className="locations-list__update-button"
-              onClick={handleRerunDialogState}
-              label={locationsPage.lists.update}
+            <PillButton
               size="small"
-              variant="secondary"
-            />
+              variant="contained"
+              color="info"
+              sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
+              onClick={handleRerunDialogState}
+            >
+              {locationsPage.lists.update}
+            </PillButton>
           )}
           <span className="locations-list__failed">
             <FailedTooltip

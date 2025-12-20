@@ -158,7 +158,6 @@ function ActiveList({
 
           {showRerun && (
             <PillButton
-              className="locations-list__update-button"
               onClick={handleRerunDialogState}
               size="small"
               variant="contained"

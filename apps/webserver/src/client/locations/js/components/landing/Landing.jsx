@@ -35,7 +35,6 @@ import LocationList from './LocationList';
 import ListsFilter from '../lists/ListsFilter';
 import store from '../../store';
 import '../../../css/locations.scss';
-import AddLocationChooser, { CHOICES } from './AddLocationChooser';
 import GfwLocationList from './GfwLocationList';
 import Folder from './Folder';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
@@ -64,7 +63,6 @@ class Landing extends Component {
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
 
     this.state = {
-      addLocationDialogOpen: false,
       bannerContent: '',
       dialogOpen: false,
       dialogTitle: '',
@@ -118,17 +116,6 @@ class Landing extends Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  onAddLocationsChooserChoice = (choice) => {
-    if (choice === CHOICES.SINGLE) {
-      this.addLocation();
-    } else if (choice === CHOICES.MULTIPLE) {
-      this.uploadLocations();
-    } else {
-      console.error('Invalid choice chosen for AddLocationsChooser:', choice);
-      this.setState({ addLocationDialogOpen: false });
-    }
-  };
 
   handlePopoverOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });
@@ -253,7 +240,6 @@ class Landing extends Component {
       dialogTitle,
       dialogOpen,
       dialogContent,
-      addLocationDialogOpen,
       foldersLoaded,
       folderFeatureNew,
       selectedTab,
@@ -367,20 +353,6 @@ class Landing extends Component {
               OK
             </PillButton>
           </DialogActions>
-        </Dialog>
-
-        <Dialog
-          open={addLocationDialogOpen}
-          maxWidth={false}
-          PaperProps={{
-            sx: { width: '60%', maxWidth: '1200px' },
-          }}
-        >
-          <AddLocationChooser
-            onCancel={() => this.setState({ addLocationDialogOpen: false })}
-            onChoice={this.onAddLocationsChooserChoice}
-            userLists={userLists}
-          />
         </Dialog>
 
         <ModalLoader open={isLoading} />

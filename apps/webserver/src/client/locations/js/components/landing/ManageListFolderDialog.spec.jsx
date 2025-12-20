@@ -1,10 +1,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
 import ManageListFolderDialog from './ManageListFolderDialog';
 import fetch from '../../../../common/js/utils/fetch';
-
-const muiTheme = getMuiTheme();
 
 const defaultProps = {
   list: { folder: null, list_name: 'Test List', id: 1 },
@@ -14,11 +11,8 @@ const defaultProps = {
   onComplete: jest.fn(),
 };
 
-const renderWithTheme = (ui) =>
-  render(<MuiThemeProvider muiTheme={muiTheme}>{ui}</MuiThemeProvider>);
-
 const renderWithProps = (props = {}) =>
-  renderWithTheme(<ManageListFolderDialog {...defaultProps} {...props} />);
+  render(<ManageListFolderDialog {...defaultProps} {...props} />);
 
 jest.mock('../../../../common/js/utils/fetch', () => {
   return {

@@ -1,8 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
@@ -30,7 +28,6 @@ global.fetch = jest.fn(() =>
 );
 
 const theme = createTheme();
-const muiTheme = getMuiTheme();
 
 const defaultProps = {
   listId: '123',
@@ -66,11 +63,9 @@ beforeEach(() => {
 
 const renderComponent = (props) => {
   return render(
-    <MuiThemeProvider muiTheme={muiTheme}>
-      <ThemeProvider theme={theme}>
-        <ChangeTypeOfAnalysisModal {...defaultProps} {...props} />
-      </ThemeProvider>
-    </MuiThemeProvider>
+    <ThemeProvider theme={theme}>
+      <ChangeTypeOfAnalysisModal {...defaultProps} {...props} />
+    </ThemeProvider>
   );
 };
 
@@ -101,8 +96,8 @@ describe('ChangeTypeOfAnalysisModal', () => {
         name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
       })
     );
-    expect(screen.getByRole('button', { name: 'Submit Analysis' })).toBeEnabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Submit Analysis' }));
+    expect(screen.getByRole('button', { name: /Submit Analysis/i })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: /Submit Analysis/i }));
     expect(screen.getByText(/You have added a new analysis to your list/)).toBeInTheDocument();
   });
 

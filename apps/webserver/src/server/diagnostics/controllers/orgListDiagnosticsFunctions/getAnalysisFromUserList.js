@@ -15,14 +15,7 @@ export const getAnalysisFromUserList = async (req, selectedList) => {
 
   if (locationId) {
     try {
-      const SINGLE_LOCATION_ROW_REQUESTED = 1;
-
-      const listLocationsData = await ListManager.getListLocations(
-        req,
-        listId,
-        locationId,
-        SINGLE_LOCATION_ROW_REQUESTED
-      );
+      const listLocationsData = await ListManager.getListLocations(req, listId, locationId, 1);
 
       spatialData = listLocationsData ? listLocationsData?.features : [];
     } catch (error) {

@@ -31,7 +31,7 @@ function createWorldGeocodingSource(sourceIndex = 999) {
         errorLogger.error('Error getting suggestions from geocoder', {
           component: 'createWorldGeocodingSource',
           action: 'getSuggestions',
-          error: err
+          error: err,
         });
         return [];
       }
@@ -47,7 +47,7 @@ function createWorldGeocodingSource(sourceIndex = 999) {
           errorLogger.warn('No address found in geocoding request', {
             component: 'createWorldGeocodingSource',
             action: 'getResults',
-            params
+            params,
           });
           return [];
         }
@@ -88,7 +88,7 @@ function createWorldGeocodingSource(sourceIndex = 999) {
         errorLogger.error('Error getting results from geocoder', {
           component: 'createWorldGeocodingSource',
           action: 'getResults',
-          error: err
+          error: err,
         });
         return [];
       } finally {

@@ -75,7 +75,7 @@ export default class PlayerControl extends Component {
       component: 'PlayerControl',
       action: 'render',
       sliderValue,
-      sliderDate
+      sliderDate,
     });
     const formattedValue = moment(sliderDate).format('D MMM YYYY');
 

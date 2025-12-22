@@ -47,7 +47,7 @@ export const createResultsGraphic = async (item) => {
       component: 'searchUtils',
       action: 'createResultsGraphic',
       geojsonType: geojson.type,
-      item
+      item,
     });
     return [];
   }

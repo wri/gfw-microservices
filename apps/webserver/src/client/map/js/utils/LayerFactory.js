@@ -412,7 +412,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         errorLogger.warn('No matching layer type found', {
           component: 'LayerFactory',
           action: 'createLayers',
-          layerId: layer.id
+          layerId: layer.id,
         });
     }
   });

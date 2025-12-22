@@ -1274,7 +1274,7 @@ class Map extends Component {
               component: 'Map',
               action: 'showCustomPopupForAllVectorLayers',
               layerId: layerID,
-              error: e
+              error: e,
             });
           });
 
@@ -1301,7 +1301,7 @@ class Map extends Component {
           errorLogger.warn('Popup info not defined for vector layer', {
             component: 'Map',
             action: 'showCustomPopupForAllVectorLayers',
-            layerId: layerID
+            layerId: layerID,
           });
         }
         featuresExist = true;
@@ -1595,7 +1595,7 @@ class Map extends Component {
             component: 'Map',
             action: 'analysisCustomFeature',
             type,
-            error: err
+            error: err,
           });
           const details = {
             dialogTitle: 'Analysis Failure',
@@ -1637,7 +1637,7 @@ class Map extends Component {
           errorLogger.error('GLAD analysis call failed on custom feature', {
             component: 'Map',
             action: 'gladAnalysisCustomFeature',
-            error: err
+            error: err,
           });
           const details = {
             dialogTitle: 'Analysis Failure',
@@ -1689,7 +1689,7 @@ class Map extends Component {
         errorLogger.error('Failed to fetch biomass data for custom feature', {
           component: 'Map',
           action: 'analysisCustomFeature_biomass',
-          error: e
+          error: e,
         });
       }
 
@@ -1743,7 +1743,7 @@ class Map extends Component {
         errorLogger.error('Failed to fetch tree cover gain data for custom feature', {
           component: 'Map',
           action: 'analysisCustomFeature_gain',
-          error: e
+          error: e,
         });
       }
       const analysisResults = {
@@ -1942,7 +1942,7 @@ class Map extends Component {
           errorLogger.error('Failed to fetch geostore admin data', {
             component: 'Map',
             action: 'analysisHandlerAdmin',
-            error: e
+            error: e,
           });
         });
       this.geostoreAnalysisCall(
@@ -1983,7 +1983,7 @@ class Map extends Component {
             component: 'Map',
             action: 'analysisHandlerAdmin',
             microserviceUrl,
-            error: err
+            error: err,
           });
           const details = {
             dialogTitle: 'Analysis Failure',
@@ -1998,7 +1998,7 @@ class Map extends Component {
         errorLogger.warn('No microservice URL available for admin analysis', {
           component: 'Map',
           action: 'analysisHandlerAdmin',
-          data
+          data,
         });
         this.setState({ spinnerOn: false });
         store.dispatch(updateAnalysis({}));
@@ -2146,7 +2146,7 @@ class Map extends Component {
         errorLogger.error('Failed to fetch zoom/BBOX values for GFW List locations', {
           component: 'Map',
           action: '_zoomToExtentOfList',
-          error: e
+          error: e,
         });
         throw new Error('Fetching Zoom in BBOX values for GFW List locations failed.');
       }
@@ -2244,7 +2244,7 @@ class Map extends Component {
           errorLogger.warn('List data not available for selected locations', {
             component: 'Map',
             action: 'showSelectedLocations',
-            listId: userList.id
+            listId: userList.id,
           });
         } else {
           const selectedListData = JSON.parse(request.responseText);
@@ -2274,7 +2274,7 @@ class Map extends Component {
                   component: 'Map',
                   action: 'showSelectedLocations',
                   listId: userList.id,
-                  error
+                  error,
                 });
 
                 const message =
@@ -2314,7 +2314,7 @@ class Map extends Component {
           component: 'Map',
           action: 'showSelectedLocations',
           listId,
-          error: err
+          error: err,
         });
         store.dispatch(showMapLoader(false));
       };
@@ -2502,7 +2502,7 @@ class Map extends Component {
           component: 'Map',
           action: 'showListDetails',
           listIds: list_ids,
-          errorCode: 604
+          errorCode: 604,
         });
       } else {
         const listData = JSON.parse(request.responseText);
@@ -2521,7 +2521,7 @@ class Map extends Component {
         component: 'Map',
         action: 'showListDetails',
         listIds: list_ids,
-        error: err
+        error: err,
       });
     };
     request.open('POST', '/map/getUserListLocationData-map', true);

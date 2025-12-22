@@ -14,7 +14,7 @@ async function getMaxDateForViirsTiles() {
       errorLogger.error('Failed to fetch max date for VIIRS tiles', {
         component: 'VIIRSLayerUtil',
         action: 'getMaxDateForViirsTiles',
-        error: e
+        error: e,
       });
     });
   return dateRes.data.max_date;
@@ -204,7 +204,7 @@ export async function fetchViirsFeatures(config, dayRange, lat, long, zoom) {
         lat,
         long,
         zoom,
-        error: e
+        error: e,
       });
     });
 }

@@ -27,7 +27,7 @@ function createSearchSource(sourceName, url, displayName, sourceIndex) {
         errorLogger.warn('Missing gfw_geojson in search result item', {
           component: 'createSearchSource',
           action: 'getResults',
-          item
+          item,
         });
         return [];
       }
@@ -42,7 +42,7 @@ function createSearchSource(sourceName, url, displayName, sourceIndex) {
         errorLogger.error('Error processing search results', {
           component: 'createSearchSource',
           action: 'getResults',
-          error: err
+          error: err,
         });
         return [];
       } finally {

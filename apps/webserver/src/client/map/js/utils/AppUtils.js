@@ -72,7 +72,7 @@ const utils = {
       errorLogger.error('Failed to copy text to clipboard', {
         component: 'AppUtils',
         action: 'copyToClipboard',
-        error: err
+        error: err,
       });
     }
     return status;
@@ -141,7 +141,7 @@ const utils = {
         errorLogger.warn('Invalid key-value pair omitted', {
           component: 'AppUtils',
           action: 'parseQuery',
-          invalidKey: pair[0]
+          invalidKey: pair[0],
         });
         return;
       }

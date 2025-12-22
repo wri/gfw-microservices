@@ -24,7 +24,7 @@ export const queryExtent = (url, defQuery = '1=1') => {
           component: 'LayerUtils',
           action: 'queryExtent',
           url,
-          error
+          error,
         });
         resolve(false);
       }
@@ -66,7 +66,7 @@ export const identifyPoints = (layer, evt, view) => {
           component: 'LayerUtils',
           action: 'identifyPoints',
           layerId: layer.id,
-          error
+          error,
         });
         resolve(false);
       }

@@ -114,6 +114,7 @@ function ChangeTypeOfAnalysisModal({
             <IconButton
               onClick={() => setIsChangeTypeOfAnalysisModalOpen(false)}
               className="change-type-of-analysis-modal__close-button"
+              aria-label="close"
             >
               <Icon>close</Icon>
             </IconButton>

@@ -84,10 +84,13 @@
 // Direct column header styles
 .ReactTable .rt-thead .rt-th {
   background-color: $table-header-bg;
-  height: $table-row-height;
+  min-height: $table-row-height;
   padding: $table-cell-pad;
   -webkit-transition: background-color 0.3s ease;
   transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @include text($size: 200, $color: $table-header-color, $weight: $font-weight-medium);
 

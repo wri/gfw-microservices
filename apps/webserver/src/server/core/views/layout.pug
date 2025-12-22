@@ -13,10 +13,10 @@ html
 				'personalization_storage':'denied',
 				'functionality_storage':'granted',
 				'security_storage':'granted',
-				'wait_for_update': 500
+				'wait_for_update': 500,
+				'url_passthrough': false
 			});
 			gtag("set", "ads_data_redaction", true);
-			gtag("set", "url_passthrough", false);
 		//- Osano Cookie Consent Script (must be first in head to discover/block all subsequent scripts)
 		script(src='https://cmp.osano.com/AzyfddTRtqi1560Dk/9ed60354-c199-4e89-92c8-047b83aa65a3/osano.js')
 		//- Custom CSS to hide Osano cookie widget button
@@ -49,7 +49,11 @@ html
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
-			gtag('config', 'G-XPY79G0P54');
+			gtag('config', 'G-XPY79G0P54', {
+				'linker': {
+					'domains': []
+				}
+			});
 		script.
 			if (window.location.pathname !== '/') {
 				sessionCheck();

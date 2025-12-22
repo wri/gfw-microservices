@@ -8,6 +8,8 @@ import {
 
 const transifex = Transifex.live.translateText;
 
+const FIELDS_SUBTITLE = 'since last TCL data update';
+
 export const alerts_analysis = {
   id: 'totalHa',
   Header: () => (
@@ -34,7 +36,9 @@ export const alerts_analysis = {
     },
     {
       id: 'alerts_in_natural_forest',
-      Header: () => <ColumnsHeader label={columnHeaders.alertsInNaturalForest} />,
+      Header: () => (
+        <ColumnsHeader label={columnHeaders.alertsInNaturalForest} subtitle={FIELDS_SUBTITLE} />
+      ),
       accessor: (d) => {
         return d;
       },
@@ -72,7 +76,9 @@ export const alerts_analysis = {
     },
     {
       id: 'alerts_in_non_forest',
-      Header: () => <ColumnsHeader label={columnHeaders.alertsInNonForest} />,
+      Header: () => (
+        <ColumnsHeader label={columnHeaders.alertsInNonForest} subtitle={FIELDS_SUBTITLE} />
+      ),
       accessor: (d) => {
         return d;
       },
@@ -108,7 +114,7 @@ export const alerts_analysis = {
     },
     {
       id: 'alerts_in_jrc',
-      Header: () => <ColumnsHeader label={columnHeaders.alertsInJrc} />,
+      Header: () => <ColumnsHeader label={columnHeaders.alertsInJrc} subtitle={FIELDS_SUBTITLE} />,
       accessor: (d) => {
         return d;
       },
@@ -151,7 +157,7 @@ export const alerts_analysis = {
     },
     {
       id: 'alerts_in_all',
-      Header: () => <ColumnsHeader label={columnHeaders.allAlerts} />,
+      Header: () => <ColumnsHeader label={columnHeaders.allAlerts} subtitle={FIELDS_SUBTITLE} />,
       accessor: (d) => {
         return d;
       },

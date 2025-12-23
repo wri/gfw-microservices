@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../common/js/components/icon/IconMenuDots';
-import { Divider, MenuList, MenuItem, Popover, ListItemIcon, Typography } from '@mui/material';
+import { Divider, MenuList, MenuItem, Popover, ListItemIcon, ListItemText } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { locationsPage, nav } from '../../../../common/js/config';
@@ -67,7 +67,9 @@ export default class Folder extends Component {
               onClose={this.closeMenu}
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <MenuList sx={{ '.MuiListItemIcon-root': { minWidth: '1.25rem' } }}>
+              <MenuList
+                sx={{ color: 'text.primary', '.MuiListItemIcon-root': { minWidth: '1.25rem' } }}
+              >
                 <MenuItem
                   onClick={() => {
                     this.setState({ isRenameDialogOpen: true });
@@ -77,9 +79,7 @@ export default class Folder extends Component {
                   <ListItemIcon>
                     <DriveFileRenameOutlineIcon fontSize="small" />
                   </ListItemIcon>
-                  <Typography variant="subtitle2" sx={{ ml: 0.5 }}>
-                    Rename
-                  </Typography>
+                  <ListItemText sx={{ ml: 0.5 }}>Rename</ListItemText>
                 </MenuItem>
 
                 {/* Only allow deletion if folder is empty */}
@@ -87,18 +87,18 @@ export default class Folder extends Component {
                   <>
                     <Divider />
                     <MenuItem
-                      className="MenuItem--danger"
                       onClick={() => {
                         this.setState({ isDeleteDialogOpen: true });
                         this.closeMenu();
                       }}
+                      sx={{
+                        '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' },
+                      }}
                     >
                       <ListItemIcon>
-                        <DeleteIcon fontSize="small" sx={{ color: 'error.main' }} />
+                        <DeleteIcon fontSize="small" />
                       </ListItemIcon>
-                      <Typography variant="subtitle2" sx={{ ml: 0.5 }}>
-                        Delete
-                      </Typography>
+                      <ListItemText sx={{ ml: 0.5 }}>Delete</ListItemText>
                     </MenuItem>
                   </>
                 )}

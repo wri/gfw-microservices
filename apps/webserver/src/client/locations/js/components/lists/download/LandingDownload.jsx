@@ -97,7 +97,9 @@ function LandingDownload({
           <DownloadIcon />
         </ListItemIcon>
         <ListItemText>{locationsPage.lists.download}</ListItemText>
-        <ArrowRightIcon fontSize="small" />
+        <ListItemIcon>
+          <ArrowRightIcon fontSize="small" />
+        </ListItemIcon>
       </MenuItem>
       <Menu
         anchorEl={submenuAnchorEl}

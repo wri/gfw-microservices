@@ -30,14 +30,14 @@ export default class RenameFolderDialog extends Component {
     return (
       <Dialog
         open={isOpen}
-        onClose={() => onCancel()}
+        onClose={onCancel}
         classes={{
           paper: 'dialog__content',
         }}
       >
         <DialogTitle className="dialog__header">
           <h1 className="dialog__title">{strings.renameFolderTitle}</h1>
-          <IconButton icon={<IconTimes />} onClick={() => onCancel()} size="large" />
+          <IconButton icon={<IconTimes />} onClick={onCancel} size="large" />
         </DialogTitle>
         <DialogContent className="dialog__body">
           <div className="dialog__prompt">{strings.renameFolderPrompt}</div>
@@ -54,6 +54,7 @@ export default class RenameFolderDialog extends Component {
         <DialogActions className="dialog__footer" sx={{ display: 'flex', justifyContent: 'start' }}>
           <PillButton
             variant="contained"
+            size="small"
             disabled={confirmDisabled}
             onClick={() => {
               gtag('event', 'User Renamed Folder on Landing Page', {
@@ -64,7 +65,7 @@ export default class RenameFolderDialog extends Component {
           >
             {strings.confirm}
           </PillButton>
-          <PillButton variant="text" color="info" onClick={onCancel}>
+          <PillButton variant="text" size="small" color="info" onClick={onCancel}>
             {strings.cancel}
           </PillButton>
         </DialogActions>

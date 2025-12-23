@@ -13,9 +13,11 @@ export default function CustomDialog({
 }) {
   return (
     <Dialog
-      PaperProps={{ className: 'list-diagnostics-dialog dialog-paper' }}
       open={open}
       onClose={closeAction}
+      classes={{
+        paper: 'dialog__content',
+      }}
       sx={{ a: { color: 'primary.main', textDecoration: 'underline' } }}
     >
       <DialogTitle>{dialogTitle}</DialogTitle>

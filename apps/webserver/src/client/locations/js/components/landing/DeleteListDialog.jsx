@@ -35,7 +35,7 @@ export default class DeleteListDialog extends Component {
       <>
         <Dialog
           open={isOpen}
-          onClose={() => onCancel()}
+          onClose={onCancel}
           classes={{
             paper: 'dialog__content',
           }}
@@ -54,6 +54,7 @@ export default class DeleteListDialog extends Component {
           >
             <PillButton
               variant="contained"
+              size="small"
               onClick={() => {
                 gtag('event', 'User Removed List from Landing Page', {
                   event_category: 'Landing Page Click',

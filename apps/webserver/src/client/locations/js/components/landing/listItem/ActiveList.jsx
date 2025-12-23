@@ -286,7 +286,7 @@ function ActiveList({
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-root': { color: 'error.main' } }}
+                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' } }}
                   >
                     <ListItemIcon>
                       <DeleteIcon />

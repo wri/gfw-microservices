@@ -50,6 +50,7 @@ export default class DeleteFolderDialog extends Component {
           >
             <PillButton
               variant="contained"
+              size="small"
               onClick={() => {
                 gtag('event', 'User Removed Folder from Landing Page', {
                   event_category: 'Landing Page Click',
@@ -59,7 +60,7 @@ export default class DeleteFolderDialog extends Component {
             >
               {strings.confirm}
             </PillButton>
-            <PillButton variant="text" color="info" onClick={onCancel}>
+            <PillButton variant="text" size="small" color="info" onClick={onCancel}>
               {strings.cancel}
             </PillButton>
           </DialogActions>

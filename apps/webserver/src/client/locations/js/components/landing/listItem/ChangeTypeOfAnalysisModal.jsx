@@ -202,7 +202,7 @@ function ButtonWithConfirmationPrompt(props) {
             <PillButton variant="contained" size="small" onClick={onConfirm}>
               {confirmationButtonLabel}
             </PillButton>
-            <PillButton className="dialog__primary-cancel" variant="clear" onClick={onCloseCancel}>
+            <PillButton variant="text" onClick={onCloseCancel}>
               Cancel
             </PillButton>
           </CardActions>

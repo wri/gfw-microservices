@@ -1,9 +1,8 @@
 import { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import fetch from '../../../../common/js/utils/fetch';
-import Button from '../../../../common/js/components/Button';
+import { PillButton } from '../../../../components';
 import { locationsPage } from '../../../../common/js/config';
-import LinkButton from '../../../../common/js/components/LinkButton';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 
@@ -27,37 +26,44 @@ export default class DeleteFolderDialog extends Component {
       <>
         <Dialog
           open={isOpen}
-          modal={true}
-          bodyClassName="dialog__body"
-          contentClassName="dialog__content"
-          onRequestClose={() => onCancel()}
-          actions={
-            <div className="dialog__footer">
-              <Button
-                className="dialog__primary-action"
-                label={strings.confirm}
-                onClick={() => {
-                  gtag('event', 'User Removed Folder from Landing Page', {
-                    event_category: 'Landing Page Click',
-                  });
-                  this._deleteFolder(folder.id);
-                }}
-                variant="primary"
-              />
-              <LinkButton label={strings.cancel} onClick={() => onCancel()} />
-            </div>
-          }
+          onClose={() => onCancel()}
+          classes={{
+            paper: 'dialog__content',
+          }}
         >
-          <div className="dialog__header">
+          <DialogTitle className="dialog__header">
             <h1 className="dialog__title">{strings.deleteFolderTitle}</h1>
             <IconButton icon={<IconTimes />} onClick={() => onCancel()} size="large" />
-          </div>
+          </DialogTitle>
 
-          <div className="dialog__prompt">
-            {strings.deleteFolderPrompt}
-            <span className="DeleteFolder__dialog-folder-name">{folder.name}?</span>
-          </div>
-          {error !== '' && <div className="DeleteFolder__dialog-error">{error}</div>}
+          <DialogContent className="dialog__body">
+            <div className="dialog__prompt">
+              {strings.deleteFolderPrompt}
+              <span className="DeleteFolder__dialog-folder-name">{folder.name}?</span>
+            </div>
+            {error !== '' && <div className="DeleteFolder__dialog-error">{error}</div>}
+          </DialogContent>
+
+          <DialogActions
+            className="dialog__footer"
+            sx={{ display: 'flex', justifyContent: 'start' }}
+          >
+            <PillButton
+              variant="contained"
+              size="small"
+              onClick={() => {
+                gtag('event', 'User Removed Folder from Landing Page', {
+                  event_category: 'Landing Page Click',
+                });
+                this._deleteFolder(folder.id);
+              }}
+            >
+              {strings.confirm}
+            </PillButton>
+            <PillButton variant="text" size="small" color="info" onClick={onCancel}>
+              {strings.cancel}
+            </PillButton>
+          </DialogActions>
         </Dialog>
       </>
     );

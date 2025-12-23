@@ -1,13 +1,14 @@
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
-import RaisedButton from 'material-ui/RaisedButton';
+
 import { locationsPage } from '../../../../common/js/config';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 import IconButton from '../../../../common/js/components/IconButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
 import './DownloadLargeListFile.scss';
+import { PillButton } from '../../../../components';
 
-function DownloadLarleListFile({ onCancel }) {
+function DownloadLargeListFile({ onCancel }) {
   const title = locationsPage.upload.errors.uploadErrorDialogDownloadMessageTitle;
 
   return (
@@ -28,25 +29,9 @@ function DownloadLarleListFile({ onCancel }) {
             There are data errors in your file. You can download it below, fix the errors and
             continue the upload process.
           </p>
-          <RaisedButton
-            style={{
-              background: '#F24E1E',
-              color: '#fff',
-              paddingLeft: '30px',
-              paddingRight: '30px',
-              borderRadius: '50px',
-            }}
-            overlayStyle={{
-              borderRadius: '18px',
-              pointerEvents: 'none',
-              backgroundColor: 'transparent',
-              height: '100%',
-            }}
-            buttonStyle={{ background: 'transparent', color: '#fff' }}
-            variant="primary"
-          >
-            DOWNLOAD FILE
-          </RaisedButton>
+          <PillButton variant="contained" color="error" sx={{ margin: 'auto' }}>
+            Download file
+          </PillButton>
         </div>
       </div>
 
@@ -55,4 +40,4 @@ function DownloadLarleListFile({ onCancel }) {
   );
 }
 
-export default DownloadLarleListFile;
+export default DownloadLargeListFile;

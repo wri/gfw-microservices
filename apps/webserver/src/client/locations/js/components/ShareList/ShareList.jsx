@@ -9,8 +9,8 @@ import {
   removeAllUsersFromSharedListService,
 } from './ShareListServices';
 import './ShareList.scss';
-import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
+import { PillButton } from '../../../../components';
 
 const ADMIN_ACCESS_LEVEL = 1;
 
@@ -175,29 +175,40 @@ class ShareList extends Component {
               />
               <div className="users-search">
                 {selectedUser && !selectedUserInSharedList.length > 0 ? (
-                  <Button
-                    variant="primary"
+                  <PillButton
+                    variant="contained"
+                    size="small"
                     onClick={() => this._handleAddUserToSharedListDialogMessage()}
-                    icon={<IconPlus height="10px" />}
-                    label="Add user"
-                  />
+                    startIcon={<IconPlus height="0.625rem" />}
+                    sx={{ gap: 0.75 }}
+                  >
+                    Add user
+                  </PillButton>
                 ) : (
-                  <Button
-                    variant="primary"
+                  <PillButton
+                    variant="contained"
+                    size="small"
                     disabled
-                    icon={<IconPlus height="10px" />}
-                    label="Add user"
-                  />
+                    startIcon={<IconPlus height="0.625rem" />}
+                    sx={{ gap: 0.75 }}
+                  >
+                    Add user
+                  </PillButton>
                 )}
 
                 {SharedListUsers.length > 0 ? (
-                  <Button
-                    variant="danger"
+                  <PillButton
+                    variant="contained"
+                    size="small"
+                    color="error"
                     onClick={() => this._handleStopSharingWithAllDialog()}
-                    label="STOP SHARING WITH ALL"
-                  />
+                  >
+                    STOP SHARING WITH ALL
+                  </PillButton>
                 ) : (
-                  <Button variant="danger" disabled label="STOP SHARING WITH ALL" />
+                  <PillButton variant="contained" size="small" color="error" disabled>
+                    STOP SHARING WITH ALL
+                  </PillButton>
                 )}
               </div>
             </section>

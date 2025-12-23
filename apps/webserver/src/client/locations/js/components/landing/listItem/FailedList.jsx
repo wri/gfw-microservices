@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import {
-  Public as PublicIcon,
-  Groups as GroupsIcon,
-  Folder as FolderIcon,
-  Settings as SettingsIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
-import {
   Dialog,
   Popover,
   Divider,
   MenuList,
   MenuItem,
   ListItemIcon,
-  Typography,
+  ListItemText,
 } from '@mui/material';
+import {
+  Public as PublicIcon,
+  Groups as GroupsIcon,
+  Folder as FolderIcon,
+  Settings as SettingsIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
 
 import DownloadLargeListFile from '../DownloadLargeListFile';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
@@ -145,9 +145,7 @@ function FailedList({
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <Typography variant="body1">
-                    {locationsPage.lists.changeTypeOfAnalysis}
-                  </Typography>
+                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
                 </MenuItem>
               )}
               <MenuItem
@@ -159,9 +157,9 @@ function FailedList({
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
-                <Typography variant="body1">
+                <ListItemText>
                   {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                </Typography>
+                </ListItemText>
               </MenuItem>
               {showDelete && (
                 <>
@@ -171,11 +169,12 @@ function FailedList({
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
+                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' } }}
                   >
-                    <ListItemIcon sx={{ '& .MuiSvgIcon-root': { color: 'error.main' } }}>
+                    <ListItemIcon>
                       <DeleteIcon />
                     </ListItemIcon>
-                    <Typography variant="body1">{locationsPage.lists.delete}</Typography>
+                    <ListItemText>{locationsPage.lists.delete}</ListItemText>
                   </MenuItem>
                 </>
               )}

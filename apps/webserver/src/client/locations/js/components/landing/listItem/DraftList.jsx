@@ -7,7 +7,6 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Typography,
 } from '@mui/material';
 import {
   Public as PublicIcon,
@@ -278,12 +277,12 @@ function DraftList({
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                    sx={{ '& .MuiSvgIcon-root, p': { color: 'error.main' } }}
+                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' } }}
                   >
                     <ListItemIcon>
                       <DeleteIcon />
                     </ListItemIcon>
-                    <Typography variant="body1">{locationsPage.lists.delete}</Typography>
+                    <ListItemText>{locationsPage.lists.delete}</ListItemText>
                   </MenuItem>
                 </>
               )}

@@ -6,7 +6,7 @@ import {
   MenuItem,
   Popover,
   ListItemIcon,
-  Typography,
+  ListItemText,
 } from '@mui/material';
 import {
   Public as PublicIcon,
@@ -205,7 +205,7 @@ function ActiveList({
                   <ListItemIcon>
                     <QueryStatsIcon />
                   </ListItemIcon>
-                  <Typography variant="body1">{locationsPage.lists.diagnostic}</Typography>
+                  <ListItemText>{locationsPage.lists.diagnostic}</ListItemText>
                 </MenuItem>
               )}
               {showMapOpt && (
@@ -213,7 +213,7 @@ function ActiveList({
                   <ListItemIcon>
                     <PlaceIcon />
                   </ListItemIcon>
-                  <Typography variant="body1">{locationsPage.lists.map}</Typography>
+                  <ListItemText>{locationsPage.lists.map}</ListItemText>
                 </MenuItem>
               )}
               {showDownloadOpt && (
@@ -233,7 +233,7 @@ function ActiveList({
                   <ListItemIcon>
                     <ShareIcon />
                   </ListItemIcon>
-                  <Typography variant="body1">{locationsPage.lists.share}</Typography>
+                  <ListItemText>{locationsPage.lists.share}</ListItemText>
                 </MenuItem>
               )}
               {showRerunOpt && (
@@ -246,7 +246,7 @@ function ActiveList({
                   <ListItemIcon>
                     <RefreshIcon />
                   </ListItemIcon>
-                  <Typography variant="body1">{locationsPage.lists.update}</Typography>
+                  <ListItemText>{locationsPage.lists.update}</ListItemText>
                 </MenuItem>
               )}
 
@@ -260,9 +260,9 @@ function ActiveList({
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
-                <Typography variant="body1">
+                <ListItemText>
                   {folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                </Typography>
+                </ListItemText>
               </MenuItem>
 
               {showDiagnosticOpt && (
@@ -275,9 +275,7 @@ function ActiveList({
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <Typography variant="body1">
-                    {locationsPage.lists.changeTypeOfAnalysis}
-                  </Typography>
+                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
                 </MenuItem>
               )}
               {showDelete && (
@@ -288,12 +286,12 @@ function ActiveList({
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                    sx={{ '& .MuiSvgIcon-root, p': { color: 'error.main' } }}
+                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-root': { color: 'error.main' } }}
                   >
                     <ListItemIcon>
                       <DeleteIcon />
                     </ListItemIcon>
-                    <Typography variant="body1">{locationsPage.lists.delete}</Typography>
+                    <ListItemText>{locationsPage.lists.delete}</ListItemText>
                   </MenuItem>
                 </>
               )}

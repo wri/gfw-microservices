@@ -64,7 +64,7 @@ export default class RenameFolderDialog extends Component {
           >
             {strings.confirm}
           </PillButton>
-          <PillButton variant="text" color="info" label={strings.cancel} onClick={onCancel}>
+          <PillButton variant="text" color="info" onClick={onCancel}>
             {strings.cancel}
           </PillButton>
         </DialogActions>

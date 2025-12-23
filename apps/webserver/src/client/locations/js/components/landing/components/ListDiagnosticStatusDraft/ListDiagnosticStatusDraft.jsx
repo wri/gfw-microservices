@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CustomTooltip from '../../../../../../common/js/components/CustomTooltip/CustomTooltip';
 import CustomDialog from '../../../../../../common/js/components/CustomDialog/CustomDialog';
 import { locationsPage } from '../../../../../../common/js/config';
@@ -32,13 +32,14 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmi
       </span>
 
       {hideSubmit && (
-        <Button
-          onClick={(evt) => handleRerunDialogState(evt)}
-          className="locations-list__submit-button"
-          label={locationsPage.lists.submit}
+        <PillButton
+          variant="contained"
           size="small"
-          variant="primary"
-        />
+          sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
+          onClick={handleRerunDialogState}
+        >
+          {locationsPage.lists.submit}
+        </PillButton>
       )}
 
       {dialogOpen && (

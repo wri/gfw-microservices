@@ -39,5 +39,6 @@ export default class Banner extends Component {
 Banner.propTypes = {
   children: PropTypes.element.isRequired,
   className: PropTypes.string,
-  intent: PropTypes.oneOf(['alert', 'danger', 'new', 'positive']),
+  intent: PropTypes.oneOf(['alert', 'danger', 'new', 'positive', 'notice']),
+  onBannerClose: PropTypes.func,
 };

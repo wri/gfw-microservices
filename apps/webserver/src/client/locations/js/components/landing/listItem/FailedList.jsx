@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import {
+  Dialog,
+  Popover,
+  Divider,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
+import {
   Public as PublicIcon,
   Groups as GroupsIcon,
   Folder as FolderIcon,
   Settings as SettingsIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
-import { Dialog, Popover, Divider, Menu, MenuItem } from 'material-ui';
 
 import DownloadLargeListFile from '../DownloadLargeListFile';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
-import Button from '../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../components';
 import sharedColumnText from './sharedColumnText';
 import FailedTooltip from '../../../../../common/js/components/CustomTooltip/FailedTooltip';
 import { locationsPage, nav } from '../../../../../common/js/config';
@@ -76,13 +84,15 @@ function FailedList({
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           {showRerun && (
-            <Button
-              className="locations-list__update-button"
-              onClick={handleRerunDialogState}
-              label={locationsPage.lists.update}
+            <PillButton
               size="small"
-              variant="secondary"
-            />
+              variant="contained"
+              color="info"
+              sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
+              onClick={handleRerunDialogState}
+            >
+              {locationsPage.lists.update}
+            </PillButton>
           )}
           <span className="locations-list__failed">
             <FailedTooltip
@@ -98,7 +108,7 @@ function FailedList({
           </span>
         </div>
 
-        <div className="locations-list__menu-container">
+        <div className="locations-list__menu-container" onClick={(e) => e.stopPropagation()}>
           <IconButton
             icon={<IconMenuDots />}
             title={nav.more}
@@ -115,45 +125,60 @@ function FailedList({
             anchorEl={menuAnchorEl}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             open={isMenuOpen}
-            onRequestClose={() => setIsMenuOpen(false)}
-            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+            onClose={() => setIsMenuOpen(false)}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <Menu className="context-menu">
+            <MenuList
+              className="context-menu"
+              sx={{
+                '.MuiMenuItem-root': { gap: 1 },
+                svg: { fontSize: '1.25rem', color: 'text.primary' },
+              }}
+            >
               {showRerun && (
                 <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
                   onClick={() => {
                     setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
+                </MenuItem>
               )}
               <MenuItem
-                primaryText={
-                  isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
-                }
-                leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
                 }}
-              />
+              >
+                <ListItemIcon>
+                  <FolderIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+                </ListItemText>
+              </MenuItem>
               {showDelete && (
                 <>
                   <Divider />
                   <MenuItem
-                    primaryText={locationsPage.lists.delete}
-                    className="MenuItem--danger"
-                    leftIcon={<DeleteIcon />}
                     onClick={() => {
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                  />
+                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' } }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon />
+                    </ListItemIcon>
+                    <ListItemText>{locationsPage.lists.delete}</ListItemText>
+                  </MenuItem>
                 </>
               )}
-            </Menu>
+            </MenuList>
           </Popover>
         </div>
       </li>

@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { Chip } from '@mui/material';
-import { Divider, Menu, MenuItem, Popover } from 'material-ui';
+import {
+  Chip,
+  Divider,
+  MenuList,
+  MenuItem,
+  Popover,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import {
   Public as PublicIcon,
   Groups as GroupsIcon,
@@ -13,7 +20,7 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 
-import Button from '../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../components';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
@@ -149,17 +156,19 @@ function ActiveList({
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           {showRerun && (
-            <Button
-              className="locations-list__update-button"
+            <PillButton
               onClick={handleRerunDialogState}
-              label={locationsPage.lists.update}
               size="small"
-              variant="secondary"
-            />
+              variant="contained"
+              color="info"
+              sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
+            >
+              {locationsPage.lists.update}
+            </PillButton>
           )}
         </div>
 
-        <div className="locations-list__menu-container">
+        <div className="locations-list__menu-container" onClick={(e) => e.stopPropagation()}>
           <IconButton
             icon={<IconMenuDots />}
             title={nav.more}
@@ -176,26 +185,36 @@ function ActiveList({
             anchorEl={menuAnchorEl}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             open={isMenuOpen}
-            onRequestClose={() => setIsMenuOpen(false)}
-            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+            onClose={() => setIsMenuOpen(false)}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <Menu className="context-menu">
+            <MenuList
+              className="context-menu"
+              sx={{
+                '.MuiMenuItem-root': { gap: 1 },
+                svg: { fontSize: '1.25rem', color: 'text.primary' },
+              }}
+            >
               {showDiagnosticOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.diagnostic}
-                  leftIcon={<QueryStatsIcon />}
                   onClick={() => {
                     const diagnosticsType = getActiveAnalysisType(listAnalysesStatus);
                     window.location = `/diagnostics?listId=${id}&type=${diagnosticsType}`;
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <QueryStatsIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.diagnostic}</ListItemText>
+                </MenuItem>
               )}
               {showMapOpt && (
-                <MenuItem
-                  primaryText={locationsPage.lists.map}
-                  leftIcon={<PlaceIcon />}
-                  onClick={viewMap}
-                />
+                <MenuItem onClick={viewMap}>
+                  <ListItemIcon>
+                    <PlaceIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.map}</ListItemText>
+                </MenuItem>
               )}
               {showDownloadOpt && (
                 <LandingDownload
@@ -210,58 +229,73 @@ function ActiveList({
                 />
               )}
               {userIsAdmin && (
-                <MenuItem
-                  primaryText={locationsPage.lists.share}
-                  leftIcon={<ShareIcon />}
-                  onClick={(e) => shareList(e, list)}
-                />
+                <MenuItem onClick={(e) => shareList(e, list)}>
+                  <ListItemIcon>
+                    <ShareIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.share}</ListItemText>
+                </MenuItem>
               )}
               {showRerunOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.update}
-                  leftIcon={<RefreshIcon />}
                   onClick={(e) => {
                     setIsMenuOpen(false);
                     handleRerunDialogState(e);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <RefreshIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.update}</ListItemText>
+                </MenuItem>
               )}
 
               <Divider />
               <MenuItem
-                primaryText={folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
                 }}
-              />
+              >
+                <ListItemIcon>
+                  <FolderIcon />
+                </ListItemIcon>
+                <ListItemText>
+                  {folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+                </ListItemText>
+              </MenuItem>
 
               {showDiagnosticOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
                   onClick={() => {
                     setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
+                </MenuItem>
               )}
               {showDelete && (
                 <>
                   <Divider />
                   <MenuItem
-                    primaryText={locationsPage.lists.delete}
-                    leftIcon={<DeleteIcon />}
-                    className="MenuItem--danger"
                     onClick={() => {
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);
                     }}
-                  />
+                    sx={{ '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' } }}
+                  >
+                    <ListItemIcon>
+                      <DeleteIcon />
+                    </ListItemIcon>
+                    <ListItemText>{locationsPage.lists.delete}</ListItemText>
+                  </MenuItem>
                 </>
               )}
-            </Menu>
+            </MenuList>
           </Popover>
         </div>
       </li>

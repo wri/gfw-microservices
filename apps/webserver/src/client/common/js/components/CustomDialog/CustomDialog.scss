@@ -1,13 +1,14 @@
 .list-diagnostics-dialog {
+  min-width: 750px;
+
   &__actions {
     display: flex;
+    align-items: center;
+    gap: 1rem;
     width: 100%;
     flex: 1;
-    padding: 0.5rem;
-  }
-
-  a {
-    color: #97bd3d;
-    text-decoration: underline;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0.5rem;
   }
 }

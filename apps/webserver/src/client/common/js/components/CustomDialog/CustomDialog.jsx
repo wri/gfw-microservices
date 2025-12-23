@@ -16,7 +16,7 @@ export default function CustomDialog({
       open={open}
       onClose={closeAction}
       classes={{
-        paper: 'dialog__content',
+        paper: 'dialog__content list-diagnostics-dialog',
       }}
       sx={{ a: { color: 'primary.main', textDecoration: 'underline' } }}
     >

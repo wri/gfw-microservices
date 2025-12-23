@@ -148,6 +148,7 @@ export default class ManageListFolderDialog extends Component {
         dialogActionConfirm={
           <PillButton
             variant="contained"
+            size="small"
             disabled={confirmDisabled}
             onClick={() => {
               gtag('event', 'User Added List to Folder on Landing Page', {

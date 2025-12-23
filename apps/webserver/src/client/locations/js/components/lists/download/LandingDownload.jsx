@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Menu, MenuItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 import { ChevronRight as ArrowRightIcon, Download as DownloadIcon } from '@mui/icons-material';
 import { locationsPage } from 'common/js/config';
 import downloadRequest from './downloadRequest';
@@ -73,6 +73,7 @@ function LandingDownload({
           component="a"
           href={`/locations/downloadErrorFile?fileKey=${error_file_storage_path}`}
           target="_blank"
+          rel="noopener noreferrer"
         >
           <ListItemIcon>
             <DownloadIcon />
@@ -97,9 +98,9 @@ function LandingDownload({
           <DownloadIcon />
         </ListItemIcon>
         <ListItemText>{locationsPage.lists.download}</ListItemText>
-        <ListItemIcon>
+        <Box component="span" sx={{ display: 'flex', marginLeft: 'auto' }}>
           <ArrowRightIcon fontSize="small" />
-        </ListItemIcon>
+        </Box>
       </MenuItem>
       <Menu
         anchorEl={submenuAnchorEl}

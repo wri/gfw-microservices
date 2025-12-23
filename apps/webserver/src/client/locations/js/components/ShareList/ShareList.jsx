@@ -177,13 +177,21 @@ class ShareList extends Component {
                 {selectedUser && !selectedUserInSharedList.length > 0 ? (
                   <PillButton
                     variant="contained"
+                    size="small"
                     onClick={() => this._handleAddUserToSharedListDialogMessage()}
-                    icon={<IconPlus height="10px" />}
+                    startIcon={<IconPlus height="0.625rem" />}
+                    sx={{ gap: 0.75 }}
                   >
                     Add user
                   </PillButton>
                 ) : (
-                  <PillButton variant="contained" disabled icon={<IconPlus height="10px" />}>
+                  <PillButton
+                    variant="contained"
+                    size="small"
+                    disabled
+                    startIcon={<IconPlus height="0.625rem" />}
+                    sx={{ gap: 0.75 }}
+                  >
                     Add user
                   </PillButton>
                 )}
@@ -191,13 +199,14 @@ class ShareList extends Component {
                 {SharedListUsers.length > 0 ? (
                   <PillButton
                     variant="contained"
+                    size="small"
                     color="error"
                     onClick={() => this._handleStopSharingWithAllDialog()}
                   >
                     STOP SHARING WITH ALL
                   </PillButton>
                 ) : (
-                  <PillButton variant="contained" color="error" disabled>
+                  <PillButton variant="contained" size="small" color="error" disabled>
                     STOP SHARING WITH ALL
                   </PillButton>
                 )}

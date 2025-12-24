@@ -13,8 +13,6 @@ import {
   Popover,
 } from '@mui/material';
 import { Campaign, Close, Info } from '@mui/icons-material';
-import { withRouter } from 'react-router-dom';
-import errorLogger from '../../../../common/js/utils/errorLogger';
 
 import Banner from '../../../../common/js/components/Banners/Banner';
 import GDPRFooter from '../../../../common/js/components/GDPRFooter';
@@ -118,21 +116,6 @@ class Landing extends Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  onAddLocationsChooserChoice = (choice) => {
-    if (choice === CHOICES.SINGLE) {
-      this.addLocation();
-    } else if (choice === CHOICES.MULTIPLE) {
-      this.uploadLocations();
-    } else {
-      errorLogger.error('Invalid choice chosen for AddLocationsChooser', {
-        component: 'Landing',
-        action: 'onAddLocationsChooserChoice',
-        choice,
-      });
-      this.setState({ addLocationDialogOpen: false });
-    }
-  };
 
   handlePopoverOpen = (event) => {
     this.setState({ anchorEl: event.currentTarget });

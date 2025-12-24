@@ -4,7 +4,6 @@ import { ChevronRight as ArrowRightIcon, Download as DownloadIcon } from '@mui/i
 import { locationsPage } from 'common/js/config';
 import downloadRequest from './downloadRequest';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
-import DownloadIcon from '@mui/icons-material/Download';
 
 function LandingDownload({
   downloadRequestedFromFolder,

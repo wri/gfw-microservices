@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import fetch from '../../../../common/js/utils/fetch';
 import errorLogger from '../../../../common/js/utils/errorLogger';
-import Button from '../../../../common/js/components/Button';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 import { PillButton } from '../../../../components';
 

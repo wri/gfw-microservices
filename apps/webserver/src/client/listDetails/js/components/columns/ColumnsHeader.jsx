@@ -3,7 +3,7 @@ import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 const sanitizeLabel = (label) => label.replace(/\s+/g, '-');
 
-const ColumnsHeader = ({ label, infoBubbleId }) => {
+const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
   const [translatedLabel, setTranslatedLabel] = useState(label);
 
   const updateTranslation = () => {
@@ -24,7 +24,7 @@ const ColumnsHeader = ({ label, infoBubbleId }) => {
 
     window.Transifex.live.onAfterTranslate(handleTranslationUpdate);
 
-    // emove subscription when component unmounts
+    // remove subscription when component unmounts
     return () => {
       window.Transifex.live.off?.('onAfterTranslate', handleTranslationUpdate);
     };
@@ -32,8 +32,15 @@ const ColumnsHeader = ({ label, infoBubbleId }) => {
 
   return (
     <span className="title-text" data-cy={`column-header-${sanitizeLabel(label)}`}>
-      <span>{translatedLabel}</span>
-      {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
+      <span>
+        <span>{translatedLabel}</span>
+        {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
+        {subtitle && (
+          <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 'normal' }}>
+            {subtitle}
+          </span>
+        )}
+      </span>
     </span>
   );
 };

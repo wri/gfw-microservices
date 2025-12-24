@@ -1,6 +1,6 @@
 /* global userLists, locationCount, gfwLists, userInfo, userSharedLists */
 
-import moment from 'moment';
+import { getYear, differenceInDays, parse, format } from 'date-fns';
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -25,10 +25,10 @@ lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 lightBaseTheme.palette.textColor = '#555555';
 
 Date.prototype.getJulian = function () {
-  const date = moment(this);
-  const year = date.year();
-  const startOfYear = moment(`${year}/01/01`, 'YYYY/MM/DD');
-  const daysPassed = date.diff(startOfYear, 'days');
+  const date = new Date(this);
+  const year = getYear(date);
+  const startOfYear = parse(`${year}/01/01`, 'yyyy/MM/dd', new Date());
+  const daysPassed = differenceInDays(date, startOfYear);
   let daysPassedFormatted = daysPassed.toString();
 
   if (daysPassedFormatted.length < 3) {
@@ -36,7 +36,7 @@ Date.prototype.getJulian = function () {
       daysPassedFormatted = `0${daysPassedFormatted}`;
     }
   }
-  return `${date.format('YY')}${daysPassedFormatted}`;
+  return `${format(date, 'yy')}${daysPassedFormatted}`;
 };
 
 function App() {

@@ -1,5 +1,5 @@
 import { AnalysisLimit, OrganizationYearlyUsageSinceOrgActivation } from '@wri-monorepos/sql';
-import moment = require('moment');
+import { differenceInCalendarDays } from 'date-fns';
 
 export interface RolloverAnalysisAmounts {
   rolloverAnalysisAreaUsed: number;
@@ -8,14 +8,14 @@ export interface RolloverAnalysisAmounts {
 export function calculateRolloverUsed(
   yearlyUsageSinceActivation: OrganizationYearlyUsageSinceOrgActivation[],
   subscriptionLimits: AnalysisLimit,
-  accountRenewalMoment: moment.Moment
+  accountRenewalMoment: Date
 ): RolloverAnalysisAmounts {
   let rolloverAnalysisAreaUsed = 0;
   let rolloverLocationsUsed = 0;
 
   // Calculate current year in same units as yearlyUsageSinceActivation
-  const now = moment();
-  const currentYear = Math.floor(moment.duration(now.diff(accountRenewalMoment)).asYears());
+  const now = new Date();
+  const currentYear = Math.floor(differenceInCalendarDays(now, accountRenewalMoment) / 365.25);
   yearlyUsageSinceActivation.forEach((yearlyData) => {
     // skip current year because it is used for current usage
     if (yearlyData.years_since_activation === currentYear) {

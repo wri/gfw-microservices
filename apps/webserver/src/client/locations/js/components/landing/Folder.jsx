@@ -1,10 +1,7 @@
 import { Component } from 'react';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../common/js/components/icon/IconMenuDots';
-import Divider from 'material-ui/Divider';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import Popover from 'material-ui/Popover';
+import { Divider, MenuList, MenuItem, Popover, ListItemIcon, ListItemText } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { locationsPage, nav } from '../../../../common/js/config';
@@ -47,7 +44,7 @@ export default class Folder extends Component {
                 : locationsPage.lists.folderItems
               ).toLowerCase()}
           </div>
-          <div className="folders-list__menu-container">
+          <div className="folders-list__menu-container" onClick={(e) => e.stopPropagation()}>
             <IconButton
               icon={<IconMenuDots />}
               title={nav.more}
@@ -67,35 +64,45 @@ export default class Folder extends Component {
               anchorEl={this.state.menuAnchorEl}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               open={this.state.isMenuOpen}
-              onRequestClose={this.closeMenu}
-              targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+              onClose={this.closeMenu}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <Menu>
+              <MenuList
+                sx={{ color: 'text.primary', '.MuiListItemIcon-root': { minWidth: '1.25rem' } }}
+              >
                 <MenuItem
-                  leftIcon={<DriveFileRenameOutlineIcon />}
-                  primaryText={'Rename'}
                   onClick={() => {
                     this.setState({ isRenameDialogOpen: true });
                     this.closeMenu();
                   }}
-                />
+                >
+                  <ListItemIcon>
+                    <DriveFileRenameOutlineIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText sx={{ ml: 0.5 }}>Rename</ListItemText>
+                </MenuItem>
 
                 {/* Only allow deletion if folder is empty */}
                 {!('lists' in folder) && (
                   <>
                     <Divider />
                     <MenuItem
-                      leftIcon={<DeleteIcon />}
-                      primaryText={'Delete'}
-                      className="MenuItem--danger"
                       onClick={() => {
                         this.setState({ isDeleteDialogOpen: true });
                         this.closeMenu();
                       }}
-                    />
+                      sx={{
+                        '& .MuiSvgIcon-root, .MuiListItemText-primary': { color: 'error.main' },
+                      }}
+                    >
+                      <ListItemIcon>
+                        <DeleteIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText sx={{ ml: 0.5 }}>Delete</ListItemText>
+                    </MenuItem>
                   </>
                 )}
-              </Menu>
+              </MenuList>
             </Popover>
             {/* This must be outside the menu, otherwise it will not be rendered while the menu is closed */}
             <DeleteFolderDialog

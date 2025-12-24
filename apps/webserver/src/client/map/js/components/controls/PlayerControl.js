@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { scaleLinear } from 'd3-scale';
-import moment from 'moment';
+import { getUnixTime, fromUnixTime, format, isBefore, isAfter } from 'date-fns';
 
 import '../../../../common/css/_irsBase.scss';
 import '../../../../common/css/_irsStyle.scss';
@@ -17,7 +17,7 @@ export default class PlayerControl extends Component {
     const { start, end, sliderDate } = props;
     // Create initial linear scale (for <Slider /> component)
     const scale = scaleLinear()
-      .domain([moment(start).unix(), moment(end).unix()])
+      .domain([getUnixTime(new Date(start)), getUnixTime(new Date(end))])
       .range([0, 1]);
     // Set Initial State
     this.state = {
@@ -50,17 +50,17 @@ export default class PlayerControl extends Component {
     const { start, sliderDate, end, changeSlider } = nextProps;
 
     const scale = scaleLinear()
-      .domain([moment(start).unix(), moment(end).unix()])
+      .domain([getUnixTime(new Date(start)), getUnixTime(new Date(end))])
       .range([0, 1]);
 
     this.setState({ start, sliderDate, end, scale }, () => {
       // If current is before start
-      if (moment(sliderDate).isBefore(moment(start), 'day')) {
+      if (isBefore(new Date(sliderDate), new Date(start))) {
         changeSlider(null, start);
         this.updateIon(start);
       }
       // If current is after end
-      if (moment(sliderDate).isAfter(moment(end), 'day')) {
+      if (isAfter(new Date(sliderDate), new Date(end))) {
         changeSlider(null, end);
         this.updateIon(end);
       }
@@ -69,7 +69,7 @@ export default class PlayerControl extends Component {
 
   render() {
     const { sliderDate } = this.state;
-    const formattedValue = moment(sliderDate).format('D MMM YYYY');
+    const formattedValue = format(new Date(sliderDate), 'd MMM yyyy');
 
     return (
       <div style={flexStyle}>
@@ -89,14 +89,14 @@ export default class PlayerControl extends Component {
     const { from } = data;
     // Must derive the unix time from the value of the slider
     const currentValue = scale.invert(from);
-    const currentDate = moment.unix(currentValue).toDate();
+    const currentDate = fromUnixTime(currentValue);
     // Set the new current state
     changeSlider(null, currentDate);
   };
 
   updateIon = (sliderDate, date) => {
     const { scale, slider } = this.state;
-    const newFrom = scale(moment(date).unix());
+    const newFrom = scale(getUnixTime(new Date(date)));
     slider.update({
       from: newFrom,
     });

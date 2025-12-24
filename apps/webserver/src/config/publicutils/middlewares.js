@@ -1,5 +1,5 @@
 const path = require('path');
-const moment = require('moment');
+const { subHours, isBefore } = require('date-fns');
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
@@ -66,8 +66,8 @@ const checkInactivity = (request, response, next) => {
   const { method, baseUrl } = request;
   const { last_activity_time, ispromanager, organization_user_id, organization_database } =
     request.session;
-  const inactiveLimit = moment().subtract(4, 'hours');
-  const lastActiveTimeMoment = moment(last_activity_time);
+  const inactiveLimit = subHours(new Date(), 4);
+  const lastActiveTime = new Date(last_activity_time);
   const isInactiveSession = baseUrl === '/session' && !last_activity_time ? true : false;
 
   function redirectClient() {
@@ -80,7 +80,7 @@ const checkInactivity = (request, response, next) => {
     }
   }
 
-  if (lastActiveTimeMoment.isBefore(inactiveLimit)) {
+  if (isBefore(lastActiveTime, inactiveLimit)) {
     if (ispromanager) {
       request.session.destroy();
       redirectClient();
@@ -110,7 +110,7 @@ const checkInactivity = (request, response, next) => {
     // If we are checking for the session, do not update the last activity time
     // This is done so that the checking user activity does not affect their last activity
     if (baseUrl !== '/session') {
-      request.session.last_activity_time = moment().toDate();
+      request.session.last_activity_time = new Date();
     }
     return next();
   }

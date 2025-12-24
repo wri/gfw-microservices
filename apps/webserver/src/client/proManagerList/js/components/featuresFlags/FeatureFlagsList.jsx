@@ -1,5 +1,5 @@
 import { Grid, Table, TableHead, TableBody, TableRow, TableContainer } from '@mui/material';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
 import { StyledTableCell } from '../../common/styledTableCell';
@@ -8,7 +8,7 @@ function FeatureFlagsList() {
   const { featureFlagsList, selectedFeatureFlag, setSelectedFeatureFlag } =
     useFeatureFlagStateContext();
 
-  const formatUpdatedTime = (date) => moment(date).format('MM/DD/YYYY - HH:mm');
+  const formatUpdatedTime = (date) => format(new Date(date), 'MM/dd/yyyy - HH:mm');
 
   return !selectedFeatureFlag ? (
     <Grid container spacing={2}>

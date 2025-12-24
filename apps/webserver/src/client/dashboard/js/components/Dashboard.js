@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import moment from 'moment';
+import { format } from 'date-fns';
 import isEmpty from 'lodash/isEmpty';
 
 import { Description, FileDownload } from '@mui/icons-material';
@@ -177,7 +177,7 @@ export default class Dashboard extends Component {
   };
 
   setDashboardLastSubmit({ dashboardLastSubmit }) {
-    const formatTimestamp = moment(dashboardLastSubmit).format('D MMMM YYYY, h:mm A');
+    const formatTimestamp = format(new Date(dashboardLastSubmit), 'd MMMM yyyy, h:mm a');
     this.setState({ lastUpdatedDashboard: formatTimestamp });
   }
 

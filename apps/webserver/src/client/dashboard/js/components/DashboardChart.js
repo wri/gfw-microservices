@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import isEqual from 'lodash/isEqual';
 import Highcharts from 'highcharts';
-import moment from 'moment';
+import { format, parse, isSameOrAfter, isSameOrBefore } from 'date-fns';
 import dictionary from '../utils/dictionary';
 import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import {
@@ -14,7 +14,7 @@ import {
 
 import '../../css/_dashboardChart.scss';
 
-const DATE_FORMAT = 'DD MMM YYYY';
+const DATE_FORMAT = 'dd MMM yyyy';
 
 const transifex = Transifex.live.translateText;
 export default class DashboardChart extends Component {
@@ -65,7 +65,7 @@ export default class DashboardChart extends Component {
           const [start] = key.split(' - ');
           const serieName =
             selectedTimeframe === 'QUARTER' || selectedTimeframe === 'YEAR'
-              ? moment(start, DATE_FORMAT).format('MMMM')
+              ? format(parse(start, DATE_FORMAT, new Date()), 'MMMM')
               : key;
           return `<b>${transifex(serieName)}</b><br/>${transifex('Alerts')}: <b>${prettifyNum(
             y
@@ -86,7 +86,7 @@ export default class DashboardChart extends Component {
             switch (selectedTimeframe) {
               case 'QUARTER':
               case 'YEAR':
-                return moment(start, DATE_FORMAT).format('MMM')[0];
+                return format(parse(start, DATE_FORMAT, new Date()), 'MMM')[0];
               case 'WEEK':
                 return start;
               default:
@@ -135,9 +135,9 @@ export default class DashboardChart extends Component {
     // Create the series for GLAD
     if (selectedAlert === 'GLAD') {
       return array.map((period, idx) => {
-        const mStart = moment(period[0], DATE_FORMAT);
-        const mEnd = moment(period[1], DATE_FORMAT);
-        const serieName = `${mStart.format(DATE_FORMAT)} - ${mEnd.format(DATE_FORMAT)}`;
+        const mStart = parse(period[0], DATE_FORMAT, new Date());
+        const mEnd = parse(period[1], DATE_FORMAT, new Date());
+        const serieName = `${format(mStart, DATE_FORMAT)} - ${format(mEnd, DATE_FORMAT)}`;
         let total = 0;
 
         // Calculating total based on start, end dates and selected period
@@ -178,16 +178,16 @@ export default class DashboardChart extends Component {
 
     // Create the series for VIIRS/FIRES
     return array.map((period, idx) => {
-      const mStart = moment(period[0], DATE_FORMAT);
-      const mEnd = moment(period[1], DATE_FORMAT);
-      const serieName = `${mStart.format(DATE_FORMAT)} - ${mEnd.format(DATE_FORMAT)}`;
+      const mStart = parse(period[0], DATE_FORMAT, new Date());
+      const mEnd = parse(period[1], DATE_FORMAT, new Date());
+      const serieName = `${format(mStart, DATE_FORMAT)} - ${format(mEnd, DATE_FORMAT)}`;
 
       let total = 0;
       locationAlertsArray.forEach((alertObj) => {
         Object.entries(alertObj).forEach((timeframe) => {
           const [p, periodData] = timeframe;
-          const periodMoment = moment(p);
-          if (periodMoment.isSameOrAfter(mStart) && periodMoment.isSameOrBefore(mEnd)) {
+          const periodDate = new Date(p);
+          if (isSameOrAfter(periodDate, mStart) && isSameOrBefore(periodDate, mEnd)) {
             const periodTotal = periodData.reduce((a, c) => a + c.count, 0);
             total = total + periodTotal;
           }

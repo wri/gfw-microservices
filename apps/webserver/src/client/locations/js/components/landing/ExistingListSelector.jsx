@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import { Autocomplete, TextField } from '@mui/material';
+
 import { locationsPage } from '../../../../common/js/config';
 import errorLogger from '../../../../common/js/utils/errorLogger';
 import './ExistingListSelector.scss';

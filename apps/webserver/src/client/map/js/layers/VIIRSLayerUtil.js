@@ -1,6 +1,6 @@
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
-import moment from 'moment';
 import errorLogger from '../../../common/js/utils/errorLogger';
+import { subDays, format } from 'date-fns';
 
 const maxDateURL =
   'https://tiles.globalforestwatch.org/nasa_viirs_fire_alerts/latest/max_alert__date';
@@ -22,7 +22,7 @@ async function getMaxDateForViirsTiles() {
 
 async function viirsLayer(id, url, visible = false, order = undefined, dayRange = 7) {
   const maxDate = await getMaxDateForViirsTiles();
-  const startDate = moment(maxDate).subtract(dayRange, 'days').format('YYYY-MM-DD');
+  const startDate = format(subDays(new Date(maxDate), dayRange), 'yyyy-MM-dd');
   url = url.replace('{end_date}', maxDate);
   url = url.replace('{start_date}', startDate);
 
@@ -191,7 +191,7 @@ async function viirsLayer(id, url, visible = false, order = undefined, dayRange 
 export async function fetchViirsFeatures(config, dayRange, lat, long, zoom) {
   let url = config.interactionConfig.config.url;
   const maxDate = await getMaxDateForViirsTiles();
-  const startDate = moment(maxDate).subtract(dayRange, 'days').format('YYYY-MM-DD');
+  const startDate = format(subDays(new Date(maxDate), dayRange), 'yyyy-MM-dd');
   const params = `?lat=${lat}&lng=${long}&z=${zoom}&start_date=${startDate}&end_date=${maxDate}`;
   url = url.concat(params);
   return fetch(url)

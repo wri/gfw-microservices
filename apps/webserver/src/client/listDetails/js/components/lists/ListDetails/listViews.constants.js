@@ -4,6 +4,6 @@ export const COMMODITY_RISK_VIEW = 'commodity_risk';
 export const FOREST_CHANGE_VIEW = 'forest_change';
 
 export const forestDataSet = {
-  NaturalForestMap: 'STBN Natural Lands',
+  NaturalForestMap: 'SBTN Natural Lands',
   JrcForestLoss: 'JRC Forest Loss',
 };

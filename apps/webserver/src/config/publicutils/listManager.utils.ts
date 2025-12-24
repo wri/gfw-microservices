@@ -329,7 +329,7 @@ export const getListLocations = async (
   req,
   list_id,
   location_id = 0,
-  rowsRequested = DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED
+  rowsRequested: number = DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED
 ) => {
   try {
     const parameters = [

@@ -1,9 +1,8 @@
 import { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import * as httpRequest from '../../../../common/js/utils/httpRequest';
 import errorLogger from '../../../../common/js/utils/errorLogger';
-import Button from '../../../../common/js/components/Button';
-import LinkButton from '../../../../common/js/components/LinkButton';
+import { Link, PillButton } from '../../../../components';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 import { FailedPopupDialog } from './FailedPopupDialog';
@@ -37,35 +36,37 @@ export default class DeleteListDialog extends Component {
       <>
         <Dialog
           open={isOpen}
-          modal={false}
-          bodyClassName="dialog__body"
-          contentClassName="dialog__content"
-          onRequestClose={() => onCancel()}
-          actions={
-            <div className="dialog__footer">
-              <Button
-                className="dialog__primary-action"
-                label={strings.deleteListDialog.confirm}
-                variant="primary"
-                onClick={() => {
-                  gtag('event', 'User Removed List from Landing Page', {
-                    event_category: 'Landing Page Click',
-                  });
-                  this._deleteList(list.id);
-                }}
-              />
-              <LinkButton label={strings.deleteListDialog.cancel} onClick={() => onCancel()} />
-            </div>
-          }
+          onClose={onCancel}
+          classes={{
+            paper: 'dialog__content',
+          }}
         >
-          <div className="dialog__header">
+          <DialogTitle className="dialog__header">
             <h1 className="dialog__title">{strings.deleteListDialog.title}</h1>
             <IconButton icon={<IconTimes />} onClick={() => onCancel()} size="large" />
-          </div>
-          <div className="dialog__prompt">
+          </DialogTitle>
+          <DialogContent className="dialog__body">
             <span className="DeleteList__dialog-list-name">{list.list_name}</span>
             {strings.deleteListDialog.text}
-          </div>
+          </DialogContent>
+          <DialogActions
+            className="dialog__footer"
+            sx={{ display: 'flex', justifyContent: 'start' }}
+          >
+            <PillButton
+              variant="contained"
+              size="small"
+              onClick={() => {
+                gtag('event', 'User Removed List from Landing Page', {
+                  event_category: 'Landing Page Click',
+                });
+                this._deleteList(list.id);
+              }}
+            >
+              {strings.deleteListDialog.confirm}
+            </PillButton>
+            <Link onClick={() => onCancel()}>{strings.deleteListDialog.cancel}</Link>
+          </DialogActions>
         </Dialog>
         {deleteListFailed && (
           <FailedPopupDialog

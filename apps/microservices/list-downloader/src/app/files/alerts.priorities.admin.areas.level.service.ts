@@ -3,7 +3,7 @@ import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { PassThrough } from 'stream';
 import * as fs from 'fs';
-import * as moment from 'moment';
+import { formatInTimeZone } from 'date-fns-tz';
 import { dictionary } from '../shared/alert.utils';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { FeatureAlertTotal } from '../transform/feature.alert.total';
@@ -106,8 +106,8 @@ export class AlertsPrioritiesAdminAreasLevelService extends IPipeService {
             countryName,
             selectedAlertText,
             selectedTimeframe,
-            moment(startDate).format(DATE_FORMAT_CSV),
-            moment(endDate).format(DATE_FORMAT_CSV),
+            formatInTimeZone(new Date(startDate), 'UTC', DATE_FORMAT_CSV),
+            formatInTimeZone(new Date(endDate), 'UTC', DATE_FORMAT_CSV),
             subStateCount / subStateCountDensity,
             counts.alerts[countryName][stateName].total /
               counts.density[countryName][stateName].total,

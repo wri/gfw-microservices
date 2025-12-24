@@ -3,7 +3,18 @@ import { AlertFieldsFileRequest, CountObj, DashboardDataType } from '@wri-monore
 import { IPipeService } from '../pipe/i.pipe.service';
 import { EventEmitter, PassThrough, Transform } from 'stream';
 import * as fs from 'fs';
-import * as moment from 'moment';
+import {
+  parse,
+  addDays,
+  addWeeks,
+  addMonths,
+  isBefore,
+  isAfter,
+  isEqual,
+  differenceInCalendarDays,
+  subDays,
+} from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 import { dictionary } from '../shared/alert.utils';
@@ -54,16 +65,36 @@ class EventEmitterTransform extends Transform {
   ) {
     const selectedTimeframe_StartEndGroupings = [];
     const selectedTimePeriod = dictionary.timeframe_dateGroupBy[selectedTimeframe];
-    const startMoment = moment(startDate);
-    const endMoment = moment(endDate);
+    // Parse dates as UTC to avoid timezone issues
+    const startMoment = new Date(startDate + 'T00:00:00.000Z');
+    const endMoment = new Date(endDate + 'T00:00:00.000Z');
+
+    // For UTC operations, we need helpers that work with UTC dates
+    // Since startOfDay/Week/Month treat dates as local time, we need to work around this
+    const addFn =
+      selectedTimePeriod === 'day' ? addDays : selectedTimePeriod === 'week' ? addWeeks : addMonths;
 
     let currentMoment = startMoment;
-    while (currentMoment.isSameOrBefore(endMoment)) {
+    while (isBefore(currentMoment, endMoment) || isEqual(currentMoment, endMoment)) {
+      // For period calculation, work in UTC
+      const periodStart = currentMoment;
+      let periodEnd;
+
+      if (selectedTimePeriod === 'day' || selectedTimePeriod === 'week') {
+        // For day/week, start and end are the same
+        periodEnd = currentMoment;
+      } else if (selectedTimePeriod === 'month') {
+        // For month, end is the last day of the month
+        // Get next month, subtract 1 day to get last day of current month
+        const nextMonth = addMonths(currentMoment, 1);
+        periodEnd = subDays(nextMonth, 1);
+      }
+
       selectedTimeframe_StartEndGroupings.push([
-        currentMoment.startOf(selectedTimePeriod).format(DATE_FORMAT_CSV),
-        currentMoment.endOf(selectedTimePeriod).format(DATE_FORMAT_CSV),
+        formatInTimeZone(periodStart, 'UTC', DATE_FORMAT_CSV),
+        formatInTimeZone(periodEnd, 'UTC', DATE_FORMAT_CSV),
       ]);
-      currentMoment = currentMoment.add(1, selectedTimePeriod).startOf('day');
+      currentMoment = addFn(currentMoment, 1);
     }
 
     return selectedTimeframe_StartEndGroupings;
@@ -95,14 +126,24 @@ class EventEmitterTransform extends Transform {
 
     return selectedTimeframe_StartEndGroupings.map((dateBounds) => {
       const [startBound, endBound] = dateBounds;
-      const dateStart = moment(startBound, DATE_FORMAT_CSV);
-      const dateEnd = moment(endBound, DATE_FORMAT_CSV);
+      // Parse dates using same approach as Moment.js did - parse formatted strings
+      const dateStart = parse(startBound, DATE_FORMAT_CSV, new Date());
+      const dateEnd = parse(endBound, DATE_FORMAT_CSV, new Date());
+
       let total = 0;
       filtered.forEach((countObj) => {
         const { count, day } = countObj;
 
-        const currentM = moment(day, DATE_FORMAT);
-        if (currentM.isSameOrAfter(dateStart) && currentM.isSameOrBefore(dateEnd)) {
+        // Parse alert day - monthly data uses 'yyyy-MM' format, daily data uses 'yyyy-MM-dd'
+        // Detect format based on string length
+        const dayFormat = day.length === 7 ? 'yyyy-MM' : DATE_FORMAT;
+        const currentM = parse(day, dayFormat, new Date());
+
+        // Use same logic as original: isSameOrAfter && isSameOrBefore
+        if (
+          (isAfter(currentM, dateStart) || isEqual(currentM, dateStart)) &&
+          (isBefore(currentM, dateEnd) || isEqual(currentM, dateEnd))
+        ) {
           total += count;
         }
       });
@@ -189,9 +230,9 @@ export class AlertsHistoryService extends IPipeService {
     fs.writeFileSync(filePath, `${this.headers.join(',')}\n`);
 
     const momentSort = (a: AlertHistory, b: AlertHistory) => {
-      const momentA = moment(a.start, DATE_FORMAT_CSV);
-      const momentB = moment(b.start, DATE_FORMAT_CSV);
-      return momentA.diff(momentB);
+      const momentA = parse(a.start, DATE_FORMAT_CSV, new Date());
+      const momentB = parse(b.start, DATE_FORMAT_CSV, new Date());
+      return differenceInCalendarDays(momentA, momentB);
     };
 
     const accumulateHistory = this.accumulateHistory.getHistory();
@@ -216,10 +257,10 @@ export class AlertsHistoryService extends IPipeService {
 
     const rows = sorted.map((timeframe) => {
       const { start, total } = timeframe;
-      const endDate = moment(start, DATE_FORMAT_CSV)
-        .add(1, endDateSchema[selectedAlert][selectedTimeframe])
-        .subtract(1, 'days')
-        .format(DATE_FORMAT_CSV);
+      const startDate = parse(start, DATE_FORMAT_CSV, new Date());
+      const period = endDateSchema[selectedAlert][selectedTimeframe];
+      const addFn = period === 'DAY' ? addDays : addMonths;
+      const endDate = formatInTimeZone(subDays(addFn(startDate, 1), 1), 'UTC', DATE_FORMAT_CSV);
 
       return [listName, selectedAlertText, selectedTimeframe, total, start, endDate];
     });

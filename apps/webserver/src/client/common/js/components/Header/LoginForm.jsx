@@ -108,6 +108,7 @@ function LoginForm() {
               <PillButton
                 variant="contained"
                 color="primary"
+                size="small"
                 onClick={handleSignIn}
                 style={{ marginLeft: 'auto' }}
                 disabled={!password.length || !username.length}

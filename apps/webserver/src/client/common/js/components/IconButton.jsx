@@ -1,4 +1,4 @@
-import IconButton from 'material-ui/IconButton';
+import { IconButton } from '@mui/material';
 
 const style = {
   root: {
@@ -21,8 +21,10 @@ const GfwIconButton = (props) => {
       data-for={props.datafor}
       onClick={props.onClick}
       disableTouchRipple={true}
-      style={props.style ? props.style : style.root}
-      iconStyle={style.icon}
+      sx={{
+        ...(props.style || style.root),
+        '& > *': style.icon,
+      }}
     >
       {props.icon}
     </IconButton>

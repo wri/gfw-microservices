@@ -1,4 +1,3 @@
-import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 import isEmpty from 'lodash/isEmpty';
 
@@ -52,8 +51,8 @@ function groupGeoJSON(geojson, zoomLevel) {
 
 function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimeframe, zoomLevel) {
   const { start, end } = getTimeframeBoundaries(selectedTimeframe);
-  const momentStart = moment(start);
-  const momentEnd = moment(end);
+  const startDate = new Date(start);
+  const endDate = new Date(end);
   const propertyFilter = dictionary.timeframe_dateGroupBy[selectedTimeframe];
   const filteredObject = {};
   const entries = Object.entries(filteredLocationsObject);
@@ -63,7 +62,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       const [key, featuresArray] = entry;
       const filteredFeaturesArray = featuresArray.map((feature) => {
         const groupedGlad = getGladByTimeFrame(selectedTimeframe, feature);
-        const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
+        const groupedViirs = getViirsGrouped(feature, startDate, endDate, propertyFilter);
 
         delete groupedGlad.delete;
         delete groupedViirs.delete;
@@ -80,7 +79,7 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // If we are at the location level
       const [key, feature] = entry;
       const groupedGlad = getGladByTimeFrame(selectedTimeframe, feature);
-      const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
+      const groupedViirs = getViirsGrouped(feature, startDate, endDate, propertyFilter);
 
       delete groupedGlad.delete;
       delete groupedViirs.delete;

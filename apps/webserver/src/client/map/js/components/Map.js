@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import moment from 'moment';
+import { subDays, format } from 'date-fns';
 import { withRouter } from 'react-router-dom';
 import errorLogger from '../../../common/js/utils/errorLogger';
 // ESRI Imports
@@ -1561,9 +1561,7 @@ class Map extends Component {
       let queryURL;
 
       if (type === 'viirs') {
-        const fireDayStart = moment(new Date())
-          .subtract(this.state.fireDays, 'days')
-          .format('YYYY-MM-DD');
+        const fireDayStart = format(subDays(new Date(), this.state.fireDays), 'yyyy-MM-dd');
         queryURL = `${DATA_API_URL}/dataApi/analysisVIIRS/?geostore_origin=${origin}&geostoreID=${geostoreID}&fireDayStart=${fireDayStart}`;
       }
 
@@ -1609,8 +1607,8 @@ class Map extends Component {
       //get the URL first, then fetch the data and update the store
       const dataApi__analysisGLAD = `${DATA_API_URL}/dataApi/analysisGLAD/`;
       const GROUP_BY_COLUMN = 'umd_glad_landsat_alerts__date';
-      const start_date = moment(this.state.gladDateRange.start).format('YYYY-MM-DD');
-      const end_date = moment(this.state.gladDateRange.end).format('YYYY-MM-DD');
+      const start_date = format(new Date(this.state.gladDateRange.start), 'yyyy-MM-dd');
+      const end_date = format(new Date(this.state.gladDateRange.end), 'yyyy-MM-dd');
       const analysisURL = `${dataApi__analysisGLAD}?geostore_origin=${origin}&geostoreID=${geostoreID}&group_by=${GROUP_BY_COLUMN}&start_date=${start_date}&end_date=${end_date}`;
 
       fetch(analysisURL, {
@@ -1895,8 +1893,8 @@ class Map extends Component {
     } else if (this.state.visibleLayers.includes(gladAlertsID)) {
       analysisType = 'glad';
     } else if (this.state.visibleLayers.includes(viirsActiveFiresID)) {
-      const currentDate = moment(new Date()).format('YYYY-MM-DD');
-      const fireDayStart = moment(new Date()).subtract(fireDays, 'days').format('YYYY-MM-DD');
+      const currentDate = format(new Date(), 'yyyy-MM-dd');
+      const fireDayStart = format(subDays(new Date(), fireDays), 'yyyy-MM-dd');
       microservice = `https://production-api.globalforestwatch.org/v1/viirs-active-fires?period=${fireDayStart}%2C${currentDate}&thresh=${canopyDensity}`;
       analysisType = 'viirs';
     }

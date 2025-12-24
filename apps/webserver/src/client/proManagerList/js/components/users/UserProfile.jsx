@@ -2,7 +2,6 @@ import { Component } from 'react';
 import { Dialog } from '@mui/material';
 import Select from 'react-select';
 import qr from 'qrcode';
-import errorLogger from '../../../../common/js/utils/errorLogger';
 
 import { PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
@@ -81,12 +80,6 @@ export default class UserProfile extends Component {
     ) {
       this.getQRCode();
     }
-    errorLogger.info('UserProfile component mounted', {
-      component: 'UserProfile',
-      action: 'componentDidMount',
-      userId: this.props.currentUser?.user_id,
-      hasEmail: !!this.props.currentUser?.email,
-    });
   }
 
   getQRCode = () => {

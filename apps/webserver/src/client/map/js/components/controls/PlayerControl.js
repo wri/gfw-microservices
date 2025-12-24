@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { scaleLinear } from 'd3-scale';
 import moment from 'moment';
-import errorLogger from '../../../../common/js/utils/errorLogger';
 
 import '../../../../common/css/_irsBase.scss';
 import '../../../../common/css/_irsStyle.scss';
@@ -69,14 +68,7 @@ export default class PlayerControl extends Component {
   }
 
   render() {
-    const { sliderDate, scale } = this.state;
-    const sliderValue = scale(moment(sliderDate).unix());
-    errorLogger.info('Player control slider value updated', {
-      component: 'PlayerControl',
-      action: 'render',
-      sliderValue,
-      sliderDate,
-    });
+    const { sliderDate } = this.state;
     const formattedValue = moment(sliderDate).format('D MMM YYYY');
 
     return (

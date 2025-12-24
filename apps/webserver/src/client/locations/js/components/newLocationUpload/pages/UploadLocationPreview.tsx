@@ -61,12 +61,13 @@ export function UploadLocationPreview() {
       const uploadedData = await uploadFileToS3(selectedFile);
       addFile(uploadedData);
     } catch (err) {
-      errorLogger.error(err, {
+      errorLogger.error('Error uploading file to S3', {
         component: 'UploadLocationPreview',
         action: 'handleFileUpload',
+        error: err,
         fileName: selectedFile?.name,
       });
-      setApiRequestError({ errors: [''] });
+      setApiRequestError({ errors: ['Error uploading file to S3'] });
     } finally {
       setIsLoadingFileUpload(false);
     }

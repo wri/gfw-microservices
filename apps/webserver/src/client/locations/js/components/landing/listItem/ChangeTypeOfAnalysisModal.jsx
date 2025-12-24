@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardActions, Modal } from '@mui/material';
+import { Card, CardContent, CardActions, Modal, IconButton, Icon } from '@mui/material';
 import isEqual from 'lodash/isEqual';
 
 import { PillButton } from '../../../../../components';
@@ -112,6 +112,13 @@ function ChangeTypeOfAnalysisModal({
       >
         <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
           <CardContent>
+            <IconButton
+              onClick={() => setIsChangeTypeOfAnalysisModalOpen(false)}
+              className="change-type-of-analysis-modal__close-button"
+              aria-label="close"
+            >
+              <Icon>close</Icon>
+            </IconButton>
             <AnalysisTypesSelector
               selectedAnalyses={selectedAnalysis}
               setSelectedAnalyses={setSelectedAnalysis}

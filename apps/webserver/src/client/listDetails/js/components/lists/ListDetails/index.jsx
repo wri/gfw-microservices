@@ -502,9 +502,10 @@ export default class ListDetails extends Component {
           });
       })
       .catch((err) => {
-        errorLogger.error(err, {
+        errorLogger.error('Error locking list for deletion', {
           component: 'ListDetails',
           action: 'handleDeleteAllLocations',
+          error: err,
         });
         this.setState({
           dialogOpen: true,

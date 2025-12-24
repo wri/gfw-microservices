@@ -3,7 +3,6 @@ import Select from 'react-select';
 import qr from 'qrcode';
 import { Box, Divider, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
-import fetch from '../../../common/js/utils/fetch';
 import { fieldValidations } from '../../../profile/js/utils/validations';
 import {
   addUser,
@@ -15,7 +14,7 @@ import {
 import { USER_STATUS, USER_STATUS_LABELS } from '../../../../config/env/userStatuses.constants';
 
 import { profilePage } from '../../../common/js/config';
-import httpRequest from '../../../common/js/utils/httpRequest';
+import * as userProfileService from '../services/userProfileService.ts';
 import { Link, PillButton } from '../../../components';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
@@ -24,6 +23,46 @@ import IconArrowLeft from '../../../common/js/components/icon/IconArrowLeft';
 import store from '../../../profile/js/store';
 import '../../css/userProfile.scss';
 import forgotStrings from '../../../forgot/js/components/forgotStrings';
+import {
+  parseMultiIds,
+  buildSelectedMulti,
+  dropdownTitleOptions,
+  buildAccessLevelOptions,
+  dropdownUserStatusOptions,
+  getUserTitle,
+  getUserAccessLevel,
+  getUserStatus,
+  createGeogOptions,
+  createCommOptions,
+} from '../utils/userProfileHelpers.ts';
+import {
+  createErrorDialog,
+  createSuccessDialog,
+  createValidationDialog,
+  createActivationSuccessDialog,
+  createDeactivationSuccessDialog,
+} from '../utils/dialogHelpers.ts';
+
+// Constants
+const ACCESS_LEVEL = {
+  ADMINISTRATOR: 1,
+  USER: 2,
+};
+
+const TITLE = {
+  OTHER: 10, // "Other" title option that requires custom input
+};
+
+const STATUS = {
+  PENDING: 1,
+  ACTIVE: 2,
+  INACTIVE: 3,
+};
+
+const AUTH_PREFERENCE = {
+  GOOGLE_AUTH: 1,
+  PASSWORD: 2,
+};
 
 export default function UserProfile(props) {
   const { titlesData, currentUser, geographiesData, commoditiesData, userInfo, users, userOnly } =
@@ -36,39 +75,8 @@ export default function UserProfile(props) {
     return { errors, missing };
   };
 
-  // Helper transforms
-  const dropdownTitleOptions = useCallback((titles) => {
-    return (titles || []).map((data) => ({ value: data.id, label: data.title }));
-  }, []);
-
-  const buildAccessLevelOptions = useCallback((accessLevels) => {
-    return (accessLevels || []).map((data) => ({ value: data.id, label: data.name }));
-  }, []);
-
   const statusData = profilePage.userProfile.statusOptions;
-  const dropdownUserStatusOptions = useCallback((statusArr) => {
-    return (statusArr || []).map((s) => ({ value: s.id, label: s.name, name: s.name }));
-  }, []);
-
   const accessLevelData = profilePage.userProfile.accessOptions;
-
-  // Convert comma-separated ids into Select values
-  const parseMultiIds = useCallback((csv) => {
-    if (!csv) {
-      return [];
-    }
-    return csv.split(',').map((v) => parseInt(v, 10));
-  }, []);
-
-  const buildSelectedMulti = useCallback((idsArray, sourceData, labelKey = 'geography_name') => {
-    if (!sourceData || !sourceData.length) {
-      return idsArray.map((id) => ({ label: '', value: id }));
-    }
-    return idsArray.map((id) => {
-      const datum = sourceData.find((d) => d.id === id);
-      return datum ? { label: datum[labelKey], value: datum.id } : { label: '', value: id };
-    });
-  }, []);
 
   // Initial derived values
   const newUserInitial = !currentUser.email;
@@ -84,50 +92,6 @@ export default function UserProfile(props) {
       ? buildSelectedMulti(commodityArray, commoditiesData, 'commmodity_name')
       : [];
 
-  // Helper getters
-  const getUserTitle = useCallback((titleId, titles) => {
-    const parsed = parseInt(titleId, 10);
-    if (parsed) {
-      const userTitle = (titles || []).find((t) => parsed === parseInt(t.id, 10));
-      if (userTitle) {
-        return { value: userTitle.id, label: userTitle.title };
-      }
-    }
-    return 'Select...';
-  }, []);
-
-  const getUserAccessLevel = useCallback((accessLevelId, accessLevelDataLocal) => {
-    const parsed = parseInt(accessLevelId, 10);
-    if (parsed) {
-      const userAccessLevel = (accessLevelDataLocal || []).find(
-        (a) => parsed === parseInt(a.id, 10)
-      );
-      if (userAccessLevel) {
-        return { value: userAccessLevel.id, label: userAccessLevel.name };
-      }
-    }
-    return 'Select...';
-  }, []);
-
-  const getUserStatus = useCallback((statusId, statusDataLocal) => {
-    const parsed = parseInt(statusId, 10);
-    if (parsed) {
-      const userStatus = (statusDataLocal || []).find((s) => parsed === parseInt(s.id, 10));
-      if (userStatus) {
-        return {
-          value: userStatus.id,
-          label: userStatus.name,
-          name: userStatus.name,
-        };
-      }
-    }
-    return {
-      value: USER_STATUS.Active,
-      label: USER_STATUS_LABELS[USER_STATUS.Active],
-      name: USER_STATUS_LABELS[USER_STATUS.Active],
-    };
-  }, []);
-
   const [state, setState] = useState(() => ({
     newUser: newUserInitial,
     id: currentUser.user_id ?? currentUser.id ?? '',
@@ -136,6 +100,7 @@ export default function UserProfile(props) {
     last_name: currentUser.last_name ?? '',
     email: currentUser.email ?? '',
     phone: currentUser.phone ?? '',
+    organization_name: currentUser.organization_name ?? userInfo?.organization_name ?? '',
     title_id: currentUser.title_id ?? 1,
     other_title: currentUser.other_title ?? '',
     access_level_id: currentUser.access_level_id ?? 1,
@@ -177,13 +142,7 @@ export default function UserProfile(props) {
       return;
     }
     try {
-      const response = await httpRequest.fetchJSON('/userSecret', { email });
-      let parsed = null;
-      try {
-        parsed = JSON.parse(response);
-      } catch {
-        parsed = null;
-      }
+      const parsed = await userProfileService.getUserSecret(email);
       if (parsed && parsed.url) {
         // qr.toDataURL returns a promise when not using callback
         qr.toDataURL(parsed.url)
@@ -201,9 +160,13 @@ export default function UserProfile(props) {
     }
   }, [state.email, updateState]);
 
-  // If current user is not new and uses Google Auth (auth_preference_id === 1), get QR
+  // If current user is not new and uses Google Auth, get QR
   useEffect(() => {
-    if (state.email && state.newUser === false && state.auth_preference_id === 1) {
+    if (
+      state.email &&
+      state.newUser === false &&
+      state.auth_preference_id === AUTH_PREFERENCE.GOOGLE_AUTH
+    ) {
       getQRCode();
     }
   }, [state.email, state.newUser, state.auth_preference_id, getQRCode]);
@@ -217,45 +180,25 @@ export default function UserProfile(props) {
       updateState({ showModalLoader: true });
 
       try {
-        const response = await httpRequest.fetchJSON('/profile/activateUser', {
+        const parsedResponse = await userProfileService.activateUser(
           id,
           email,
           first_name,
-          last_name,
-        });
-
-        let parsedResponse;
-        try {
-          parsedResponse = JSON.parse(response);
-        } catch {
-          parsedResponse = null;
-        }
+          last_name
+        );
 
         if (!parsedResponse) {
-          updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: 'Error',
-            dialogMessage: 'Activation failed: invalid server response.',
-          });
+          updateState(createErrorDialog('Activation failed: invalid server response.'));
           return;
         }
 
         const { errorCode, userMessage } = parsedResponse;
 
         if (errorCode) {
-          updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: 'Error',
-            dialogMessage: userMessage,
-          });
+          updateState(createErrorDialog(userMessage));
         } else {
           updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: 'User activated',
-            dialogMessage: `The user ${first_name} ${last_name} has been successfully activated.`,
+            ...createActivationSuccessDialog(first_name, last_name),
             status_id: USER_STATUS.Active,
           });
 
@@ -267,12 +210,7 @@ export default function UserProfile(props) {
           store.dispatch(updateUser(userObject));
         }
       } catch (err) {
-        updateState({
-          showModalLoader: false,
-          dialogOpen: true,
-          dialogTitle: 'Error',
-          dialogMessage: 'Activation failed.',
-        });
+        updateState(createErrorDialog('Activation failed.'));
       }
     },
     [state, updateState]
@@ -281,64 +219,51 @@ export default function UserProfile(props) {
   // Deactivation
   const deactivateUser = useCallback(() => {
     const { access_level_id, id, email, first_name, last_name } = state;
-    const isAdmin = access_level_id === 1;
+    const isAdmin = access_level_id === ACCESS_LEVEL.ADMINISTRATOR;
     const isSelf = userInfo.id === id;
     const numberOfOrgAdmins = (users || []).filter(
-      (user) => user.access_level_id === 1 && user.status_id === 2
+      (user) =>
+        user.access_level_id === ACCESS_LEVEL.ADMINISTRATOR && user.status_id === STATUS.ACTIVE
     ).length;
 
     if (numberOfOrgAdmins <= 1 && isAdmin) {
       updateState({
-        dialogOpen: true,
-        dialogTitle: 'Unable to deactivate user',
-        dialogMessage:
+        ...createErrorDialog(
           'Deactivating this user will leave the organization without an administrator.',
+          'Unable to deactivate user'
+        ),
         updating: false,
       });
       return;
     }
     if (isSelf && isAdmin) {
       updateState({
-        dialogOpen: true,
-        dialogTitle: 'Unable to deactivate user',
-        dialogMessage: 'You are not allowed to deactivate yourself as an administrator.',
+        ...createErrorDialog(
+          'You are not allowed to deactivate yourself as an administrator.',
+          'Unable to deactivate user'
+        ),
         updating: false,
       });
       return;
     }
 
     updateState({ showModalLoader: true });
-    httpRequest
-      .fetchJSON('/profile/deactivateUser', { name: id, email })
-      .then((response) => {
-        const parsedResponse = JSON.parse(response);
+    userProfileService
+      .deactivateUser(id, email)
+      .then((parsedResponse) => {
         const { errorCode, userMessage } = parsedResponse;
         if (errorCode) {
-          updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: 'Error',
-            dialogMessage: userMessage,
-          });
+          updateState(createErrorDialog(userMessage));
         } else {
           updateState({
-            showModalLoader: false,
+            ...createDeactivationSuccessDialog(first_name, last_name),
             status_id: USER_STATUS.Inactive,
-            dialogOpen: true,
-            dialogTitle: 'User deactivated',
-            dialogMessage: `The user ${first_name} ${last_name} has been successfully deactivated.`,
-            updating: false,
           });
           store.dispatch(updateUser({ user_id: id, status_id: USER_STATUS.Inactive }));
         }
       })
       .catch(() => {
-        updateState({
-          showModalLoader: false,
-          dialogOpen: true,
-          dialogTitle: 'Error',
-          dialogMessage: 'Deactivation failed.',
-        });
+        updateState(createErrorDialog('Deactivation failed.'));
       });
   }, [state, userInfo, users, updateState]);
 
@@ -355,56 +280,32 @@ export default function UserProfile(props) {
 
     // Handle validation feedback
     if (allErrors.length || allMissing.length) {
-      if (allErrors.length && allMissing.length) {
-        allErrors.unshift('Please review for invalid characters:');
-        allMissing.unshift('Please enter:');
-        updateState({
-          dialogOpen: true,
-          dialogTitle: 'Invalid field entries & Mandatory fields missing',
-          dialogMessage: [...allErrors, ...allMissing],
-          updating: false,
-        });
-      } else if (allErrors.length) {
-        allErrors.unshift('Please review for invalid characters:');
-        updateState({
-          dialogOpen: true,
-          dialogTitle: 'Invalid field entries',
-          dialogMessage: allErrors,
-          updating: false,
-        });
-      } else {
-        allMissing.unshift('Please enter:');
-        updateState({
-          dialogOpen: true,
-          dialogTitle: 'Mandatory fields missing',
-          dialogMessage: allMissing,
-          updating: false,
-        });
-      }
+      updateState(createValidationDialog(allErrors, allMissing));
       return;
     }
 
     const { newUser, id } = state;
-    const url = newUser ? '/profile/createuser' : '/profile/updateuser';
     const body = {
       ...state,
       geographies: (state.geographies || []).map((g) => g.value),
       commodities: (state.commodities || []).map((c) => c.value),
     };
-    const headers = { 'Content-Type': 'application/json' };
     updateState({ showModalLoader: true, updating: true });
 
     try {
-      const response = await fetch({ url, method: 'POST', headers, body });
+      const response = newUser
+        ? await userProfileService.createUser(body)
+        : await userProfileService.updateUser(body);
       updateState({ showModalLoader: false });
 
       if (response.errorCode) {
         updateState({
-          dialogOpen: true,
-          dialogTitle: newUser ? 'User not added' : 'User not updated',
-          dialogMessage: newUser
-            ? response.userMessage
-            : 'Please contact system administrator for more information.',
+          ...createErrorDialog(
+            newUser
+              ? response.userMessage
+              : 'Please contact system administrator for more information.',
+            newUser ? 'User not added' : 'User not updated'
+          ),
           updating: false,
         });
         return;
@@ -458,10 +359,7 @@ export default function UserProfile(props) {
       }
     } catch (err) {
       updateState({
-        dialogOpen: true,
-        dialogTitle: 'Error',
-        dialogMessage: 'Request failed.',
-        showModalLoader: false,
+        ...createErrorDialog('Request failed.'),
         updating: false,
       });
     }
@@ -472,52 +370,33 @@ export default function UserProfile(props) {
     updateState({ showModalLoader: true });
 
     try {
-      const response = await httpRequest.fetchJSON('/auth/admin-reset-user-password', { email });
-      let res;
-
-      try {
-        res = JSON.parse(response);
-      } catch {
-        res = null;
-      }
+      const res = await userProfileService.adminResetPassword(email);
 
       if (res) {
         if (res.systemMessage?.code === 'LimitExceededException') {
           updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: forgotStrings.resetLimit.title,
-            dialogMessage: forgotStrings.resetLimit.message,
+            ...createErrorDialog(forgotStrings.resetLimit.message, forgotStrings.resetLimit.title),
           });
         } else if (res.message === 'Success') {
           updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: forgotStrings.resetSuccess.title,
-            dialogMessage: forgotStrings.resetSuccess.message,
+            ...createSuccessDialog(
+              forgotStrings.resetSuccess.message,
+              forgotStrings.resetSuccess.title
+            ),
           });
         } else {
           updateState({
-            showModalLoader: false,
-            dialogOpen: true,
-            dialogTitle: forgotStrings.resetError.title,
-            dialogMessage: forgotStrings.resetError.message,
+            ...createErrorDialog(forgotStrings.resetError.message, forgotStrings.resetError.title),
           });
         }
       } else {
         updateState({
-          showModalLoader: false,
-          dialogOpen: true,
-          dialogTitle: forgotStrings.resetError.title,
-          dialogMessage: forgotStrings.resetError.message,
+          ...createErrorDialog(forgotStrings.resetError.message, forgotStrings.resetError.title),
         });
       }
     } catch {
       updateState({
-        showModalLoader: false,
-        dialogOpen: true,
-        dialogTitle: forgotStrings.resetError.title,
-        dialogMessage: forgotStrings.resetError.message,
+        ...createErrorDialog(forgotStrings.resetError.message, forgotStrings.resetError.title),
       });
     }
   }, [state.email, updateState]);
@@ -561,16 +440,6 @@ export default function UserProfile(props) {
     [updateState]
   );
 
-  // Utility creators for options (for react-select)
-  const createGeogOptions = useCallback(
-    (option) => ({ label: option.geography_name, value: option.id }),
-    []
-  );
-  const createCommOptions = useCallback(
-    (option) => ({ label: option.commmodity_name, value: option.id }),
-    []
-  );
-
   // Dialog close
   const closeDialog = useCallback(() => updateState({ dialogOpen: false }), [updateState]);
 
@@ -581,6 +450,7 @@ export default function UserProfile(props) {
     last_name,
     email,
     phone,
+    organization_name,
     title_id,
     other_title,
     status_id,
@@ -700,6 +570,18 @@ export default function UserProfile(props) {
         </div>
 
         <div className="input-field__block-container">
+          <label htmlFor="user_organization" className="block-label">
+            Organization
+          </label>
+          <input
+            value={organization_name}
+            disabled={true}
+            id="user_organization"
+            name="user_organization"
+          />
+        </div>
+
+        <div className="input-field__block-container">
           <label htmlFor="user_phone" className="block-label required-param">
             {profilePage.profileManager.userContactFields[4]}
           </label>
@@ -722,7 +604,7 @@ export default function UserProfile(props) {
 
         <section className="section-container">
           <div className="input-field__block-container">
-            {userInfo.access_level_id === 1 ? (
+            {userInfo.access_level_id === ACCESS_LEVEL.ADMINISTRATOR ? (
               <>
                 <label htmlFor="access-level-select" className="block-label required-param">
                   {profilePage.profileManager.userProfileFields[0]}
@@ -768,7 +650,7 @@ export default function UserProfile(props) {
             />
           </div>
 
-          <div className={`${title_id === 10 ? 'col flex-grid-column' : 'hidden'}`}>
+          <div className={`${title_id === TITLE.OTHER ? 'col flex-grid-column' : 'hidden'}`}>
             <label className="profile-label" htmlFor="userPhone">
               Alternative Title
             </label>
@@ -858,7 +740,7 @@ export default function UserProfile(props) {
 
         {userOnly ||
         newUser ||
-        !(status_id === 2) ||
+        !(status_id === STATUS.ACTIVE) ||
         (userInfo.email === email && !newUser) ? null : (
           <PillButton
             variant="contained"
@@ -869,15 +751,8 @@ export default function UserProfile(props) {
           </PillButton>
         )}
 
-        {userOnly || newUser ? null : (
-          <PillButton
-            variant="contained"
-            color="error"
-            className={`${status_id === USER_STATUS.Inactive ? 'button-disabled' : ''}`}
-            disabled={status_id === USER_STATUS.Inactive}
-            onClick={deactivateUser}
-            style={{ marginRight: '10px' }}
-          >
+        {userOnly || newUser || status_id === USER_STATUS.Inactive ? null : (
+          <PillButton variant="contained" onClick={deactivateUser} style={{ marginRight: '10px' }}>
             {profilePage.profileManager.deactivate}
           </PillButton>
         )}

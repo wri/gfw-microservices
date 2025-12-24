@@ -33,12 +33,23 @@ export const userProfileData = (req, res) => {
   const isAdministrator = UserManager.isAdministrator(req);
 
   if (isAdministrator) {
-    const promises = [AccountManager.getUsersList(req), AuthManager.getUserInfo(req)];
+    const promises = [
+      AccountManager.getUsersList(req),
+      AuthManager.getUserInfo(req),
+      AccountManager.getAccountProfile(req),
+    ];
 
     Promise.all(promises)
       .then((results) => {
-        const [usersList, userInfo] = results;
+        const [usersList, userInfo, accountProfile] = results;
         const userToEdit = usersList.find((user) => user.user_id === user_id);
+
+        // Add organization_name from account profile
+        // All users in getUsersList are from the same organization as the administrator
+        const orgName = accountProfile?.organization_name || req.session.organization_name;
+        if (userToEdit) {
+          userToEdit.organization_name = orgName;
+        }
 
         res.status(200).json({
           users: usersList,
@@ -59,10 +70,16 @@ export const userProfileData = (req, res) => {
   } else {
     AuthManager.getUserInfo(req)
       .then((userInfo) => {
+        // Add organization_name from session for non-admin users
+        const enhancedUserInfo = {
+          ...userInfo,
+          organization_name: req.session.organization_name || '',
+        };
+
         res.status(200).json({
           users: [],
-          userInfo,
-          userToEdit: userInfo,
+          userInfo: enhancedUserInfo,
+          userToEdit: enhancedUserInfo,
           classifications: classes,
           commodities: commoditiesData,
           geographies: geographiesData,

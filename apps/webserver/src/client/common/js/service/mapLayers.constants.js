@@ -729,7 +729,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata: 'gfw_global_integrated_disturbance_alerts_metadata',
+          metadata: 'gfw_integrated_dist_alerts',
           url: 'https://tiles.globalforestwatch.org/gfw_integrated_dist_alerts/latest/dynamic/{z}/{x}/{y}.png?render_type=true_color',
         },
       },
@@ -1270,7 +1270,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           url: 'https://tiles.globalforestwatch.org/sbtn_natural_lands_classification/v1.1/default_pro/{z}/{x}/{y}.png',
-          metadata: 'sbtn_natural_forests_map',
+          metadata: 'sbtn_natural_lands_classification',
         },
       },
       legendConfig: {
@@ -2545,7 +2545,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata: 'gfw_integrated_alerts_drivers_metadata',
+          metadata: 'wur_alert_drivers',
           url: 'https://tiles.globalforestwatch.org/gfw_integrated_alerts_drivers/v20250925/dynamic/{z}/{x}/{y}.png?render_type=true_color',
         },
       },
@@ -2754,7 +2754,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           useCors: true,
-          metadata: 'gfw_global_vegetation_disturbance_alerts_metadata',
+          metadata: 'umd_glad_dist_alerts',
           url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts/v20251108/dynamic/{z}/{x}/{y}.png?render_type=true_color&alert_confidence=high',
         },
       },

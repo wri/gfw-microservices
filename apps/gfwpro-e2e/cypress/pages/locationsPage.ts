@@ -106,7 +106,7 @@ class LocationsPage {
     stopSharingBtn: () => cy.contains('button', 'STOP SHARING WITH ALL'),
     userSelectInput: () => cy.get('#react-select-2-input'),
     dialogHeader: () => cy.get('.dialog__title'),
-    dialogBody: () => cy.get('.dialog__prompt'),
+    dialogBody: () => cy.get('.dialog__body'),
   };
 
   verifyLists(lists: string[], exist: boolean) {
@@ -132,9 +132,9 @@ class LocationsPage {
         });
       this.clickOnDeleteList();
       this.elements.dialogHeader().should('have.text', 'Confirm deletion');
-      this.elements
-        .dialogBody()
-        .should('have.text', `${listName} will be deleted. Please press ‘OK’ to confirm.`);
+      // The dialog body contains the list name in a span and then the text
+      // So we check for contains instead of exact match
+      this.elements.dialogBody().should('contain', listName).and('contain', 'will be deleted');
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
     });

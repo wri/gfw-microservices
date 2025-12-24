@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { format as dateFnsFormat } from 'date-fns';
 
 export function formatNumber(number) {
   if (number >= 1000000) {
@@ -15,7 +15,7 @@ function addComma(number) {
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-export const formatDateForCurrentBrowserLanguage = (date, format = 'L') => {
-  moment.locale(navigator.language || navigator.userLanguage);
-  return moment(date).format(format);
+export const formatDateForCurrentBrowserLanguage = (date, formatStr = 'P') => {
+  // date-fns uses 'P' for locale-aware short date format (equivalent to moment's 'L')
+  return dateFnsFormat(new Date(date), formatStr);
 };

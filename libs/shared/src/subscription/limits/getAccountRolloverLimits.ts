@@ -4,7 +4,7 @@ import {
   getAccountYearlyUsageSinceActivation,
 } from '@wri-monorepos/sql';
 import { calculateRolloverUsed } from '../utils';
-import moment = require('moment');
+import { format as formatDate } from 'date-fns';
 
 export async function getAccountRolloverLimits(
   organizationId: number,
@@ -12,10 +12,10 @@ export async function getAccountRolloverLimits(
   extendedLimits: AnalysisLimit
 ) {
   const orgRenewalTime = await getAccountRenewalTime(organizationId);
-  const accountRenewalMoment = moment(orgRenewalTime);
+  const accountRenewalMoment = new Date(orgRenewalTime);
   const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(
     organizationId,
-    accountRenewalMoment.format('YYYY-MM-DD')
+    formatDate(accountRenewalMoment, 'yyyy-MM-dd')
   );
 
   // RolloverUsed = for[y]yearlyUsageSinceActivation =- subscriptionLimits

@@ -1,4 +1,4 @@
-const moment = require('moment');
+const { addDays, differenceInDays, format: formatDate } = require('date-fns');
 const logger = require('../../../config/privateutils/logger.utils');
 import * as sql from 'mssql';
 import config from '../../../config/config';
@@ -147,19 +147,18 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
     }
 
     const orgActivatedTime = await getAccountRenewalTime(organization_id);
-    const todayAsEndDay = moment().add(1, 'day');
-    const accountActivationDate = moment(orgActivatedTime);
-    const accountLatestYearStartDate = todayAsEndDay
-      .clone()
-      .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+    const todayAsEndDay = addDays(new Date(), 1);
+    const accountActivationDate = new Date(orgActivatedTime);
+    const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
+    const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
 
     const userStartDate =
       typeof startDate === 'undefined' || startDate == null || startDate === ''
-        ? accountLatestYearStartDate.format('YYYY-MM-DD')
+        ? formatDate(accountLatestYearStartDate, 'yyyy-MM-dd')
         : startDate;
     const userEndDate =
       typeof endDate === 'undefined' || endDate == null || endDate === ''
-        ? todayAsEndDay.format('YYYY-MM-DD')
+        ? formatDate(todayAsEndDay, 'yyyy-MM-dd')
         : endDate;
 
     const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
@@ -286,14 +285,13 @@ export const downladOrganizationUsersUsageExport = async (req, res) => {
   } = req.session;
 
   const orgActivatedTime = await getAccountRenewalTime(orgId);
-  const todayAsEndDay = moment().add(1, 'day');
-  const accountActivationDate = moment(orgActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay
-    .clone()
-    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+  const todayAsEndDay = addDays(new Date(), 1);
+  const accountActivationDate = new Date(orgActivatedTime);
+  const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
+  const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
 
-  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
-  const endDate = todayAsEndDay.format('YYYY-MM-DD');
+  const startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
+  const endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
 
   const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
   const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;

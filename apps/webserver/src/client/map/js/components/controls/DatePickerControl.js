@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import moment from 'moment';
+import { format } from 'date-fns';
 import DatePicker from 'material-ui/DatePicker';
 
 // Styling for the text field element of <DatePicker /> Component
@@ -66,5 +66,5 @@ export default class DatePickerControl extends Component {
     );
   }
 
-  formatDate = (date) => moment(date).format('D MMM YYYY');
+  formatDate = (date) => format(new Date(date), 'd MMM yyyy');
 }

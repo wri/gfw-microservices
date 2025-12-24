@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import * as moment from 'moment';
+import { isWithinInterval, isBefore, isAfter } from 'date-fns';
 import {
   dictionary,
   COLUMN_LOCATION_NAME,
@@ -8,38 +8,62 @@ import {
   COLUMN_COUNTRY,
 } from '../shared/alert.utils';
 
-export function getGladDaily(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
+export function getGladDaily(feature, momentStart: Date, momentEnd: Date) {
   return feature.glad_alerts_daily.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'days', '[]');
+    // Parse date string as UTC to match how momentStart/momentEnd are parsed
+    return isWithinInterval(new Date(date.day + 'T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
-export function getGladMonthlyMonth(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
+export function getGladMonthlyMonth(feature, momentStart: Date, momentEnd: Date) {
   return feature.glad_alerts_monthly.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'month', '[]');
+    // Parse date string as UTC - monthly data is in 'yyyy-MM' format, so add '-01' for first day of month
+    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
-export function getGladMonthlyQuarter(feature, momentEnd: moment.Moment) {
-  const momentStart = moment(momentEnd).subtract(2, 'month');
+export function getGladMonthlyQuarter(feature, momentEnd: Date) {
+  // Go back 2 months using UTC to avoid DST issues
+  const year = momentEnd.getUTCFullYear();
+  const month = momentEnd.getUTCMonth();
+  const momentStart = new Date(Date.UTC(year, month - 2, 1));
 
   return feature.glad_alerts_monthly.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'month', '[]');
+    // Parse date string as UTC - monthly data is in 'yyyy-MM' format, so add '-01' for first day of month
+    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
-export function getGladMonthlyYear(feature, momentEnd: moment.Moment) {
-  const momentStart = moment(momentEnd).subtract(1, 'years');
+export function getGladMonthlyYear(feature, momentEnd: Date) {
+  // Go back 1 year using UTC to avoid DST issues
+  const year = momentEnd.getUTCFullYear();
+  const month = momentEnd.getUTCMonth();
+  const day = momentEnd.getUTCDate();
+  const momentStart = new Date(Date.UTC(year - 1, month, day));
 
   return feature.glad_alerts_monthly.filter((date) => {
-    return moment(date.day).isBetween(momentStart, momentEnd, 'month', '[]');
+    // Parse date string as UTC - monthly data is in 'yyyy-MM' format, so add '-01' for first day of month
+    return isWithinInterval(new Date(date.day + '-01T00:00:00.000Z'), {
+      start: momentStart,
+      end: momentEnd,
+    });
   });
 }
 
-export function getViirsGrouped(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
+export function getViirsGrouped(feature, momentStart: Date, momentEnd: Date) {
   return groupBy(feature.viirs_alerts_daily, (alert) => {
-    const alertMoment = moment(alert.day);
-    if (alertMoment.isBefore(momentStart) || alertMoment.isAfter(momentEnd)) {
+    // Parse date string as UTC to match how momentStart/momentEnd are parsed
+    const alertMoment = new Date(alert.day + 'T00:00:00.000Z');
+    if (isBefore(alertMoment, momentStart) || isAfter(alertMoment, momentEnd)) {
       return 'delete';
     } else {
       return alert.day;

@@ -1,12 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientStoreConnection, Lists, Organization } from '@wri-monorepos/sql';
 import { ListService } from './list.service';
-import moment from 'moment';
+import { subDays } from 'date-fns';
 
-jest.mock('moment', () => {
-  const actualMoment = jest.requireActual('moment');
-  return jest.fn(() => actualMoment('2025-05-07T18:00:55.154Z'));
-});
+jest.useFakeTimers().setSystemTime(new Date('2025-05-07T18:00:55.154Z'));
 
 describe('ListService', () => {
   let service: ListService;
@@ -66,7 +63,7 @@ describe('ListService', () => {
 
   describe('unlockLists', () => {
     it('should unlock lists that are older than 24 hours', async () => {
-      const yesterday = moment().add(-1, 'days').toDate();
+      const yesterday = subDays(new Date(), 1);
 
       await service.unlockLists(mockOrganization);
 

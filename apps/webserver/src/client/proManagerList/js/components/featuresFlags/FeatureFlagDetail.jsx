@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { format } from 'date-fns';
 import {
   Grid,
   Switch,
@@ -26,7 +26,7 @@ const StyledSwitch = styled(Switch)(() => ({
   },
 }));
 
-const formatUpdatedTime = (date) => moment(date).format('MM/DD/YYYY - HH:mm');
+const formatUpdatedTime = (date) => format(new Date(date), 'MM/dd/yyyy - HH:mm');
 
 function FeatureFlagDetail() {
   const { selectedFeatureFlag, accountsWithFeatureFlagsByFlagId, upsertFeatureFlagByFlagId } =

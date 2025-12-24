@@ -593,9 +593,10 @@ export default class ListDetails extends Component {
           }
         })
         .catch((err) => {
-          errorLogger.error(err, {
+          errorLogger.error('Error deleting selected locations', {
             component: 'ListDetails',
             action: 'deleteSelectedLocations',
+            error: err,
           });
           this.setState({
             dialogOpen: true,

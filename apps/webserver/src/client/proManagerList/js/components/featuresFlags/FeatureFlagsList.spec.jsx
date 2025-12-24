@@ -1,8 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { format } from 'date-fns';
 
 import FeatureFlagsList from './FeatureFlagsList';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
-import moment from 'moment/moment';
 
 jest.mock('./FeatureFlagStateContext');
 
@@ -29,7 +29,7 @@ describe('FeatureFlagsList', () => {
     });
 
     featureFlagsList.forEach((flag) => {
-      const formattedDate = moment(flag.updateDateTime).format('MM/DD/YYYY - HH:mm');
+      const formattedDate = format(new Date(flag.updateDateTime), 'MM/dd/yyyy - HH:mm');
 
       expect(screen.getByText(formattedDate)).toBeInTheDocument();
     });

@@ -12,7 +12,7 @@
 ******************************************************************* */
 // Imports for this module.
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
-const moment = require('moment');
+const { format: formatDate } = require('date-fns');
 
 import config from '../config';
 
@@ -61,8 +61,9 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
 
   switch (type) {
     case config.platformVars.emailType.NEW_ORGANIZATION:
-      title = `<h3>Dear GFW Pro Operations Administrator,</h3><p>Please visit pro.globalforestwatch.org/pro-manager to review the following application for a <b>GFW Pro</b> Account, submitted on ${moment().format(
-        'DD MMM YYYY, hh:mm a'
+      title = `<h3>Dear GFW Pro Operations Administrator,</h3><p>Please visit pro.globalforestwatch.org/pro-manager to review the following application for a <b>GFW Pro</b> Account, submitted on ${formatDate(
+        new Date(),
+        'dd MMM yyyy, hh:mm a'
       )}</p>`;
       msg =
         `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td><u>Account Information</u></td></tr><tr><td>Company Name:</td><td>${
@@ -97,8 +98,9 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
     case config.platformVars.emailType.REQUEST_ORGANIZATION:
       title = `<h3>Dear ${content.user_first_name} ${content.user_last_name},</h3>`;
       msg =
-        `<p>We received your GFW Pro Account application submitted on ${moment().format(
-          'DD MMM YYYY, hh:mm a'
+        `<p>We received your GFW Pro Account application submitted on ${formatDate(
+          new Date(),
+          'dd MMM yyyy, hh:mm a'
         )}.</p>` + '<p>We will review your application and respond within 2 business days.</p>';
       break;
     case config.platformVars.emailType.ORGANIZATION_ACTIVATED:

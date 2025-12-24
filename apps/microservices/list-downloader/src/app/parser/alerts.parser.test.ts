@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import {
   getGladDaily,
   getGladMonthlyMonth,
@@ -19,8 +18,8 @@ describe('Alerts Parser', () => {
       ],
     };
 
-    const momentStart = moment('2020-01-02');
-    const momentEnd = moment('2020-01-04');
+    const momentStart = new Date('2020-01-02');
+    const momentEnd = new Date('2020-01-04');
 
     const result = getGladDaily(feature, momentStart, momentEnd);
     expect(result).toStrictEqual([
@@ -41,8 +40,8 @@ describe('Alerts Parser', () => {
       ],
     };
 
-    const momentStart = moment('2020-02-01');
-    const momentEnd = moment('2020-04-01');
+    const momentStart = new Date('2020-02-01');
+    const momentEnd = new Date('2020-04-01');
 
     const result = getGladMonthlyMonth(feature, momentStart, momentEnd);
     expect(result).toStrictEqual([{ day: '2020-02' }, { day: '2020-03' }, { day: '2020-04' }]);
@@ -59,7 +58,7 @@ describe('Alerts Parser', () => {
       ],
     };
 
-    const momentEnd = moment('2020-05-01');
+    const momentEnd = new Date('2020-05-01');
 
     const result = getGladMonthlyQuarter(feature, momentEnd);
     expect(result).toStrictEqual([{ day: '2020-03' }, { day: '2020-04' }, { day: '2020-05' }]);
@@ -89,7 +88,7 @@ describe('Alerts Parser', () => {
       ],
     };
 
-    const momentEnd = moment('2020-05-01');
+    const momentEnd = new Date('2020-05-01');
 
     const result = getGladMonthlyYear(feature, momentEnd);
     expect(result).toStrictEqual([
@@ -120,8 +119,8 @@ describe('Alerts Parser', () => {
       ],
     };
 
-    const momentStart = moment('2020-01-02');
-    const momentEnd = moment('2020-01-04');
+    const momentStart = new Date('2020-01-02');
+    const momentEnd = new Date('2020-01-04');
 
     const result = getViirsGrouped(feature, momentStart, momentEnd);
     expect(result).toStrictEqual({

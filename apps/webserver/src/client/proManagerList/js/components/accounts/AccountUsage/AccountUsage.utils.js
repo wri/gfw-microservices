@@ -1,8 +1,8 @@
-import moment from 'moment';
+import { subMonths, addDays, format } from 'date-fns';
 
-export const oneMonthAgoDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
+export const oneMonthAgoDate = format(subMonths(new Date(), 1), 'yyyy-MM-dd');
 
-export const endDayIncludingToday = moment().add(1, 'day').format('YYYY-MM-DD');
+export const endDayIncludingToday = format(addDays(new Date(), 1), 'yyyy-MM-dd');
 
 export const todaysDateISOString = new Date().toISOString().slice(0, 10);
 

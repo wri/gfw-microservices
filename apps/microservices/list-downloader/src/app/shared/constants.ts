@@ -26,8 +26,8 @@ export const SELECTED_ALERT_INTEGRATED = 'Integrated';
 export const POOL_SIZE = 5;
 export const MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
 
-export const DATE_FORMAT_CSV = 'DD MMM YYYY';
-export const DATE_FORMAT = 'YYYY-MM-DD';
+export const DATE_FORMAT_CSV = 'dd MMM yyyy';
+export const DATE_FORMAT = 'yyyy-MM-dd';
 
 export const ALERTS_PRIORITIES_LOCATION_LEVEL = 'AlertsPriorities_LocationsLevel';
 export const ALERTS_LOCATION_LEVEL = 'Alerts_LocationsLevel';

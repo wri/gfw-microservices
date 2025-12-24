@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { UnlockListService } from './unlock.list.service';
-import moment from 'moment';
+import { formatInTimeZone } from 'date-fns-tz';
 
 @Injectable()
 export class Task {
@@ -13,9 +13,11 @@ export class Task {
   @Cron('0 0 1 * * *')
   async performingDailyTasks() {
     this.logger.log(
-      `Performing daily tasks, executed at: ${moment(new Date())
-        .utc()
-        .format('YYYY-MM-DD HH:mm:ss')}`
+      `Performing daily tasks, executed at: ${formatInTimeZone(
+        new Date(),
+        'UTC',
+        'yyyy-MM-dd HH:mm:ss'
+      )}`
     );
 
     // Random delay between 0 and 2 hours to reduce collision probability across multiple instances

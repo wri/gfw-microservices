@@ -3,7 +3,17 @@ import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
 import { IFileGenerator } from './i.file.generator';
 import { AlertsDataService } from '../data/alerts.data.service';
 import * as asyncPool from 'tiny-async-pool';
-import * as moment from 'moment';
+import {
+  subDays,
+  subMonths,
+  subWeeks,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  endOfDay,
+  format,
+} from 'date-fns';
 import { AlertsFileService } from '../files/alerts.file.service';
 import {
   POOL_SIZE,
@@ -60,32 +70,38 @@ export class AlertsGeneratorService extends IFileGenerator {
     switch (selectedTimeframe) {
       case SELECTED_TIMEFRAME_DAY: {
         return {
-          startDate: moment().subtract(1, 'days').format(startDateFormat),
-          endDate: moment().endOf('day').format(endDateFormat),
+          startDate: format(subDays(new Date(), 1), startDateFormat),
+          endDate: format(endOfDay(new Date()), endDateFormat),
         };
       }
       case SELECTED_TIMEFRAME_WEEK: {
+        const lastWeek = subWeeks(new Date(), 1);
         return {
-          startDate: moment().subtract(1, 'week').startOf('week').format(startDateFormat),
-          endDate: moment().subtract(1, 'week').endOf('week').format(endDateFormat),
+          startDate: format(startOfWeek(lastWeek), startDateFormat),
+          endDate: format(endOfWeek(lastWeek), endDateFormat),
         };
       }
       case SELECTED_TIMEFRAME_MONTH: {
+        const lastMonth = subMonths(new Date(), 1);
         return {
-          startDate: moment().subtract(1, 'month').startOf('month').format(startDateFormat),
-          endDate: moment().subtract(1, 'month').endOf('month').format(endDateFormat),
+          startDate: format(startOfMonth(lastMonth), startDateFormat),
+          endDate: format(endOfMonth(lastMonth), endDateFormat),
         };
       }
       case SELECTED_TIMEFRAME_QUARTER: {
+        const threeMonthsAgo = subMonths(new Date(), 3);
+        const lastMonth = subMonths(new Date(), 1);
         return {
-          startDate: moment().subtract(3, 'month').startOf('month').format(startDateFormat),
-          endDate: moment().subtract(1, 'month').endOf('month').format(endDateFormat),
+          startDate: format(startOfMonth(threeMonthsAgo), startDateFormat),
+          endDate: format(endOfMonth(lastMonth), endDateFormat),
         };
       }
       case SELECTED_TIMEFRAME_YEAR: {
+        const twelveMonthsAgo = subMonths(new Date(), 12);
+        const lastMonth = subMonths(new Date(), 1);
         return {
-          startDate: moment().subtract(12, 'month').startOf('month').format(startDateFormat),
-          endDate: moment().subtract(1, 'month').endOf('month').format(endDateFormat),
+          startDate: format(startOfMonth(twelveMonthsAgo), startDateFormat),
+          endDate: format(endOfMonth(lastMonth), endDateFormat),
         };
       }
     }

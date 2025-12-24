@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
-import * as moment from 'moment';
+import { parse, isValid } from 'date-fns';
 
 export const listIdSchema = z.coerce.number();
 
@@ -26,13 +26,13 @@ export class ListAnalysisResponse {
 }
 
 const dateFormat = z.string().transform((value) => {
-  const date = moment(value, 'MM-DD-YYYY', true);
+  const date = parse(value, 'MM-dd-yyyy', new Date());
 
-  if (!date.isValid()) {
+  if (!isValid(date)) {
     throw new BadRequestException('Invalid date format, use MM-DD-YYYY');
   }
 
-  return date.toDate();
+  return date;
 });
 
 export const alertsGenerateBodySchema = z.object({

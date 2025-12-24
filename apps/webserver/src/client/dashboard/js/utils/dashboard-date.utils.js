@@ -1,4 +1,18 @@
-import moment from 'moment';
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  format,
+  isBefore,
+  isAfter,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  isSameDay,
+} from 'date-fns';
 import groupBy from 'lodash/groupBy';
 
 import {
@@ -8,16 +22,16 @@ import {
 import * as dictionary from './dictionary';
 import { getTimeframeBoundaries } from './dateUtils';
 
-export const DATE_FORMAT__DAY = 'YYYY-MM-DD';
-export const DATE_FORMAT__WEEK = 'YYYY-w';
-export const DATE_FORMAT__MONTH = 'YYYY-MM';
+export const DATE_FORMAT__DAY = 'yyyy-MM-dd';
+export const DATE_FORMAT__WEEK = 'yyyy-w';
+export const DATE_FORMAT__MONTH = 'yyyy-MM';
 
 // CSV formats
-export const DATE_FORMAT__CSV = 'DD MMM YYYY';
+export const DATE_FORMAT__CSV = 'dd MMM yyyy';
 
 /**
  * Get Dashboard Days Range
- * Date format - 'YYYY-MM-DD'
+ * Date format - 'yyyy-MM-dd'
  *
  * @param {number} [numberOfDays = 1] - Number of days
  * @return {string[]} - List of Formated Days Range (e.g. ['2021-09-13', ...])
@@ -25,16 +39,12 @@ export const DATE_FORMAT__CSV = 'DD MMM YYYY';
 export const getDashboardDaysRange = (numberOfDays = 1) => {
   return Array(numberOfDays)
     .fill()
-    .map((value, index) =>
-      moment()
-        .add(-numberOfDays + index, 'day')
-        .format(DATE_FORMAT__DAY)
-    );
+    .map((value, index) => format(addDays(new Date(), -numberOfDays + index), DATE_FORMAT__DAY));
 };
 
 /**
  * Get Dashboard Monthly Range
- * Date format - 'YYYY-MM'
+ * Date format - 'yyyy-MM'
  *
  * @param {number} [numberOfMonths] - Number of Months (e.g 12 - for year)
  * @return {string[]} - List of Formated Month Range (e.g. ['2021-08', ...])
@@ -43,9 +53,7 @@ function getDashboardMonthlyRange(numberOfMonths) {
   return Array(numberOfMonths)
     .fill()
     .map((value, index) =>
-      moment()
-        .add(-numberOfMonths + index, 'month')
-        .format(DATE_FORMAT__MONTH)
+      format(addMonths(new Date(), -numberOfMonths + index), DATE_FORMAT__MONTH)
     );
 }
 
@@ -159,15 +167,15 @@ export function getGladMonthlyYear(feature) {
  * Get VIIRS Grouped
  *
  * @param {Object} feature - Single location
- * @param {moment.Moment} momentStart - Moment date start
- * @param {moment.Moment} momentEnd - Moment date end
- * @param {moment.unitOfTime.StartOf} propertyFilter - Property Filter (e.g. 'day' | 'week' | 'month')
+ * @param {Date} momentStart - Date start
+ * @param {Date} momentEnd - Date end
+ * @param {string} propertyFilter - Property Filter (e.g. 'day' | 'week' | 'month')
  * @return {Object | 'delete'} - List of VIIRS alerts
  */
 export function getViirsGrouped(feature, momentStart, momentEnd) {
   return groupBy(feature.properties.viirs_alerts_daily, (alert) => {
-    const alertMoment = moment(alert.day);
-    if (alertMoment.isBefore(momentStart) || alertMoment.isAfter(momentEnd)) {
+    const alertDate = new Date(alert.day);
+    if (isBefore(alertDate, momentStart) || isAfter(alertDate, momentEnd)) {
       return 'delete';
     } else {
       return alert.day;
@@ -247,16 +255,31 @@ export function getSelectedTimeframeStartEndGroupings(selectedTimeframe) {
   let selectedTimeframe_StartEndGroupings = [];
   const selectedTimePeriod = dictionary.timeframe_dateGroupBy[selectedTimeframe];
   const { start, end } = getTimeframeBoundaries(selectedTimeframe);
-  const startMoment = moment(start);
-  const endMoment = moment(end);
 
-  let currentMoment = startMoment;
-  while (currentMoment.isSameOrBefore(endMoment)) {
+  let currentDate = new Date(start);
+  const endDate = new Date(end);
+
+  while (isSameDay(currentDate, endDate) || !isAfter(currentDate, endDate)) {
+    let periodStart, periodEnd;
+
+    if (selectedTimePeriod === 'day') {
+      periodStart = startOfDay(currentDate);
+      periodEnd = endOfDay(currentDate);
+      currentDate = addDays(currentDate, 1);
+    } else if (selectedTimePeriod === 'week') {
+      periodStart = startOfWeek(currentDate);
+      periodEnd = endOfWeek(currentDate);
+      currentDate = addWeeks(currentDate, 1);
+    } else if (selectedTimePeriod === 'month') {
+      periodStart = startOfMonth(currentDate);
+      periodEnd = endOfMonth(currentDate);
+      currentDate = addMonths(currentDate, 1);
+    }
+
     selectedTimeframe_StartEndGroupings.push([
-      currentMoment.startOf(selectedTimePeriod).format(DATE_FORMAT__CSV),
-      currentMoment.endOf(selectedTimePeriod).format(DATE_FORMAT__CSV),
+      format(periodStart, DATE_FORMAT__CSV),
+      format(periodEnd, DATE_FORMAT__CSV),
     ]);
-    currentMoment = currentMoment.add(1, selectedTimePeriod).startOf('day');
   }
 
   return selectedTimeframe_StartEndGroupings;

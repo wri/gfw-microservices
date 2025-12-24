@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import store from '../../../store';
 import { updatePlanetTileLayer, updatePlanetTileColor } from '../../../actions/mapActions';
@@ -24,7 +24,7 @@ export const PlanetTilesOptions = () => {
           const yearAndMonth = match && match[0]?.replace(/_/g, '-');
           const res = {
             tileName: tile.name,
-            label: moment(yearAndMonth).format('MMM YYYY'),
+            label: format(new Date(yearAndMonth), 'MMM yyyy'),
           };
           return res;
         });

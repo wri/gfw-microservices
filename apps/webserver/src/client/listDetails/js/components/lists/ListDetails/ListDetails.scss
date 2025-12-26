@@ -31,6 +31,10 @@ body:has(.list-details) {
   padding: 10px 0 16px;
   margin-bottom: 10px;
 
+  > div {
+    margin-left: auto;
+  }
+
   &__download-reports-button.MuiButton-root {
     color: #767575;
     border: 1px solid #767575;

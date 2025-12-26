@@ -1885,7 +1885,8 @@ export default class ListDetails extends Component {
       listName !== gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.ADMINISTRATIVE_AREAS] &&
       listName !== gfwListsNames[GFW_LISTS_NUMBER_CONSTANTS.PROTECTED_AREAS] &&
       (isGfwList || getActiveAnalysisType(listAnalysesStatus)) &&
-      selectedLocations?.length < 2;
+      selectedLocations?.length < 2 &&
+      listView !== ALERTS;
 
     const locationsWithError = listData?.filter((x) => x.ErrorDetails);
     const carLastUpdateDate = JSON.parse(listData?.[0]?.attributes || '{}')?.['ID Updated Date'];

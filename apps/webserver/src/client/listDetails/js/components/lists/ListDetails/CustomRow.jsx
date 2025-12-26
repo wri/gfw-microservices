@@ -13,6 +13,7 @@ import { updateSelectedLocations } from '../../../../../locations/js/actions/loc
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import store from '../../../../../locations/js/store';
+import { ALERTS } from './listViews.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -59,7 +60,8 @@ const CustomRow = ({
   const isSelectedLocationActive =
     rowInfo?.location_status_id === listStatus.Active || rowInfo?.statusCode === listStatus.Active;
 
-  const showLocationDiagnosticButton = isGfwList || isSelectedLocationActive;
+  const showLocationDiagnosticButton =
+    (isGfwList || isSelectedLocationActive) && listView !== ALERTS;
 
   return (
     <div

@@ -76,11 +76,12 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
         </Box>
       </DialogContent>
       <DialogActions>
-        <PillButton onClick={handleClose} color="info">
+        <PillButton onClick={handleClose} color="info" size="small">
           Cancel
         </PillButton>
         <PillButton
           variant="contained"
+          size="small"
           onClick={() =>
             onDownload({
               startDate: formatDateToISO(startDateInput),

@@ -8,15 +8,15 @@
   > div {
     /*  padding fix to avoid scroll overlap in firefox */
     padding-right: 5px;
-    width: 100%;
     box-sizing: border-box;
     overflow: hidden;
   }
-  > div[role='presentation'] {
+  // !important is required here to override Material-UI's inline styles on div[role='presentation']
+  // Material-UI v0.x applies inline styles (width: 840px) that cannot be overridden by CSS specificity alone
+  // This is the standard practice for overriding third-party library inline styles
+  div[role='presentation'] {
     width: 100%;
-    max-width: 800px;
-    box-sizing: border-box;
-    overflow: hidden;
+    max-width: 800px !important;
   }
   &__header {
     display: flex;

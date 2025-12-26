@@ -20,7 +20,7 @@ import { boxStyle, selectStyle } from './filterStyles';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import '../../../../../../common/css/filter-dialogs.scss';
 
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 
 interface AdministrativeAreasGFWListFilterProps {
   adminAreas: { Country: string; State: string; 'Sub State'?: string }[];
@@ -175,15 +175,19 @@ const AdministrativeAreasGFWListFilter: FC<AdministrativeAreasGFWListFilterProps
           }}
         >
           {isCountrySetInFilter && (
-            <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+            <PillButton variant="contained" color="secondary" size="small" onClick={onCloseHandler}>
+              Cancel
+            </PillButton>
           )}
-          <Button
-            style={{ marginLeft: '10px' }}
-            variant="primary"
+          <PillButton
+            variant="contained"
+            size="small"
             disabled={!isCountrySetInState}
             onClick={updateValues}
-            label="Apply"
-          />
+            sx={{ ml: 0.5 }}
+          >
+            Apply
+          </PillButton>
         </div>
       </Box>
     </Modal>

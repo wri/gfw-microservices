@@ -31,12 +31,6 @@ jest.mock('../../../../../locations/js/components/lists/download/confirmDialog',
   default: jest.fn(() => <div>ConfirmDialog</div>),
 }));
 
-jest.mock('material-ui', () => ({
-  Menu: ({ children }) => <div>{children}</div>,
-  MenuItem: ({ children }) => <div>{children}</div>,
-  Popover: ({ children }) => <div>{children}</div>,
-}));
-
 describe('ListDownloadMenu', () => {
   const defaultProps = {
     combinedColumns: [],

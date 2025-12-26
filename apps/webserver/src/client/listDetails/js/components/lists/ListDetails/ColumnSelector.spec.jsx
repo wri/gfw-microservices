@@ -1,9 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import ColumnSelector from './ColumnSelector';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
-const muiTheme = getMuiTheme();
 // Mock global Transifex
 const mockTransifex = {
   live: {
@@ -27,26 +24,22 @@ describe('ColumnSelector', () => {
 
   it('renders without crashing', () => {
     render(
-      <MuiThemeProvider muiTheme={muiTheme}>
-        <ColumnSelector
-          listColumns={mockListColumns}
-          visibleColumns={mockVisibleColumns}
-          setListColumns={mockSetListColumns}
-        />
-      </MuiThemeProvider>
+      <ColumnSelector
+        listColumns={mockListColumns}
+        visibleColumns={mockVisibleColumns}
+        setListColumns={mockSetListColumns}
+      />
     );
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('shows Popover when button is clicked', () => {
     render(
-      <MuiThemeProvider muiTheme={muiTheme}>
-        <ColumnSelector
-          listColumns={mockListColumns}
-          visibleColumns={mockVisibleColumns}
-          setListColumns={mockSetListColumns}
-        />
-      </MuiThemeProvider>
+      <ColumnSelector
+        listColumns={mockListColumns}
+        visibleColumns={mockVisibleColumns}
+        setListColumns={mockSetListColumns}
+      />
     );
 
     const button = screen.getByRole('button');
@@ -61,13 +54,11 @@ describe('ColumnSelector', () => {
   });
   it('calls setListColumns when a column checkbox is clicked', () => {
     render(
-      <MuiThemeProvider muiTheme={muiTheme}>
-        <ColumnSelector
-          listColumns={mockListColumns}
-          visibleColumns={mockVisibleColumns}
-          setListColumns={mockSetListColumns}
-        />
-      </MuiThemeProvider>
+      <ColumnSelector
+        listColumns={mockListColumns}
+        visibleColumns={mockVisibleColumns}
+        setListColumns={mockSetListColumns}
+      />
     );
 
     const button = screen.getByRole('button');

@@ -1,13 +1,6 @@
 import { useState } from 'react';
-import Popover from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
-import MenuItem from 'material-ui/MenuItem';
-import PublicIcon from '@mui/icons-material/Public';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import Button from '@mui/material/Button';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { Popover, MenuList, MenuItem, Button } from '@mui/material';
+import { Public, Delete, DriveFileMove, QueryStats, MoreVert } from '@mui/icons-material';
 import ListDownloadMenu from '../download/ListDownloadMenu';
 import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
 import redirectToMap from '../../../../../common/js/utils/redirect';
@@ -89,7 +82,7 @@ const CustomRow = ({
                 }}
                 data-cy="location-diagnostics"
                 onClick={() => viewDiagnostic(locationId)}
-                startIcon={<QueryStatsIcon />}
+                startIcon={<QueryStats />}
               >
                 {transifex('Location diagnostic')}
               </Button>
@@ -97,7 +90,7 @@ const CustomRow = ({
 
             <Button
               onClick={() => redirectToMap(sendData)}
-              startIcon={<PublicIcon />}
+              startIcon={<Public />}
               sx={greenButtonStyle}
               data-cy="locations-map"
             >
@@ -111,21 +104,19 @@ const CustomRow = ({
                 setIsMenuOpen(!isMenuOpen);
               }}
             >
-              <MoreVertIcon data-cy="row-more-options-button" sx={{ color: 'black' }} />
+              <MoreVert data-cy="row-more-options-button" sx={{ color: 'black' }} />
             </Button>
 
             <Popover
               anchorEl={menuAnchorEl}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               open={isMenuOpen}
-              onRequestClose={() => setIsMenuOpen(false)}
-              targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+              onClose={() => setIsMenuOpen(false)}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-              <Menu className="context-menu">
+              <MenuList>
                 {isCopyMoveActionAvailable && (
                   <MenuItem
-                    primaryText={isGfwList ? 'COPY' : 'COPY/MOVE'}
-                    leftIcon={<DriveFileMoveIcon />}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));
                       copyMoveAction({
@@ -134,7 +125,10 @@ const CustomRow = ({
                         selectedNewOrExisting: null,
                       });
                     }}
-                  />
+                  >
+                    <DriveFileMove sx={{ mr: 1 }} fontSize="small" />
+                    {isGfwList ? 'Copy' : 'Copy/Move'}
+                  </MenuItem>
                 )}
 
                 <ListDownloadMenu
@@ -154,16 +148,17 @@ const CustomRow = ({
                 />
                 {isDeleteButtonAvailable && (
                   <MenuItem
-                    primaryText="DELETE"
-                    leftIcon={<DeleteIcon />}
-                    style={{ color: 'red' }}
+                    sx={{ color: 'error.main' }}
                     onClick={() => {
                       store.dispatch(updateSelectedLocations([locationId]));
                       promptDeleteSelectedLocations();
                     }}
-                  />
+                  >
+                    <Delete sx={{ mr: 1 }} fontSize="small" />
+                    Delete
+                  </MenuItem>
                 )}
-              </Menu>
+              </MenuList>
             </Popover>
           </div>
         )}

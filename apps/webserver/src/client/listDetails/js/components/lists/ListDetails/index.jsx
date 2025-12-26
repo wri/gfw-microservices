@@ -71,7 +71,6 @@ import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
 import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
-import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
@@ -181,7 +180,7 @@ export default class ListDetails extends Component {
       listColumns: [],
       combinedColumns: [],
 
-      openCountriesPopover: false,
+      isCountriesPopoverOpen: false,
       dialogOpen: false,
       rerunDialogState: false,
       currentAdminAreas: [], // adminAreas
@@ -1395,18 +1394,19 @@ export default class ListDetails extends Component {
     });
   };
 
-  toggleCountriesPopover = (event) => {
+  openCountriesPopover = (event) => {
     event.preventDefault();
 
     this.setState({
-      openCountriesPopover: true,
+      isCountriesPopoverOpen: true,
       anchorElCountries: event.currentTarget,
     });
   };
 
   closeCountriesPopover = () => {
     this.setState({
-      openCountriesPopover: false,
+      isCountriesPopoverOpen: false,
+      anchorElCountries: null,
     });
   };
 
@@ -1748,7 +1748,7 @@ export default class ListDetails extends Component {
       searchInputValue,
       filterString,
       listNotAccessible,
-      openCountriesPopover,
+      isCountriesPopoverOpen,
       refreshPage,
       rerunDialogState,
       selectedMoveOrCopy,
@@ -1901,7 +1901,7 @@ export default class ListDetails extends Component {
     const translatedDiagnosticButtonLabel = Transifex.live.translateText(diagnosticButtonLabel);
 
     return (
-      <ThemeProvider>
+      <>
         <div className="list-details">
           {!isGfwList && (
             <>
@@ -2067,14 +2067,14 @@ export default class ListDetails extends Component {
                 </div>
                 <LocationsSummary
                   anchorElCountries={anchorElCountries}
-                  closeCountriesPopover={this.closeCountriesPopover}
                   countries={countries}
                   filterValues={filterValues}
                   listLocationsCount={numberOfResults}
-                  openCountriesPopover={openCountriesPopover}
                   selectedList={selectedList}
                   shareView={shareView}
-                  toggleCountriesPopover={this.toggleCountriesPopover}
+                  isOpen={isCountriesPopoverOpen}
+                  onOpen={this.openCountriesPopover}
+                  onClose={this.closeCountriesPopover}
                   numberOfResults={numberOfResults}
                 />
               </Stack>
@@ -2348,7 +2348,7 @@ export default class ListDetails extends Component {
           onDownload={(date) => this.handleAlertsDownloadReport(listID, listView, date)}
         />
         <GDPRFooter variant="app" />
-      </ThemeProvider>
+      </>
     );
   }
 }

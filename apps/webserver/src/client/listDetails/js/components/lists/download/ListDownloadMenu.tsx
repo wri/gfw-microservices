@@ -4,8 +4,16 @@ import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from '@mui/icons-material';
-import { Divider, Box, Button } from '@mui/material';
-import { Menu, MenuItem, Popover } from 'material-ui';
+import {
+  Divider,
+  Box,
+  Button,
+  MenuList,
+  MenuItem,
+  Popover,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 import { userAccessLevel } from '../../../../../common/js/config';
 import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils/lists.utils';
 import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
@@ -53,7 +61,7 @@ function ListDownloadMenu({
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const isMenuOpen = Boolean(anchorEl);
 
-  const handleOpenMenu = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -121,49 +129,68 @@ function ListDownloadMenu({
     <>
       {isHoverMenu ? (
         <MenuItem
-          leftIcon={<DownloadIcon height="14px" />}
-          rightIcon={isMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
           data-cy="download-list"
           onClick={handleOpenMenu}
-          primaryText="DOWNLOAD"
-        />
+          sx={{ '.MuiListItemIcon-root': { minWidth: 0 } }}
+        >
+          <ListItemIcon>
+            <DownloadIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText sx={{ mx: 1 }}>Download</ListItemText>
+          <Box component="span" sx={{ display: 'flex', marginLeft: 'auto' }}>
+            {isMenuOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+          </Box>
+        </MenuItem>
       ) : (
         <Button
           data-cy="download-list"
           color="inherit"
-          startIcon={<DownloadIcon height="14px" />}
-          endIcon={isMenuOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          startIcon={<DownloadIcon fontSize="small" />}
+          endIcon={
+            isMenuOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />
+          }
           onClick={handleOpenMenu}
         >
           Download
         </Button>
       )}
 
-      <Popover anchorEl={anchorEl} open={isMenuOpen} onRequestClose={handleClose}>
-        <Menu>
+      <Popover
+        anchorEl={anchorEl}
+        open={isMenuOpen}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
+        <MenuList>
           {errorFileStoragePath && (
             <MenuItem
-              primaryText="Download error file CSV"
+              component="a"
               data-cy="download-error-file"
               href={`/locations/downloadErrorFile?fileKey=${errorFileStoragePath}`}
               target="_blank"
-            />
+              rel="noopener noreferrer"
+            >
+              <ListItemText>Download error file CSV</ListItemText>
+            </MenuItem>
           )}
 
           {isSourceFileDownloadEnabled && (
             <MenuItem
-              primaryText="Location(s) CSV"
               data-cy="download-list-csv"
               onClick={() => handleMenuClick({ format: 'csv', type: 'input' })}
-            />
+            >
+              <ListItemText>Location(s) CSV</ListItemText>
+            </MenuItem>
           )}
 
           {isSourceFileDownloadEnabled && (
             <MenuItem
-              primaryText="Location(s) Shapefile"
               data-cy="download-list-shapefile"
               onClick={() => handleMenuClick({ format: 'shapefile', type: 'input' })}
-            />
+            >
+              <ListItemText>Location(s) Shapefile</ListItemText>
+            </MenuItem>
           )}
           <Divider />
           <MenuItem>
@@ -171,7 +198,7 @@ function ListDownloadMenu({
               Downloads contain location data only; no analysis
             </Box>
           </MenuItem>
-        </Menu>
+        </MenuList>
       </Popover>
       <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
     </>

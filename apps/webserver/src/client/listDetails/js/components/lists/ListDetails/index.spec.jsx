@@ -24,11 +24,6 @@ jest.mock('common/js/components/InfoBubble', () => () => <div data-testid="info-
   virtual: true,
 });
 
-// Mock legacy material-ui dependency used by common Button
-jest.mock('material-ui/RaisedButton', () => () => <div data-testid="raised-button" />, {
-  virtual: true,
-});
-
 import { render, screen } from '@testing-library/react';
 
 import ListDetails from './index';
@@ -75,11 +70,6 @@ jest.mock('./LocationsSummary', () => () => <div data-testid="locations-summary"
 jest.mock('../../../../../locations/js/components/ShareList/ShareList', () => () => (
   <div data-testid="share-list" />
 ));
-jest.mock('material-ui/Dialog', () => () => <div data-testid="dialog" />);
-jest.mock('material-ui/Tabs', () => ({ Tabs: () => <div />, Tab: () => <div /> }));
-jest.mock('material-ui/Card', () => ({ Card: () => <div />, CardText: () => <div /> }));
-jest.mock('material-ui/FlatButton', () => () => <div />);
-jest.mock('material-ui/Toolbar', () => ({ Toolbar: () => <div />, ToolbarGroup: () => <div /> }));
 
 describe('ListDetails', () => {
   const defaultProps = {

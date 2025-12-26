@@ -12,10 +12,10 @@
     box-sizing: border-box;
     overflow: hidden;
   }
-  div[role='presentation'] {
-    width: 100% !important;
-    max-width: 800px !important;
-    box-sizing: border-box !important;
+  > div[role='presentation'] {
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
     overflow: hidden;
   }
   &__header {

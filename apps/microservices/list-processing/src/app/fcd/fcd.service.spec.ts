@@ -245,7 +245,6 @@ describe('Classified Region - handleClassifiedRegionCategoryForList', () => {
     jest.spyOn(SQLUtils, 'queryDBFirstRow').mockImplementation(() =>
       Promise.resolve({
         country_specific_deforestation_classified_region_yearly: '{}',
-        arg_otbn_area: '{}',
       })
     );
 

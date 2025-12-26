@@ -384,8 +384,6 @@ export const AnalysisSchema = {
 
 export interface AnalysisSchemaType {
   id: number;
-  argentinaPresence: string;
-  argOtbnArea: string;
   brazilBiomes: string;
   brazilBiomesPresence: string;
   cerradoBiomePresence: string;
@@ -442,7 +440,6 @@ export interface AnalysisSchemaType {
   treeCoverExtentPrimaryForest: number;
   treeCoverExtentProtectedAreas: number;
   treeCoverExtentTotal: number;
-  treeCoverLossArgOtbnYearly: string;
   treeCoverLossBrazilBiomesYearly: string;
   treeCoverLossByCountryLandmarkYearly: string;
   treeCoverLossByCountryWdpaYearly: string;

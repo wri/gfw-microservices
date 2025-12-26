@@ -2,12 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ListActions from './ListActions';
 
 const theme = createTheme();
-const muiTheme = getMuiTheme();
 
 const mockStore = {
   listDetails: {
@@ -106,36 +103,34 @@ describe('ListActions', () => {
   it('renders action buttons correctly', () => {
     render(
       <Provider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
-          <ThemeProvider theme={theme}>
-            <ListActions
-              currentUser={currentUser}
-              selectedList={{}}
-              userSharedLists={[]}
-              isInFolder={false}
-              isManageListFolderOpen={false}
-              setIsManageListFolderOpen={mockFunction}
-              showShareList={mockFunction}
-              handleDraftSubmit={mockFunction}
-              draftSubmitDialogOpen={false}
-              setDraftSubmitDialogOpen={mockFunction}
-              setIsListSubmittedForAnalysis={mockFunction}
-              isListSubmittedForAnalysis={false}
-              toggleReRunAnalysisDialog={mockFunction}
-              rerunDialogState={false}
-              rerunList={mockFunction}
-              tableSortedBy=""
-              tableSortedDesc={false}
-              selectedLocations={[]}
-              isEveryRowSelected={false}
-              userIsOwner={false}
-              showMultipleSelectionBulkActions={false}
-              isEditActionAvailable={false}
-              canMove={false}
-              canDelete={false}
-            />
-          </ThemeProvider>
-        </MuiThemeProvider>
+        <ThemeProvider theme={theme}>
+          <ListActions
+            currentUser={currentUser}
+            selectedList={{}}
+            userSharedLists={[]}
+            isInFolder={false}
+            isManageListFolderOpen={false}
+            setIsManageListFolderOpen={mockFunction}
+            showShareList={mockFunction}
+            handleDraftSubmit={mockFunction}
+            draftSubmitDialogOpen={false}
+            setDraftSubmitDialogOpen={mockFunction}
+            setIsListSubmittedForAnalysis={mockFunction}
+            isListSubmittedForAnalysis={false}
+            toggleReRunAnalysisDialog={mockFunction}
+            rerunDialogState={false}
+            rerunList={mockFunction}
+            tableSortedBy=""
+            tableSortedDesc={false}
+            selectedLocations={[]}
+            isEveryRowSelected={false}
+            userIsOwner={false}
+            showMultipleSelectionBulkActions={false}
+            isEditActionAvailable={false}
+            canMove={false}
+            canDelete={false}
+          />
+        </ThemeProvider>
       </Provider>
     );
     expect(screen.getByText('Add Locations')).toBeInTheDocument();
@@ -145,32 +140,30 @@ describe('ListActions', () => {
   it('renders bulk action buttons when multiple selections are made', () => {
     render(
       <Provider store={store}>
-        <MuiThemeProvider muiTheme={muiTheme}>
-          <ThemeProvider theme={theme}>
-            <ListActions
-              currentUser={currentUser}
-              selectedList={{}}
-              userSharedLists={[]}
-              isInFolder={false}
-              isManageListFolderOpen={false}
-              setIsManageListFolderOpen={mockFunction}
-              showShareList={mockFunction}
-              handleDraftSubmit={mockFunction}
-              draftSubmitDialogOpen={false}
-              setDraftSubmitDialogOpen={mockFunction}
-              setIsListSubmittedForAnalysis={mockFunction}
-              isListSubmittedForAnalysis={false}
-              toggleReRunAnalysisDialog={mockFunction}
-              rerunDialogState={false}
-              rerunList={mockFunction}
-              showMultipleSelectionBulkActions={true}
-              canMove={true}
-              canDelete={true}
-              promptMoveSelectedLocations={mockFunction}
-              promptDeleteSelectedLocations={mockFunction}
-            />
-          </ThemeProvider>
-        </MuiThemeProvider>
+        <ThemeProvider theme={theme}>
+          <ListActions
+            currentUser={currentUser}
+            selectedList={{}}
+            userSharedLists={[]}
+            isInFolder={false}
+            isManageListFolderOpen={false}
+            setIsManageListFolderOpen={mockFunction}
+            showShareList={mockFunction}
+            handleDraftSubmit={mockFunction}
+            draftSubmitDialogOpen={false}
+            setDraftSubmitDialogOpen={mockFunction}
+            setIsListSubmittedForAnalysis={mockFunction}
+            isListSubmittedForAnalysis={false}
+            toggleReRunAnalysisDialog={mockFunction}
+            rerunDialogState={false}
+            rerunList={mockFunction}
+            showMultipleSelectionBulkActions={true}
+            canMove={true}
+            canDelete={true}
+            promptMoveSelectedLocations={mockFunction}
+            promptDeleteSelectedLocations={mockFunction}
+          />
+        </ThemeProvider>
       </Provider>
     );
 

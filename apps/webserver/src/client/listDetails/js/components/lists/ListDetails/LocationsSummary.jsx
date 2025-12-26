@@ -1,4 +1,4 @@
-import Popover from 'material-ui/Popover';
+import { Popover } from '@mui/material';
 import IconShare from '../../../../../common/js/components/icon/IconShare';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
@@ -10,16 +10,18 @@ import './LocationsSummary.scss';
 
 const transifex = Transifex.live.translateText;
 
+const MAX_VISIBLE_COUNTRIES = 3;
+
 function LocationsSummary({
   anchorElCountries,
-  closeCountriesPopover,
   countries,
   filterValues,
   listLocationsCount,
-  openCountriesPopover,
   selectedList,
   shareView,
-  toggleCountriesPopover,
+  isOpen,
+  onOpen,
+  onClose,
   numberOfResults,
 }) {
   const isGfwProList = selectedList.isGlobalForestWatchList;
@@ -45,7 +47,9 @@ function LocationsSummary({
   const countriesString = countriesSelected.join(', ');
 
   const countriesStringSummary =
-    countriesSelected.length > 3 ? countriesSelected.slice(0, 3).join(', ') : countriesString;
+    countriesSelected.length > MAX_VISIBLE_COUNTRIES
+      ? countriesSelected.slice(0, MAX_VISIBLE_COUNTRIES).join(', ')
+      : countriesString;
 
   const showingText = useTransifexTranslation('Showing');
   const ofText = useTransifexTranslation('of');
@@ -72,8 +76,8 @@ function LocationsSummary({
       {listLength > 0 && (
         <div
           onClick={(e) => {
-            if (countriesSelected.length > 3) {
-              toggleCountriesPopover(e);
+            if (countriesSelected.length > MAX_VISIBLE_COUNTRIES) {
+              onOpen(e);
             }
           }}
         >
@@ -83,17 +87,19 @@ function LocationsSummary({
           <span>{totalLocationsText}</span>
           <span>{` • `}</span>
 
-          {countriesSelected.length <= 3 && countriesStringSummary}
-          {countriesSelected.length > 3 && (
+          {countriesSelected.length <= MAX_VISIBLE_COUNTRIES ? (
+            countriesStringSummary
+          ) : (
             <span className="country-name-extend">
               {countriesStringSummary}…
               <Popover
                 className="countries-popover dialog"
-                open={openCountriesPopover}
+                open={isOpen}
                 anchorEl={anchorElCountries}
                 anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-                onRequestClose={closeCountriesPopover}
+                transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+                onClose={onClose}
+                slotProps={{ paper: { sx: { width: '350px' } } }}
               >
                 <div className="countries-popover__inner">
                   <div className="countries-popover__header dialog__header">
@@ -103,7 +109,10 @@ function LocationsSummary({
                     <IconButton
                       icon={<IconTimes />}
                       title={transifex(locationsPage.lists.closePopover)}
-                      onClick={closeCountriesPopover}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClose();
+                      }}
                       size="medium"
                     />
                   </div>

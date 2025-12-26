@@ -50,6 +50,9 @@ const infoBubbleConfig = {
   administrativeAreasProList: 'administrative_areas_pro_list',
   listDetailsIdType: 'list_details_id_type',
   listDetailsIdValue: 'list_details_id_value',
+  recentDistAlertsLandCoverDataset: 'recent_dist_alerts_land_cover_dataset',
+  recentDistAlertsForestNaturalForest: 'recent_dist_alerts_forest_natural_forest',
+  recentDistAlertsNonForest: 'recent_dist_alerts_non_forest',
 };
 
 export default infoBubbleConfig;

@@ -5,6 +5,7 @@ import {
   normalizeColumnData,
   calculateAndFormatTotalDeforestation,
 } from '../../../../locations/js/utils/locationsTableUtils';
+import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -37,7 +38,11 @@ export const alerts_analysis = {
     {
       id: 'alerts_in_natural_forest',
       Header: () => (
-        <ColumnsHeader label={columnHeaders.alertsInNaturalForest} subtitle={FIELDS_SUBTITLE} />
+        <ColumnsHeader
+          label={columnHeaders.alertsInNaturalForest}
+          subtitle={FIELDS_SUBTITLE}
+          infoBubbleId={infoBubbleConfig.recentDistAlertsForestNaturalForest}
+        />
       ),
       accessor: (d) => {
         return d;
@@ -77,7 +82,11 @@ export const alerts_analysis = {
     {
       id: 'alerts_in_non_forest',
       Header: () => (
-        <ColumnsHeader label={columnHeaders.alertsInNonForest} subtitle={FIELDS_SUBTITLE} />
+        <ColumnsHeader
+          label={columnHeaders.alertsInNonForest}
+          subtitle={FIELDS_SUBTITLE}
+          infoBubbleId={infoBubbleConfig.recentDistAlertsNonForest}
+        />
       ),
       accessor: (d) => {
         return d;
@@ -114,7 +123,13 @@ export const alerts_analysis = {
     },
     {
       id: 'alerts_in_jrc',
-      Header: () => <ColumnsHeader label={columnHeaders.alertsInJrc} subtitle={FIELDS_SUBTITLE} />,
+      Header: () => (
+        <ColumnsHeader
+          label={columnHeaders.alertsInJrc}
+          subtitle={FIELDS_SUBTITLE}
+          infoBubbleId={infoBubbleConfig.recentDistAlertsForestNaturalForest}
+        />
+      ),
       accessor: (d) => {
         return d;
       },

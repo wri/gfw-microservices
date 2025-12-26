@@ -1,8 +1,7 @@
-import { Component } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Stack,
   Button as MaterialButton,
-  Badge,
   Box,
   Grid,
   Typography,
@@ -13,15 +12,16 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import InfoBubble from '../../../../../../common/js/components/InfoBubble';
-import { Clear, FilterAlt } from '@mui/icons-material';
+import { Clear } from '@mui/icons-material';
 import {
   toggleCanopyModal,
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
+import store from '../../../../../../locations/js/store';
 import { defaultFilterValues } from '../../defaultFilterValues';
-import Button from '../../../../../../common/js/components/Button';
+
+// Components
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import ColumnSelector from '../ColumnSelector';
 import GFWListCommodityRiskFilter from './GFWListCommodityRiskFilter';
@@ -32,12 +32,16 @@ import GFWListFilter from './GFWListFilter';
 import NaturalForestLossDataSourceToggle from './NaturalForestLossDataSourceToggle';
 import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayFormatToggleButtons';
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
-import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
-import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
-import store from '../../../../../../locations/js/store';
+import FilterButton from './FilterButton';
+
+// Common
 import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
+import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
+import InfoBubble from '../../../../../../common/js/components/InfoBubble';
+import { default as GFWProButton } from '../../../../../../common/js/components/Button';
+import infoBubbleConfig from '../../../../../../common/js/infoBubbleConfig.constants';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
@@ -46,45 +50,63 @@ import {
   forestDataSet,
 } from '../listViews.constants';
 
-export default class Filter extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { ...defaultFilterValues };
-    this.initialState = this.state;
-  }
+import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
 
-  changeCountry = (evt) => {
-    this.setState({
+export default function Filter({
+  filterValues,
+  parentCompanyOptionsForFilter,
+  supplierNameOptionsForFilter,
+  secondSupplierNameOptionsForFilter,
+  isFilterModalVisible,
+  filterCount,
+  listColumns,
+  visibleColumns,
+  setListColumns,
+  listView,
+  listName,
+  adminAreas,
+  protectedAreas,
+  isGfwList,
+  areAllAnalysesDraft,
+  isListWithErrors,
+  forestDataset,
+  onForestDatasetChange,
+}) {
+  const [state, setState] = useState({ ...defaultFilterValues });
+
+  const changeCountry = (evt) => {
+    setState({
+      ...state,
       selectedCountry: evt.target.value,
       selectedState: '',
       selectedSubState: '',
     });
   };
 
-  changeState = (evt) => {
-    this.setState({ selectedState: evt.target.value, selectedSubState: '' });
+  const changeState = (evt) => {
+    setState({ ...state, selectedState: evt.target.value, selectedSubState: '' });
   };
 
-  changeSubState = (evt) => {
-    this.setState({ selectedSubState: evt.target.value });
+  const changeSubState = (evt) => {
+    setState({ ...state, selectedSubState: evt.target.value });
   };
 
-  changeShowOnlyLocationsWithError = (evt) => {
-    this.setState({ hasError: evt.target.checked }, () =>
-      store.dispatch(updateFilters(this.state))
-    );
+  const changeShowOnlyLocationsWithError = (evt) => {
+    const newState = { ...state, hasError: evt.target.checked };
+    setState(newState);
+    store.dispatch(updateFilters(newState));
   };
 
-  updateValues = (state) => {
+  const updateValues = (currentState) => {
     let filterCount = 0;
-    Object.keys(state).forEach((key) => {
-      if (filterKeys.includes(key) && !!state[key]) {
+    Object.keys(currentState).forEach((key) => {
+      if (filterKeys.includes(key) && !!currentState[key]) {
         filterCount += 1;
       }
     });
 
     store.dispatch(toggleCanopyModal());
-    store.dispatch(updateFilters(state));
+    store.dispatch(updateFilters(currentState));
     store.dispatch(setFilterCount(filterCount));
 
     gtag('event', 'list table filter', {
@@ -93,46 +115,26 @@ export default class Filter extends Component {
     });
   };
 
-  resetFilters = () => {
-    this.setState(this.initialState, () => {
-      store.dispatch(toggleCanopyModal());
-      store.dispatch(updateFilters(this.initialState));
-      store.dispatch(setFilterCount(0));
-    });
+  const resetFilters = () => {
+    setState({ ...defaultFilterValues });
+    store.dispatch(toggleCanopyModal());
+    store.dispatch(updateFilters({ ...defaultFilterValues }));
+    store.dispatch(setFilterCount(0));
   };
 
-  render() {
-    const {
-      filterValues,
-      parentCompanyOptionsForFilter,
-      supplierNameOptionsForFilter,
-      secondSupplierNameOptionsForFilter,
-      isFilterModalVisible,
-      filterCount,
-      listColumns,
-      visibleColumns,
-      setListColumns,
-      listView,
-      listName,
-      adminAreas,
-      protectedAreas,
-      isGfwList,
-      areAllAnalysesDraft,
-      isListWithErrors,
-      forestDataset,
-      onForestDatasetChange,
-    } = this.props;
-    const { selectedCountry, selectedState, selectedSubState } = this.state;
+  const { selectedCountry, selectedState, selectedSubState } = state;
 
-    const { countryList, stateList, subStateList } = filterCountryStateAndSubStateOptions(
-      filterValues,
-      selectedCountry,
-      selectedState
-    );
+  const { countryList, stateList, subStateList } = useMemo(
+    () => filterCountryStateAndSubStateOptions(filterValues, selectedCountry, selectedState),
+    [filterValues, selectedCountry, selectedState]
+  );
+
+  const { PALM_OIL_MILLS, PROTECTED_AREAS, ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
+
+  // Memoize all computed visibility flags
+  const filterVisibility = useMemo(() => {
     const isCommodityRiskFilterVisible = listView === COMMODITY_RISK_VIEW;
     const isForestChangeFilterVisible = listView === FOREST_CHANGE_VIEW;
-
-    const { PALM_OIL_MILLS, PROTECTED_AREAS, ADMINISTRATIVE_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
 
     const isUserListCommodityRiskFilterVisible = isCommodityRiskFilterVisible && !isGfwList;
     const isGFWListCommodityRiskFilterVisible =
@@ -157,204 +159,207 @@ export default class Filter extends Component {
 
     const shouldRenderLocationsWithErrorsCheckbox = !isInlineFilterVisible && isListWithErrors;
 
-    return (
-      <>
-        {isProtectedAreasFilterVisible && (
-          <ProtectedAreasGFWList
-            protectedAreas={protectedAreas}
-            isFilterModalVisible={isFilterModalVisible}
-          />
-        )}
+    return {
+      isCommodityRiskFilterVisible,
+      isUserListCommodityRiskFilterVisible,
+      isGFWListCommodityRiskFilterVisible,
+      isProtectedAreasFilterVisible,
+      isAdministrativeAreasFilterVisible,
+      isGFWListOtherThanProtectedOrAdministrativeAreas,
+      isInlineFilterVisible,
+      isListFiltered,
+      shouldRenderLocationsWithErrorsCheckbox,
+    };
+  }, [
+    listView,
+    isGfwList,
+    listName,
+    isFilterModalVisible,
+    filterCount,
+    isListWithErrors,
+    PALM_OIL_MILLS,
+    PROTECTED_AREAS,
+    ADMINISTRATIVE_AREAS,
+  ]);
 
-        {isAdministrativeAreasFilterVisible && (
-          <AdministrativeAreasGFWListFilter
-            adminAreas={adminAreas}
-            isFilterModalVisible={isFilterModalVisible}
-          />
-        )}
+  const {
+    isCommodityRiskFilterVisible,
+    isUserListCommodityRiskFilterVisible,
+    isGFWListCommodityRiskFilterVisible,
+    isProtectedAreasFilterVisible,
+    isAdministrativeAreasFilterVisible,
+    isGFWListOtherThanProtectedOrAdministrativeAreas,
+    isInlineFilterVisible,
+    isListFiltered,
+    shouldRenderLocationsWithErrorsCheckbox,
+  } = filterVisibility;
 
-        {isGFWListOtherThanProtectedOrAdministrativeAreas && (
-          <GFWListFilter
-            filterValues={filterValues}
-            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-            list_name={listName}
-            isFilterModalVisible={isFilterModalVisible}
-            clearFilters={this.resetFilters}
-            isListFiltered={isListFiltered}
-          />
-        )}
+  return (
+    <>
+      {isProtectedAreasFilterVisible && (
+        <ProtectedAreasGFWList
+          protectedAreas={protectedAreas}
+          isFilterModalVisible={isFilterModalVisible}
+        />
+      )}
 
-        {isUserListCommodityRiskFilterVisible && (
-          <UserListCommodityRiskFilter
-            listName={listName}
-            isFilterModalVisible={isFilterModalVisible}
-            filterValues={filterValues}
-            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-            supplierNameOptionsForFilter={supplierNameOptionsForFilter}
-            secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
-            clearFilters={this.resetFilters}
-            isListFiltered={isListFiltered}
-          />
-        )}
-        {isGFWListCommodityRiskFilterVisible && (
-          <GFWListCommodityRiskFilter
-            filterValues={filterValues}
-            parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
-            isFilterModalVisible={isFilterModalVisible}
-            clearFilters={this.resetFilters}
-            isListFiltered={isListFiltered}
-          />
-        )}
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          sx={{ pt: 2, pb: 0.5 }}
-        >
-          <Grid container>
-            {isInlineFilterVisible ? (
-              <>
-                <Grid container item xs={8} spacing={3}>
-                  <CountryStateSubStateFilter
-                    countries={countryList}
-                    selectedCountry={selectedCountry}
-                    onCountryChange={this.changeCountry}
-                    states={stateList}
-                    selectedState={selectedState}
-                    onStateChange={this.changeState}
-                    subStates={subStateList}
-                    selectedSubState={selectedSubState}
-                    onSubStateChange={this.changeSubState}
+      {isAdministrativeAreasFilterVisible && (
+        <AdministrativeAreasGFWListFilter
+          adminAreas={adminAreas}
+          isFilterModalVisible={isFilterModalVisible}
+        />
+      )}
+
+      {isGFWListOtherThanProtectedOrAdministrativeAreas && (
+        <GFWListFilter
+          filterValues={filterValues}
+          parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+          list_name={listName}
+          isFilterModalVisible={isFilterModalVisible}
+          clearFilters={resetFilters}
+          isListFiltered={isListFiltered}
+        />
+      )}
+
+      {isUserListCommodityRiskFilterVisible && (
+        <UserListCommodityRiskFilter
+          listName={listName}
+          isFilterModalVisible={isFilterModalVisible}
+          filterValues={filterValues}
+          parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+          supplierNameOptionsForFilter={supplierNameOptionsForFilter}
+          secondSupplierNameOptionsForFilter={secondSupplierNameOptionsForFilter}
+          clearFilters={resetFilters}
+          isListFiltered={isListFiltered}
+        />
+      )}
+      {isGFWListCommodityRiskFilterVisible && (
+        <GFWListCommodityRiskFilter
+          filterValues={filterValues}
+          parentCompanyOptionsForFilter={parentCompanyOptionsForFilter}
+          isFilterModalVisible={isFilterModalVisible}
+          clearFilters={resetFilters}
+          isListFiltered={isListFiltered}
+        />
+      )}
+      <Stack
+        alignItems="center"
+        direction="row"
+        justifyContent="space-between"
+        sx={{ pt: 2, pb: 0.5 }}
+      >
+        <Grid container>
+          {isInlineFilterVisible ? (
+            <>
+              <Grid container item xs={8} spacing={3}>
+                <CountryStateSubStateFilter
+                  countries={countryList}
+                  selectedCountry={selectedCountry}
+                  onCountryChange={changeCountry}
+                  states={stateList}
+                  selectedState={selectedState}
+                  onStateChange={changeState}
+                  subStates={subStateList}
+                  selectedSubState={selectedSubState}
+                  onSubStateChange={changeSubState}
+                />
+              </Grid>
+              <Grid item xs={3} sx={{ alignSelf: 'center' }}>
+                <GFWProButton
+                  variant="primary"
+                  data-cy="filter-apply-button"
+                  onClick={() => updateValues(state)}
+                  label="APPLY"
+                />
+                <GFWProButton
+                  style={{ marginLeft: '10px' }}
+                  variant="secondary"
+                  onClick={resetFilters}
+                  label="CLEAR"
+                />
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={4}>
+                {listView === POST_2020_RISK_ASSESSMENT_VIEW && !areAllAnalysesDraft && (
+                  <NaturalForestLossDataSourceToggle />
+                )}
+                {shouldRenderLocationsWithErrorsCheckbox && (
+                  <FormControlLabel
+                    sx={{ pl: 0.75 }}
+                    control={
+                      <Checkbox
+                        checked={state.hasError}
+                        onChange={changeShowOnlyLocationsWithError}
+                      />
+                    }
+                    label={
+                      <Typography variant="body2" sx={{ textTransform: 'none' }}>
+                        Show only locations with errors
+                      </Typography>
+                    }
                   />
-                </Grid>
-                <Grid item xs={3} sx={{ alignSelf: 'center' }}>
-                  <Button
-                    variant="primary"
-                    data-cy="filter-apply-button"
-                    onClick={() => this.updateValues(this.state)}
-                    label="APPLY"
-                  />
-                  <Button
-                    style={{ marginLeft: '10px' }}
-                    variant="secondary"
-                    onClick={this.resetFilters}
-                    label="CLEAR"
-                  />
-                </Grid>
-              </>
-            ) : (
-              <>
-                <Grid item xs={4}>
-                  {listView === POST_2020_RISK_ASSESSMENT_VIEW && !areAllAnalysesDraft && (
-                    <NaturalForestLossDataSourceToggle />
-                  )}
-                  {shouldRenderLocationsWithErrorsCheckbox && (
-                    <FormControlLabel
-                      sx={{ pl: 0.75 }}
-                      control={
-                        <Checkbox
-                          checked={this.state.hasError}
-                          onChange={this.changeShowOnlyLocationsWithError}
-                        />
-                      }
-                      label={
-                        <Typography variant="body2" sx={{ textTransform: 'none' }}>
-                          Show only locations with errors
-                        </Typography>
-                      }
-                    />
-                  )}
-                  {listView === ALERTS && (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <FormControl
-                        size="small"
-                        sx={{ width: 230, mt: shouldRenderLocationsWithErrorsCheckbox ? 1 : 0 }}
+                )}
+                {listView === ALERTS && (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControl
+                      size="small"
+                      sx={{ width: 230, mt: shouldRenderLocationsWithErrorsCheckbox ? 1 : 0 }}
+                    >
+                      <InputLabel>Forest Dataset</InputLabel>
+                      <Select
+                        value={forestDataset}
+                        onChange={onForestDatasetChange}
+                        label="Forest Dataset"
                       >
-                        <InputLabel>Forest Dataset</InputLabel>
-                        <Select
-                          value={forestDataset}
-                          onChange={onForestDatasetChange}
-                          label="Forest Dataset"
-                        >
-                          <MenuItem value={forestDataSet.NaturalForestMap}>
-                            {forestDataSet.NaturalForestMap}
-                          </MenuItem>
-                          <MenuItem value={forestDataSet.JrcForestLoss}>
-                            {forestDataSet.JrcForestLoss}
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                      <InfoBubble />
-                    </Box>
-                  )}
-                </Grid>
-                <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
-                  {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
-                    <DeforestationDisplayFormatToggleButtons />
-                  )}
-                </Grid>
-              </>
-            )}
-            <Grid item xs={1} sx={{ alignSelf: 'center', marginLeft: 'auto' }}>
-              <Box flexGrow={1} />
-              <Stack alignItems="center" direction="row">
+                        <MenuItem value={forestDataSet.NaturalForestMap}>
+                          {forestDataSet.NaturalForestMap}
+                        </MenuItem>
+                        <MenuItem value={forestDataSet.JrcForestLoss}>
+                          {forestDataSet.JrcForestLoss}
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                    <InfoBubble infoBubbleId={infoBubbleConfig.recentDistAlertsLandCoverDataset} />
+                  </Box>
+                )}
+              </Grid>
+              <Grid item xs={shouldRenderLocationsWithErrorsCheckbox ? 5 : 7}>
+                {!isCommodityRiskFilterVisible && !areAllAnalysesDraft && (
+                  <DeforestationDisplayFormatToggleButtons />
+                )}
+              </Grid>
+            </>
+          )}
+          <Grid item xs={1} sx={{ alignSelf: 'center', marginLeft: 'auto' }}>
+            <Box flexGrow={1} />
+            <Stack alignItems="center" direction="row">
+              <FilterButton
+                isFilterModalVisible={isFilterModalVisible}
+                filterCount={filterCount}
+                onClick={() => store.dispatch(toggleCanopyModal())}
+              />
+              {isInlineFilterVisible && (
                 <MaterialButton
-                  data-cy="filter-open-button"
+                  data-cy="filter-close-button"
                   sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                   onClick={() => store.dispatch(toggleCanopyModal())}
                 >
-                  {!isFilterModalVisible && filterCount > 0 ? (
-                    <Badge
-                      sx={{
-                        '& .MuiBadge-badge': {
-                          backgroundColor: '#97bd3d',
-                          color: 'white',
-                        },
-                      }}
-                      badgeContent={filterCount}
-                      overlap="circular"
-                    >
-                      <FilterAlt
-                        sx={{
-                          color: 'black',
-                          marginRight: '10px',
-                          fontSize: '25px',
-                          marginTop: '3px',
-                        }}
-                      />
-                    </Badge>
-                  ) : (
-                    <FilterAlt
-                      sx={{
-                        color: 'black',
-                        marginRight: '10px',
-                        fontSize: '25px',
-                        marginTop: '3px',
-                      }}
-                    />
-                  )}
+                  <Clear sx={{ color: 'black' }} />
                 </MaterialButton>
-                {isInlineFilterVisible && (
-                  <MaterialButton
-                    data-cy="filter-close-button"
-                    sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-                    onClick={() => store.dispatch(toggleCanopyModal())}
-                  >
-                    <Clear sx={{ color: 'black' }} />
-                  </MaterialButton>
-                )}
-                {!isFilterModalVisible && (
-                  <ColumnSelector
-                    listColumns={listColumns}
-                    visibleColumns={visibleColumns}
-                    setListColumns={setListColumns}
-                  />
-                )}
-              </Stack>
-            </Grid>
+              )}
+              {!isFilterModalVisible && (
+                <ColumnSelector
+                  listColumns={listColumns}
+                  visibleColumns={visibleColumns}
+                  setListColumns={setListColumns}
+                />
+              )}
+            </Stack>
           </Grid>
-        </Stack>
-      </>
-    );
-  }
+        </Grid>
+      </Stack>
+    </>
+  );
 }

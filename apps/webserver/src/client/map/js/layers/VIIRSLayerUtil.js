@@ -1,4 +1,5 @@
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import errorLogger from '../../../common/js/utils/errorLogger';
 import { subDays, format } from 'date-fns';
 
 const maxDateURL =
@@ -9,7 +10,13 @@ const maxDateURL =
 async function getMaxDateForViirsTiles() {
   const dateRes = await fetch(maxDateURL)
     .then((res) => res.json())
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      errorLogger.error('Failed to fetch max date for VIIRS tiles', {
+        component: 'VIIRSLayerUtil',
+        action: 'getMaxDateForViirsTiles',
+        error: e,
+      });
+    });
   return dateRes.data.max_date;
 }
 
@@ -190,7 +197,16 @@ export async function fetchViirsFeatures(config, dayRange, lat, long, zoom) {
   return fetch(url)
     .then((res) => res.json())
     .then((data) => data.data)
-    .catch((e) => console.log(e));
+    .catch((e) => {
+      errorLogger.error('Failed to fetch VIIRS fire data', {
+        component: 'VIIRSLayerUtil',
+        action: 'getFireData',
+        lat,
+        long,
+        zoom,
+        error: e,
+      });
+    });
 }
 
 export default viirsLayer;

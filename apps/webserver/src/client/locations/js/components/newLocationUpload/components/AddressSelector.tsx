@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import debounce from 'lodash.debounce';
 import { FieldError } from 'react-hook-form';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 interface AddressSelectorProps {
   onResultSelect: (latitude: number, longitude: number) => void;
@@ -30,7 +31,12 @@ export function AddressSelector({ onResultSelect, onClearValue, error }: Address
         setOptions(data.suggestions.map((suggestion: { text: string }) => suggestion.text));
       }
     } catch (error) {
-      console.error('Error fetching suggestions:', error);
+      errorLogger.apiError(error, {
+        endpoint: API_URL,
+        method: 'GET',
+        component: 'AddressSelector',
+        action: 'fetchSuggestions',
+      });
     } finally {
       setLoading(false);
     }
@@ -60,7 +66,13 @@ export function AddressSelector({ onResultSelect, onClearValue, error }: Address
         onResultSelect(location.y, location.x);
       }
     } catch (error) {
-      console.error('Error fetching coordinates:', error);
+      errorLogger.apiError(error, {
+        endpoint:
+          'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates',
+        method: 'GET',
+        component: 'AddressSelector',
+        action: 'fetchCoordinates',
+      });
     }
   };
 

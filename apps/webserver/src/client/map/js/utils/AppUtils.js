@@ -1,3 +1,5 @@
+import errorLogger from '../../../common/js/utils/errorLogger';
+
 const utils = {
   /**
    * Retrieve the object from a given array based on id and value
@@ -67,7 +69,11 @@ const utils = {
     try {
       status = document.execCommand('copy');
     } catch (err) {
-      console.error(err);
+      errorLogger.error('Failed to copy text to clipboard', {
+        component: 'AppUtils',
+        action: 'copyToClipboard',
+        error: err,
+      });
     }
     return status;
   },
@@ -132,7 +138,11 @@ const utils = {
         pair[0] === null ||
         typeof pair[0] === 'undefined'
       ) {
-        console.warn(`You provided an invalid key-value pair, ${pair[0]} is being omitted.`);
+        errorLogger.warn('Invalid key-value pair omitted', {
+          component: 'AppUtils',
+          action: 'parseQuery',
+          invalidKey: pair[0],
+        });
         return;
       }
       result[pair[0]] = pair[1];

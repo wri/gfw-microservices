@@ -6,6 +6,7 @@ import { useAccountDetail } from './AccountDetailSection';
 import { disabledStyles } from '../../common/formStyles';
 import FieldLabel from './FieldLabel';
 import { AccountStatusChip } from './AccountStatusChip';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 /**
  * @Summary Displays and manages the account status settings.
@@ -68,7 +69,12 @@ export default function AccountStatusSetting() {
         dialog.disableDialogAction(true);
       }
     } catch (err) {
-      console.error(`Error in ${route}`, err);
+      errorLogger.apiError(err, {
+        endpoint: route,
+        method: 'POST',
+        component: 'AccountStatusSetting',
+        action: 'handleAccountAction',
+      });
       dialog.setDialogTitle(errorTitle);
       dialog.setDialogMessage('Please reload the page and try again');
       dialog.disableDialogAction(true);

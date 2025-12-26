@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import * as httpRequest from '../../../../common/js/utils/httpRequest';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import { Link, PillButton } from '../../../../components';
 import IconButton from '../../../../common/js/components/IconButton';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
@@ -94,7 +95,12 @@ export default class DeleteListDialog extends Component {
               deleteList: false,
               deleteListFailed: true,
             });
-            console.log('DeleteList action error', err);
+            errorLogger.error('DeleteList action error', {
+              component: 'DeleteListDialog',
+              action: 'deleteList',
+              error: err,
+              listId: list_id,
+            });
           });
       })
       .catch((err) => {
@@ -102,7 +108,12 @@ export default class DeleteListDialog extends Component {
           deleteList: false,
           deleteListFailed: true,
         });
-        console.log('LockList action error', err);
+        errorLogger.error('LockList action error', {
+          component: 'DeleteListDialog',
+          action: 'lockList',
+          error: err,
+          listId: list_id,
+        });
       });
   };
 }

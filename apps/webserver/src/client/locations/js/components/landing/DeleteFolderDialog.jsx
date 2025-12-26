@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import fetch from '../../../../common/js/utils/fetch';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 import { PillButton } from '../../../../components';
 import { locationsPage } from '../../../../common/js/config';
 import IconButton from '../../../../common/js/components/IconButton';
@@ -96,7 +97,12 @@ export default class DeleteFolderDialog extends Component {
         this.setState({
           error: locationsPage.lists.deleteFolderError,
         });
-        console.log('Error deleting folder.', err);
+        errorLogger.error('Error deleting folder', {
+          component: 'DeleteFolderDialog',
+          action: 'deleteFolder',
+          error: err,
+          folderId: this.props.folder?.id,
+        });
       });
   };
 }

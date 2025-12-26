@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 const defaultData = {
   EAPI: 'N/A',
@@ -20,7 +21,11 @@ export const getLatestCommits = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error(error);
+    errorLogger.error('Error fetching latest commits', {
+      component: 'LatestCommits',
+      action: 'fetchLatestCommits',
+      error,
+    });
     return defaultData;
   }
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import AccountProfile from './AccountProfile';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const AccountDetailContext = createContext();
 
@@ -39,7 +40,12 @@ export default function AccountDetailSection({
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching account data', {
+          component: 'AccountDetailSection',
+          action: 'fetchAccountData',
+          error,
+        });
+        setIsLoading(false);
       });
   }, []);
 

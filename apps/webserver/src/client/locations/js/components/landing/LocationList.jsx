@@ -3,6 +3,7 @@ import { getIsDiagnosticStatusDraft } from '../../../../listDetails/js/utils/dra
 import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../common/js/config';
 import { getActiveAnalysisFlags } from '../../../../listDetails/js/utils/listDetails.utils';
 import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 import fetch from '../../../../common/js/utils/fetch';
 import ManageListFolderDialog from './ManageListFolderDialog';
@@ -68,7 +69,12 @@ export default class LocationList extends Component {
       })
       .catch((err) => {
         showLoader(false);
-        console.log('Error when re-running a list', err);
+        errorLogger.error('Error when re-running a list', {
+          component: 'LocationList',
+          action: 'rerunList',
+          error: err,
+          listId: this.props.list.id,
+        });
       });
 
     gtag('event', 'update button click', {

@@ -7,6 +7,7 @@ import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { locationsPage } from '../../../../../common/js/config';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import DrawIcon from '@mui/icons-material/Draw';
 import {
   addCoordinateTextFromPoint,
@@ -151,7 +152,11 @@ export const LocationMapDrawer = ({
       sketchViewModel.create('polygon');
       setMode(DrawShapeMode.Drawing);
     } else {
-      console.warn(`No defined action for MODE ${mode}`);
+      errorLogger.warn('No defined action for draw mode', {
+        component: 'LocationMapDrawer',
+        action: 'handleDrawClick',
+        mode,
+      });
     }
   };
 

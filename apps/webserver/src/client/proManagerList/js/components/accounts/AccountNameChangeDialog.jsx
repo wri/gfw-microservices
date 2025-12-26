@@ -8,6 +8,7 @@ import {
   Divider,
   TextField,
 } from '@mui/material';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 import FieldLabel from './FieldLabel';
 
@@ -51,7 +52,12 @@ export default function AccountNameChangeDialog({ open, initialValue = '', onClo
           setError(`The name "${val}" already exists. Please provide a new organization name.`);
         }
       } catch (err) {
-        console.error(err);
+        errorLogger.error('Error checking organization name availability', {
+          component: 'AccountNameChangeDialog',
+          action: 'handleInputChange',
+          error: err,
+          name: val,
+        });
       }
     }, TIMEOUT_DELAY);
 

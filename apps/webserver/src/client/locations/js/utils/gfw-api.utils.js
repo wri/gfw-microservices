@@ -1,4 +1,5 @@
 import axios from 'axios';
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 /**
  * Get Palm Oil Mill latitude and longitude
@@ -17,13 +18,28 @@ export const getPalmOilMillLatLong = async (PalmOilMillID) => {
     .catch((err) => {
       if (err.response) {
         // client received an error response (5xx, 4xx)
-        console.log(err.response);
+        errorLogger.error('GFW API error response', {
+          component: 'gfw-api.utils',
+          action: 'getPalmOilMillLatLong',
+          error: err.response,
+          palmOilMillID: PalmOilMillID,
+        });
       } else if (err.request) {
         // client never received a response, or request never left
-        console.log(err.request);
+        errorLogger.error('GFW API request failed', {
+          component: 'gfw-api.utils',
+          action: 'getPalmOilMillLatLong',
+          error: err.request,
+          palmOilMillID: PalmOilMillID,
+        });
       } else {
         // anything else
-        console.log(err.toJSON());
+        errorLogger.error('GFW API unknown error', {
+          component: 'gfw-api.utils',
+          action: 'getPalmOilMillLatLong',
+          error: err.toJSON(),
+          palmOilMillID: PalmOilMillID,
+        });
       }
 
       return err;

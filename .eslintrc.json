@@ -19,6 +19,28 @@
   "plugins": ["@nrwl/nx"],
   "overrides": [
     {
+      "files": ["**/errorLogger.js", "**/errorLogger.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/*.spec.js",
+        "**/*.spec.jsx",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.test.js",
+        "**/*.test.jsx",
+        "**/cypress/**/*"
+      ],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
         "@nrwl/nx/enforce-module-boundaries": [
@@ -42,14 +64,16 @@
       "rules": {
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": "error",
-        "@typescript-eslint/no-non-null-assertion": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "no-console": "off"
       }
     },
     {
       "files": ["*.js", "*.jsx"],
       "extends": ["plugin:@nrwl/nx/javascript", "eslint:recommended"],
       "rules": {
-        "no-unused-vars": "error"
+        "no-unused-vars": "error",
+        "no-console": "off"
       }
     },
     {

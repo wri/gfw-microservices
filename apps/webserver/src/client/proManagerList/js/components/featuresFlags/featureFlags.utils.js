@@ -1,3 +1,5 @@
+import errorLogger from '../../../../common/js/utils/errorLogger';
+
 export const getAllFeatureFlags = async () => {
   try {
     const response = await fetch('/api/feature-flags', {
@@ -11,7 +13,11 @@ export const getAllFeatureFlags = async () => {
     const { data } = await response.json();
     return data;
   } catch (error) {
-    console.error(error);
+    errorLogger.apiError(error, {
+      endpoint: '/api/feature-flags',
+      method: 'GET',
+      component: 'FeatureFlags',
+    });
     return [];
   }
 };
@@ -31,7 +37,12 @@ export const getFeatureFlagsByFlagId = async (id) => {
     const { data } = await response.json();
     return data;
   } catch (error) {
-    console.error(error);
+    errorLogger.apiError(error, {
+      endpoint: `/api/feature-flags/${id}`,
+      method: 'GET',
+      component: 'FeatureFlags',
+      flagId: id,
+    });
     return [];
   }
 };
@@ -53,7 +64,13 @@ export const upsertFeatureFlag = async ({ flagId, flagState, orgId = null }) => 
     const { data } = await response.json();
     return data;
   } catch (error) {
-    console.error(error);
+    errorLogger.apiError(error, {
+      endpoint: '/api/feature-flags',
+      method: 'POST',
+      component: 'FeatureFlags',
+      flagId,
+      flagState,
+    });
     return {};
   }
 };
@@ -69,6 +86,10 @@ export const getAccountListData = async () => {
     });
     return await response.json();
   } catch (error) {
-    console.error(error);
+    errorLogger.apiError(error, {
+      endpoint: '/pro-manager-list/accounts',
+      method: 'GET',
+      component: 'ProManagerList',
+    });
   }
 };

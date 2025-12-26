@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import UserProfile from './UserProfile';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) {
   const [promanagerData, setPromanagerData] = useState({});
@@ -18,7 +19,14 @@ function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) 
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching user detail data', {
+          component: 'UserDetailSection',
+          action: 'fetchUserData',
+          error,
+          organizationId,
+          userId,
+        });
+        setIsLoading(false);
       });
   }, []);
 

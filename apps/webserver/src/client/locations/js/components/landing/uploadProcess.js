@@ -1,4 +1,5 @@
 import axios from 'axios';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => ({
   [newProp]: old,
@@ -32,7 +33,12 @@ const createPresignedUrlStep = async (param) => {
     });
     return { ...param, ...data };
   } catch (error) {
-    console.log(error);
+    errorLogger.error('Error creating presigned URL', {
+      component: 'uploadProcess',
+      action: 'getPresignedURLStep',
+      error,
+      fileName: largeListFile.name,
+    });
     throw new Error(error);
   }
 };
@@ -73,7 +79,13 @@ const saveListToProcessStep = async (param) => {
     });
     return { ...param, ...data };
   } catch (error) {
-    console.log(error);
+    errorLogger.error('Error creating large list', {
+      component: 'uploadProcess',
+      action: 'createLargeListStep',
+      error,
+      listID,
+      listName,
+    });
     throw new Error(error);
   }
 };

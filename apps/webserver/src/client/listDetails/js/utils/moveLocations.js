@@ -1,5 +1,6 @@
 import { deduceActiveId } from '../../../common/js/utils/templateUtils';
 import { containsPunctuation, getListValidStatus } from '../../../locations/js/utils/lists.utils';
+import errorLogger from '../../../common/js/utils/errorLogger';
 
 const filterValidTemplates = (template, activeTemplate, addType, commodityType) => {
   let templateId = 1;
@@ -78,14 +79,24 @@ const saveGfwListLocations = (
     const checkForPunctuation = containsPunctuation(lowerListName);
 
     if (!listName) {
-      console.error(`invalidListName - listName: ${listName}`);
+      errorLogger.error('invalidListName - listName is empty', {
+        component: 'moveLocations',
+        action: 'handleSelectedTemplate',
+        listName,
+        selectedNewOrExisting,
+      });
       reject('invalidListName');
       return;
     } else if (checkListExists && selectedNewOrExisting === 'new') {
       reject('listNameAlreadyExists');
       return;
     } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
-      console.error(`invalidListName - checkForPunctuation: ${checkForPunctuation}`);
+      errorLogger.error('invalidListName - contains punctuation', {
+        component: 'moveLocations',
+        action: 'handleSelectedTemplate',
+        listName,
+        checkForPunctuation,
+      });
       reject('invalidListName');
       return;
     }
@@ -183,7 +194,11 @@ const saveGfwListLocations = (
       })
       .catch((err) => {
         reject(err);
-        console.warn(`Error: ${err}`);
+        errorLogger.warn('Error moving/copying locations', {
+          component: 'moveLocations',
+          action: 'handleSelectedTemplate',
+          error: err,
+        });
       });
 
     gtag('event', 'Next button clicked', {

@@ -1,3 +1,5 @@
+import errorLogger from '../common/js/utils/errorLogger';
+
 export const getListOfCountries = async () => {
   try {
     const response = await fetch('/map/gadm-admininstrative-boundaries', {
@@ -17,7 +19,11 @@ export const getListOfCountries = async () => {
       countryOptions: data,
     };
   } catch (error) {
-    console.error('Error fetching countries:', error);
+    errorLogger.apiError(error, {
+      endpoint: '/map/gadm-admininstrative-boundaries',
+      method: 'GET',
+      component: 'Map',
+    });
     return {
       countryOptions: [],
     };
@@ -46,7 +52,12 @@ export const getListOfStatesOrProvinces = async (countryCode) => {
       stateOrProvinceOptions: data,
     };
   } catch (error) {
-    console.error(`Error fetching states or provinces for ${countryCode}:`, error);
+    errorLogger.apiError(error, {
+      endpoint: `/map/gadm-admininstrative-boundaries?countryCode=${countryCode}`,
+      method: 'GET',
+      component: 'Map',
+      countryCode,
+    });
     return {
       stateOrProvinceOptions: [],
     };

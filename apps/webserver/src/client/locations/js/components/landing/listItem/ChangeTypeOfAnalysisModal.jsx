@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardActions, Modal, IconButton, Icon } from '@mui/material';
 import isEqual from 'lodash/isEqual';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 import { PillButton } from '../../../../../components';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
@@ -75,7 +76,12 @@ function ChangeTypeOfAnalysisModal({
       setIsChangeTypeOfAnalysisModalOpen(false);
       window.location.reload();
     } catch (error) {
-      console.warn(error);
+      errorLogger.warn('Error saving analysis selection as draft', {
+        component: 'ChangeTypeOfAnalysisModal',
+        action: 'saveAsDraft',
+        error,
+        listId,
+      });
       setIsLoading(false);
     }
   };
@@ -87,7 +93,12 @@ function ChangeTypeOfAnalysisModal({
       setIsChangeTypeOfAnalysisModalOpen(false);
       window.location.reload();
     } catch (error) {
-      console.warn(error);
+      errorLogger.warn('Error submitting selected analysis', {
+        component: 'ChangeTypeOfAnalysisModal',
+        action: 'submitSelectedAnalysis',
+        error,
+        listId,
+      });
       setIsLoading(false);
     }
   };

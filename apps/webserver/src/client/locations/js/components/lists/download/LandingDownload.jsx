@@ -3,6 +3,7 @@ import { Menu, MenuItem, ListItemIcon, ListItemText, Box } from '@mui/material';
 import { ChevronRight as ArrowRightIcon, Download as DownloadIcon } from '@mui/icons-material';
 import { locationsPage } from 'common/js/config';
 import downloadRequest from './downloadRequest';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 function LandingDownload({
   downloadRequestedFromFolder,
@@ -24,7 +25,14 @@ function LandingDownload({
     setConfirmDialog(true);
 
     downloadRequest({ listID, format, type, source: 'landing' }).catch((err) => {
-      console.warn('err', err);
+      errorLogger.warn('Error downloading list from landing page', {
+        component: 'LandingDownload',
+        action: 'localHandleDownload',
+        error: err,
+        listID,
+        format,
+        type,
+      });
     });
 
     if (downloadRequestedFromFolder) {

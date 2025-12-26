@@ -2,6 +2,7 @@ import SearchSource from '@arcgis/core/widgets/Search/SearchSource';
 import store from '../../store';
 import { showMapLoader } from '../../actions/mapActions';
 import { createResultsGraphic } from './searchUtils';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 function createSearchSource(sourceName, url, displayName, sourceIndex) {
   return new SearchSource({
@@ -23,7 +24,11 @@ function createSearchSource(sourceName, url, displayName, sourceIndex) {
       const item = params.suggestResult?.key;
 
       if (!item || !item.gfw_geojson) {
-        console.warn("No 'gfw_geojson' found in item:", item);
+        errorLogger.warn('Missing gfw_geojson in search result item', {
+          component: 'createSearchSource',
+          action: 'getResults',
+          item,
+        });
         return [];
       }
       try {
@@ -34,7 +39,11 @@ function createSearchSource(sourceName, url, displayName, sourceIndex) {
           },
         ];
       } catch (err) {
-        console.error('Error in getResults:', err);
+        errorLogger.error('Error processing search results', {
+          component: 'createSearchSource',
+          action: 'getResults',
+          error: err,
+        });
         return [];
       } finally {
         store.dispatch(showMapLoader(false));

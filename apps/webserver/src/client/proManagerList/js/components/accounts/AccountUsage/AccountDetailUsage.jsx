@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import {
   Table,
   TableBody,
@@ -59,7 +60,14 @@ function AccountDetailUsage() {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching date range account data', {
+          component: 'AccountDetailUsage',
+          action: 'fetchDateRangeData',
+          error,
+          organizationId,
+          startDate,
+          endDate,
+        });
         setDateRangeAccountData({});
         setIsLoading(false);
       });
@@ -80,7 +88,14 @@ function AccountDetailUsage() {
         setAnalysisUsageByType(analysisUsageByType);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching analysis usage by type', {
+          component: 'AccountDetailUsage',
+          action: 'fetchAnalysisUsageByType',
+          error,
+          organizationId,
+          startDate,
+          endDate,
+        });
         setAnalysisUsageByType([]);
         setIsLoading(false);
       });
@@ -159,7 +174,12 @@ function AccountUsageInfoBubbles() {
       .then((res) => res.json())
       .then((data) => {
         if (data?.success === false) {
-          console.warn(data);
+          errorLogger.warn('Account usage fetch returned unsuccessful', {
+            component: 'AccountDetailUsage',
+            action: 'fetchAccountUsageData',
+            data,
+            organizationId,
+          });
         }
 
         const [accountUsage = {}] = data;
@@ -173,7 +193,12 @@ function AccountUsageInfoBubbles() {
         });
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching account usage data', {
+          component: 'AccountDetailUsage',
+          action: 'fetchAccountUsageData',
+          error,
+          organizationId,
+        });
       });
   }, []);
 

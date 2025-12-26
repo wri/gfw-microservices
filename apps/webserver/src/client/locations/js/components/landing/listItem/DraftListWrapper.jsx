@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AnalyzingList from './AnalyzingList';
 import DraftList from './DraftList';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/requestUtils';
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 
 function DraftListWrapper(props) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -25,7 +26,12 @@ function DraftListWrapper(props) {
       .catch((error) => {
         setIsAnalyzing(false);
         // TODO: Get details what to do after list submission fails
-        console.log(error);
+        errorLogger.error('Error submitting draft list for analysis', {
+          component: 'DraftListWrapper',
+          action: 'submitForAnalysis',
+          error,
+          listId: list.id,
+        });
       });
   };
 

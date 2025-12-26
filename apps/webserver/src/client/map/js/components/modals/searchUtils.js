@@ -3,6 +3,7 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import Multipoint from '@arcgis/core/geometry/Multipoint';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 export const createResultsGraphic = async (item) => {
   await new Promise((resolve) => setTimeout(resolve, 0)); // Allow UI updates
@@ -42,7 +43,12 @@ export const createResultsGraphic = async (item) => {
       spatialReference,
     });
   } else {
-    console.error('Unsupported GeoJSON type:', geojson.type);
+    errorLogger.error('Unsupported GeoJSON type in search results', {
+      component: 'searchUtils',
+      action: 'createResultsGraphic',
+      geojsonType: geojson.type,
+      item,
+    });
     return [];
   }
 

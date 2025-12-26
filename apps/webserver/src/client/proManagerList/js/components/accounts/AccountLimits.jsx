@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Typography, TextField, Grid } from '@mui/material';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 import { PillButton } from '../../../../components';
 import {
@@ -131,7 +132,11 @@ function AccountLimitsGlobal({ setIsLoading }) {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching account limits', {
+          component: 'AccountLimits',
+          action: 'fetchLimits',
+          error,
+        });
         dialog.openDialog('Oops! Something went wrong', 'Please try again.');
         dialog.disableDialogAction(false);
         setIsLoading(false);

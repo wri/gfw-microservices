@@ -68,9 +68,7 @@ export default class PlayerControl extends Component {
   }
 
   render() {
-    const { sliderDate, scale } = this.state;
-    const sliderValue = scale(getUnixTime(new Date(sliderDate)));
-    console.log('Slider Value', sliderValue);
+    const { sliderDate } = this.state;
     const formattedValue = format(new Date(sliderDate), 'd MMM yyyy');
 
     return (

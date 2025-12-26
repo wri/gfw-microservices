@@ -3,6 +3,7 @@ import UsersListTable from './UsersListTable';
 import '../../../css/proManagerList.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
 import { USER_STATUS_LABELS } from '../../../../../config/env/userStatuses.constants';
+import errorLogger from '../../../../common/js/utils/errorLogger';
 
 function UsersListSection({ isLoading, setIsLoading }) {
   const [userFilterStr, setUserFilterStr] = useState('');
@@ -24,7 +25,12 @@ function UsersListSection({ isLoading, setIsLoading }) {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
+        errorLogger.error('Error fetching users list data', {
+          component: 'UsersListSection',
+          action: 'fetchData',
+          error,
+        });
+        setIsLoading(false);
       });
   }, []);
 

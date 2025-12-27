@@ -2,7 +2,7 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "wri-monorepos",
   "affected": {
-    "defaultBase": "main"
+    "defaultBase": "develop"
   },
   "tasksRunnerOptions": {
     "default": {

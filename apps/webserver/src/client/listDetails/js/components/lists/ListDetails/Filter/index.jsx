@@ -75,20 +75,24 @@ export default function Filter({
   const [state, setState] = useState({ ...defaultFilterValues });
 
   const changeCountry = (evt) => {
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       selectedCountry: evt.target.value,
       selectedState: '',
       selectedSubState: '',
-    });
+    }));
   };
 
   const changeState = (evt) => {
-    setState({ ...state, selectedState: evt.target.value, selectedSubState: '' });
+    setState((prevState) => ({
+      ...prevState,
+      selectedState: evt.target.value,
+      selectedSubState: '',
+    }));
   };
 
   const changeSubState = (evt) => {
-    setState({ ...state, selectedSubState: evt.target.value });
+    setState((prevState) => ({ ...prevState, selectedSubState: evt.target.value }));
   };
 
   const changeShowOnlyLocationsWithError = (evt) => {

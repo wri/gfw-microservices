@@ -10,13 +10,24 @@ describe('Information Bubbles', () => {
 
   When('I login in the landing page', () => {
     cy.loginUI();
-    cy.visit('/locations');
+    // Clear any info bubble cache that might interfere with the test
+    cy.window().then((win) => {
+      const keys = Object.keys(win.localStorage);
+      keys.forEach((key) => {
+        if (key.toLowerCase().includes('info-bubble') || key.toLowerCase().includes('gfw-info')) {
+          win.localStorage.removeItem(key);
+        }
+      });
+    });
   });
 
   When('I navigate to a list diagnostic page', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
+    cy.url().should('include', '/list-details');
     listDetailsPage.clickOnPost2000Tab();
+    cy.waitForLoadingMessage();
     listDetailsPage.clickOnListDiagnosticsBtn();
+    cy.url().should('include', '/diagnostics');
   });
 
   Then('I should be able to see each info bubbles content including links if available', () => {

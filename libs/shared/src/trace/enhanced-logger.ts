@@ -10,13 +10,13 @@ import { traceContext } from './trace.context';
  * 3. Thread-local variable (emergency fallback)
  */
 export class EnhancedTraceLogger extends ConsoleLogger {
-  private static currentRequest: any = null;
+  private static currentRequest: { traceId?: string } | null = null;
 
   /**
    * Set the current request for fallback trace ID retrieval
    * This is used when AsyncLocalStorage is not available
    */
-  static setCurrentRequest(req: any) {
+  static setCurrentRequest(req: { traceId?: string }) {
     EnhancedTraceLogger.currentRequest = req;
   }
 
@@ -94,7 +94,11 @@ export class EnhancedTraceLogger extends ConsoleLogger {
 /**
  * Middleware helper to set request context for logging
  */
-export function setRequestForLogging(req: any, res: any, next: any) {
+export function setRequestForLogging(
+  req: { traceId?: string },
+  res: { on: (event: string, callback: () => void) => void },
+  next: () => void
+) {
   EnhancedTraceLogger.setCurrentRequest(req);
 
   // Clear request reference when response finishes

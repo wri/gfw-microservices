@@ -161,7 +161,7 @@ describe('csvLatLongIdBasedTransformer', () => {
             coordinates: [0, 0],
           },
         },
-      } as any);
+      } as unknown as Awaited<ReturnType<typeof carLookup>>);
 
       await expect(csvLatLongIdBasedTransformer(rows)).rejects.toThrow(
         "You have entered an invalid ID not found in the system's database, please ensure you have entered the ID value correctly."

@@ -8,10 +8,14 @@ describe('Information Bubbles', () => {
   const listDetailsPage = new ListDetailsPage();
   const diagnosticsPage = new DiagnosticsPage();
 
-  beforeEach(() => {
-    // Ensure clean state - clear any localStorage/sessionStorage that might interfere
+  When('I login in the landing page', () => {
+    cy.loginUI();
+    cy.visit('/locations');
+    // Wait for locations page to be fully loaded
+    cy.url().should('include', '/locations');
+    cy.get('body').should('be.visible');
+    // Clear any info bubble cache that might interfere with the test
     cy.window().then((win) => {
-      // Clear any info bubble cache that might affect the test
       const keys = Object.keys(win.localStorage);
       keys.forEach((key) => {
         if (key.toLowerCase().includes('info-bubble') || key.toLowerCase().includes('gfw-info')) {
@@ -19,14 +23,6 @@ describe('Information Bubbles', () => {
         }
       });
     });
-  });
-
-  When('I login in the landing page', () => {
-    cy.loginUI();
-    cy.visit('/locations');
-    // Wait for locations page to be fully loaded
-    cy.url().should('include', '/locations');
-    cy.get('body').should('be.visible');
   });
 
   When('I navigate to a list diagnostic page', () => {

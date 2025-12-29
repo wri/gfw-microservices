@@ -1,10 +1,10 @@
 import { performance } from 'perf_hooks';
 
 export function Performance() {
-  return function (_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (_target: unknown, _propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const startTime = performance.now();
       const initialMemoryUsage = process.memoryUsage().heapUsed;
       const initialCpuUsage = process.cpuUsage();

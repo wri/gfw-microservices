@@ -40,6 +40,8 @@ type WorkerType = {
   config: ConfigService<ServerConfigType, true>;
   emailService: EmailService;
   traceId?: string;
+  organizationId?: number;
+  userId?: number;
 };
 
 const LIST_UPLOAD_QUEUE_CONCURRENCY = 1;
@@ -97,141 +99,148 @@ async function worker(input: WorkerType, cb: done) {
   const { organization_database: organizationDatabase, list_id: listId } = input.request;
 
   // Re-establish trace context for the worker
-  // This preserves the trace ID from the original HTTP request even though
-  // the worker runs asynchronously outside the original request context
+  // This preserves the trace ID, organization ID, and user ID from the original HTTP request
+  // even though the worker runs asynchronously outside the original request context
   const workerTraceId =
     input.traceId || traceContext.getTraceId() || traceContext.generateTraceId();
+  const workerOrgId = input.organizationId;
+  const workerUserId = input.userId;
 
   // Run the entire worker in the trace context to ensure all logs and operations
-  // are associated with the correct trace ID
-  await traceContext.run(workerTraceId, async () => {
-    // Clear any existing error file before starting analysis
-    await clearErrorFile(organizationDatabase, listId);
+  // are associated with the correct trace ID, organization ID, and user ID
+  await traceContext.run(
+    workerTraceId,
+    async () => {
+      // Clear any existing error file before starting analysis
+      await clearErrorFile(organizationDatabase, listId);
 
-    const chainType: ChainType = {
-      request: input.request,
-      geojson: {
-        type: 'FeatureCollection',
-        features: [],
-      },
-    };
+      const chainType: ChainType = {
+        request: input.request,
+        geojson: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      };
 
-    const connection = new SQLUtils();
-    const s3Service = new S3Service();
-    try {
-      await connection.connect(organizationDatabase);
+      const connection = new SQLUtils();
+      const s3Service = new S3Service();
+      try {
+        await connection.connect(organizationDatabase);
 
-      const downloadS3File = new DownloadS3File(s3Service, input.config);
-      const parseData = new ParserData();
-      const processUploadData = new ProcessUploadData();
-      const gadmService = new GADMService();
-      const clipToLandService = new ClipToLandService();
-      const validateLatLongGeojson = new ValidateLatLongGeojson();
-      const insertLocationData = new InsertLocationData();
-      const writeLocationCount = new WriteLocationCount();
-      const listSchemaName = new ListSchemaName(false);
-      const startAnalysis = new StartAnalysis();
-      const convertPoint2Polygon = new ConvertPoint2Polygon();
-      const validateMandatoryFields = new ValidateMandatoryFields();
-      const validateLocationName = new ValidateLocationName();
-      const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
-      const convertGeojsonProperties = new ConvertGeojsonProperties();
-      const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
-      const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
-      const adjustGeoData = new AdjustGeoData();
-      class ListSizeLimitValidator extends AbstractHandler<ChainType> {
-        private lastLoggedAt = 0;
+        const downloadS3File = new DownloadS3File(s3Service, input.config);
+        const parseData = new ParserData();
+        const processUploadData = new ProcessUploadData();
+        const gadmService = new GADMService();
+        const clipToLandService = new ClipToLandService();
+        const validateLatLongGeojson = new ValidateLatLongGeojson();
+        const insertLocationData = new InsertLocationData();
+        const writeLocationCount = new WriteLocationCount();
+        const listSchemaName = new ListSchemaName(false);
+        const startAnalysis = new StartAnalysis();
+        const convertPoint2Polygon = new ConvertPoint2Polygon();
+        const validateMandatoryFields = new ValidateMandatoryFields();
+        const validateLocationName = new ValidateLocationName();
+        const addNewLocationToAnalysisTable = new AddNewLocationToAnalysisTable();
+        const convertGeojsonProperties = new ConvertGeojsonProperties();
+        const putListAsDraft = new PutListAsDraft(input.config, input.emailService);
+        const generateErrorFile = new GenerateErrorFile(s3Service, input.config);
+        const adjustGeoData = new AdjustGeoData();
+        class ListSizeLimitValidator extends AbstractHandler<ChainType> {
+          private lastLoggedAt = 0;
 
-        async handle(input: ChainType): Promise<ChainType> {
-          const req = input.request as RequestNewList | undefined;
-          const db = req?.organization_database;
-          const listId = req?.list_id as number | undefined;
-          const incomingFeaturesCount = Array.isArray(input.geojson)
-            ? input.geojson.length
-            : input.geojson?.features?.length ?? 0;
+          async handle(input: ChainType): Promise<ChainType> {
+            const req = input.request as RequestNewList | undefined;
+            const db = req?.organization_database;
+            const listId = req?.list_id as number | undefined;
+            const incomingFeaturesCount = Array.isArray(input.geojson)
+              ? input.geojson.length
+              : input.geojson?.features?.length ?? 0;
 
-          if (db && listId && incomingFeaturesCount) {
-            if (incomingFeaturesCount > MAX_LOCATIONS_PER_LIST) {
-              const now = Date.now();
-              if (now - this.lastLoggedAt > 5000) {
-                workerLogger.warn(
-                  `Upload for list ${listId} in database ${db} contains ${incomingFeaturesCount} features, exceeding the maximum allowed ${MAX_LOCATIONS_PER_LIST}. Rejecting batch.`
-                );
-                this.lastLoggedAt = now;
+            if (db && listId && incomingFeaturesCount) {
+              if (incomingFeaturesCount > MAX_LOCATIONS_PER_LIST) {
+                const now = Date.now();
+                if (now - this.lastLoggedAt > 5000) {
+                  workerLogger.warn(
+                    `Upload for list ${listId} in database ${db} contains ${incomingFeaturesCount} features, exceeding the maximum allowed ${MAX_LOCATIONS_PER_LIST}. Rejecting batch.`
+                  );
+                  this.lastLoggedAt = now;
+                }
+                throw new ListSizeLimitException(MAX_LOCATIONS_PER_LIST);
               }
-              throw new ListSizeLimitException(MAX_LOCATIONS_PER_LIST);
-            }
 
-            await checkListSizeLimit(db, listId, input.geojson);
+              await checkListSizeLimit(db, listId, input.geojson);
+            }
+            return super.handle(input);
           }
-          return super.handle(input);
+        }
+        const listSizeLimitValidator = new ListSizeLimitValidator();
+
+        downloadS3File
+          .setNext(parseData)
+          .setNext(convertGeojsonProperties)
+          .setNext(listSizeLimitValidator)
+          .setNext(listSchemaName)
+          .setNext(adjustGeoData)
+          .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
+          .setNext(validateLocationName)
+          .setNext(convertPoint2Polygon)
+          .setNext(gadmService) // depends on convertPoint2Polygon
+          .setNext(validateLatLongGeojson) // depends on gadmService, must be before clipToLandService
+          .setNext(clipToLandService)
+          .setNext(processUploadData)
+          .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
+          .setNext(insertLocationData)
+          .setNext(writeLocationCount)
+          .setNext(generateErrorFile)
+          .setNext(addNewLocationToAnalysisTable)
+          .setNext(startAnalysis);
+
+        await AbstractHandler.runFullChain(downloadS3File, chainType);
+        cb(null);
+      } catch (error) {
+        if (error instanceof ListSizeLimitException) {
+          workerLogger.warn(
+            `List ${listId} in database ${organizationDatabase} exceeded size limit. ${error.message}`
+          );
+
+          // Update both upload status and analysis status in parallel
+          // Using Promise.allSettled to ensure both operations complete even if one fails
+          await Promise.allSettled([
+            AbstractHandler.updateListsUploadStatus(
+              chainType,
+              'List size limit exceeded',
+              error.message
+            ),
+            updateAnalysisStatusForSizeLimitError(
+              organizationDatabase,
+              listId,
+              input.request.analysisIds || [],
+              error.message
+            ),
+          ]);
+
+          cb(null);
+        } else {
+          workerLogger.error(
+            `Error processing list ${listId} in database ${organizationDatabase}: ${error.message}`,
+            (error as Error)?.stack
+          );
+          cb(error as Error);
+        }
+      } finally {
+        try {
+          await connection.disconnect();
+        } catch (disconnectError) {
+          workerLogger.error(
+            `Failed to disconnect from database ${organizationDatabase}: ${disconnectError.message}`,
+            (disconnectError as Error)?.stack
+          );
         }
       }
-      const listSizeLimitValidator = new ListSizeLimitValidator();
-
-      downloadS3File
-        .setNext(parseData)
-        .setNext(convertGeojsonProperties)
-        .setNext(listSizeLimitValidator)
-        .setNext(listSchemaName)
-        .setNext(adjustGeoData)
-        .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
-        .setNext(validateLocationName)
-        .setNext(convertPoint2Polygon)
-        .setNext(gadmService) // depends on convertPoint2Polygon
-        .setNext(validateLatLongGeojson) // depends on gadmService, must be before clipToLandService
-        .setNext(clipToLandService)
-        .setNext(processUploadData)
-        .setNext(putListAsDraft) // depends on gadmService and validateLatLongGeojson
-        .setNext(insertLocationData)
-        .setNext(writeLocationCount)
-        .setNext(generateErrorFile)
-        .setNext(addNewLocationToAnalysisTable)
-        .setNext(startAnalysis);
-
-      await AbstractHandler.runFullChain(downloadS3File, chainType);
-      cb(null);
-    } catch (error) {
-      if (error instanceof ListSizeLimitException) {
-        workerLogger.warn(
-          `List ${listId} in database ${organizationDatabase} exceeded size limit. ${error.message}`
-        );
-
-        // Update both upload status and analysis status in parallel
-        // Using Promise.allSettled to ensure both operations complete even if one fails
-        await Promise.allSettled([
-          AbstractHandler.updateListsUploadStatus(
-            chainType,
-            'List size limit exceeded',
-            error.message
-          ),
-          updateAnalysisStatusForSizeLimitError(
-            organizationDatabase,
-            listId,
-            input.request.analysisIds || [],
-            error.message
-          ),
-        ]);
-
-        cb(null);
-      } else {
-        workerLogger.error(
-          `Error processing list ${listId} in database ${organizationDatabase}: ${error.message}`,
-          (error as Error)?.stack
-        );
-        cb(error as Error);
-      }
-    } finally {
-      try {
-        await connection.disconnect();
-      } catch (disconnectError) {
-        workerLogger.error(
-          `Failed to disconnect from database ${organizationDatabase}: ${disconnectError.message}`,
-          (disconnectError as Error)?.stack
-        );
-      }
-    }
-  });
+    },
+    workerOrgId,
+    workerUserId
+  );
 }
 
 @Injectable()
@@ -284,15 +293,19 @@ export class StartAnalysisService {
       }
     }
 
-    // Extract trace ID before queuing to preserve it in the async worker
-    // If no trace ID exists, generate a new one to ensure proper tracing
+    // Extract trace ID, organization ID, and user ID before queuing to preserve them
+    // in the async worker. If no trace ID exists, generate a new one to ensure proper tracing
     const traceId = traceContext.getTraceId() || traceContext.generateTraceId();
+    const organizationId = traceContext.getOrganizationId();
+    const contextUserId = traceContext.getUserId();
 
     this.queue.push({
       request,
       config: this.config,
       emailService: this.emailService,
       traceId,
+      organizationId,
+      userId: contextUserId,
     });
 
     return {

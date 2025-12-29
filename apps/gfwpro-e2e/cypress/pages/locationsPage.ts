@@ -226,7 +226,8 @@ class LocationsPage {
   }
 
   clickOnLocationsList(name: string) {
-    cy.contains(name).click();
+    // Wait for the list to be visible and clickable before clicking
+    cy.contains(name).should('be.visible').click();
   }
 
   clickOnAddLocationsBtn() {

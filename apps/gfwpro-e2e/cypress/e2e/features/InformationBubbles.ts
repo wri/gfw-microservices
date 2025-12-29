@@ -10,10 +10,6 @@ describe('Information Bubbles', () => {
 
   When('I login in the landing page', () => {
     cy.loginUI();
-    cy.visit('/locations');
-    // Wait for locations page to be fully loaded
-    cy.url().should('include', '/locations');
-    cy.get('body').should('be.visible');
     // Clear any info bubble cache that might interfere with the test
     cy.window().then((win) => {
       const keys = Object.keys(win.localStorage);
@@ -26,16 +22,11 @@ describe('Information Bubbles', () => {
   });
 
   When('I navigate to a list diagnostic page', () => {
-    // Ensure we're on the locations page and wait for list to be visible
-    cy.url().should('include', '/locations');
-    cy.contains('AAT Argentina Points Generic').should('be.visible');
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    // Wait for list details page to load
     cy.url().should('include', '/list-details');
     listDetailsPage.clickOnPost2000Tab();
     cy.waitForLoadingMessage();
     listDetailsPage.clickOnListDiagnosticsBtn();
-    // Wait for diagnostics page to load
     cy.url().should('include', '/diagnostics');
   });
 

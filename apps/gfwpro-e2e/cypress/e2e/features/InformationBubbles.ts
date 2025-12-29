@@ -8,15 +8,39 @@ describe('Information Bubbles', () => {
   const listDetailsPage = new ListDetailsPage();
   const diagnosticsPage = new DiagnosticsPage();
 
+  beforeEach(() => {
+    // Ensure clean state - clear any localStorage/sessionStorage that might interfere
+    cy.window().then((win) => {
+      // Clear any info bubble cache that might affect the test
+      const keys = Object.keys(win.localStorage);
+      keys.forEach((key) => {
+        if (key.toLowerCase().includes('info-bubble') || key.toLowerCase().includes('gfw-info')) {
+          win.localStorage.removeItem(key);
+        }
+      });
+    });
+  });
+
   When('I login in the landing page', () => {
     cy.loginUI();
     cy.visit('/locations');
+    // Wait for locations page to be fully loaded
+    cy.url().should('include', '/locations');
+    cy.get('body').should('be.visible');
   });
 
   When('I navigate to a list diagnostic page', () => {
+    // Ensure we're on the locations page and wait for list to be visible
+    cy.url().should('include', '/locations');
+    cy.contains('AAT Argentina Points Generic').should('be.visible');
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
+    // Wait for list details page to load
+    cy.url().should('include', '/list-details');
     listDetailsPage.clickOnPost2000Tab();
+    cy.waitForLoadingMessage();
     listDetailsPage.clickOnListDiagnosticsBtn();
+    // Wait for diagnostics page to load
+    cy.url().should('include', '/diagnostics');
   });
 
   Then('I should be able to see each info bubbles content including links if available', () => {

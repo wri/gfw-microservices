@@ -21,7 +21,6 @@ import {
 import store from '../../../../../../locations/js/store';
 import { defaultFilterValues } from '../../defaultFilterValues';
 
-// Components
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import ColumnSelector from '../ColumnSelector';
 import GFWListCommodityRiskFilter from './GFWListCommodityRiskFilter';
@@ -34,7 +33,6 @@ import DeforestationDisplayFormatToggleButtons from '../DeforestationDisplayForm
 import filterCountryStateAndSubStateOptions from './filterCountryStateAndSubStateOptions';
 import FilterButton from './FilterButton';
 
-// Common
 import '../../../../../../common/css/_irsBase.scss';
 import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';

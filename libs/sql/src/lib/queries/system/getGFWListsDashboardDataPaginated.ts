@@ -27,6 +27,7 @@ export const getGFWListsDashboardDataPaginated = `
   SET @TEMPLATE = '
     ;WITH ParsedAlerts AS (
       SELECT
+        list_id,
         location_id,
         -- Parse and sum integrated_alerts_daily fields (count-based)
         ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_all_nominal)), 0) AS integratedAlertsDailyAllNominal,
@@ -100,7 +101,7 @@ export const getGFWListsDashboardDataPaginated = `
       L.location_name
     FROM dbo.[Analyses-Dashboard] AD
     
-    LEFT JOIN ParsedAlerts PA ON PA.location_id = AD.location_id
+    LEFT JOIN ParsedAlerts PA ON PA.list_id = AD.list_id AND PA.location_id = AD.location_id
     
     OUTER APPLY (
       SELECT TOP 1 gadmid, [Country], [State], [Sub State], [Location Name], Latitude, Longitude

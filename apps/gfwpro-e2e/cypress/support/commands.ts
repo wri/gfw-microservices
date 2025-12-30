@@ -136,6 +136,15 @@ Cypress.Commands.add('dismissCookieBanner', () => {
     } else {
       cy.log('Osano cookie banner not found - may already be dismissed');
     }
+
+    // Banner exists, wait for accept button and click it
+    // Cypress will automatically retry until the element appears (up to timeout)
+    cy.get('.osano-cm-accept, .osano-cm-accept-all', { timeout: 15000 })
+      .should('be.visible')
+      .first()
+      .click({ force: true });
+
+    cy.log('Cookie banner dismissed');
   });
 });
 

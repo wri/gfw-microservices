@@ -2,8 +2,9 @@ import axios from 'axios';
 import { traceContext } from './trace.context';
 
 /**
- * Global axios configuration that automatically adds trace ID headers to all requests.
+ * Global axios configuration that automatically adds trace ID, organization ID, and user ID headers to all requests.
  * This should be called once during application startup to configure all axios instances.
+ * These headers allow trace context to be forwarded between microservices.
  */
 export function configureGlobalAxiosTracing(): void {
   // Add request interceptor to all axios instances globally
@@ -11,12 +12,28 @@ export function configureGlobalAxiosTracing(): void {
     (config) => {
       try {
         const traceId = traceContext.getTraceId();
-        if (traceId && config.headers) {
-          config.headers['X-Trace-ID'] = traceId;
+        const organizationId = traceContext.getOrganizationId();
+        const userId = traceContext.getUserId();
+
+        if (config.headers) {
+          // Forward trace ID
+          if (traceId) {
+            config.headers['x-trace-id'] = traceId;
+          }
+
+          // Forward organization ID
+          if (organizationId !== undefined) {
+            config.headers['x-organization-id'] = organizationId.toString();
+          }
+
+          // Forward user ID
+          if (userId !== undefined) {
+            config.headers['x-user-id'] = userId.toString();
+          }
         }
       } catch (error) {
-        // Silently fail - don't break requests if trace ID retrieval fails
-        console.debug('Failed to add trace ID to request:', error);
+        // Silently fail - don't break requests if trace context retrieval fails
+        console.debug('Failed to add trace context to request:', error);
       }
       return config;
     },

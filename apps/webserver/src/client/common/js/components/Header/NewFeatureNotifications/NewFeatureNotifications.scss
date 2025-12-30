@@ -1,19 +1,36 @@
 @import '../../../../css/colorsGFW';
 
 .new-feature-notifications {
+  max-width: 800px;
+  width: 800px;
+  box-sizing: border-box;
+  overflow: hidden;
   > div {
     /*  padding fix to avoid scroll overlap in firefox */
     padding-right: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  // !important is required here to override Material-UI's inline styles on div[role='presentation']
+  // Material-UI v0.x applies inline styles (width: 840px) that cannot be overridden by CSS specificity alone
+  // This is the standard practice for overriding third-party library inline styles
+  div[role='presentation'] {
+    width: 100%;
+    max-width: 800px !important;
   }
   &__header {
     display: flex;
     justify-content: space-between;
     padding: 0px 16px;
     align-items: center;
+    width: 100%;
+    box-sizing: border-box;
   }
   &__mark-as-read {
     text-align: right;
     padding: 0px 16px;
+    width: 100%;
+    box-sizing: border-box;
     button {
       background: none;
       color: $gfw-green;

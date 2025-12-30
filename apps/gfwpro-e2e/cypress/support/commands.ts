@@ -127,7 +127,6 @@ Cypress.Commands.add('dismissCookieBanner', () => {
     const acceptButton = $body.find('.osano-cm-accept, .osano-cm-accept-all');
     const buttonVisible = acceptButton.length > 0 && acceptButton.is(':visible');
 
-<<<<<<< HEAD
     if (bannerVisible && buttonVisible) {
       // Banner and button are visible, click it directly without timeout since we verified it exists
       cy.wrap(acceptButton.first()).click({ force: true });
@@ -135,7 +134,6 @@ Cypress.Commands.add('dismissCookieBanner', () => {
     } else {
       // Banner or button not found/visible - may already be dismissed or not loaded yet
       cy.log('Osano cookie banner not found or not ready - may already be dismissed');
->>>>>>> db9daaae (fix(gfwpro-e2e): fix dismissCookieBanner to use if/else instead of early return)
     }
   });
 });

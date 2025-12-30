@@ -69,18 +69,19 @@ describe('AlertsGlobalIntegratedDisturbanceDailyService', () => {
         Country: 'CountryX',
         State: 'StateY',
         'Sub State': 'SubZ',
-        integratedAlertsAreaAllNominal: '{"2021-01-01":"0.18","2021-01-02":"0.09"}',
-        integratedAlertsAreaSbtnNaturalForestsNominal: '{"2021-01-01":"0.09","2021-01-02":"0"}',
-        integratedAlertsAreaSbtnNaturalEcosystemNominal: '{"2021-01-01":"0","2021-01-02":"0"}',
-        integratedAlertsAreaJrcNominal: '{"2021-01-01":"0","2021-01-02":"0.09"}',
-        integratedAlertsAreaAllHigh: '{"2021-01-02":"0.27"}',
-        integratedAlertsAreaSbtnNaturalForestsHigh: '{"2021-01-02":"0.18"}',
-        integratedAlertsAreaSbtnNaturalEcosystemHigh: '{"2021-01-02":"0"}',
-        integratedAlertsAreaJrcHigh: '{"2021-01-02":"0.09"}',
-        integratedAlertsAreaAllHighest: '{"2021-01-01":"0.36"}',
-        integratedAlertsAreaSbtnNaturalForestsHighest: '{"2021-01-01":"0.18"}',
-        integratedAlertsAreaSbtnNaturalEcosystemHighest: '{"2021-01-01":"0"}',
-        integratedAlertsAreaJrcHighest: '{"2021-01-01":"0.09"}',
+        // Changed to numbers - SQL now returns pre-summed values
+        integratedAlertsAreaAllNominal: 0.27, // Sum of 0.18 + 0.09
+        integratedAlertsAreaSbtnNaturalForestsNominal: 0.09,
+        integratedAlertsAreaSbtnNaturalEcosystemNominal: 0,
+        integratedAlertsAreaJrcNominal: 0.09,
+        integratedAlertsAreaAllHigh: 0.27,
+        integratedAlertsAreaSbtnNaturalForestsHigh: 0.18,
+        integratedAlertsAreaSbtnNaturalEcosystemHigh: 0,
+        integratedAlertsAreaJrcHigh: 0.09,
+        integratedAlertsAreaAllHighest: 0.36,
+        integratedAlertsAreaSbtnNaturalForestsHighest: 0.18,
+        integratedAlertsAreaSbtnNaturalEcosystemHighest: 0,
+        integratedAlertsAreaJrcHighest: 0.09,
       },
     ];
 
@@ -90,12 +91,12 @@ describe('AlertsGlobalIntegratedDisturbanceDailyService', () => {
     await service.finish(filters);
 
     const csvData = readCsvLines();
+    // Now returns single aggregated row per confidence level instead of per-day rows
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Location Size (ha),Country,State,Sub state,Alert Type,Start Date,End Date,Date,Confidence Level,Total alert hectares,Hectares of alerts in SBTN Natural Forest,Hectares of alerts in SBTN Natural Open Ecosystems,Hectares of alerts in JRC Forest,Number of locations',
-      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,2021-01-01,Nominal,0.18,0.09,0,0,1',
-      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,2021-01-01,Highest,0.36,0.18,0,0.09,1',
-      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,2021-01-02,Nominal,0.09,0,0,0.09,1',
-      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,2021-01-02,High,0.27,0.18,0,0.09,1',
+      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,all-time,Nominal,0.27,0.09,0,0.09,1',
+      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,all-time,High,0.27,0.18,0,0.09,1',
+      'TestList_Global_Integrated_Disturbance_Alerts_Daily,"Location A",200,CountryX,StateY,SubZ,"Global Integrated Disturbance Alert",2021-01-01,2021-01-02,all-time,Highest,0.36,0.18,0,0.09,1',
       'TestList_Global_Integrated_Disturbance_Alerts_Daily,Total locations,500,,,,Global Integrated Disturbance Alert,2021-01-01,2021-01-02,,,,,,,1',
       '',
     ]);

@@ -3349,39 +3349,30 @@ describe('AlertsService - formatData', () => {
         location_lon: 0,
         location_name: 'Test Location',
         totalHa: 100,
-        integratedAlertsDailyAllNominal: '{"2021-01-01":2,"2021-01-02":1}',
-        integratedAlertsDailySbtnNominal: '{"2021-01-01":1}',
-        integratedAlertsDailyJrcNominal: '{"2021-01-02":1}',
-        integratedAlertsDailyAllHigh: '{"2021-01-01":3}',
-        integratedAlertsDailySbtnHigh: '{"2021-01-01":2}',
-        integratedAlertsDailyJrcHigh: '{"2021-01-01":1}',
-        integratedAlertsDailyAllHighest: '{}',
-        integratedAlertsDailySbtnHighest: '{}',
-        integratedAlertsDailyJrcHighest: '{}',
+        // Changed to numbers - SQL now returns pre-summed values
+        integratedAlertsDailyAllNominal: 3, // Sum of 2 + 1
+        integratedAlertsDailySbtnNominal: 1,
+        integratedAlertsDailyJrcNominal: 1,
+        integratedAlertsDailyAllHigh: 3,
+        integratedAlertsDailySbtnHigh: 2,
+        integratedAlertsDailyJrcHigh: 1,
+        integratedAlertsDailyAllHighest: 0,
+        integratedAlertsDailySbtnHighest: 0,
+        integratedAlertsDailyJrcHighest: 0,
       },
     ];
 
     const result = alertsService.formatData(input);
 
+    // Expected output now returns single aggregated rows per confidence level
     expect(result[0].globalIntegratedDisturbanceDaily).toEqual({
       nominal: [
         {
-          day: '2021-01-01',
-          totalAlertCount: 2,
-          totalAlertHectares: 0.18,
+          day: 'all-time',
+          totalAlertCount: 3,
+          totalAlertHectares: 0.27,
           sbtnNaturalForestCount: 1,
           sbtnNaturalForestHectares: 0.09,
-          sbtnNaturalOpenEcosystemsCount: 0,
-          sbtnNaturalOpenEcosystemsHectares: 0,
-          jrcForestCount: 0,
-          jrcForestHectares: 0,
-        },
-        {
-          day: '2021-01-02',
-          totalAlertCount: 1,
-          totalAlertHectares: 0.09,
-          sbtnNaturalForestCount: 0,
-          sbtnNaturalForestHectares: 0,
           sbtnNaturalOpenEcosystemsCount: 0,
           sbtnNaturalOpenEcosystemsHectares: 0,
           jrcForestCount: 1,
@@ -3390,7 +3381,7 @@ describe('AlertsService - formatData', () => {
       ],
       high: [
         {
-          day: '2021-01-01',
+          day: 'all-time',
           totalAlertCount: 3,
           totalAlertHectares: 0.27,
           sbtnNaturalForestCount: 2,
@@ -3401,7 +3392,7 @@ describe('AlertsService - formatData', () => {
           jrcForestHectares: 0.09,
         },
       ],
-      highest: [],
+      highest: [], // Empty because test data has 0 values
     });
   });
 });

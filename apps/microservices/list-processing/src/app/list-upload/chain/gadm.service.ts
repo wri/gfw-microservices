@@ -97,29 +97,30 @@ export class GADMService extends AbstractHandler<ChainType> {
       type: feature.geometry.type,
       coordinates: geometryWithCoords.coordinates,
     };
-    // const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
-    // const requestData = { geometry, sql };
+    const centroidGeometryJson = JSON.stringify(centroidGeometry).replace(/'/g, "''");
+    const fullGeometryJson = JSON.stringify(fullGeometry).replace(/'/g, "''");
     const sql = `SELECT
     MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometry
+      centroidGeometryJson
     )}')) THEN gid_1 END) as gid_1,
     MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometry
+      centroidGeometryJson
     )}')) THEN gid_2 END) as gid_2,
     MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometry
+      centroidGeometryJson
     )}')) THEN name_0 END) as name_0,
     MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometry
+      centroidGeometryJson
     )}')) THEN name_1 END) as name_1,
     MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometry
+      centroidGeometryJson
     )}')) THEN name_2 END) as name_2,
     ST_UNION(ST_Intersection(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      fullGeometry
+      fullGeometryJson
     )}'))) as st_union
     FROM data WHERE (adm_level='2') OR (adm_level='1')`;
-    // putting adm_level 1 to handle locations without adm2 (e.g. Libya), but having adm_level 2 fist and in parenthesis to prioritize adm_level 2
+    // putting adm_level 1 to handle locations without adm2 (e.g. Libya)
+    // but having adm_level 2 first and in parenthesis to prioritize adm_level 2
 
     const requestData = {
       geometry: feature.geometry,
@@ -142,7 +143,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     );
   }
 
-  addGeoReferenceData = async (feature: Feature) => {
+  addGeoReferenceData = async (feature: Feature): Promise<any> => {
     try {
       const response = await this.getGadmData(feature);
 

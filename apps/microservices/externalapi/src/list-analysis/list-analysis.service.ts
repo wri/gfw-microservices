@@ -23,6 +23,7 @@ import {
 } from './list-upload-new.dto';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
+import { isRetryableError, DEFAULT_DELAY } from './utils/retry-utils';
 import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import {
   CREATE_ANALYSIS,
@@ -430,6 +431,36 @@ export class ListAnalysisService {
     }
   }
 
+  private async retryCreateLargeList(
+    retriesLeft: number,
+    data: {
+      list_name: string;
+      user_id: number;
+      client_database: string;
+      analysisIds: string[];
+      commodity: string;
+    }
+  ): Promise<{ data: { list_id: number } }> {
+    try {
+      const response = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
+      return response;
+    } catch (error) {
+      const statusCode = error.response?.status || error.code;
+
+      // retry only for certain timeout/network errors
+      if (retriesLeft > 0 && isRetryableError(error)) {
+        this.logger.warn(
+          `Retryable error in create-large-list request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
+        return this.retryCreateLargeList(retriesLeft - 1, data);
+      }
+
+      // If not retryable or no retries left, throw the error
+      throw error;
+    }
+  }
+
   async uploadNewList(
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
@@ -476,7 +507,7 @@ export class ListAnalysisService {
         analysisIds: newListDetails.analysisIDs,
         commodity: newListDetails.commodity,
       };
-      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
+      largeListCreated = await this.retryCreateLargeList(3, data);
     } catch (error) {
       const errorMessage = (error?.response?.data?.message || error?.message || '').toString();
       if (error?.response?.status === HttpStatus.CONFLICT) {

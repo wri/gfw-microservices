@@ -6,7 +6,9 @@ import { theme } from '../../../../styles/theme';
  * Formats a timestamp or Date to ISO date string (YYYY-MM-DD)
  */
 const formatDate = (date) => {
-  if (!date) return new Date().toISOString().split('T')[0];
+  if (!date) {
+    return new Date().toISOString().split('T')[0];
+  }
   return new Date(date).toISOString().split('T')[0];
 };
 

@@ -1,5 +1,4 @@
 import { AppBar } from '@mui/material';
-
 import store from '../../store';
 import { toggleLayer } from '../../actions/mapActions';
 import LayerCheckbox from './LayerCheckbox';

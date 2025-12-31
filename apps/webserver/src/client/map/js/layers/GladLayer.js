@@ -61,9 +61,9 @@ const GladLayer = BaseTileLayer.createSubclass({
 
   filter: function (data) {
     const todayDate = parseInt(getJulianDate(new Date()), 10);
-    const towoWeeksAgo = new Date();
-    towoWeeksAgo.setDate(towoWeeksAgo.getDate() - 14);
-    const weekAgoJulian = parseInt(getJulianDate(towoWeeksAgo), 10);
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const weekAgoJulian = parseInt(getJulianDate(twoWeeksAgo), 10);
     for (var i = 0; i < data.length; i += 4) {
       // Decode the rgba/pixel so I can filter on confidence and date ranges
       var slice = [data[i], data[i + 1], data[i + 2]];

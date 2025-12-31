@@ -14,7 +14,7 @@ import { getYear, differenceInDays, parse, format } from 'date-fns';
 export function getJulianDate(date) {
   const year = getYear(date);
   const startOfYear = parse(`${year}/01/01`, 'yyyy/MM/dd', new Date());
-  const daysPassed = differenceInDays(date, startOfYear);
+  const daysPassed = differenceInDays(date, startOfYear) + 1; // Add 1 for 1-indexed day of year
   const daysPassedFormatted = daysPassed.toString().padStart(3, '0');
 
   return `${format(date, 'yy')}${daysPassedFormatted}`;

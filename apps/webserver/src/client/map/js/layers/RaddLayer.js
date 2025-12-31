@@ -62,9 +62,9 @@ const RaddLayer = BaseTileLayer.createSubclass({
 
   filter: function (data) {
     const todayDate = getJulianDate(new Date());
-    const towoWeeksAgo = new Date();
-    towoWeeksAgo.setDate(towoWeeksAgo.getDate() - 14);
-    const weekAgoJulian = getJulianDate(towoWeeksAgo);
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const weekAgoJulian = getJulianDate(twoWeeksAgo);
     for (var i = 0; i < data.length; i += 4) {
       // Decode the rgba/pixel so I can filter on confidence and date ranges
       var slice = [data[i], data[i + 1], data[i + 2]];

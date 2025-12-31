@@ -156,7 +156,7 @@ describe('GADMService', () => {
         } as RequestNewList,
       };
 
-      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue();
+      jest.spyOn(service, 'addGeoReferenceData').mockResolvedValue({} as any);
       const result = await service.addGeoReferenceDataToFeatures(geojson, request);
       expect(service.addGeoReferenceData).toHaveBeenCalled();
       expect(result.type).toBe('FeatureCollection');

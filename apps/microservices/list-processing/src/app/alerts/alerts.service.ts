@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DashboardDataType } from '@wri-monorepos/sql';
 import { AlertsRepository } from './alerts.repository';
 
-const ALERT_PIXEL_SIZE_HA = 0.09;
-
 @Injectable()
 export class AlertsService {
   constructor(private readonly alertsRepository: AlertsRepository) {}
@@ -95,15 +93,14 @@ export class AlertsService {
                 {
                   day: 'all-time',
                   totalAlertCount: l.integratedAlertsDailyAllNominal || 0,
-                  totalAlertHectares: this.toHectares(l.integratedAlertsDailyAllNominal || 0),
+                  totalAlertHectares: l.integratedAlertsAreaAllNominal || 0,
                   sbtnNaturalForestCount: l.integratedAlertsDailySbtnNominal || 0,
-                  sbtnNaturalForestHectares: this.toHectares(
-                    l.integratedAlertsDailySbtnNominal || 0
-                  ),
+                  sbtnNaturalForestHectares: l.integratedAlertsAreaSbtnNaturalForestsNominal || 0,
                   sbtnNaturalOpenEcosystemsCount: 0,
-                  sbtnNaturalOpenEcosystemsHectares: 0,
+                  sbtnNaturalOpenEcosystemsHectares:
+                    l.integratedAlertsAreaSbtnNaturalEcosystemNominal || 0,
                   jrcForestCount: l.integratedAlertsDailyJrcNominal || 0,
-                  jrcForestHectares: this.toHectares(l.integratedAlertsDailyJrcNominal || 0),
+                  jrcForestHectares: l.integratedAlertsAreaJrcNominal || 0,
                 },
               ]
             : [],
@@ -112,13 +109,14 @@ export class AlertsService {
                 {
                   day: 'all-time',
                   totalAlertCount: l.integratedAlertsDailyAllHigh || 0,
-                  totalAlertHectares: this.toHectares(l.integratedAlertsDailyAllHigh || 0),
+                  totalAlertHectares: l.integratedAlertsAreaAllHigh || 0,
                   sbtnNaturalForestCount: l.integratedAlertsDailySbtnHigh || 0,
-                  sbtnNaturalForestHectares: this.toHectares(l.integratedAlertsDailySbtnHigh || 0),
+                  sbtnNaturalForestHectares: l.integratedAlertsAreaSbtnNaturalForestsHigh || 0,
                   sbtnNaturalOpenEcosystemsCount: 0,
-                  sbtnNaturalOpenEcosystemsHectares: 0,
+                  sbtnNaturalOpenEcosystemsHectares:
+                    l.integratedAlertsAreaSbtnNaturalEcosystemHigh || 0,
                   jrcForestCount: l.integratedAlertsDailyJrcHigh || 0,
-                  jrcForestHectares: this.toHectares(l.integratedAlertsDailyJrcHigh || 0),
+                  jrcForestHectares: l.integratedAlertsAreaJrcHigh || 0,
                 },
               ]
             : [],
@@ -127,15 +125,14 @@ export class AlertsService {
                 {
                   day: 'all-time',
                   totalAlertCount: l.integratedAlertsDailyAllHighest || 0,
-                  totalAlertHectares: this.toHectares(l.integratedAlertsDailyAllHighest || 0),
+                  totalAlertHectares: l.integratedAlertsAreaAllHighest || 0,
                   sbtnNaturalForestCount: l.integratedAlertsDailySbtnHighest || 0,
-                  sbtnNaturalForestHectares: this.toHectares(
-                    l.integratedAlertsDailySbtnHighest || 0
-                  ),
+                  sbtnNaturalForestHectares: l.integratedAlertsAreaSbtnNaturalForestsHighest || 0,
                   sbtnNaturalOpenEcosystemsCount: 0,
-                  sbtnNaturalOpenEcosystemsHectares: 0,
+                  sbtnNaturalOpenEcosystemsHectares:
+                    l.integratedAlertsAreaSbtnNaturalEcosystemHighest || 0,
                   jrcForestCount: l.integratedAlertsDailyJrcHighest || 0,
-                  jrcForestHectares: this.toHectares(l.integratedAlertsDailyJrcHighest || 0),
+                  jrcForestHectares: l.integratedAlertsAreaJrcHighest || 0,
                 },
               ]
             : [],
@@ -176,10 +173,6 @@ export class AlertsService {
       dissolvedGeoJSON: { features: diss },
       geojson: { features: geo },
     };
-  }
-
-  private toHectares(count: number): number {
-    return Number((count * ALERT_PIXEL_SIZE_HA).toFixed(2));
   }
 
   formatDates(dateString: string) {

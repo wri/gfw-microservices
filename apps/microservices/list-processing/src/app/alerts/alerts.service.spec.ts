@@ -3359,6 +3359,19 @@ describe('AlertsService - formatData', () => {
         integratedAlertsDailyAllHighest: 0,
         integratedAlertsDailySbtnHighest: 0,
         integratedAlertsDailyJrcHighest: 0,
+        // Area fields (hectares) - these are the actual hectare values from SQL
+        integratedAlertsAreaAllNominal: 0.27,
+        integratedAlertsAreaSbtnNaturalForestsNominal: 0.09,
+        integratedAlertsAreaSbtnNaturalEcosystemNominal: 0,
+        integratedAlertsAreaJrcNominal: 0.09,
+        integratedAlertsAreaAllHigh: 0.27,
+        integratedAlertsAreaSbtnNaturalForestsHigh: 0.18,
+        integratedAlertsAreaSbtnNaturalEcosystemHigh: 0,
+        integratedAlertsAreaJrcHigh: 0.09,
+        integratedAlertsAreaAllHighest: 0,
+        integratedAlertsAreaSbtnNaturalForestsHighest: 0,
+        integratedAlertsAreaSbtnNaturalEcosystemHighest: 0,
+        integratedAlertsAreaJrcHighest: 0,
       },
     ];
 

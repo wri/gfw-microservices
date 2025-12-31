@@ -79,8 +79,7 @@ SELECT
 	ISNULL([commodity_threat_protected_areas], '{}') AS [commodity_threat_protected_areas],
 	ISNULL([commodity_threat_fires], '{}') AS [commodity_threat_fires],
 	ISNULL([dissolved_geom_object_key], '{}') AS [dissolved_geom_object_key],
-							ISNULL([classified_region_area], '{}') AS [classified_region_area],
-							ISNULL([argentina_presence], 'false') AS [argentina_presence]
+							ISNULL([classified_region_area], '{}') AS [classified_region_area]
 INTO dbo.[temp_analysis_table]
 FROM OPENJSON (@json)
 WITH(
@@ -148,8 +147,7 @@ WITH(
 	[commodity_threat_protected_areas] [nvarchar](max),
 	[commodity_threat_fires] [nvarchar](max),
 	[dissolved_geom_object_key] [nvarchar](300),
-							[classified_region_area] [nvarchar](max),
-							[argentina_presence] [nvarchar](50)
+							[classified_region_area] [nvarchar](max)
 
 )
 
@@ -222,8 +220,7 @@ SET @TEMPLATE = '
 		D.[commodity_threat_protected_areas],
 		D.[commodity_threat_fires],
 		D.[dissolved_geom_object_key],
-									D.[classified_region_area],
-									D.[argentina_presence]
+									D.[classified_region_area]
 	INTO dbo.[temp_merged_analysis_table]
 	FROM [temp_analysis_table] AS D
 	RIGHT JOIN [{ANALYSIS_TABLE}] AS L ON D.location_id = L.location_id ORDER BY L.location_id ASC
@@ -307,8 +304,7 @@ SET @APPEND_LOCATION_TEMPLATE = '
 		D.[commodity_threat_protected_areas],
 		D.[commodity_threat_fires],
 		D.[dissolved_geom_object_key],
-									D.[classified_region_area],
-									D.[argentina_presence]
+									D.[classified_region_area]
 	INTO dbo.[temp_merged_analysis_table]
 	FROM [temp_analysis_table] AS D
 	INNER JOIN [{ANALYSIS_TABLE}] AS L ON D.location_id = L.location_id ORDER BY L.location_id ASC

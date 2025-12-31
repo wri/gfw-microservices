@@ -1,29 +1,40 @@
 import { sum } from 'lodash';
 import { DATA_LAYER } from '../shared/constants';
-import { cloneRow, formatPct, validatePct } from '../shared/functions';
+import { cloneRow, formatPct, validatePct, isObjInCountryFormat } from '../shared/functions';
 
 const dataLayerParser = ({ data, dataRow, csvData }) => {
-  const { brazil_biomes: brazilBiomes, arg_otbn_area: argentinaOTBN } = data;
+  const { brazil_biomes: brazilBiomes, classified_region_area: classifiedRegionArea } = data;
 
-  const brazilData = {
-    dataLayerName: DATA_LAYER.brazil_biomes,
-    data: JSON.parse(brazilBiomes ?? '{}'),
-    available: Object.entries(JSON.parse(brazilBiomes ?? '{}')).length > 0,
-  };
+  // Try Brazil biomes first
+  const brazilParsed = JSON.parse(brazilBiomes ?? '{}');
+  if (Object.keys(brazilParsed).length > 0) {
+    dataLayerProcessor(
+      { dataLayerName: DATA_LAYER.brazil_biomes, data: brazilParsed },
+      dataRow,
+      csvData
+    );
+    return;
+  }
 
-  const argentinaData = {
-    dataLayerName: DATA_LAYER.arg_otbn_area,
-    data: JSON.parse(argentinaOTBN ?? '{}'),
-    available: Object.entries(JSON.parse(argentinaOTBN ?? '{}')).length > 0,
-  };
-
-  const objToProcess = brazilData.available
-    ? brazilData
-    : argentinaData.available
-    ? argentinaData
-    : { data: {}, dataLayerName: '' };
-
-  dataLayerProcessor(objToProcess, dataRow, csvData);
+  // Fallback to Argentina classified region (replaces deprecated arg_otbn_area)
+  if (classifiedRegionArea) {
+    try {
+      const parsedClassifiedRegion = JSON.parse(classifiedRegionArea ?? '{}');
+      const argData = isObjInCountryFormat(parsedClassifiedRegion)
+        ? parsedClassifiedRegion?.ARG || {}
+        : parsedClassifiedRegion;
+      if (Object.keys(argData).length > 0) {
+        dataLayerProcessor(
+          { dataLayerName: 'Argentina Classified Region', data: argData },
+          dataRow,
+          csvData
+        );
+        return;
+      }
+    } catch (e) {
+      // If parsing fails, do nothing
+    }
+  }
 };
 
 const dataLayerProcessor = ({ data, dataLayerName }, dataRow, csvData) => {

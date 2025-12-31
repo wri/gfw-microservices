@@ -448,10 +448,6 @@ export const EXCEL_TEMPLATES = {
   ],
   sAmericaBiomesAggregate: [
     {
-      name: 'arg_otbn_area',
-      parsed: 'overhead',
-    },
-    {
       name: 'brazil_biomes',
       parsed: 'overhead',
     },
@@ -930,8 +926,8 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
       composites: [
         {
-          attribute: 'arg_otbn_area',
-          type: 'category',
+          attribute: 'classified_region_area',
+          type: 'country',
           label: 'Argentina OTBN',
           limit: 4,
         },
@@ -958,8 +954,8 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
       composites: [
         {
-          attribute: 'arg_otbn_area',
-          type: 'category',
+          attribute: 'classified_region_area',
+          type: 'country',
           label: 'Argentina OTBN',
           limit: 4,
         },
@@ -1459,7 +1455,6 @@ export const FIELDS_NEEDED_CALCULATION = [
   'south_america_presence',
   'southeast_asia_presence',
   'brazil_biomes',
-  'arg_otbn_area',
   'total_area',
   'soy_total_area',
   'soy_pre2001_nonforest_area',
@@ -1475,8 +1470,8 @@ export const NESTED_JSON_ATTRIBUTES = [
 ];
 
 export const DATA_LAYER = {
-  arg_otbn_area: 'Argentina OTBN',
   brazil_biomes: 'Brazil Biomes',
+  argentina_otbn: 'Argentina OTBN',
 };
 
 export const DEFORESTATION_KPIS_HEADER_AGGREGATE = {

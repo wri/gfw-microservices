@@ -342,7 +342,6 @@ SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
         [commodity_threat_protected_areas] NVARCHAR(MAX) DEFAULT ''{}'',
         [commodity_threat_fires] NVARCHAR(MAX) DEFAULT ''{}'',
         [dissolved_geom_object_key] NVARCHAR(300) DEFAULT ''{}'',
-        [argentina_presence] NVARCHAR(50) DEFAULT ''false'',
 
         [protected_areas_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',
         [landmark_by_category_area] NVARCHAR(MAX) DEFAULT ''{}'',

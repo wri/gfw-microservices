@@ -76,7 +76,6 @@ export const ListFieldsFileRequestSchema = BasicFieldsFileRequestSchema.extend({
   listLevelAnalysis: z
     .object({
       country_area: z.string().trim().optional(),
-      arg_otbn_area: z.string().trim().optional(),
       protected_areas_by_category_area: z.string().trim().optional(),
       landmark_by_category_area: z.string().trim().optional(),
       listId: z.number().int().positive().optional(),

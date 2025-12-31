@@ -18,7 +18,9 @@ describe('getAllFilesAndZip', () => {
 
   afterAll(() => {
     fs.rmSync(testDir, { recursive: true, force: true });
-    if (fs.existsSync(testZip)) fs.unlinkSync(testZip);
+    if (fs.existsSync(testZip)) {
+      fs.unlinkSync(testZip);
+    }
   });
 
   it('should include Palm Risk Analysis CSV in the zip even if values are zero', async () => {

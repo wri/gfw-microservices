@@ -95,16 +95,6 @@ const utils = {
     return item.slice(item.length - length);
   },
 
-  getJulianDate: (timestamp) => {
-    const day = 1000 * 60 * 60 * 24;
-    const newDate = new Date(timestamp);
-    const year = new Date(newDate.getFullYear(), 0, 0);
-    const currentDay = Math.ceil((newDate - year) / day);
-    //- Year should be 15000 or 16000
-    const julianYear = (newDate.getFullYear() - 2000) * 1000;
-    return julianYear + currentDay;
-  },
-
   /**
    * Inclusive Array generator
    */

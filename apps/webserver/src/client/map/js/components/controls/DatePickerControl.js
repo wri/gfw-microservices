@@ -1,70 +1,135 @@
-import { Component } from 'react';
-import { format } from 'date-fns';
-import DatePicker from 'material-ui/DatePicker';
+import { useState, useEffect, useRef } from 'react';
+import { Box, TextField, Typography } from '@mui/material';
+import { theme } from '../../../../styles/theme';
 
-// Styling for the text field element of <DatePicker /> Component
-const datePickerStyle = {
-  width: '100px',
-  height: '32px',
-  margin: '10px 5px',
-  border: '1px solid #A1BA42',
-  borderRadius: '20px',
-  fontSize: '13px',
-  fontWeight: 300,
-};
-const flexStyle = { display: 'flex', justifyContent: 'center', alignItems: 'center' };
-
-const fontStyle = {
-  fontFamily: "'Fira Sans', sans-serif !important",
+/**
+ * Formats a timestamp or Date to ISO date string (YYYY-MM-DD)
+ */
+const formatDate = (date) => {
+  if (!date) return new Date().toISOString().split('T')[0];
+  return new Date(date).toISOString().split('T')[0];
 };
 
-export default class DatePickerControl extends Component {
-  constructor(props) {
-    super(props);
-    const { start, end, minDate } = props;
-    this.state = {
-      start: start,
-      end: end,
-      minDate: minDate || start,
-      maxDate: end,
+const dateInputStyles = {
+  flex: 1,
+  '& .MuiOutlinedInput-root': {
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+  '& .MuiOutlinedInput-input': {
+    padding: '2px 6px',
+    fontSize: '0.8125rem',
+  },
+};
+
+export default function DatePickerControl({ start, end, minDate, changeStart, changeEnd }) {
+  const minDateTimestamp = new Date(minDate || start).getTime();
+  const maxDateTimestamp = new Date().getTime();
+
+  const [startDateInput, setStartDateInput] = useState(formatDate(start));
+  const [endDateInput, setEndDateInput] = useState(formatDate(end));
+  const [dateRange, setDateRange] = useState([new Date(start).getTime(), new Date(end).getTime()]);
+
+  const startDateTimeoutRef = useRef(null);
+  const endDateTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    const newStart = new Date(start).getTime();
+    const newEnd = new Date(end).getTime();
+    setDateRange([newStart, newEnd]);
+    setStartDateInput(formatDate(newStart));
+    setEndDateInput(formatDate(newEnd));
+  }, [start, end]);
+
+  useEffect(() => {
+    return () => {
+      if (startDateTimeoutRef.current) {
+        clearTimeout(startDateTimeoutRef.current);
+      }
+      if (endDateTimeoutRef.current) {
+        clearTimeout(endDateTimeoutRef.current);
+      }
     };
-  }
+  }, []);
 
-  componentWillReceiveProps(nextProps) {
-    const { start, end } = nextProps;
-    this.setState({ start, end });
-  }
+  const handleStartDateChange = (event) => {
+    const newValue = event.target.value;
+    setStartDateInput(newValue);
 
-  render() {
-    const { changeStart, changeEnd } = this.props;
-    const { start, end, minDate, maxDate } = this.state;
-    const fromLabel = `deforestation alerts from`;
+    if (!newValue) {
+      return;
+    }
 
-    return (
-      <div className="adhoc-analysis__date-picker-container" style={flexStyle}>
-        <div style={{ ...fontStyle, fontSize: '11px' }}>{fromLabel}</div>
-        <DatePicker
-          minDate={minDate}
-          maxDate={maxDate}
-          value={start}
-          container="inline"
-          formatDate={this.formatDate}
-          textFieldStyle={{ ...datePickerStyle, ...fontStyle }}
-          onChange={(evt, date) => changeStart(null, date)}
-        />
-        <div style={{ ...fontStyle, fontSize: '11px' }}>to</div>
-        <DatePicker
-          minDate={minDate}
-          maxDate={new Date()}
-          value={end}
-          container="inline"
-          formatDate={this.formatDate}
-          textFieldStyle={{ ...datePickerStyle, ...fontStyle }}
-          onChange={(evt, date) => changeEnd(null, date)}
-        />
-      </div>
-    );
-  }
+    const newStartDate = new Date(newValue).getTime();
+    if (newStartDate >= minDateTimestamp && newStartDate <= dateRange[1] && !isNaN(newStartDate)) {
+      setDateRange([newStartDate, dateRange[1]]);
 
-  formatDate = (date) => format(new Date(date), 'd MMM yyyy');
+      if (startDateTimeoutRef.current) {
+        clearTimeout(startDateTimeoutRef.current);
+      }
+
+      startDateTimeoutRef.current = setTimeout(() => {
+        changeStart(null, new Date(newStartDate));
+      }, 1000);
+    }
+  };
+
+  const handleEndDateChange = (event) => {
+    const newValue = event.target.value;
+    setEndDateInput(newValue);
+
+    if (!newValue) {
+      return;
+    }
+
+    const newEndDate = new Date(newValue).getTime();
+    if (newEndDate <= maxDateTimestamp && newEndDate >= dateRange[0] && !isNaN(newEndDate)) {
+      setDateRange([dateRange[0], newEndDate]);
+
+      if (endDateTimeoutRef.current) {
+        clearTimeout(endDateTimeoutRef.current);
+      }
+
+      endDateTimeoutRef.current = setTimeout(() => {
+        changeEnd(null, new Date(newEndDate));
+      }, 1000);
+    }
+  };
+
+  return (
+    <Box
+      className="adhoc-analysis__date-picker-container"
+      sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1 }}
+    >
+      <Typography variant="body2" sx={{ fontSize: '0.8125rem' }}>
+        deforestation alerts from
+      </Typography>
+      <TextField
+        type="date"
+        value={startDateInput}
+        onChange={handleStartDateChange}
+        inputProps={{
+          min: formatDate(minDateTimestamp),
+          max: formatDate(dateRange[1]),
+        }}
+        size="small"
+        sx={dateInputStyles}
+      />
+      <Typography variant="body2" sx={{ fontSize: '0.8125rem' }}>
+        to
+      </Typography>
+      <TextField
+        type="date"
+        value={endDateInput}
+        onChange={handleEndDateChange}
+        inputProps={{
+          min: formatDate(dateRange[0]),
+          max: formatDate(maxDateTimestamp),
+        }}
+        size="small"
+        sx={dateInputStyles}
+      />
+    </Box>
+  );
 }

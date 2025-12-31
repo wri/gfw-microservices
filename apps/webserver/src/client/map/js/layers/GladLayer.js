@@ -1,32 +1,11 @@
 import BaseTileLayer from '@arcgis/core/layers/BaseTileLayer';
 import esriRequest from '@arcgis/core/request';
-import { getYear, differenceInDays, parse, format } from 'date-fns';
-
-// Modify the JS Date object
-Date.prototype.getJulian = function () {
-  // Convert date into Date Object
-  const date = new Date(this);
-  // Get the year
-  const year = getYear(date);
-  // Create a date object of the beginning of the year
-  const startOfYear = parse(`${year}/01/01`, 'yyyy/MM/dd', new Date());
-  // Find number of days passed
-  const daysPassed = differenceInDays(date, startOfYear);
-  // Append leading zeros if needed
-  let daysPassedFormatted = daysPassed.toString();
-  if (daysPassedFormatted.length < 3) {
-    while (daysPassedFormatted.length < 3) {
-      daysPassedFormatted = `0${daysPassedFormatted}`;
-    }
-  }
-  // Return the correct Julian
-  return parseInt(`${format(date, 'yy')}${daysPassedFormatted}`, 10);
-};
+import { getJulianDate } from '../utils/dateUtils';
 
 const GladLayer = BaseTileLayer.createSubclass({
   properties: {
     julianFrom: 15000,
-    julianTo: new Date().getJulian(),
+    julianTo: parseInt(getJulianDate(new Date()), 10),
     showHighConfidenceConfirmed: false,
   },
 
@@ -81,10 +60,10 @@ const GladLayer = BaseTileLayer.createSubclass({
   },
 
   filter: function (data) {
-    const todayDate = new Date().getJulian();
+    const todayDate = parseInt(getJulianDate(new Date()), 10);
     const towoWeeksAgo = new Date();
     towoWeeksAgo.setDate(towoWeeksAgo.getDate() - 14);
-    const weekAgoJulian = towoWeeksAgo.getJulian();
+    const weekAgoJulian = parseInt(getJulianDate(towoWeeksAgo), 10);
     for (var i = 0; i < data.length; i += 4) {
       // Decode the rgba/pixel so I can filter on confidence and date ranges
       var slice = [data[i], data[i + 1], data[i + 2]];

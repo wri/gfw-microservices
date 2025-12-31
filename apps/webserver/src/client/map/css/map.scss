@@ -130,9 +130,9 @@ $lightGray: rgba(158, 158, 158, 0.3);
 
 .analysis__nav__item {
   height: 100% !important;
-  display: inline-block;
   width: 50%;
   background-color: #eeeeee !important;
+  border: none;
   &.selected-analysis {
     background-color: white !important;
   }
@@ -253,6 +253,8 @@ $lightGray: rgba(158, 158, 158, 0.3);
 }
 
 .analysis__body__draw__button {
+  display: flex;
+  justify-content: center;
   text-align: center;
   padding: 0 5px;
   .locations-upload-multiple .file-upload__button {
@@ -263,6 +265,8 @@ $lightGray: rgba(158, 158, 158, 0.3);
 }
 
 .analysis__body__cancel__button {
+  display: flex;
+  justify-content: center;
   $cancel-button__distance: 15px;
   text-align: center;
   margin: 0 0 15px 0;
@@ -406,7 +410,9 @@ $lightGray: rgba(158, 158, 158, 0.3);
 }
 
 .analysis-footer-click {
-  padding-top: 5px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 .analysis-panel-button-wrap {
@@ -418,7 +424,6 @@ $lightGray: rgba(158, 158, 158, 0.3);
   text-transform: uppercase;
   font-size: 9px;
   width: 100%;
-  position: absolute;
   top: 10px;
   left: 0px;
 }

@@ -246,11 +246,7 @@ export const getPreviewData = async (req, res) => {
     const url = `${process.env.LISTS_MICROSERVICE_URL}/list/upload/preview`; // preview.list.upload.controller.ts
 
     const { data } = await retryWithBackoff(
-      () => axios.post(
-        url,
-        { path },
-        { headers: { 'Content-Type': 'application/json' } }
-      ),
+      () => axios.post(url, { path }, { headers: { 'Content-Type': 'application/json' } }),
       { retries: 3, delayMs: 1000, isRetryable: isRetryableError, logger }
     );
     res.status(200).json(data);

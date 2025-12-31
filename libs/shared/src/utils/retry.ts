@@ -9,12 +9,7 @@ export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   options: RetryOptions = {}
 ): Promise<T> {
-  const {
-    retries = 3,
-    delayMs = 1000,
-    isRetryable = () => false,
-    logger,
-  } = options;
+  const { retries = 3, delayMs = 1000, isRetryable = () => false, logger } = options;
 
   let attempt = 0;
   let lastError: any;
@@ -41,8 +36,5 @@ export async function retryWithBackoff<T>(
 export function isRetryableError(error: any): boolean {
   const retryableCodes = ['ECONNRESET', 'ECONNABORTED', 'ETIMEDOUT'];
   const status = error?.response?.status;
-  return (
-    retryableCodes.includes(error.code) ||
-    [429, 500, 502, 503, 504].includes(status)
-  );
+  return retryableCodes.includes(error.code) || [429, 500, 502, 503, 504].includes(status);
 }

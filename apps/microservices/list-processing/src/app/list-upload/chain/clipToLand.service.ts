@@ -75,7 +75,9 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     );
   }
 
-  getClipToLandData = async (feature: Feature): Promise<{ properties: any; geometry: any; type: string }> => {
+  getClipToLandData = async (
+    feature: Feature
+  ): Promise<{ properties: any; geometry: any; type: string }> => {
     // Type assertion for geometry with coordinates property
     const geometryWithCoords = feature.geometry as Feature['geometry'] & {
       coordinates: Position[];
@@ -144,14 +146,21 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     });
   }
 
-  private async logProgressAndYield(i: number, total: number, lastYieldTimestamp: number): Promise<number> {
+  private async logProgressAndYield(
+    i: number,
+    total: number,
+    lastYieldTimestamp: number
+  ): Promise<number> {
     if (Math.random() < 0.1) {
       this.logger.debug(`clipToLand - progress: ${i} of ${total}`);
     }
     return yieldIfLong(lastYieldTimestamp);
   }
 
-  clipToLand = async (geojson: FeatureCollection, request: ChainType): Promise<{ geojson: FeatureCollection }> => {
+  clipToLand = async (
+    geojson: FeatureCollection,
+    request: ChainType
+  ): Promise<{ geojson: FeatureCollection }> => {
     const { features } = geojson;
     const processedFeatures: Feature[] = [];
     let lastYieldTimestamp = Date.now();

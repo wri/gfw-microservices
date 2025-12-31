@@ -1,26 +1,69 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
-import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
-import axiosRetry from 'axios-retry';
-import { yieldIfLong, isRetryableError } from './shared';
+import wkx from 'wkx';
 
-const DEFAULT_DELAY = 1000;
-
-axiosRetry(axios, {
-  retries: 6,
-  retryDelay: (retryCount) => {
-    const baseDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000);
-    const jitter = Math.random() * DEFAULT_DELAY;
-    return baseDelay + jitter;
-  },
-  retryCondition: isRetryableError,
-});
+import { Position } from 'typeorm/driver/types/GeoJsonTypes';
+import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
+import { yieldIfLong } from './shared';
+import { Feature, FeatureCollection, Polygon } from '@wri-monorepos/geo';
+import { retryWithBackoff, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
   private BATCH_SIZE = 50;
+
+  private async retryDataAPI(
+    retriesLeft: number,
+    requestData: Record<string, unknown>,
+    feature: Feature
+  ): Promise<any> {
+    return retryWithBackoff(
+      async () => {
+        const response = await axios.post(
+          'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
+          requestData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': process.env.GFW_DATA_API_KEY,
+            },
+            timeout: 30000, // 30 second timeout
+          }
+        );
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch data: ${response.statusText}`);
+        }
+        // Check if response looks like HTML (common error response format)
+        if (
+          typeof response.data === 'string' &&
+          (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
+        ) {
+          throw new Error(
+            `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
+          );
+        }
+
+        // Check if the response has the expected structure
+        const data = response.data?.data;
+        if (!data || !Array.isArray(data) || !data.length || !data[0]) {
+          throw new Error(
+            `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
+              response.data
+            )}`
+          );
+        }
+        return data;
+      },
+      {
+        retries: 3,
+        delayMs: 1000,
+        isRetryable: isRetryableError,
+        logger: this.logger,
+      }
+    );
+  }
 
   /**
    * Function to perform a GET request using axios.
@@ -33,31 +76,64 @@ export class GADMService extends AbstractHandler<ChainType> {
       throw new Error('Feature does not have valid longitude/latitude or geometry.');
     }
 
-    const geometry = {
+    const centroidGeometry = {
       type: 'Point',
       coordinates: [longitude, latitude],
     };
-    const sql = "SELECT gid_1, gid_2, name_0, name_1, name_2 FROM mytable WHERE adm_level='2'";
+    const geometryWithCoords = feature.geometry as Feature['geometry'] & {
+      coordinates: Position[];
+    };
+    const fullGeometry = {
+      type: feature.geometry.type,
+      coordinates: geometryWithCoords.coordinates,
+    };
+    const centroidGeometryJson = JSON.stringify(centroidGeometry).replace(/'/g, "''");
+    const fullGeometryJson = JSON.stringify(fullGeometry).replace(/'/g, "''");
+    const sql = `SELECT
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
+      centroidGeometryJson
+    )}')) THEN gid_1 END) as gid_1,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
+      centroidGeometryJson
+    )}')) THEN gid_2 END) as gid_2,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
+      centroidGeometryJson
+    )}')) THEN name_0 END) as name_0,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
+      centroidGeometryJson
+    )}')) THEN name_1 END) as name_1,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
+      centroidGeometryJson
+    )}')) THEN name_2 END) as name_2,
+    ST_UNION(ST_Intersection(geom, ST_GeomFromGeoJSON('${JSON.stringify(
+      fullGeometryJson
+    )}'))) as st_union
+    FROM data WHERE (adm_level='2') OR (adm_level='1')`;
+    // putting adm_level 1 to handle locations without adm2 (e.g. Libya)
+    // but having adm_level 2 first and in parenthesis to prioritize adm_level 2
 
-    const response = await axios.post(
-      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
-      { sql, geometry },
-      {
-        headers: {
-          'x-api-key': process.env.GFW_DATA_API_KEY,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const requestData = {
+      geometry: feature.geometry,
+      sql: sql,
+    };
 
-    if (response.status !== 200) {
-      throw new Error(`Failed to fetch data: ${response.statusText}`);
-    }
-
-    return response.data?.data;
+    return await this.retryDataAPI(3, requestData, feature);
   };
 
-  addGeoReferenceData = async (feature: Feature): Promise<void> => {
+  // remove very tiny polygons that sometimes appear due to GADM level
+  private discardTinyPolygons(geometry: Polygon): void {
+    const TINY_LAT_LONG_DIFF = 0.0000001; // approx 1 cm
+    geometry.coordinates = geometry.coordinates.filter(
+      (coords) =>
+        !coords.every(
+          ([x, y]) =>
+            Math.abs(x - coords[0][0]) < TINY_LAT_LONG_DIFF &&
+            Math.abs(y - coords[0][1]) < TINY_LAT_LONG_DIFF
+        )
+    );
+  }
+
+  addGeoReferenceData = async (feature: Feature): Promise<any> => {
     try {
       const response = await this.getGadmData(feature);
 
@@ -72,23 +148,64 @@ export class GADMService extends AbstractHandler<ChainType> {
           gadmid: fullGid.split('_')[0],
         };
       }
+      const payload = {
+        properties: feature.properties,
+        geometry: feature.geometry,
+        type: 'FeatureCollection',
+      };
+      if (response[0]?.st_union) {
+        const buffer = Buffer.from(response[0]?.st_union, 'hex');
+        const geometry = wkx.Geometry.parse(buffer);
+        const geometryToGeoJson = geometry.toGeoJSON() as Polygon;
+        this.discardTinyPolygons(geometryToGeoJson);
+        payload.geometry = geometryToGeoJson;
+      }
+      return payload;
     } catch (error) {
+      const statusCode = error.response?.status || error.code;
+      this.logger.warn(
+        `ERROR in gadm request (${statusCode}):`,
+        error.stack || error.message,
+        JSON.stringify(error.response?.data)
+      );
       const { latitude, longitude } = feature.properties;
       this.logger.error(
         `Error fetching GADM data for feature at ${latitude}, ${longitude}`,
         error.response?.data?.message || error.stack
       );
       feature.properties.hasUnanalyzableError = true;
+
+      const payload = {
+        properties: {
+          ...feature.properties,
+          errorDetails: `ERROR in gadm request (${statusCode}): ${error.message}`,
+        },
+        geometry: {},
+        type: 'Feature',
+      };
+      return payload;
     }
   };
 
   async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
+    batch.forEach((feature) => {
+      if (feature.properties && feature.properties.geometry) {
+        delete feature.properties.geometry;
+      }
+    });
+
     try {
-      await Promise.all(batch.map((feature) => this.addGeoReferenceData(feature)));
-      return batch;
+      const result = await Promise.all(batch.map((feature) => this.addGeoReferenceData(feature)));
+      return result as Feature[];
     } catch (e) {
       (request.request as RequestNewList).hasUnanalyzableError = true;
-      this.logger.warn('Error in processBatch:', e.stack || e);
+      batch.forEach((feature) => {
+        feature.properties.errorDetails = feature.properties.errorDetails || [];
+        (feature.properties.errorDetails as Array<string>).push(
+          `Potential gadm error: ${e.message || e}`
+        );
+      });
+      this.logger.warn('Error in gadm.processBatch:', e.stack || e);
       return batch;
     }
   }

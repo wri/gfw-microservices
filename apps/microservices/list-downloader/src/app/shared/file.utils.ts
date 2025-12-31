@@ -35,15 +35,14 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
         const array = [];
         let count = 1;
         files.forEach((file) => {
-          getSpecificLine(`/tmp/wri-${key}/${file}`, 2, (err, line) => {
+          fs.stat(`/tmp/wri-${key}/${file}`, (err, stats) => {
             if (err) {
               reject(err);
             }
-
-            if (line.trim() !== '') {
+            // Only skip files that are truly empty (size 0)
+            if (stats.size > 0) {
               array.push(file);
             }
-
             if (files.length === count) {
               resolve(array);
             }

@@ -16,11 +16,13 @@ const priorityLabel = {
 };
 
 const categoryParser = ({ totalProp, currentRow }) => {
-  const lastYear = totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
-
-  const label = priorityLabel[lastYear];
-  if (label) {
-    currentRow.push(label);
+  const lastYearKey = Object.keys(totalProp)[Object.keys(totalProp).length - 1];
+  if (lastYearKey !== undefined) {
+    const lastYear = totalProp[lastYearKey];
+    const label = priorityLabel[lastYear];
+    if (label !== undefined) {
+      currentRow.push(label);
+    }
   }
 };
 
@@ -60,11 +62,12 @@ const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
       rowObj = filterBelowEndYear(rowObj);
 
       const years = Object.keys(rowObj);
-      const value = rowObj[years[years.length - 1]] || 0;
-      const priority = priorityLabel[value];
-
-      if (priority) {
-        currentRow.push(priority);
+      if (years.length > 0) {
+        const value = rowObj[years[years.length - 1]];
+        const priority = priorityLabel[value];
+        if (priority !== undefined) {
+          currentRow.push(priority);
+        }
       }
     }
   });

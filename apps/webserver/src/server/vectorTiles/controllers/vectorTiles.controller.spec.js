@@ -1,10 +1,88 @@
-const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
-const vectorTilesController = require('./vectorTiles.controller');
-const vectorTileGenerateUtils = require('../utils/vectorTileGenerate.utils');
-const vectorTileSQSUtils = require('../utils/vectorTileSQS.utils');
+// Mock AWS SDK BEFORE any requires
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3Client: jest.fn().mockImplementation(() => ({
+    send: jest.fn(),
+  })),
+  GetObjectCommand: jest.fn(),
+  PutObjectCommand: jest.fn(),
+  DeleteObjectsCommand: jest.fn(),
+  ListObjectsV2Command: jest.fn(),
+}));
+
+// Mock node:fs/promises
+jest.mock('node:fs/promises', () => ({
+  writeFile: jest.fn(),
+  readFile: jest.fn(),
+}));
+
+// Mock @mapbox/mbtiles BEFORE any requires
+jest.mock('@mapbox/mbtiles', () => {
+  return jest.fn().mockImplementation((path, callback) => {
+    const mockMbtiles = {
+      getInfo: jest.fn((cb) => {
+        cb(null, {
+          bounds: [-180, -85, 180, 85],
+          maxzoom: 14,
+          minzoom: 0,
+          filesize: 1024,
+        });
+      }),
+      getTile: jest.fn((z, x, y, cb) => {
+        cb(null, Buffer.from('mock tile data'), {});
+      }),
+      close: jest.fn((cb) => cb && cb()),
+    };
+    callback && callback(null, mockMbtiles);
+    return mockMbtiles;
+  });
+});
+
+jest.mock('date-fns', () => ({
+  format: jest.fn((date, formatStr) => '2024-01-01'),
+}));
+
+jest.mock('mssql', () => ({
+  connect: jest.fn(),
+  close: jest.fn(),
+  Int: 'Int',
+  VarChar: 'VarChar',
+}));
+
+jest.mock('fs', () => ({
+  readFileSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  existsSync: jest.fn(() => true),
+  unlinkSync: jest.fn(),
+  statSync: jest.fn(() => ({ size: 1024 })),
+}));
+
+jest.mock('path', () => ({
+  basename: jest.fn((p) => p.split('/').pop()),
+  join: jest.fn((...args) => args.join('/')),
+}));
+
+jest.mock('../../../config/privateutils/sql.utils', () => ({
+  executeOrganizationStoredProcedure: jest.fn(),
+}));
+
+jest.mock('../../../config/privateutils/logger.utils', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+}));
 
 jest.mock('../utils/vectorTileGenerate.utils');
-jest.mock('../utils/vectorTileSQS.utils');
+jest.mock('../utils/vectorTileRetrieve.utils');
+jest.mock('../utils/vectorTileDB.utils');
+jest.mock('../utils/vectorTileS3.utils');
+
+const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
+const vectorTilesController = require('./vectorTiles.controller');
+const { generateAndStoreVectorTiles } = require('../utils/vectorTileGenerate.utils');
+const { getTileUsingZoomAndPosition } = require('../utils/vectorTileRetrieve.utils');
+const { getListVectorTileS3PathDB } = require('../utils/vectorTileDB.utils');
+const { getMBTileFromS3Bucket } = require('../utils/vectorTileS3.utils');
+const sqlUtils = require('../../../config/privateutils/sql.utils');
 
 describe('vectorTiles.controller', () => {
   let req, res;
@@ -13,104 +91,213 @@ describe('vectorTiles.controller', () => {
     req = {
       params: {},
       body: {},
+      query: {},
       user: { id: 'user123' },
+      session: { organization_database: 'test_db' },
     };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
+      header: jest.fn().mockReturnThis(),
+      send: jest.fn().mockReturnThis(),
     };
     jest.clearAllMocks();
   });
 
-  describe('generateVectorTiles', () => {
-    it('should initiate vector tile generation', async () => {
-      vectorTileSQSUtils.sendGenerateMessage.mockResolvedValue({ MessageId: 'msg123' });
+  describe('deleteTiles', () => {
+    it('should delete vector tiles for a list', async () => {
+      req.body = { listID: 123 };
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue({});
 
-      req.params = { listId: '123' };
+      await vectorTilesController.deleteTiles(req, res);
 
-      await vectorTilesController.generateVectorTiles(req, res);
-
-      expect(vectorTileSQSUtils.sendGenerateMessage).toHaveBeenCalledWith({
-        listId: '123',
-        userId: 'user123',
-      });
-      expect(res.status).toHaveBeenCalledWith(202);
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+        req,
+        'uspDeleteListVectorTilesPath',
+        expect.any(Array)
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        message: expect.stringContaining('initiated'),
-        listId: '123',
+        success: true,
+        message: expect.stringContaining('deleted'),
       });
     });
 
-    it('should handle missing listId', async () => {
-      await vectorTilesController.generateVectorTiles(req, res);
+    it('should return 400 for invalid listID', async () => {
+      req.body = { listID: 'invalid' };
+
+      await vectorTilesController.deleteTiles(req, res);
 
       expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: expect.stringContaining('number'),
+      });
     });
 
-    it('should handle SQS errors', async () => {
-      vectorTileSQSUtils.sendGenerateMessage.mockRejectedValue(new Error('SQS error'));
+    it('should handle database errors', async () => {
+      req.body = { listID: 123 };
+      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(new Error('DB error'));
 
-      req.params = { listId: '123' };
-
-      await vectorTilesController.generateVectorTiles(req, res);
+      await vectorTilesController.deleteTiles(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: expect.stringContaining('SQS error') });
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: expect.any(String),
+        error: 'DB error',
+      });
     });
   });
 
-  describe('getVectorTileStatus', () => {
-    it('should return generation status', async () => {
-      vectorTileGenerateUtils.getGenerationStatus.mockResolvedValue({
-        status: 'completed',
-        progress: 100,
-      });
+  describe('generateTiles', () => {
+    it('should initiate tile generation', async () => {
+      req.body = { listID: 123 };
+      generateAndStoreVectorTiles.mockResolvedValue({ message: 'Tiles generated' });
 
-      req.params = { listId: '456' };
+      await vectorTilesController.generateTiles(req, res);
 
-      await vectorTilesController.getVectorTileStatus(req, res);
-
-      expect(vectorTileGenerateUtils.getGenerationStatus).toHaveBeenCalledWith('456');
+      expect(generateAndStoreVectorTiles).toHaveBeenCalledWith(req, 123);
+      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
-        status: 'completed',
-        progress: 100,
+        success: true,
+        message: 'Tiles generated',
       });
     });
 
-    it('should return 404 when status not found', async () => {
-      vectorTileGenerateUtils.getGenerationStatus.mockResolvedValue(null);
+    it('should handle generation errors', async () => {
+      req.body = { listID: 123 };
+      generateAndStoreVectorTiles.mockRejectedValue({ message: 'Generation failed' });
 
-      req.params = { listId: '456' };
+      await vectorTilesController.generateTiles(req, res);
 
-      await vectorTilesController.getVectorTileStatus(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.status).toHaveBeenCalledWith(422);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: 'Generation failed',
+      });
     });
   });
 
-  describe('deleteVectorTiles', () => {
-    it('should delete vector tiles for a list', async () => {
-      vectorTileGenerateUtils.deleteVectorTiles.mockResolvedValue({ deleted: 150 });
+  describe('retrieveTiles', () => {
+    it('should retrieve tiles with valid parameters', async () => {
+      req.params = { id: '123' };
+      req.query = { latitude: '40.7128', longitude: '-74.0060', zoom: '10' };
+      const mockHeaders = { 'Content-Type': 'application/x-protobuf' };
+      const mockData = Buffer.from('tile data');
+      getTileUsingZoomAndPosition.mockResolvedValue([mockHeaders, mockData]);
 
-      req.params = { listId: '789' };
+      await vectorTilesController.retrieveTiles(req, res);
 
-      await vectorTilesController.deleteVectorTiles(req, res);
+      expect(getTileUsingZoomAndPosition).toHaveBeenCalledWith(
+        req,
+        '123',
+        '40.7128',
+        '-74.0060',
+        '10'
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.header).toHaveBeenCalledWith(mockHeaders);
+      expect(res.send).toHaveBeenCalledWith(mockData);
+    });
 
-      expect(vectorTileGenerateUtils.deleteVectorTiles).toHaveBeenCalledWith('789');
+    it('should return 400 when missing required parameters', async () => {
+      req.params = { id: '123' };
+      req.query = { latitude: '40.7128' };
+
+      await vectorTilesController.retrieveTiles(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith({
-        message: expect.stringContaining('deleted'),
-        deleted: 150,
+        success: false,
+        message: expect.stringContaining('latitude, longitude and zoom'),
       });
     });
 
-    it('should handle deletion errors', async () => {
-      vectorTileGenerateUtils.deleteVectorTiles.mockRejectedValue(new Error('Delete failed'));
+    it('should handle tile retrieval errors', async () => {
+      req.params = { id: '123' };
+      req.query = { latitude: '40.7128', longitude: '-74.0060', zoom: '10' };
+      getTileUsingZoomAndPosition.mockRejectedValue(new Error('Tile not found'));
 
-      req.params = { listId: '789' };
+      await vectorTilesController.retrieveTiles(req, res);
 
-      await vectorTilesController.deleteVectorTiles(req, res);
+      expect(res.status).toHaveBeenCalledWith(422);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: 'Tile not found',
+      });
+    });
+  });
 
-      expect(res.status).toHaveBeenCalledWith(500);
+  describe('getListMbtileInfo', () => {
+    it('should return mbtile file info', async () => {
+      req.body = { listID: 123 };
+      getListVectorTileS3PathDB.mockResolvedValue('path/to/file.mbtiles');
+      getMBTileFromS3Bucket.mockResolvedValue();
+
+      await vectorTilesController.getListMbtileInfo(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          bounds: expect.any(Array),
+          maxZoom: expect.any(Number),
+          minZoom: expect.any(Number),
+          success: expect.any(Number),
+        })
+      );
+    });
+
+    it('should handle errors when getting mbtile info', async () => {
+      req.body = { listID: 123 };
+      getListVectorTileS3PathDB.mockRejectedValue(new Error('DB error'));
+
+      await vectorTilesController.getListMbtileInfo(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(422);
+      expect(res.json).toHaveBeenCalledWith({
+        success: false,
+        message: expect.stringContaining('Error'),
+        error: 'DB error',
+      });
+    });
+  });
+
+  describe('prepareMbtileFile', () => {
+    it('should return local file path when file exists', async () => {
+      const fs = require('fs');
+      fs.existsSync.mockReturnValue(true);
+      getListVectorTileS3PathDB.mockResolvedValue('path/to/file.mbtiles');
+
+      const result = await vectorTilesController.prepareMbtileFile(req, 123);
+
+      expect(result).toContain('file.mbtiles');
+      expect(getMBTileFromS3Bucket).not.toHaveBeenCalled();
+    });
+
+    it('should download from S3 when file does not exist locally', async () => {
+      const fs = require('fs');
+      fs.existsSync.mockReturnValueOnce(false).mockReturnValueOnce(true);
+      getListVectorTileS3PathDB.mockResolvedValue('path/to/file.mbtiles');
+      getMBTileFromS3Bucket.mockResolvedValue();
+
+      const result = await vectorTilesController.prepareMbtileFile(req, 123);
+
+      expect(getMBTileFromS3Bucket).toHaveBeenCalledWith('path/to/file.mbtiles');
+      expect(result).toContain('file.mbtiles');
+    });
+
+    it('should regenerate tiles when S3 file not found', async () => {
+      const fs = require('fs');
+      fs.existsSync.mockReturnValue(false);
+      getListVectorTileS3PathDB.mockResolvedValue('path/to/file.mbtiles');
+      getMBTileFromS3Bucket.mockRejectedValue(new Error('NoSuchKey: File does not exist'));
+      generateAndStoreVectorTiles.mockResolvedValue({ path: 'path/to/new.mbtiles' });
+
+      const result = await vectorTilesController.prepareMbtileFile(req, 123);
+
+      expect(generateAndStoreVectorTiles).toHaveBeenCalledWith(req, 123);
+      expect(result).toContain('new.mbtiles');
     });
   });
 });

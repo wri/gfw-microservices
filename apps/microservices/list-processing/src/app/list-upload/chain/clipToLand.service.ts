@@ -1,23 +1,13 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
-import { Feature, FeatureCollection } from '@wri-monorepos/geo';
 import axios from 'axios';
-import axiosRetry from 'axios-retry';
 // We're using wkx because wellknown only handles wkt instead of wkb
 import wkx from 'wkx';
-import { Position } from 'typeorm/driver/types/GeoJsonTypes';
-import { yieldIfLong, isRetryableError } from './shared';
 
-const DEFAULT_DELAY = 1000; // 1 second
-axiosRetry(axios, {
-  retries: 6,
-  retryDelay: (retryCount) => {
-    const baseDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000);
-    const jitter = Math.random() * DEFAULT_DELAY; // Add up to 1 second of random
-    return baseDelay + jitter;
-  },
-  retryCondition: isRetryableError,
-});
+import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
+import { Position } from 'typeorm/driver/types/GeoJsonTypes';
+import { Feature, FeatureCollection } from '@wri-monorepos/geo';
+import { retryWithBackoff, isRetryableError } from '@wri-monorepos/shared/utils/retry';
+import { yieldIfLong } from './shared';
 
 export class ClipToLandService extends AbstractHandler<ChainType> {
   logger = new Logger(ClipToLandService.name);
@@ -26,65 +16,66 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   // Value of 50 is 20% slower than 100, but may be more reliable
   private BATCH_SIZE = 50;
 
-  private async retryDataAPI(retriesLeft: number, requestData: any, feature: Feature) {
-    try {
-      const response = await axios.post(
-        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': process.env.GFW_DATA_API_KEY,
-          },
-          timeout: 30000, // 30 second timeout
+  private async retryDataAPI(
+    retriesLeft: number,
+    requestData: Record<string, unknown>,
+    feature: Feature
+  ): Promise<{ properties: any; geometry: any; type: string }> {
+    return retryWithBackoff(
+      async () => {
+        const response = await axios.post(
+          'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
+          requestData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': process.env.GFW_DATA_API_KEY,
+            },
+            timeout: 30000, // 30 second timeout
+          }
+        );
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch data: ${response.statusText}`);
         }
-      );
+        // Check if response looks like HTML (common error response format)
+        if (
+          typeof response.data === 'string' &&
+          (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
+        ) {
+          throw new Error(
+            `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
+          );
+        }
 
-      if (response.status !== 200) {
-        throw new Error(`Failed to fetch data: ${response.statusText}`);
+        // Check if the response has the expected structure
+        if (!response.data.data || !response.data.data[0] || !response.data.data[0].st_union) {
+          throw new Error(
+            `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
+              response.data
+            )}`
+          );
+        }
+        const buffer = Buffer.from(response.data?.data[0].st_union, 'hex');
+        const geometry = wkx.Geometry.parse(buffer);
+        const geometryToGeoJSON = geometry.toGeoJSON();
+        const payload = {
+          properties: feature.properties,
+          geometry: geometryToGeoJSON,
+          type: 'FeatureCollection',
+        };
+        return payload;
+      },
+      {
+        retries: 3,
+        delayMs: 1000,
+        isRetryable: isRetryableError,
+        logger: this.logger,
       }
-      // Check if response looks like HTML (common error response format)
-      if (
-        typeof response.data === 'string' &&
-        (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
-      ) {
-        throw new Error(
-          `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
-        );
-      }
-
-      // Check if the response has the expected structure
-      if (!response.data.data || !response.data.data[0] || !response.data.data[0].st_union) {
-        throw new Error(
-          `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
-            response.data
-          )}`
-        );
-      }
-      const buffer = Buffer.from(response.data?.data[0].st_union, 'hex');
-      const geometry = wkx.Geometry.parse(buffer);
-      const geometryToGeoJson = geometry.toGeoJSON();
-      const payload = {
-        properties: feature.properties,
-        geometry: geometryToGeoJson,
-        type: 'FeatureCollection',
-      };
-      return payload;
-    } catch (error) {
-      const statusCode = error.response?.status || error.code;
-      // retry only for certain timeout/network errors
-      if (retriesLeft > 0 && isRetryableError(error)) {
-        this.logger.warn(
-          `Retryable error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`
-        );
-        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
-        return this.retryDataAPI(retriesLeft - 1, requestData, feature);
-      }
-      throw error;
-    }
+    );
   }
 
-  getClipToLandData = async (feature: Feature) => {
+  getClipToLandData = async (feature: Feature): Promise<{ properties: any; geometry: any; type: string }> => {
     // Type assertion for geometry with coordinates property
     const geometryWithCoords = feature.geometry as Feature['geometry'] & {
       coordinates: Position[];
@@ -120,7 +111,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
       };
       // Add a small delay before rethrowing
       if (error.response?.status !== 429) {
-        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
       return payload;
@@ -128,13 +119,7 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
   };
 
   private async processBatch(batch: Feature[], request: ChainType): Promise<Feature[]> {
-    // remove extra geometry properties if they exist
-    batch.forEach((feature) => {
-      if (feature.properties && feature.properties.geometry) {
-        delete feature.properties.geometry;
-      }
-    });
-
+    this.cleanBatchGeometry(batch);
     try {
       const result = await Promise.all(batch.map((feature) => this.getClipToLandData(feature)));
       return result as Feature[];
@@ -151,12 +136,26 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
     }
   }
 
-  clipToLand = async (geojson, request): Promise<{ geojson: FeatureCollection }> => {
-    const { features } = geojson as FeatureCollection;
+  private cleanBatchGeometry(batch: Feature[]): void {
+    batch.forEach((feature) => {
+      if (feature.properties && feature.properties.geometry) {
+        delete feature.properties.geometry;
+      }
+    });
+  }
+
+  private async logProgressAndYield(i: number, total: number, lastYieldTimestamp: number): Promise<number> {
+    if (Math.random() < 0.1) {
+      this.logger.debug(`clipToLand - progress: ${i} of ${total}`);
+    }
+    return yieldIfLong(lastYieldTimestamp);
+  }
+
+  clipToLand = async (geojson: FeatureCollection, request: ChainType): Promise<{ geojson: FeatureCollection }> => {
+    const { features } = geojson;
     const processedFeatures: Feature[] = [];
     let lastYieldTimestamp = Date.now();
 
-    // Process features in batches
     for (let i = 0; i < features.length; i += this.BATCH_SIZE) {
       const batch = features.slice(i, i + this.BATCH_SIZE);
       try {
@@ -164,14 +163,9 @@ export class ClipToLandService extends AbstractHandler<ChainType> {
         processedFeatures.push(...processedBatch);
       } catch (e) {
         this.logger.warn('Error processing batch:', e);
-        processedFeatures.push(...batch); // Add original features if processing fails
+        processedFeatures.push(...batch);
       }
-      if (Math.random() < 0.1) {
-        // Log progress for approximately 10% of batches
-        this.logger.debug(`clipToLand - progress: ${i} of ${features.length}`);
-      }
-      // periodically yield to avoid CPU overload that may trigger AWS ECS health check failure
-      lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
+      lastYieldTimestamp = await this.logProgressAndYield(i, features.length, lastYieldTimestamp);
     }
 
     return {

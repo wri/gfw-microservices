@@ -16,7 +16,6 @@ export class GADMService extends AbstractHandler<ChainType> {
   private async retryDataAPI(
     retriesLeft: number,
     requestData: Record<string, unknown>,
-    feature: Feature
   ): Promise<any> {
     return retryWithBackoff(
       async () => {
@@ -57,7 +56,7 @@ export class GADMService extends AbstractHandler<ChainType> {
         return data;
       },
       {
-        retries: 3,
+        retries: retriesLeft,
         delayMs: 1000,
         isRetryable: isRetryableError,
         logger: this.logger,
@@ -117,7 +116,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       sql: sql,
     };
 
-    return await this.retryDataAPI(3, requestData, feature);
+    return await this.retryDataAPI(3, requestData);
   };
 
   // remove very tiny polygons that sometimes appear due to GADM level

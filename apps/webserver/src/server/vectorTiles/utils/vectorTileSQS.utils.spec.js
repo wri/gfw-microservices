@@ -62,9 +62,9 @@ describe('vectorTileSQS.utils', () => {
         promise: jest.fn().mockRejectedValue(new Error('Queue unavailable')),
       });
 
-      await expect(
-        vectorTileSQSUtils.sendGenerateMessage({ listId: 'list123' })
-      ).rejects.toThrow('Queue unavailable');
+      await expect(vectorTileSQSUtils.sendGenerateMessage({ listId: 'list123' })).rejects.toThrow(
+        'Queue unavailable'
+      );
     });
   });
 
@@ -72,9 +72,7 @@ describe('vectorTileSQS.utils', () => {
     it('should receive messages from SQS queue', async () => {
       mockSQS.receiveMessage.mockReturnValue({
         promise: jest.fn().mockResolvedValue({
-          Messages: [
-            { MessageId: 'msg1', Body: JSON.stringify({ listId: 'list123' }) },
-          ],
+          Messages: [{ MessageId: 'msg1', Body: JSON.stringify({ listId: 'list123' }) }],
         }),
       });
 

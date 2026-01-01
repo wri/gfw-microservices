@@ -77,9 +77,9 @@ describe('vectorTileGenerate.utils', () => {
     it('should handle deletion errors gracefully', async () => {
       vectorTileS3Utils.deleteTilesForList.mockRejectedValue(new Error('S3 error'));
 
-      await expect(
-        vectorTileGenerateUtils.deleteVectorTiles('list123')
-      ).rejects.toThrow('S3 error');
+      await expect(vectorTileGenerateUtils.deleteVectorTiles('list123')).rejects.toThrow(
+        'S3 error'
+      );
     });
   });
 

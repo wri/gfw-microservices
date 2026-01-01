@@ -79,7 +79,7 @@ describe('vectorTileRetrieve.utils', () => {
     it('should retrieve all tiles within bounds', async () => {
       const mockTile1 = Buffer.from('tile1');
       const mockTile2 = Buffer.from('tile2');
-      
+
       vectorTileUtils.validateTileParameters.mockReturnValue(true);
       vectorTileUtils.getTilePath.mockReturnValue('path');
       vectorTileS3Utils.getTileFromS3

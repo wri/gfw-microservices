@@ -104,10 +104,7 @@ describe('vectorTileS3.utils', () => {
     it('should delete all tiles for a list', async () => {
       mockS3.listObjectsV2.mockReturnValue({
         promise: jest.fn().mockResolvedValue({
-          Contents: [
-            { Key: 'tiles/list123/10/1/1.pbf' },
-            { Key: 'tiles/list123/10/1/2.pbf' },
-          ],
+          Contents: [{ Key: 'tiles/list123/10/1/1.pbf' }, { Key: 'tiles/list123/10/1/2.pbf' }],
         }),
       });
 

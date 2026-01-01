@@ -34,9 +34,9 @@ describe('vectorTileDB.utils', () => {
     it('should handle database errors', async () => {
       sql.connect.mockRejectedValue(new Error('Connection failed'));
 
-      await expect(
-        vectorTileDBUtils.getListGeometry('list123', 'db-client')
-      ).rejects.toThrow('Connection failed');
+      await expect(vectorTileDBUtils.getListGeometry('list123', 'db-client')).rejects.toThrow(
+        'Connection failed'
+      );
     });
 
     it('should return empty array when no data found', async () => {
@@ -77,9 +77,9 @@ describe('vectorTileDB.utils', () => {
     it('should handle save errors', async () => {
       sql.connect.mockRejectedValue(new Error('Save failed'));
 
-      await expect(
-        vectorTileDBUtils.saveGenerationStatus('list123', 'error', 0)
-      ).rejects.toThrow('Save failed');
+      await expect(vectorTileDBUtils.saveGenerationStatus('list123', 'error', 0)).rejects.toThrow(
+        'Save failed'
+      );
     });
   });
 

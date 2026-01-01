@@ -14,11 +14,11 @@ describe('vectorTileTippecanoe.utils', () => {
   describe('generateTiles', () => {
     it('should generate tiles using tippecanoe', async () => {
       const mockGeojson = { type: 'FeatureCollection', features: [] };
-      
-      fs.writeFileSync.mockImplementation(() => {});
+
+      fs.writeFileSync.mockImplementation(jest.fn);
       fs.readFileSync.mockReturnValue(Buffer.from('tile data'));
-      fs.unlinkSync.mockImplementation(() => {});
-      
+      fs.unlinkSync.mockImplementation(jest.fn);
+
       exec.mockImplementation((cmd, callback) => {
         callback(null, 'Success', '');
       });
@@ -35,8 +35,8 @@ describe('vectorTileTippecanoe.utils', () => {
 
     it('should use default zoom levels if not specified', async () => {
       const mockGeojson = { type: 'FeatureCollection', features: [] };
-      
-      fs.writeFileSync.mockImplementation(() => {});
+
+      fs.writeFileSync.mockImplementation(jest.fn);
       exec.mockImplementation((cmd, callback) => {
         callback(null, 'Success', '');
       });
@@ -50,29 +50,27 @@ describe('vectorTileTippecanoe.utils', () => {
 
     it('should handle tippecanoe errors', async () => {
       const mockGeojson = { type: 'FeatureCollection', features: [] };
-      
-      fs.writeFileSync.mockImplementation(() => {});
+
+      fs.writeFileSync.mockImplementation(jest.fn);
       exec.mockImplementation((cmd, callback) => {
         callback(new Error('Tippecanoe failed'), '', 'Error output');
       });
 
-      await expect(
-        vectorTileTippecanoeUtils.generateTiles(mockGeojson)
-      ).rejects.toThrow('Tippecanoe failed');
+      await expect(vectorTileTippecanoeUtils.generateTiles(mockGeojson)).rejects.toThrow(
+        'Tippecanoe failed'
+      );
     });
 
     it('should clean up temporary files on error', async () => {
       const mockGeojson = { type: 'FeatureCollection', features: [] };
-      
-      fs.writeFileSync.mockImplementation(() => {});
-      fs.unlinkSync.mockImplementation(() => {});
+
+      fs.writeFileSync.mockImplementation(jest.fn);
+      fs.unlinkSync.mockImplementation(jest.fn);
       exec.mockImplementation((cmd, callback) => {
         callback(new Error('Failed'), '', '');
       });
 
-      await expect(
-        vectorTileTippecanoeUtils.generateTiles(mockGeojson)
-      ).rejects.toThrow();
+      await expect(vectorTileTippecanoeUtils.generateTiles(mockGeojson)).rejects.toThrow();
 
       expect(fs.unlinkSync).toHaveBeenCalled();
     });

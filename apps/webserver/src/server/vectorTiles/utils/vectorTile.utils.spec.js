@@ -1,10 +1,10 @@
-const { describe, it, expect, jest } = require('@jest/globals');
+const { describe, it, expect } = require('@jest/globals');
 const vectorTileUtils = require('./vectorTile.utils');
 
 describe('vectorTile.utils', () => {
   describe('getTileCoordinates', () => {
     it('should convert lat/lng to tile coordinates at zoom 10', () => {
-      const result = vectorTileUtils.getTileCoordinates(40.7128, -74.0060, 10);
+      const result = vectorTileUtils.getTileCoordinates(40.7128, -74.006, 10);
 
       expect(result).toHaveProperty('x');
       expect(result).toHaveProperty('y');

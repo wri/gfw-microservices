@@ -16,6 +16,7 @@ const { getMBTileFromS3Bucket } = require('../utils/vectorTileS3.utils');
 // Config
 const { VECTOR_TILES_LOCATION, MBTILE_EXTENSION } = require('../config/vectorTiles.config');
 
+
 exports.deleteTiles = async (req, res) => {
   logger.info(`/vectorTile/deleteTiles - Request => Query PARAMS: ${JSON.stringify(req.body)}`);
   const { listID } = req.body;

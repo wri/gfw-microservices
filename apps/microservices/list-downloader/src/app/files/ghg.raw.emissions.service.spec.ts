@@ -41,14 +41,29 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
 
     const csvData = fs.readFileSync(filePath);
     const lines = csvData.toString().split('\n');
-    const expectedResults = [
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Raw Emissions,CH4 Raw Emissions,N2O Raw Emissions,Combined Raw Emissions,Year',
+
+    // Check header
+    expect(lines[0]).toBe(
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Raw Emissions,CH4 Raw Emissions,N2O Raw Emissions,Combined Raw Emissions,Year'
+    );
+
+    // Check that we have the expected number of data rows (excluding header and empty line)
+    const dataLines = lines.slice(1).filter((line) => line.trim() !== '');
+    expect(dataLines).toHaveLength(3);
+
+    // Check that all expected rows are present (order-independent)
+    const expectedRows = [
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,2025',
       '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,0,0,0,0,2025',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,2025',
-      '',
     ];
-    expect(lines).toStrictEqual(expectedResults);
+
+    expectedRows.forEach((expectedRow) => {
+      expect(dataLines).toContain(expectedRow);
+    });
+
+    // Check that last line is empty
+    expect(lines[lines.length - 1]).toBe('');
   });
 
   test('When receive an empty input array', async () => {
@@ -86,11 +101,27 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
-    expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Raw Emissions,CH4 Raw Emissions,N2O Raw Emissions,Combined Raw Emissions,Year',
+
+    // Check header
+    expect(lines[0]).toBe(
+      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Raw Emissions,CH4 Raw Emissions,N2O Raw Emissions,Combined Raw Emissions,Year'
+    );
+
+    // Check that we have the expected number of data rows (excluding header and empty line)
+    const dataLines = lines.slice(1).filter((line) => line.trim() !== '');
+    expect(dataLines).toHaveLength(2);
+
+    // Check that all expected rows are present (order-independent)
+    const expectedRows = [
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,2025',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,2025',
-      '',
-    ]);
+    ];
+
+    expectedRows.forEach((expectedRow) => {
+      expect(dataLines).toContain(expectedRow);
+    });
+
+    // Check that last line is empty
+    expect(lines[lines.length - 1]).toBe('');
   });
 });

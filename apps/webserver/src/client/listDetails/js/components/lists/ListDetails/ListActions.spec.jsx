@@ -11,8 +11,10 @@ jest.mock('../../../../../locations/js/utils/requestUtils');
 jest.mock('../../../../../locations/js/components/landing/foldersApi');
 jest.mock('../../../../../locations/js/actions/locationActions');
 jest.mock('../../../../../locations/js/components/landing/ManageListFolderDialog', () => {
-  return function ManageListFolderDialog({ isOpen, onComplete, onCancel, list, folders }) {
-    if (!isOpen) return null;
+  return function ManageListFolderDialog({ isOpen, onComplete, onCancel }) {
+    if (!isOpen) {
+      return null;
+    }
     return (
       <div data-testid="manage-list-folder-dialog">
         <button onClick={() => onComplete('List added to folder successfully')}>Complete</button>
@@ -27,6 +29,7 @@ const errorLogger = require('../../../../../common/js/utils/errorLogger').defaul
 const { requestGeoTrellisAnalyzeList } = require('../../../../../locations/js/utils/requestUtils');
 const { getFolders } = require('../../../../../locations/js/components/landing/foldersApi');
 const { updateFolders } = require('../../../../../locations/js/actions/locationActions');
+const realStore = require('../../../../../locations/js/store').default;
 
 const theme = createTheme();
 
@@ -65,6 +68,7 @@ describe('ListActions', () => {
   let store;
 
   const mockFunction = jest.fn();
+  let storeDispatchSpy;
 
   beforeEach(() => {
     store = createStore(() => mockStore);
@@ -75,6 +79,8 @@ describe('ListActions', () => {
     getFolders.mockClear();
     updateFolders.mockClear();
 
+    storeDispatchSpy = jest.spyOn(realStore, 'dispatch').mockImplementation(() => {});
+
     global.gtag = jest.fn();
 
     global.window.Transifex = {
@@ -82,6 +88,14 @@ describe('ListActions', () => {
         onAfterTranslate: jest.fn(),
       },
     };
+
+    mockFunction.mockClear();
+  });
+
+  afterEach(() => {
+    if (storeDispatchSpy) {
+      storeDispatchSpy.mockRestore();
+    }
   });
   it('renders action buttons correctly', () => {
     render(
@@ -210,8 +224,9 @@ describe('ListActions', () => {
   it('opens search bar when search icon is clicked', async () => {
     const user = userEvent.setup();
     const handleSearchInputChange = jest.fn();
+    const handleSearchInputClick = jest.fn();
 
-    const { rerender } = render(
+    render(
       <Provider store={store}>
         <ThemeProvider theme={theme}>
           <ListActions
@@ -234,45 +249,32 @@ describe('ListActions', () => {
             canMove={false}
             canDelete={false}
             handleSearchInputChange={handleSearchInputChange}
+            handleSearchInputClick={handleSearchInputClick}
             searchInputValue=""
           />
         </ThemeProvider>
       </Provider>
     );
 
-    const buttons = screen.getAllByRole('button');
-    const searchButton = buttons[buttons.length - 1]; // Last button is the search button
+    const searchButton = screen.getByTestId('search-icon-button');
+    expect(searchButton).toBeInTheDocument();
+
     await user.click(searchButton);
 
-    // After opening, clicking the clear button should call handleSearchInputChange with empty string
-    rerender(
-      <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <ListActions
-            currentUser={currentUser}
-            selectedList={{}}
-            userSharedLists={[]}
-            isInFolder={false}
-            isManageListFolderOpen={false}
-            setIsManageListFolderOpen={mockFunction}
-            showShareList={mockFunction}
-            handleDraftSubmit={mockFunction}
-            draftSubmitDialogOpen={false}
-            setDraftSubmitDialogOpen={mockFunction}
-            setIsListSubmittedForAnalysis={mockFunction}
-            isListSubmittedForAnalysis={false}
-            toggleReRunAnalysisDialog={mockFunction}
-            rerunDialogState={false}
-            rerunList={mockFunction}
-            showMultipleSelectionBulkActions={false}
-            canMove={false}
-            canDelete={false}
-            handleSearchInputChange={handleSearchInputChange}
-            searchInputValue=""
-          />
-        </ThemeProvider>
-      </Provider>
-    );
+    const searchInput = screen.getByPlaceholderText(/Type your search and press Enter/i);
+    expect(searchInput).toBeInTheDocument();
+
+    const clearButton = screen.getByTestId('clear-search-button');
+    expect(clearButton).toBeInTheDocument();
+
+    await user.type(searchInput, 'test search');
+
+    expect(handleSearchInputChange).toHaveBeenCalled();
+    expect(handleSearchInputChange.mock.calls.length).toBeGreaterThan(0);
+
+    await user.click(clearButton);
+
+    expect(handleSearchInputChange).toHaveBeenCalledWith('');
   });
 
   it('calls showShareList when share button is clicked', async () => {
@@ -638,10 +640,6 @@ describe('ListActions', () => {
       },
     ];
 
-    const mockStoreDispatch = jest.fn();
-    const realStore = require('../../../../../locations/js/store').default;
-    realStore.dispatch = mockStoreDispatch;
-
     getFolders.mockResolvedValue(mockFolders);
     updateFolders.mockReturnValue({ type: 'UPDATE_FOLDERS', payload: mockFolders });
 
@@ -686,17 +684,17 @@ describe('ListActions', () => {
 
     expect(updateFolders).toHaveBeenCalledWith(mockFolders);
 
-    expect(mockStoreDispatch).toHaveBeenCalledWith({
+    expect(storeDispatchSpy).toHaveBeenCalledWith({
       type: 'UPDATE_FOLDERS',
       payload: mockFolders,
     });
 
     // Verify setState was called with the expected state
-    // Note: currentFolder will be null because it searches in the old 'folders' prop, not 'foldersLocal'
+    // currentFolder should be the folder that contains the list (id='1')
     expect(setState).toHaveBeenCalledWith({
       bannerContent: 'List added to folder successfully',
       isManageListFolderOpen: false,
-      currentFolder: null,
+      currentFolder: mockFolders[0], // folder1 contains list '1'
     });
   });
 });

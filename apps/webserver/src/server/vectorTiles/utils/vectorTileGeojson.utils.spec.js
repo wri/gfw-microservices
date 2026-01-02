@@ -1,133 +1,178 @@
-const { describe, it, expect } = require('@jest/globals');
+/**
+ * @jest-environment node
+ */
+
+jest.mock('fs', () => ({
+  writeFile: jest.fn((path, data, callback) => {
+    // Call callback synchronously with no error
+    callback(null);
+  }),
+  mkdirSync: jest.fn(),
+}));
+
+jest.mock('path', () => ({
+  join: jest.fn((...args) => args.join('/')),
+}));
+
+jest.mock('../../../config/config/locations.config', () => ({
+  DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED: 1000,
+}));
+
+jest.mock('./vectorTile.utils', () => ({
+  getCurrentDateTimeFormatted: jest.fn(() => '20240101_120000'),
+}));
+
+jest.mock('../../../config/publicutils/listManager.utils', () => ({
+  getListLocations: jest.fn(),
+}));
+
+jest.mock('../../../config/privateutils/logger.utils', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+}));
+
+const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
 const vectorTileGeojsonUtils = require('./vectorTileGeojson.utils');
+const ListManager = require('../../../config/publicutils/listManager.utils');
+const fs = require('fs');
 
 describe('vectorTileGeojson.utils', () => {
-  describe('convertToGeojson', () => {
-    it('should convert WKT geometries to GeoJSON', () => {
-      const input = [
-        { location_id: 1, Geometry: 'POINT(0 0)', name: 'Point A' },
-        { location_id: 2, Geometry: 'POINT(1 1)', name: 'Point B' },
-      ];
+  let req;
 
-      const result = vectorTileGeojsonUtils.convertToGeojson(input);
-
-      expect(result).toHaveProperty('type', 'FeatureCollection');
-      expect(result.features).toHaveLength(2);
-      expect(result.features[0]).toHaveProperty('type', 'Feature');
-      expect(result.features[0]).toHaveProperty('geometry');
-      expect(result.features[0].properties).toHaveProperty('location_id', 1);
-      expect(result.features[0].properties).toHaveProperty('name', 'Point A');
-    });
-
-    it('should handle polygon geometries', () => {
-      const input = [
-        {
-          location_id: 3,
-          Geometry: 'POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))',
-        },
-      ];
-
-      const result = vectorTileGeojsonUtils.convertToGeojson(input);
-
-      expect(result.features[0].geometry.type).toBe('Polygon');
-      expect(result.features[0].geometry.coordinates).toBeDefined();
-    });
-
-    it('should handle multipolygon geometries', () => {
-      const input = [
-        {
-          location_id: 4,
-          Geometry: 'MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)))',
-        },
-      ];
-
-      const result = vectorTileGeojsonUtils.convertToGeojson(input);
-
-      expect(result.features[0].geometry.type).toBe('MultiPolygon');
-    });
-
-    it('should skip invalid geometries', () => {
-      const input = [
-        { location_id: 1, Geometry: 'INVALID', name: 'Bad' },
-        { location_id: 2, Geometry: 'POINT(0 0)', name: 'Good' },
-      ];
-
-      const result = vectorTileGeojsonUtils.convertToGeojson(input);
-
-      expect(result.features).toHaveLength(1);
-      expect(result.features[0].properties.location_id).toBe(2);
-    });
-
-    it('should return empty FeatureCollection for empty input', () => {
-      const result = vectorTileGeojsonUtils.convertToGeojson([]);
-
-      expect(result).toEqual({
-        type: 'FeatureCollection',
-        features: [],
-      });
-    });
-
-    it('should preserve all properties except Geometry', () => {
-      const input = [
-        {
-          location_id: 1,
-          Geometry: 'POINT(0 0)',
-          name: 'Test',
-          country: 'USA',
-          area: 1000,
-        },
-      ];
-
-      const result = vectorTileGeojsonUtils.convertToGeojson(input);
-
-      expect(result.features[0].properties).toEqual({
-        location_id: 1,
-        name: 'Test',
-        country: 'USA',
-        area: 1000,
-      });
-      expect(result.features[0].properties).not.toHaveProperty('Geometry');
+  beforeEach(() => {
+    req = {
+      session: { organization_database: 'test_db' },
+    };
+    jest.clearAllMocks();
+    // Reset fs.writeFile to default success behavior
+    fs.writeFile.mockImplementation((path, data, callback) => {
+      callback(null);
     });
   });
 
-  describe('validateGeojson', () => {
-    it('should return true for valid GeoJSON', () => {
-      const geojson = {
+  describe('createTempGeojsonFile', () => {
+    it('should create geojson file from list locations', async () => {
+      const mockGeojson = {
         type: 'FeatureCollection',
         features: [
           {
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [0, 0] },
-            properties: {},
+            properties: { location_id: 1, name: 'Location 1' },
+          },
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [1, 1] },
+            properties: { location_id: 2, name: 'Location 2' },
           },
         ],
       };
 
-      const result = vectorTileGeojsonUtils.validateGeojson(geojson);
+      ListManager.getListLocations.mockResolvedValue(mockGeojson);
 
-      expect(result).toBe(true);
+      const result = await vectorTileGeojsonUtils.createTempGeojsonFile(
+        req,
+        'uuid-123',
+        '/tmp/list-1',
+        1,
+        0
+      );
+
+      expect(result).toEqual({ lastLocationID: 3 });
+      expect(fs.mkdirSync).toHaveBeenCalledWith('/tmp/list-1', { recursive: true });
+      expect(fs.writeFile).toHaveBeenCalledWith(
+        '/tmp/list-1/20240101_120000_2_1_uuid-123.geojson',
+        JSON.stringify(mockGeojson),
+        expect.any(Function)
+      );
     });
 
-    it('should return false for invalid type', () => {
-      const geojson = {
-        type: 'InvalidType',
-        features: [],
-      };
-
-      const result = vectorTileGeojsonUtils.validateGeojson(geojson);
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false when features is not an array', () => {
-      const geojson = {
+    it('should handle file write errors', async () => {
+      const mockGeojson = {
         type: 'FeatureCollection',
-        features: 'not an array',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: { location_id: 1 },
+          },
+        ],
       };
 
-      const result = vectorTileGeojsonUtils.validateGeojson(geojson);
+      ListManager.getListLocations.mockResolvedValue(mockGeojson);
+      fs.writeFile.mockImplementation((path, data, callback) => {
+        callback(new Error('Write failed'));
+      });
 
-      expect(result).toBe(false);
+      await expect(
+        vectorTileGeojsonUtils.createTempGeojsonFile(req, 'uuid-123', '/tmp/list-1', 1, 0)
+      ).rejects.toThrow('Creating Temp Geojson file failed');
+    });
+
+    it('should handle list locations fetch errors', async () => {
+      ListManager.getListLocations.mockRejectedValue(new Error('DB error'));
+
+      await expect(
+        vectorTileGeojsonUtils.createTempGeojsonFile(req, 'uuid-123', '/tmp/list-1', 1, 0)
+      ).rejects.toThrow('Getting List Geojson for list ID: 1 failed');
+    });
+  });
+
+  describe('createTempGeojsonFiles', () => {
+    it('should create multiple geojson files for large lists', async () => {
+      const mockGeojson = {
+        type: 'FeatureCollection',
+        features: Array.from({ length: 1000 }, (_, i) => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [i, i] },
+          properties: { location_id: i + 1 },
+        })),
+      };
+
+      ListManager.getListLocations.mockResolvedValue(mockGeojson);
+
+      await vectorTileGeojsonUtils.createTempGeojsonFiles(req, 2500, 'uuid-123', '/tmp/list-1', 1);
+
+      // Should create 3 chunks (1000 + 1000 + 500)
+      expect(ListManager.getListLocations).toHaveBeenCalledTimes(3);
+      expect(fs.writeFile).toHaveBeenCalledTimes(3);
+    });
+
+    it('should create single file for small lists', async () => {
+      const mockGeojson = {
+        type: 'FeatureCollection',
+        features: Array.from({ length: 100 }, (_, i) => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [i, i] },
+          properties: { location_id: i + 1 },
+        })),
+      };
+
+      ListManager.getListLocations.mockResolvedValue(mockGeojson);
+
+      await vectorTileGeojsonUtils.createTempGeojsonFiles(req, 100, 'uuid-123', '/tmp/list-1', 1);
+
+      expect(ListManager.getListLocations).toHaveBeenCalledTimes(1);
+      expect(fs.writeFile).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass correct location IDs for each chunk', async () => {
+      const mockGeojson = {
+        type: 'FeatureCollection',
+        features: Array.from({ length: 1000 }, (_, i) => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [i, i] },
+          properties: { location_id: i + 1 },
+        })),
+      };
+
+      ListManager.getListLocations.mockResolvedValue(mockGeojson);
+
+      await vectorTileGeojsonUtils.createTempGeojsonFiles(req, 2000, 'uuid-123', '/tmp/list-1', 1);
+
+      expect(ListManager.getListLocations).toHaveBeenNthCalledWith(1, req, 1, 0);
+      expect(ListManager.getListLocations).toHaveBeenNthCalledWith(2, req, 1, 1001);
     });
   });
 });

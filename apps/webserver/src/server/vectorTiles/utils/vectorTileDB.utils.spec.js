@@ -1,117 +1,130 @@
+/**
+ * @jest-environment node
+ */
+
+jest.mock('mssql', () => ({
+  connect: jest.fn(),
+  close: jest.fn(),
+  Int: 'Int',
+  NVarChar: jest.fn((size) => `NVarChar(${size})`),
+  MAX: 'MAX',
+  DateTime: 'DateTime',
+}));
+
+jest.mock('../../../config/privateutils/logger.utils', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+}));
+
+jest.mock('../../../config/privateutils/sql.utils', () => ({
+  executeOrganizationStoredProcedure: jest.fn(),
+}));
+
 const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
 const vectorTileDBUtils = require('./vectorTileDB.utils');
-const sql = require('mssql');
-
-jest.mock('mssql');
+const sqlUtils = require('../../../config/privateutils/sql.utils');
 
 describe('vectorTileDB.utils', () => {
+  let req;
+
   beforeEach(() => {
+    req = {
+      session: { organization_database: 'test_db' },
+    };
     jest.clearAllMocks();
   });
 
-  describe('getListGeometry', () => {
-    it('should fetch geometry data for a list', async () => {
-      const mockRecordset = [
-        { location_id: 1, Geometry: 'POINT(0 0)' },
-        { location_id: 2, Geometry: 'POINT(1 1)' },
-      ];
+  describe('updateListVectorTilesStoragePathDB', () => {
+    it('should update vector tiles storage path in database', async () => {
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([]);
 
-      sql.connect.mockResolvedValue({
-        request: jest.fn().mockReturnValue({
-          input: jest.fn().mockReturnThis(),
-          query: jest.fn().mockResolvedValue({ recordset: mockRecordset }),
-        }),
-        close: jest.fn(),
-      });
+      await vectorTileDBUtils.updateListVectorTilesStoragePathDB(
+        req,
+        123,
+        's3://bucket/path/to/file.mbtiles'
+      );
 
-      const result = await vectorTileDBUtils.getListGeometry('list123', 'db-client');
-
-      expect(result).toHaveLength(2);
-      expect(result[0]).toHaveProperty('location_id', 1);
-      expect(sql.connect).toHaveBeenCalled();
-    });
-
-    it('should handle database errors', async () => {
-      sql.connect.mockRejectedValue(new Error('Connection failed'));
-
-      await expect(vectorTileDBUtils.getListGeometry('list123', 'db-client')).rejects.toThrow(
-        'Connection failed'
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledTimes(2);
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+        req,
+        'uspUpdateListStringResult',
+        expect.arrayContaining([
+          expect.objectContaining({ field: 'list_id', value: 123 }),
+          expect.objectContaining({ field: 'column_name', value: 'vector_tiles_storage_path' }),
+          expect.objectContaining({ field: 'value', value: 's3://bucket/path/to/file.mbtiles' }),
+        ])
+      );
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+        req,
+        'uspSetDashboardTimestamp',
+        expect.arrayContaining([
+          expect.objectContaining({ field: 'list_id_array', value: 123 }),
+          expect.objectContaining({ field: 'column_name', value: 'vector_tiles_last_updated' }),
+          expect.objectContaining({ field: 'value' }),
+        ])
       );
     });
 
-    it('should return empty array when no data found', async () => {
-      sql.connect.mockResolvedValue({
-        request: jest.fn().mockReturnValue({
-          input: jest.fn().mockReturnThis(),
-          query: jest.fn().mockResolvedValue({ recordset: [] }),
-        }),
-        close: jest.fn(),
-      });
+    it('should throw error when storage path update fails', async () => {
+      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(new Error('DB error'));
 
-      const result = await vectorTileDBUtils.getListGeometry('list999', 'db-client');
+      await expect(
+        vectorTileDBUtils.updateListVectorTilesStoragePathDB(req, 123, 's3://bucket/file.mbtiles')
+      ).rejects.toThrow('Updating List Vector Tiles Storage Path in DB failed');
+    });
 
-      expect(result).toEqual([]);
+    it('should throw error when last updated timestamp update fails', async () => {
+      sqlUtils.executeOrganizationStoredProcedure
+        .mockResolvedValueOnce([]) // First call succeeds
+        .mockRejectedValueOnce(new Error('Timestamp update failed')); // Second call fails
+
+      await expect(
+        vectorTileDBUtils.updateListVectorTilesStoragePathDB(req, 123, 's3://bucket/file.mbtiles')
+      ).rejects.toThrow('Updating List Vector Tiles last updated in DB failed');
     });
   });
 
-  describe('saveGenerationStatus', () => {
-    it('should save generation status to database', async () => {
-      const mockRequest = {
-        input: jest.fn().mockReturnThis(),
-        query: jest.fn().mockResolvedValue({ rowsAffected: [1] }),
-      };
+  describe('getListVectorTileS3PathDB', () => {
+    it('should retrieve vector tile S3 path from database', async () => {
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([
+        { vector_tiles_storage_path: 's3://bucket/path/to/file.mbtiles' },
+      ]);
 
-      sql.connect.mockResolvedValue({
-        request: jest.fn().mockReturnValue(mockRequest),
-        close: jest.fn(),
-      });
+      const result = await vectorTileDBUtils.getListVectorTileS3PathDB(req, 123);
 
-      await vectorTileDBUtils.saveGenerationStatus('list123', 'processing', 50);
-
-      expect(mockRequest.input).toHaveBeenCalledWith('listId', expect.anything(), 'list123');
-      expect(mockRequest.input).toHaveBeenCalledWith('status', expect.anything(), 'processing');
-      expect(mockRequest.input).toHaveBeenCalledWith('progress', expect.anything(), 50);
-      expect(mockRequest.query).toHaveBeenCalled();
-    });
-
-    it('should handle save errors', async () => {
-      sql.connect.mockRejectedValue(new Error('Save failed'));
-
-      await expect(vectorTileDBUtils.saveGenerationStatus('list123', 'error', 0)).rejects.toThrow(
-        'Save failed'
+      expect(result).toBe('s3://bucket/path/to/file.mbtiles');
+      expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+        req,
+        'uspGetListVectorTilesPath',
+        expect.arrayContaining([expect.objectContaining({ field: 'list_id', value: 123 })])
       );
     });
-  });
 
-  describe('getGenerationStatus', () => {
-    it('should retrieve generation status from database', async () => {
-      const mockStatus = { status: 'completed', progress: 100, created_at: new Date() };
+    it('should return null when no path exists', async () => {
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([
+        { vector_tiles_storage_path: null },
+      ]);
 
-      sql.connect.mockResolvedValue({
-        request: jest.fn().mockReturnValue({
-          input: jest.fn().mockReturnThis(),
-          query: jest.fn().mockResolvedValue({ recordset: [mockStatus] }),
-        }),
-        close: jest.fn(),
-      });
-
-      const result = await vectorTileDBUtils.getGenerationStatus('list123');
-
-      expect(result).toEqual(mockStatus);
-    });
-
-    it('should return null when status not found', async () => {
-      sql.connect.mockResolvedValue({
-        request: jest.fn().mockReturnValue({
-          input: jest.fn().mockReturnThis(),
-          query: jest.fn().mockResolvedValue({ recordset: [] }),
-        }),
-        close: jest.fn(),
-      });
-
-      const result = await vectorTileDBUtils.getGenerationStatus('list999');
+      const result = await vectorTileDBUtils.getListVectorTileS3PathDB(req, 123);
 
       expect(result).toBeNull();
+    });
+
+    it('should return null when no record found', async () => {
+      sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([]);
+
+      const result = await vectorTileDBUtils.getListVectorTileS3PathDB(req, 999);
+
+      expect(result).toBeNull();
+    });
+
+    it('should throw error when database query fails', async () => {
+      sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(new Error('DB error'));
+
+      await expect(vectorTileDBUtils.getListVectorTileS3PathDB(req, 123)).rejects.toThrow(
+        'Getting List Vector Tiles S3 Path from DB failed'
+      );
     });
   });
 });

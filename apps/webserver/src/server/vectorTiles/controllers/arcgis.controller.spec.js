@@ -1,12 +1,50 @@
+/**
+ * @jest-environment node
+ */
+
+// Mock @mapbox/mbtiles BEFORE any imports
+jest.mock('@mapbox/mbtiles', () => {
+  return jest.fn().mockImplementation((path, callback) => {
+    const mockMbtiles = {
+      getTile: jest.fn((z, x, y, cb) => {
+        cb(null, Buffer.from('mock tile data'), { 'Content-Type': 'application/x-protobuf' });
+      }),
+    };
+    callback && callback(null, mockMbtiles);
+    return mockMbtiles;
+  });
+});
+
+jest.mock('fs', () => ({
+  existsSync: jest.fn(() => true),
+}));
+
+jest.mock('path', () => ({
+  join: jest.fn((...args) => args.join('/')),
+}));
+
+jest.mock('../templates/esri-vector-tile-root', () => ({
+  esriVectorTileRoot: { version: 8, sources: {} },
+}));
+
+jest.mock('../templates/esri-vector-tile-metadata', () => ({
+  esriVectorTileMetadata: { name: 'test', format: 'pbf' },
+}));
+
+jest.mock('../config/vectorTiles.config', () => ({
+  VECTOR_TILES_LOCATION: '/tmp/tiles',
+  MBTILE_EXTENSION: '.mbtiles',
+}));
+
+jest.mock('../controllers/vectorTiles.controller', () => ({
+  prepareMbtileFile: jest.fn(),
+}));
+
 const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
 const arcgisController = require('./arcgis.controller');
-const vectorTileRetrieveUtils = require('../utils/vectorTileRetrieve.utils');
-const esriVectorTileRoot = require('../templates/esri-vector-tile-root');
-const esriVectorTileMetadata = require('../templates/esri-vector-tile-metadata');
-
-jest.mock('../utils/vectorTileRetrieve.utils');
-jest.mock('../templates/esri-vector-tile-root');
-jest.mock('../templates/esri-vector-tile-metadata');
+const vectorTilesController = require('../controllers/vectorTiles.controller');
+const MBTiles = require('@mapbox/mbtiles');
+const fs = require('fs');
 
 describe('arcgis.controller', () => {
   let req, res;
@@ -21,110 +59,117 @@ describe('arcgis.controller', () => {
       json: jest.fn().mockReturnThis(),
       send: jest.fn().mockReturnThis(),
       setHeader: jest.fn().mockReturnThis(),
+      writeHead: jest.fn().mockReturnThis(),
+      end: jest.fn().mockReturnThis(),
     };
     jest.clearAllMocks();
   });
 
-  describe('getVectorTileRoot', () => {
-    it('should return vector tile root JSON', async () => {
-      const mockRoot = { version: 8, sources: {} };
-      esriVectorTileRoot.mockReturnValue(mockRoot);
+  describe('getEsriVectorTileRoot', () => {
+    it('should return vector tile root JSON', () => {
+      arcgisController.getEsriVectorTileRoot(req, res);
 
-      req.params = { listId: '123' };
+      expect(res.send).toHaveBeenCalledWith(expect.objectContaining({ version: 8, sources: {} }));
+    });
+  });
 
-      await arcgisController.getVectorTileRoot(req, res);
+  describe('getEsriVectorTileMetadata', () => {
+    it('should return vector tile metadata JSON', () => {
+      arcgisController.getEsriVectorTileMetadata(req, res);
 
-      expect(res.json).toHaveBeenCalledWith(mockRoot);
-      expect(esriVectorTileRoot).toHaveBeenCalledWith('123');
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'test', format: 'pbf' })
+      );
+    });
+  });
+
+  describe('handleVectorTilePbfRequest', () => {
+    it('should return vector tile binary data', async () => {
+      const mockTileData = Buffer.from('tile data');
+      const mockMbtiles = {
+        getTile: jest.fn((z, x, y, cb) => {
+          cb(null, mockTileData, { 'Content-Type': 'application/x-protobuf' });
+        }),
+      };
+
+      MBTiles.mockImplementation((path, callback) => {
+        callback(null, mockMbtiles);
+        return mockMbtiles;
+      });
+
+      req.params = { mbtile: 'test-list', z: '10', x: '512', y: '384' };
+
+      await arcgisController.handleVectorTilePbfRequest(req, res);
+
+      expect(fs.existsSync).toHaveBeenCalled();
+      expect(mockMbtiles.getTile).toHaveBeenCalledWith('10', '512', '384', expect.any(Function));
+      expect(res.writeHead).toHaveBeenCalledWith(
+        200,
+        expect.objectContaining({
+          'Cache-Control': expect.any(String),
+        })
+      );
+      expect(res.end).toHaveBeenCalledWith(mockTileData);
     });
 
-    it('should handle missing listId parameter', async () => {
-      await arcgisController.getVectorTileRoot(req, res);
+    it('should prepare mbtile file when not found locally', async () => {
+      const mockTileData = Buffer.from('tile data');
+      const mockMbtiles = {
+        getTile: jest.fn((z, x, y, cb) => {
+          cb(null, mockTileData, {});
+        }),
+      };
 
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: expect.any(String) });
+      fs.existsSync.mockReturnValueOnce(false);
+      vectorTilesController.prepareMbtileFile.mockResolvedValue();
+      MBTiles.mockImplementation((path, callback) => {
+        callback(null, mockMbtiles);
+        return mockMbtiles;
+      });
+
+      req.params = { mbtile: 'test-list', z: '10', x: '512', y: '384' };
+
+      await arcgisController.handleVectorTilePbfRequest(req, res);
+
+      expect(vectorTilesController.prepareMbtileFile).toHaveBeenCalledWith(
+        req,
+        null,
+        'test-list.mbtiles'
+      );
+      expect(res.writeHead).toHaveBeenCalledWith(200, expect.any(Object));
+    });
+
+    it('should return 422 when tile not found', async () => {
+      const mockMbtiles = {
+        getTile: jest.fn((z, x, y, cb) => {
+          cb(new Error('Tile not found'));
+        }),
+      };
+
+      MBTiles.mockImplementation((path, callback) => {
+        callback(null, mockMbtiles);
+        return mockMbtiles;
+      });
+
+      req.params = { mbtile: 'test-list', z: '10', x: '512', y: '384' };
+
+      await arcgisController.handleVectorTilePbfRequest(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(422);
+      expect(res.send).toHaveBeenCalled();
     });
 
     it('should handle errors gracefully', async () => {
-      req.params = { listId: '123' };
-      esriVectorTileRoot.mockImplementation(() => {
-        throw new Error('Template error');
+      MBTiles.mockImplementation(() => {
+        throw new Error('MBTiles error');
       });
 
-      await arcgisController.getVectorTileRoot(req, res);
+      req.params = { mbtile: 'test-list', z: '10', x: '512', y: '384' };
 
-      expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.json).toHaveBeenCalledWith({ error: expect.stringContaining('Template error') });
-    });
-  });
+      await arcgisController.handleVectorTilePbfRequest(req, res);
 
-  describe('getVectorTileMetadata', () => {
-    it('should return vector tile metadata JSON', async () => {
-      const mockMetadata = { name: 'test', format: 'pbf' };
-      esriVectorTileMetadata.mockReturnValue(mockMetadata);
-
-      req.params = { listId: '456' };
-
-      await arcgisController.getVectorTileMetadata(req, res);
-
-      expect(res.json).toHaveBeenCalledWith(mockMetadata);
-      expect(esriVectorTileMetadata).toHaveBeenCalledWith('456');
-    });
-
-    it('should handle missing listId parameter', async () => {
-      await arcgisController.getVectorTileMetadata(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-    });
-  });
-
-  describe('getVectorTile', () => {
-    it('should return vector tile binary data', async () => {
-      const mockTileData = Buffer.from('tile data');
-      vectorTileRetrieveUtils.getTile.mockResolvedValue(mockTileData);
-
-      req.params = { listId: '123', z: '10', x: '512', y: '384' };
-
-      await arcgisController.getVectorTile(req, res);
-
-      expect(vectorTileRetrieveUtils.getTile).toHaveBeenCalledWith({
-        listId: '123',
-        z: 10,
-        x: 512,
-        y: 384,
-      });
-      expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'application/x-protobuf');
-      expect(res.send).toHaveBeenCalledWith(mockTileData);
-    });
-
-    it('should return 404 when tile not found', async () => {
-      vectorTileRetrieveUtils.getTile.mockResolvedValue(null);
-
-      req.params = { listId: '123', z: '10', x: '512', y: '384' };
-
-      await arcgisController.getVectorTile(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(404);
-      expect(res.json).toHaveBeenCalledWith({ error: 'Tile not found' });
-    });
-
-    it('should validate z/x/y parameters are numeric', async () => {
-      req.params = { listId: '123', z: 'abc', x: '512', y: '384' };
-
-      await arcgisController.getVectorTile(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ error: expect.stringContaining('Invalid') });
-    });
-
-    it('should handle retrieval errors', async () => {
-      vectorTileRetrieveUtils.getTile.mockRejectedValue(new Error('S3 error'));
-
-      req.params = { listId: '123', z: '10', x: '512', y: '384' };
-
-      await arcgisController.getVectorTile(req, res);
-
-      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.status).toHaveBeenCalledWith(422);
+      expect(res.send).toHaveBeenCalled();
     });
   });
 });

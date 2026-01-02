@@ -1,133 +1,172 @@
+/**
+ * @jest-environment node
+ */
+
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3: jest.fn(),
+}));
+
+jest.mock('fs', () => ({
+  readFileSync: jest.fn(),
+}));
+
+jest.mock('node:fs/promises', () => ({
+  writeFile: jest.fn(),
+}));
+
+jest.mock('path', () => ({
+  join: jest.fn((...args) => args.join('/')),
+  basename: jest.fn((p) => p.split('/').pop()),
+}));
+
+jest.mock('../config/vectorTiles.config', () => ({
+  VECTOR_TILES_LOCATION: '/var/tiles',
+  MBTILE_S3_BUCKET: 's3://test-bucket',
+  MBTILE_S3_BUCKET_NAME: 'test-bucket',
+  MBTILE_S3_BUCKET_PATH: 'vector-tiles',
+}));
+
+jest.mock('../../../config/privateutils/logger.utils', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+}));
+
 const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
 const vectorTileS3Utils = require('./vectorTileS3.utils');
-const AWS = require('aws-sdk');
-
-jest.mock('aws-sdk');
+const { S3 } = require('@aws-sdk/client-s3');
+const fs = require('fs');
+const { writeFile } = require('node:fs/promises');
 
 describe('vectorTileS3.utils', () => {
-  let mockS3;
+  let mockS3Instance;
 
   beforeEach(() => {
-    mockS3 = {
-      getObject: jest.fn(),
+    mockS3Instance = {
       putObject: jest.fn(),
-      deleteObjects: jest.fn(),
-      listObjectsV2: jest.fn(),
+      deleteObject: jest.fn(),
+      getObject: jest.fn(),
     };
 
-    AWS.S3.mockImplementation(() => mockS3);
+    S3.mockImplementation(() => mockS3Instance);
     jest.clearAllMocks();
   });
 
-  describe('getTileFromS3', () => {
-    it('should retrieve tile from S3 bucket', async () => {
-      const mockData = Buffer.from('tile data');
-      mockS3.getObject.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({ Body: mockData }),
+  describe('uploadMBTileToS3Bucket', () => {
+    it('should upload mbtile to S3 bucket', async () => {
+      const mockFileContent = Buffer.from('mbtile data');
+      fs.readFileSync.mockReturnValue(mockFileContent);
+      mockS3Instance.putObject.mockImplementation((params, callback) => {
+        callback(null);
       });
 
-      const result = await vectorTileS3Utils.getTileFromS3('tiles/list123/10/512/384.pbf');
+      const result = await vectorTileS3Utils.uploadMBTileToS3Bucket(
+        'list-123.mbtiles',
+        '/tmp/list-123.mbtiles'
+      );
 
-      expect(result).toEqual(mockData);
-      expect(mockS3.getObject).toHaveBeenCalledWith({
-        Bucket: expect.any(String),
-        Key: 'tiles/list123/10/512/384.pbf',
-      });
-    });
-
-    it('should return null when tile not found', async () => {
-      mockS3.getObject.mockReturnValue({
-        promise: jest.fn().mockRejectedValue({ code: 'NoSuchKey' }),
-      });
-
-      const result = await vectorTileS3Utils.getTileFromS3('tiles/nonexistent.pbf');
-
-      expect(result).toBeNull();
-    });
-
-    it('should throw error for non-404 S3 errors', async () => {
-      mockS3.getObject.mockReturnValue({
-        promise: jest.fn().mockRejectedValue({ code: 'AccessDenied' }),
-      });
-
-      await expect(
-        vectorTileS3Utils.getTileFromS3('tiles/list123/tile.pbf')
-      ).rejects.toHaveProperty('code', 'AccessDenied');
-    });
-  });
-
-  describe('uploadTiles', () => {
-    it('should upload multiple tiles to S3', async () => {
-      const tiles = [
-        { path: 'tiles/1.pbf', data: Buffer.from('tile1') },
-        { path: 'tiles/2.pbf', data: Buffer.from('tile2') },
-      ];
-
-      mockS3.putObject.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({}),
-      });
-
-      const result = await vectorTileS3Utils.uploadTiles(tiles);
-
-      expect(result).toEqual({ uploaded: 2 });
-      expect(mockS3.putObject).toHaveBeenCalledTimes(2);
+      expect(result).toEqual({ mbtileS3FilePath: 's3://test-bucket/list-123.mbtiles' });
+      expect(fs.readFileSync).toHaveBeenCalledWith('/tmp/list-123.mbtiles');
+      expect(mockS3Instance.putObject).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Bucket: 'test-bucket',
+          Key: 'vector-tiles/list-123.mbtiles',
+          Body: mockFileContent,
+          ContentType: 'application/x-sqlite3',
+        }),
+        expect.any(Function)
+      );
     });
 
     it('should handle upload failures', async () => {
-      const tiles = [{ path: 'tiles/1.pbf', data: Buffer.from('tile1') }];
-
-      mockS3.putObject.mockReturnValue({
-        promise: jest.fn().mockRejectedValue(new Error('Upload failed')),
+      fs.readFileSync.mockReturnValue(Buffer.from('data'));
+      mockS3Instance.putObject.mockImplementation((params, callback) => {
+        callback(new Error('Upload failed'));
       });
 
-      await expect(vectorTileS3Utils.uploadTiles(tiles)).rejects.toThrow('Upload failed');
-    });
-
-    it('should set correct content type for tiles', async () => {
-      const tiles = [{ path: 'tiles/1.pbf', data: Buffer.from('tile1') }];
-
-      mockS3.putObject.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({}),
-      });
-
-      await vectorTileS3Utils.uploadTiles(tiles);
-
-      expect(mockS3.putObject).toHaveBeenCalledWith(
-        expect.objectContaining({
-          ContentType: 'application/x-protobuf',
-        })
-      );
+      await expect(
+        vectorTileS3Utils.uploadMBTileToS3Bucket('list-123.mbtiles', '/tmp/list-123.mbtiles')
+      ).rejects.toThrow('MBTile addition to S3 bucket failed');
     });
   });
 
-  describe('deleteTilesForList', () => {
-    it('should delete all tiles for a list', async () => {
-      mockS3.listObjectsV2.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Contents: [{ Key: 'tiles/list123/10/1/1.pbf' }, { Key: 'tiles/list123/10/1/2.pbf' }],
+  describe('deletingMBTileFromS3Bucket', () => {
+    it('should delete mbtile from S3 bucket', async () => {
+      mockS3Instance.deleteObject.mockImplementation((params, callback) => {
+        callback(null);
+      });
+
+      const result = await vectorTileS3Utils.deletingMBTileFromS3Bucket(
+        's3://test-bucket/list-123.mbtiles'
+      );
+
+      expect(result).toEqual({ message: 'MBTile deleted from S3 bucket' });
+      expect(mockS3Instance.deleteObject).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Bucket: 'test-bucket',
+          Key: 'vector-tiles/list-123.mbtiles',
         }),
-      });
-
-      mockS3.deleteObjects.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({ Deleted: [{ Key: 'tiles/list123/10/1/1.pbf' }] }),
-      });
-
-      const result = await vectorTileS3Utils.deleteTilesForList('list123');
-
-      expect(result).toHaveProperty('deleted');
-      expect(mockS3.listObjectsV2).toHaveBeenCalled();
-      expect(mockS3.deleteObjects).toHaveBeenCalled();
+        expect.any(Function)
+      );
     });
 
-    it('should handle empty list gracefully', async () => {
-      mockS3.listObjectsV2.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({ Contents: [] }),
+    it('should handle deletion errors', async () => {
+      mockS3Instance.deleteObject.mockImplementation((params, callback) => {
+        callback(new Error('Delete failed'));
       });
 
-      const result = await vectorTileS3Utils.deleteTilesForList('list999');
+      await expect(
+        vectorTileS3Utils.deletingMBTileFromS3Bucket('s3://test-bucket/list-123.mbtiles')
+      ).rejects.toThrow('Deleting MBTile from S3 bucket failed');
+    });
+  });
 
-      expect(result).toEqual({ deleted: 0 });
-      expect(mockS3.deleteObjects).not.toHaveBeenCalled();
+  describe('getMBTileFromS3Bucket', () => {
+    it('should download mbtile from S3 bucket', async () => {
+      const mockData = { Body: Buffer.from('mbtile data') };
+      mockS3Instance.getObject.mockImplementation((params, callback) => {
+        callback(null, mockData);
+      });
+      writeFile.mockResolvedValue();
+
+      const result = await vectorTileS3Utils.getMBTileFromS3Bucket(
+        's3://test-bucket/list-123.mbtiles'
+      );
+
+      expect(result).toEqual({
+        message: 'MBTile retrieved from S3 bucket',
+        mbtileFilePath: '/var/tiles/list-123.mbtiles',
+      });
+      expect(mockS3Instance.getObject).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Bucket: 'test-bucket',
+          Key: 'vector-tiles/list-123.mbtiles',
+        }),
+        expect.any(Function)
+      );
+      expect(writeFile).toHaveBeenCalledWith('/var/tiles/list-123.mbtiles', mockData.Body);
+    });
+
+    it('should handle S3 download errors', async () => {
+      mockS3Instance.getObject.mockImplementation((params, callback) => {
+        callback(new Error('Access denied'));
+      });
+
+      await expect(
+        vectorTileS3Utils.getMBTileFromS3Bucket('s3://test-bucket/list-123.mbtiles')
+      ).rejects.toThrow('Getting MBTile Vector Tiles from S3 bucket failed');
+    });
+
+    it('should handle file write errors', async () => {
+      const mockData = { Body: Buffer.from('mbtile data') };
+      mockS3Instance.getObject.mockImplementation((params, callback) => {
+        callback(null, mockData);
+      });
+      writeFile.mockRejectedValue(new Error('Write failed'));
+
+      await expect(
+        vectorTileS3Utils.getMBTileFromS3Bucket('s3://test-bucket/list-123.mbtiles')
+      ).rejects.toThrow('Getting MBTile Vector Tiles from S3 bucket failed');
     });
   });
 });

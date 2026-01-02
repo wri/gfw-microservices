@@ -1,109 +1,193 @@
-const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
-const vectorTileSQSUtils = require('./vectorTileSQS.utils');
-const AWS = require('aws-sdk');
+/**
+ * @jest-environment node
+ */
 
-jest.mock('aws-sdk');
+jest.mock(
+  '../config/vectorTilesSqs.config',
+  () => ({
+    VECTOR_TILE_SQS__QA: 'https://sqs.us-east-1.amazonaws.com/123456789/qa-vector-tiles',
+    VECTOR_TILE_SQS__STAGING: 'https://sqs.us-east-1.amazonaws.com/123456789/staging-vector-tiles',
+    VECTOR_TILE_SQS__PRODUCTION: 'https://sqs.us-east-1.amazonaws.com/123456789/prod-vector-tiles',
+    VECTOR_TILE_SQS__LATEST: 'https://sqs.us-east-1.amazonaws.com/123456789/latest-vector-tiles',
+  }),
+  { virtual: true }
+);
+
+jest.mock('@aws-sdk/client-sqs', () => ({
+  SQSClient: jest.fn(),
+}));
+
+jest.mock('sqs-consumer', () => ({
+  Consumer: {
+    create: jest.fn(),
+  },
+}));
+
+jest.mock('./vectorTileGenerate.utils', () => ({
+  generateAndStoreVectorTiles: jest.fn(),
+}));
+
+jest.mock('../../../config/privateutils/logger.utils', () => ({
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+}));
+
+const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
+const { Consumer } = require('sqs-consumer');
+const logger = require('../../../config/privateutils/logger.utils');
+const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');
 
 describe('vectorTileSQS.utils', () => {
-  let mockSQS;
+  let mockConsumer;
 
   beforeEach(() => {
-    mockSQS = {
-      sendMessage: jest.fn(),
-      receiveMessage: jest.fn(),
-      deleteMessage: jest.fn(),
+    mockConsumer = {
+      on: jest.fn().mockReturnThis(),
+      start: jest.fn(),
+      stop: jest.fn(),
     };
 
-    AWS.SQS.mockImplementation(() => mockSQS);
+    Consumer.create.mockReturnValue(mockConsumer);
     jest.clearAllMocks();
   });
 
-  describe('sendGenerateMessage', () => {
-    it('should send generation message to SQS queue', async () => {
-      mockSQS.sendMessage.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({ MessageId: 'msg123' }),
-      });
+  describe('initialize', () => {
+    it('should initialize SQS consumer for QA environment', async () => {
+      process.env.NODE_ENV = 'qa';
+      jest.isolateModules(async () => {
+        const { initialize } = require('./vectorTileSQS.utils');
+        initialize();
 
-      const result = await vectorTileSQSUtils.sendGenerateMessage({
-        listId: 'list123',
-        userId: 'user456',
+        expect(Consumer.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            queueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/qa-vector-tiles',
+            handleMessage: expect.any(Function),
+            batchSize: 5,
+          })
+        );
+        expect(mockConsumer.on).toHaveBeenCalledWith('error', expect.any(Function));
+        expect(mockConsumer.on).toHaveBeenCalledWith('processing_error', expect.any(Function));
+        expect(mockConsumer.start).toHaveBeenCalled();
       });
-
-      expect(result).toHaveProperty('MessageId', 'msg123');
-      expect(mockSQS.sendMessage).toHaveBeenCalledWith(
-        expect.objectContaining({
-          QueueUrl: expect.any(String),
-          MessageBody: expect.stringContaining('list123'),
-        })
-      );
     });
 
-    it('should include all required parameters in message', async () => {
-      mockSQS.sendMessage.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({ MessageId: 'msg123' }),
+    it('should initialize SQS consumer for staging environment', () => {
+      process.env.NODE_ENV = 'staging';
+      jest.isolateModules(() => {
+        const { initialize } = require('./vectorTileSQS.utils');
+        initialize();
+
+        expect(Consumer.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            queueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/staging-vector-tiles',
+          })
+        );
       });
-
-      await vectorTileSQSUtils.sendGenerateMessage({
-        listId: 'list123',
-        userId: 'user456',
-        priority: 'high',
-      });
-
-      const call = mockSQS.sendMessage.mock.calls[0][0];
-      const messageBody = JSON.parse(call.MessageBody);
-
-      expect(messageBody).toHaveProperty('listId', 'list123');
-      expect(messageBody).toHaveProperty('userId', 'user456');
-      expect(messageBody).toHaveProperty('priority', 'high');
     });
 
-    it('should handle SQS errors', async () => {
-      mockSQS.sendMessage.mockReturnValue({
-        promise: jest.fn().mockRejectedValue(new Error('Queue unavailable')),
+    it('should initialize SQS consumer for production environment', () => {
+      process.env.NODE_ENV = 'production';
+      jest.isolateModules(() => {
+        const { initialize } = require('./vectorTileSQS.utils');
+        initialize();
+
+        expect(Consumer.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            queueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/prod-vector-tiles',
+          })
+        );
       });
-
-      await expect(vectorTileSQSUtils.sendGenerateMessage({ listId: 'list123' })).rejects.toThrow(
-        'Queue unavailable'
-      );
-    });
-  });
-
-  describe('receiveMessages', () => {
-    it('should receive messages from SQS queue', async () => {
-      mockSQS.receiveMessage.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({
-          Messages: [{ MessageId: 'msg1', Body: JSON.stringify({ listId: 'list123' }) }],
-        }),
-      });
-
-      const result = await vectorTileSQSUtils.receiveMessages();
-
-      expect(result).toHaveLength(1);
-      expect(result[0]).toHaveProperty('MessageId', 'msg1');
     });
 
-    it('should return empty array when no messages', async () => {
-      mockSQS.receiveMessage.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({}),
+    it('should use latest queue for unknown environment', () => {
+      process.env.NODE_ENV = 'development';
+      jest.isolateModules(() => {
+        const { initialize } = require('./vectorTileSQS.utils');
+        initialize();
+
+        expect(Consumer.create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            queueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/latest-vector-tiles',
+          })
+        );
       });
-
-      const result = await vectorTileSQSUtils.receiveMessages();
-
-      expect(result).toEqual([]);
     });
-  });
 
-  describe('deleteMessage', () => {
-    it('should delete message from queue', async () => {
-      mockSQS.deleteMessage.mockReturnValue({
-        promise: jest.fn().mockResolvedValue({}),
+    it('should handle SQS messages and trigger tile generation', async () => {
+      await jest.isolateModulesAsync(async () => {
+        const { initialize } = require('./vectorTileSQS.utils');
+        initialize();
+
+        const handleMessage = Consumer.create.mock.calls[0][0].handleMessage;
+        const mockMessage = {
+          Body: JSON.stringify({
+            organization_database: 'test_db',
+            organization_id: 456,
+            list_id: 123,
+          }),
+          Attributes: {
+            ApproximateFirstReceiveTimestamp: '1640000000000',
+          },
+        };
+
+        generateAndStoreVectorTiles.mockResolvedValue({
+          message: 'Tiles generated successfully',
+        });
+
+        await handleMessage(mockMessage);
+
+        // Wait for promise chain to complete
+        await new Promise((resolve) => setImmediate(resolve));
+
+        expect(generateAndStoreVectorTiles).toHaveBeenCalledWith(
+          expect.objectContaining({
+            messageTimestamp: 1640000000000,
+            session: {
+              isNodeServer: true,
+              organization_database: 'test_db',
+              organization_id: 456,
+            },
+          }),
+          123
+        );
+        expect(logger.info).toHaveBeenCalledWith(
+          'SUCCESSFUL VECTOR TILE TRIGGER/GENERATION',
+          'Tiles generated successfully'
+        );
       });
+    });
 
-      await vectorTileSQSUtils.deleteMessage('receipt123');
+    it('should log errors when tile generation fails', async () => {
+      await jest.isolateModulesAsync(async () => {
+        const { initialize } = require('./vectorTileSQS.utils');
+        initialize();
 
-      expect(mockSQS.deleteMessage).toHaveBeenCalledWith({
-        QueueUrl: expect.any(String),
-        ReceiptHandle: 'receipt123',
+        const handleMessage = Consumer.create.mock.calls[0][0].handleMessage;
+        const mockMessage = {
+          Body: JSON.stringify({
+            organization_database: 'test_db',
+            organization_id: 456,
+            list_id: 123,
+          }),
+          Attributes: {
+            ApproximateFirstReceiveTimestamp: '1640000000000',
+          },
+        };
+
+        generateAndStoreVectorTiles.mockRejectedValue({
+          message: 'Generation failed',
+        });
+
+        await handleMessage(mockMessage);
+
+        // Wait for promise chain to complete
+        await new Promise((resolve) => setImmediate(resolve));
+
+        expect(logger.error).toHaveBeenCalledWith(
+          'VECTOR TILE GENERATION FAILED',
+          'Generation failed'
+        );
       });
     });
   });

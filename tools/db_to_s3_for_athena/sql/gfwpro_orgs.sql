@@ -15,6 +15,13 @@ SELECT
             SELECT 1 
             FROM dbo.ExternalAPIKeys AS K
             WHERE K.organizationId = O.id
+        ) 
+        AND EXISTS (
+            SELECT 1 
+            FROM dbo.FeatureFlags AS FF
+            WHERE FF.org_id = O.id
+              AND FF.flag_id = 'PermanentFlagForExternalApiKeys'
+              AND FF.flag_state = 1
         ) THEN CAST(1 AS BIT)
         ELSE CAST(0 AS BIT)
     END AS is_api_capable

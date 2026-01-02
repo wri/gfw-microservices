@@ -8,6 +8,7 @@ IF OBJECT_ID('tempdb..#large_list_data') IS NOT NULL
 
 -- create temporary table for storing data from EACH organization
 CREATE TABLE #large_list_data (
+    organization_id INT,
     organization NVARCHAR(MAX),
     large_list_id INT,
     list_id INT,
@@ -48,6 +49,7 @@ BEGIN
       -- Insert list data including upload format and API flag
     SET @sql = N'
       INSERT INTO #large_list_data (
+        organization_id,
         organization,
         large_list_id,
         list_id,
@@ -57,6 +59,7 @@ BEGIN
         is_api_list
       )
       SELECT
+        ' + CAST(@org_id AS NVARCHAR(10)) + ' AS organization_id,
         N''' + REPLACE(@org_name, '''', '''''') + ''' AS organization,
         LL.large_list_id,
         LL.list_id,

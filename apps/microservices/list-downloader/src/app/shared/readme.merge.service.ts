@@ -45,8 +45,10 @@ export class ReadmeMergeServices {
         this.logger.warn('Please provide at least one file.');
         return '';
       }
+      // Normalize outputFilePath to always have trailing slash for consistency
+      const normalizedPath = outputFilePath.endsWith('/') ? outputFilePath : `${outputFilePath}/`;
       // Writing the result to an output file
-      const outputFile = `${outputFilePath}/README.csv`;
+      const outputFile = `${normalizedPath}README.csv`;
 
       // Write the new header if provided
       const headerContent = newHeader ? `${newHeader}\n` : '';
@@ -68,7 +70,7 @@ export class ReadmeMergeServices {
           // Add old Header
           if (oldHeader.length < lines[0].length) {
             oldHeader = lines[0];
-            fs.appendFileSync(`${outputFilePath}/README.csv`, lines[0] + '\n');
+            fs.appendFileSync(outputFile, lines[0] + '\n');
           }
           // Add all lines except the header
           allLines.push(...lines.slice(1));
@@ -85,7 +87,7 @@ export class ReadmeMergeServices {
       for (const line of uniqueLines) {
         // Replace with the list name
         const updatedLine = line.replace(/Test List|<LISTNAME>/g, listName.replace(/ /g, '_'));
-        fs.appendFileSync(`${outputFilePath}/README.csv`, updatedLine + '\n');
+        fs.appendFileSync(outputFile, updatedLine + '\n');
       }
 
       this.logger.log(`CSV result file generated successfully: ${outputFile}`);

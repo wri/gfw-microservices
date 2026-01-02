@@ -5708,6 +5708,10 @@ export const ghgAnalysesData = [
     ch4EmissionsFactor: '{"2021":220.8186,"2022":228.1142,"2023":20.0}',
     n2oEmissionsFactor: '{"2021":320.8186,"2022":328.1142,"2023":3.0}',
     combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    emissionsCo2Yearly: '{"2025":0}',
+    emissionsCh4Yearly: '{"2025":0}',
+    emissionsN2oYearly: '{"2025":0}',
+    emissionsYearly: '{"2025":0}',
   },
   {
     listId: 5642,
@@ -5724,6 +5728,10 @@ export const ghgAnalysesData = [
     ch4EmissionsFactor: '{"2021":420.8186,"2022":428.1142,"2023":420.0}',
     n2oEmissionsFactor: '{"2021":420.8186,"2022":428.1142,"2023":43.0}',
     combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+    emissionsCo2Yearly: '{"2025":0}',
+    emissionsCh4Yearly: '{"2025":0}',
+    emissionsN2oYearly: '{"2025":0}',
+    emissionsYearly: '{"2025":0}',
   },
   {
     listId: 5642,
@@ -5740,6 +5748,10 @@ export const ghgAnalysesData = [
     ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
     n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
     combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+    emissionsCo2Yearly: '{"2025":0}',
+    emissionsCh4Yearly: '{"2025":0}',
+    emissionsN2oYearly: '{"2025":0}',
+    emissionsYearly: '{"2025":0}',
   },
 ] as unknown as AfiAnalysisByListId[];
 
@@ -5759,6 +5771,10 @@ export const ghgAnalysesDataIncompleteRow = [
     ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
     n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
     combinedEmissionsFactor: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    emissionsCo2Yearly: '{"2025":0}',
+    emissionsCh4Yearly: '{"2025":0}',
+    emissionsN2oYearly: '{"2025":0}',
+    emissionsYearly: '{"2025":0}',
   },
   {
     listId: 5642,
@@ -5773,6 +5789,11 @@ export const ghgAnalysesDataIncompleteRow = [
     ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
     n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
     analysisError: null,
+    // Missing commodity to make this an incomplete row
+    emissionsCo2Yearly: '{"2025":0}',
+    emissionsCh4Yearly: '{"2025":0}',
+    emissionsN2oYearly: '{"2025":0}',
+    emissionsYearly: '{"2025":0}',
   },
   {
     listId: 5642,
@@ -5789,5 +5810,9 @@ export const ghgAnalysesDataIncompleteRow = [
     ch4EmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":53.0}',
     n2oEmissionsFactor: '{"2021":520.8186,"2022":528.1142,"2023":520.0}',
     combinedEmissionsFactor: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
+    emissionsCo2Yearly: '{"2025":0}',
+    emissionsCh4Yearly: '{"2025":0}',
+    emissionsN2oYearly: '{"2025":0}',
+    emissionsYearly: '{"2025":0}',
   },
 ] as unknown as AfiAnalysisByListId[];

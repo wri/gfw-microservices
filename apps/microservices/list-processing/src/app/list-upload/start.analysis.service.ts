@@ -15,9 +15,9 @@ import { logExecutionTime } from './chain/shared';
 import { WriteLocationCount } from './chain/write.location.count';
 import { ProcessUploadData } from './chain/process.upload.data';
 
-import fastq from 'fastq';
-import type { queue, done } from 'fastq';
 import { ListSchemaName } from './chain/list.schema.name';
+import { RedisQueueService } from './redis-queue.service';
+import type { done } from 'fastq';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
 import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
 import { ValidateLocationName } from './chain/validate.location.name';
@@ -244,16 +244,20 @@ async function worker(input: WorkerType, cb: done) {
 export class StartAnalysisService {
   private intervals: NodeJS.Timeout[] = [];
   private readonly logger = new Logger(StartAnalysisService.name);
-  private queue: queue<WorkerType> = fastq(worker, LIST_UPLOAD_QUEUE_CONCURRENCY);
 
   constructor(
     private readonly config: ConfigService<ServerConfigType, true>,
     @Inject(forwardRef(() => CommodityService))
     private readonly commodityService: CommodityService,
-    private readonly emailService: EmailService
+    private readonly emailService: EmailService,
+    private readonly redisQueue: RedisQueueService
   ) {
-    const intervalId = global.setInterval(() => {
-      const stats = this.getQueueStats();
+    // Set the worker function and email service for the Redis queue
+    this.redisQueue.setWorker(worker, LIST_UPLOAD_QUEUE_CONCURRENCY);
+    this.redisQueue.setEmailService(this.emailService);
+
+    const intervalId = global.setInterval(async () => {
+      const stats = await this.getQueueStats();
       if (stats.running > 0 || stats.length > 0) {
         this.logger.log(`Queue Health: ${JSON.stringify(stats)}`);
       }
@@ -296,7 +300,7 @@ export class StartAnalysisService {
     const organizationId = traceContext.getOrganizationId();
     const contextUserId = traceContext.getUserId();
 
-    this.queue.push({
+    await this.redisQueue.push({
       request,
       config: this.config,
       emailService: this.emailService,
@@ -316,11 +320,11 @@ export class StartAnalysisService {
     this.intervals.forEach((intervalId) => global.clearInterval(intervalId));
   }
 
-  getQueueStats() {
+  async getQueueStats() {
     return {
-      length: this.queue.length(),
-      running: this.queue.running(),
-      concurrency: this.queue.concurrency,
+      length: await this.redisQueue.length(),
+      running: this.redisQueue.runningCount(),
+      concurrency: this.redisQueue.getConcurrency(),
     };
   }
 }

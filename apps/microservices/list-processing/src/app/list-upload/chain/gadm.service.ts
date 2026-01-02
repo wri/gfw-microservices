@@ -89,24 +89,12 @@ export class GADMService extends AbstractHandler<ChainType> {
     const centroidGeometryJson = JSON.stringify(centroidGeometry).replace(/'/g, "''");
     const fullGeometryJson = JSON.stringify(fullGeometry).replace(/'/g, "''");
     const sql = `SELECT
-    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometryJson
-    )}')) THEN gid_1 END) as gid_1,
-    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometryJson
-    )}')) THEN gid_2 END) as gid_2,
-    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometryJson
-    )}')) THEN name_0 END) as name_0,
-    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometryJson
-    )}')) THEN name_1 END) as name_1,
-    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      centroidGeometryJson
-    )}')) THEN name_2 END) as name_2,
-    ST_UNION(ST_Intersection(geom, ST_GeomFromGeoJSON('${JSON.stringify(
-      fullGeometryJson
-    )}'))) as st_union
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON(' ${centroidGeometryJson} ')) THEN gid_1 END) as gid_1,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON(' ${centroidGeometryJson} ')) THEN gid_2 END) as gid_2,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON(' ${centroidGeometryJson} ')) THEN name_0 END) as name_0,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON(' ${centroidGeometryJson} ')) THEN name_1 END) as name_1,
+    MAX(CASE WHEN ST_Contains(geom, ST_GeomFromGeoJSON(' ${centroidGeometryJson} ')) THEN name_2 END) as name_2,
+    ST_UNION(ST_Intersection(geom, ST_GeomFromGeoJSON(' ${fullGeometryJson} '))) as st_union
     FROM data WHERE (adm_level='2') OR (adm_level='1')`;
     // putting adm_level 1 to handle locations without adm2 (e.g. Libya)
     // but having adm_level 2 first and in parenthesis to prioritize adm_level 2

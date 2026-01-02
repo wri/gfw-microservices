@@ -13,12 +13,14 @@ import { ServerConfigType } from '../../validators/server-config';
 import { ListUploadController } from './list-upload.controller';
 import { SaveListProcessService } from './save.list.process.service';
 import { ListUploadService } from './list-upload.service';
+import { RedisQueueService } from './redis-queue.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ListTemplate], 'default'), SqlModule, AwsModule, ListModule],
   controllers: [PreviewListUploadController, ListUploadController],
   providers: [
     S3Service,
+    RedisQueueService,
     StartAnalysisService,
     PreviewListUploadService,
     CreateLargeListService,

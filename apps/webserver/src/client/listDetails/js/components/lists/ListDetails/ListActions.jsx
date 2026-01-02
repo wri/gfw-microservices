@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { connect } from 'react-redux';
-import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
-import { Stack, Button, Paper } from '@mui/material';
+import { InputBase, IconButton, Stack, Button, Paper } from '@mui/material';
 import {
   Search,
   Clear,
@@ -13,7 +11,7 @@ import {
   FolderShared,
   Delete,
   Add,
-} from '@mui/icons-material/';
+} from '@mui/icons-material';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
 
@@ -286,8 +284,8 @@ const ListActions = ({
                     getFolders().then((foldersLocal) => {
                       store.dispatch(updateFolders(foldersLocal));
                       const currentFolderLocal =
-                        folders && folders.length > 0
-                          ? folders.find((folder) =>
+                        foldersLocal && foldersLocal.length > 0
+                          ? foldersLocal.find((folder) =>
                               folder.lists && folder.lists.length > 0
                                 ? folder.lists.find((listId) => listId === selectedList.id)
                                 : null
@@ -363,6 +361,7 @@ const ListActions = ({
               <Button
                 sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                 onClick={() => setIsSearchBarOpen(true)}
+                data-testid="search-icon-button"
               >
                 <Search sx={{ color: 'black' }} />
               </Button>
@@ -370,6 +369,7 @@ const ListActions = ({
               <Button
                 sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
                 onClick={closeSearchBarHandler}
+                data-testid="clear-search-button"
               >
                 <Clear sx={{ color: 'black' }} />
               </Button>

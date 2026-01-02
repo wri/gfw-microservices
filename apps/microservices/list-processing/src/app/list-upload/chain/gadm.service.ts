@@ -15,7 +15,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   private async retryDataAPI(
     retriesLeft: number,
-    requestData: Record<string, unknown>,
+    requestData: Record<string, unknown>
   ): Promise<any> {
     return retryWithBackoff(
       async () => {

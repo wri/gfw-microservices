@@ -79,7 +79,7 @@ describe('ListActions', () => {
     getFolders.mockClear();
     updateFolders.mockClear();
 
-    storeDispatchSpy = jest.spyOn(realStore, 'dispatch').mockImplementation(() => {});
+    storeDispatchSpy = jest.spyOn(realStore, 'dispatch').mockImplementation(jest.fn());
 
     global.gtag = jest.fn();
 

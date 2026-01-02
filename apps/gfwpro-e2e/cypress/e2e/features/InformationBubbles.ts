@@ -1,4 +1,4 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
@@ -8,17 +8,31 @@ describe('Information Bubbles', () => {
   const listDetailsPage = new ListDetailsPage();
   const diagnosticsPage = new DiagnosticsPage();
 
-  When('I login in the landing page', () => {
-    cy.loginUI();
-    // Clear any info bubble cache that might interfere with the test
+  // Clear info bubble cache before each test to ensure test isolation
+  // This prevents interference from previous tests when running all tests together
+  Before(() => {
+    // Visit baseUrl to get a window context, then clear localStorage
+    cy.visit(Cypress.config().baseUrl || '/', { failOnStatusCode: false });
     cy.window().then((win) => {
+      // Clear localStorage for info bubble related keys
       const keys = Object.keys(win.localStorage);
       keys.forEach((key) => {
         if (key.toLowerCase().includes('info-bubble') || key.toLowerCase().includes('gfw-info')) {
           win.localStorage.removeItem(key);
         }
       });
+      // Also clear sessionStorage if needed
+      const sessionKeys = Object.keys(win.sessionStorage);
+      sessionKeys.forEach((key) => {
+        if (key.toLowerCase().includes('info-bubble') || key.toLowerCase().includes('gfw-info')) {
+          win.sessionStorage.removeItem(key);
+        }
+      });
     });
+  });
+
+  When('I login in the landing page', () => {
+    cy.loginUI();
   });
 
   When('I navigate to a list diagnostic page', () => {

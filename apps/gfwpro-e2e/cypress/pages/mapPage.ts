@@ -21,7 +21,7 @@ class MapPage {
     suggestionInputDefault: () =>
       cy.get('[id="search-widget-suggestion-item-0"]').contains('Use current location'),
     clearInputBtn: () => cy.get('[class="esri-search__clear-button esri-widget--button"]'),
-    tabModalAnalysis: () => cy.get('[id="analysisHeader"]'),
+    tabModalAnalysis: () => cy.get('button.analysis__nav__item.analysis-header-click'),
     tabModalBaseMap: () => cy.get('[id="basemapHeader"]'),
     tabDrawFormInAnalysis: () => cy.get('[id="draw-active-analysis"]'),
     tabCountryOrRegionInAnalysis: () => cy.get('[id="region-active-analysis"]'),

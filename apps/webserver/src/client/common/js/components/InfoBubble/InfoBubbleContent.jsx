@@ -1,21 +1,38 @@
 import { useState, useEffect } from 'react';
 import { marked } from 'marked';
+import { CircularProgress, Box } from '@mui/material';
 import { fetchInfoBubble, saveInfoBubbleCache, getInfoBubbleCache } from './infoBubble.utils';
 
 export default function InfoBubbleContent({ infoBubbleId }) {
   const [bubbleData, setBubbleData] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const infoBubbleList = getInfoBubbleCache();
 
     if (infoBubbleList && infoBubbleList[infoBubbleId]) {
       setBubbleData(infoBubbleList[infoBubbleId]);
+      setIsLoading(false);
     } else {
-      fetchInfoBubble(infoBubbleId).then((data) => {
-        setBubbleData(data);
-        saveInfoBubbleCache(data, infoBubbleId);
-      });
+      fetchInfoBubble(infoBubbleId)
+        .then((data) => {
+          setBubbleData(data);
+          saveInfoBubbleCache(data, infoBubbleId);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
     }
   }, []);
+
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100px">
+        <CircularProgress size={24} />
+      </Box>
+    );
+  }
 
   return (
     <>

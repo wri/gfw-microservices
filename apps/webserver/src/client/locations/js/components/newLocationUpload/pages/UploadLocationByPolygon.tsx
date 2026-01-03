@@ -296,6 +296,7 @@ export function UploadLocationByPolygon({
                   variant="outlined"
                   color="info"
                   onClick={() => handleChangeLocationFormat(LocationFormat.PolygonCoordinates)}
+                  data-testid="enter-polygon-coords-btn"
                 >
                   <AddLocationAlt sx={{ fontSize: (theme) => theme.typography.h4 }} />
                   <Typography variant="body2">Enter polygon coordinates</Typography>

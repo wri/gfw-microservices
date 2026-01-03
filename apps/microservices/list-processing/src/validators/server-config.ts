@@ -27,6 +27,10 @@ export const serverConfigSchema = z.object({
   LATEST_COMMIT: z.string().optional(),
 
   SES_SENDER_EMAIL: z.string().email(),
+
+  REDIS_HOST: z.string().optional(),
+  REDIS_PORT: z.coerce.number().optional(),
+  REDIS_CONNECT_TIMEOUT: z.coerce.number().optional(),
 });
 
 export type ServerConfigType = z.infer<typeof serverConfigSchema>;

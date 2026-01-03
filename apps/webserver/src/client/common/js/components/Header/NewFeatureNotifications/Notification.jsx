@@ -33,18 +33,16 @@ const NewFeatureNotification = ({ data, read }) => {
             <div className="new-feature-notification__date">{data?.releaseDate}</div>
           </div>
           <div className="new-feature-notification__description">
-            <div>
-              <PortableText value={data?.description} />
-            </div>
+            <PortableText value={data?.description} />
           </div>
           {data.image && (
             <div>
               <Icon
-                style={{ cursor: 'pointer', border: '1px solid black' }}
+                style={{ cursor: 'pointer' }}
                 onMouseEnter={imagePopoverEnter}
                 onMouseLeave={imagePopoverLeave}
               >
-                gif
+                image
               </Icon>
             </div>
           )}

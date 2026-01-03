@@ -1,6 +1,6 @@
+import { AppBar } from '@mui/material';
 import store from '../../store';
 import { toggleLayer } from '../../actions/mapActions';
-import AppBar from 'material-ui/AppBar';
 import LayerCheckbox from './LayerCheckbox';
 import { Component } from 'react';
 import { proLayers } from '../../../../common/js/proLayers.config';
@@ -177,7 +177,7 @@ export default class LayerPanel extends Component {
       (e) => e.country.toLowerCase().includes(this.state.filterStr.toLowerCase()) || ''
     );
     return (
-      <AppBar className="map__header" showMenuIconButton={false}>
+      <AppBar className="map__header" position="static">
         <nav className="map-navigation__container">
           <div className="map__headers-list" id="layer-panel-nav">
             <div className="nav-item__container forest-change-nav__container">

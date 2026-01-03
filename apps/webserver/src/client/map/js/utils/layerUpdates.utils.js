@@ -3,6 +3,7 @@ import {
   layersWithCanopyDensityThresholdControl,
 } from '../components/legend/DeforestationAlerts/deforestationAlerts.constants';
 import { proLayers } from '../../../common/js/proLayers.config';
+import { getJulianDate } from './dateUtils';
 
 // Function to remove and add a layer
 const redrawLayer = async (map, layer) => {
@@ -101,8 +102,8 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     deforestationAlertsIds.forEach((deforestationAlertsLayer) => {
       const mapLayer = map.findLayerById(deforestationAlertsLayer);
       if (mapLayer) {
-        const julianTo = parseInt(gladDateRange.end.getJulian(), 10);
-        const julianFrom = parseInt(gladDateRange.start.getJulian(), 10);
+        const julianTo = parseInt(getJulianDate(gladDateRange.end), 10);
+        const julianFrom = parseInt(getJulianDate(gladDateRange.start), 10);
 
         mapLayer.julianTo = julianTo;
         mapLayer.julianFrom = julianFrom;

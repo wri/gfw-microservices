@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import FlatButton from 'material-ui/FlatButton';
 import _intersection from 'lodash/intersection';
 
 import {
@@ -22,7 +21,8 @@ import {
   downloadLinks,
 } from '../../../../common/js/proLayers.config';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import GfwButton from '../../../../common/js/components/GfwButton';
+
+import { PillButton } from '../../../../components';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 
 import { PlanetTilesOptions } from './PlanetTilesOptions/PlanetTilesOptions';
@@ -439,53 +439,46 @@ export default class AnalysisPanel extends Component {
       <div className="analysis-tools__container">
         <div className={className}>
           <ul className="analysis__headers-list" id="layer-panel-nav">
-            <FlatButton
+            <button
               onClick={this.toggleAnalysis}
-              id="analysisHeader"
               className={`analysis__nav__item analysis-header-click ${
                 selectedAnalysis === 'analysis' ? 'selected-analysis' : ''
               } ${isAnalysisDisabled ? 'disabled-analysis disabled-header' : ''}`}
-              label=""
-              icon={
-                <span
-                  className={`module-tabs header-tabs analysis-header-click ${
-                    isAnalysisDisabled ? 'disabled-header' : ''
-                  }`}
-                  id="analysis-header-icon"
+            >
+              <span
+                className={`module-tabs header-tabs analysis-header-click ${
+                  isAnalysisDisabled ? 'disabled-header' : ''
+                }`}
+                id="analysis-header-icon"
+              >
+                <svg
+                  className={`analysis-header-click ${isAnalysisDisabled ? 'disabled-header' : ''}`}
                 >
-                  <svg
+                  <use
                     className={`analysis-header-click ${
                       isAnalysisDisabled ? 'disabled-header' : ''
                     }`}
-                  >
-                    <use
-                      className={`analysis-header-click ${
-                        isAnalysisDisabled ? 'disabled-header' : ''
-                      }`}
-                      xlinkHref="#icon-tab-analysis"
-                    />
-                  </svg>
-                </span>
-              }
-            />
-            <FlatButton
+                    xlinkHref="#icon-tab-analysis"
+                  />
+                </svg>
+              </span>
+            </button>
+            <button
               onClick={this.toggleAnalysis}
               id="basemapHeader"
               className={`analysis__nav__item basemap-header-click ${
                 selectedAnalysis === 'basemap' ? 'selected-analysis' : ''
               }`}
-              label=""
-              icon={
-                <span
-                  className="module-tabs header-tabs pointer basemap-header-click"
-                  id="basemap-header-icon"
-                >
-                  <svg className="basemap-header-click">
-                    <use className="basemap-header-click" xlinkHref="#icon-basemap" />
-                  </svg>
-                </span>
-              }
-            />
+            >
+              <span
+                className="module-tabs header-tabs pointer basemap-header-click"
+                id="basemap-header-icon"
+              >
+                <svg className="basemap-header-click">
+                  <use className="basemap-header-click" xlinkHref="#icon-basemap" />
+                </svg>
+              </span>
+            </button>
           </ul>
           <div
             className={`analysis__body__item ${selectedAnalysis === 'analysis' ? '' : 'hidden'}`}
@@ -511,11 +504,14 @@ export default class AnalysisPanel extends Component {
               </li>
             </ul>
             <div className={`analysis__body__cancel__button ${isSpinnerVisible ? '' : 'hidden'}`}>
-              <GfwButton
-                classNames="AnalysisPanel__button btn-red text__semi-bold-12"
-                value="Cancel Analysis"
+              <PillButton
+                variant="contained"
+                color="error"
+                size="small"
                 onClick={() => cancelAnalysis()}
-              />
+              >
+                Cancel Analysis
+              </PillButton>
             </div>
             <div
               className={`analysis__body__subitem ${
@@ -527,11 +523,9 @@ export default class AnalysisPanel extends Component {
                 {mapPage.drawInstructions}
               </div>
               <div className="analysis__body__draw__button">
-                <GfwButton
-                  classNames="AnalysisPanel__button btn-green text__semi-bold-12"
-                  value={drawingLabel}
-                  onClick={this.startDrawing}
-                />
+                <PillButton variant="contained" size="small" onClick={this.startDrawing}>
+                  {drawingLabel}
+                </PillButton>
               </div>
             </div>
             <div
@@ -593,43 +587,33 @@ export default class AnalysisPanel extends Component {
               }`}
             >
               <div className="analysis__body__results__button">
-                <GfwButton
-                  classNames="AnalysisPanel__button btn-green text__semi-bold-12"
-                  value="Add New Location"
-                  onClick={() => this.addNewLocation()}
-                />
+                <PillButton variant="contained" size="small" onClick={this.addNewLocation}>
+                  Add New Location
+                </PillButton>
               </div>
               <div className="analysis-panel-button-wrap">
-                <FlatButton
+                <button
                   onClick={this.openDownload}
                   className="analysis__nav__item analysis-footer-click"
-                  icon={
-                    <span>
-                      <span className="module-tabs footer-tabs pointer" id="download-footer-icon">
-                        <svg>
-                          <use xlinkHref="#icon-download" />
-                        </svg>
-                      </span>
-                      <span className="analysis-footer-label download-data-label">
-                        Download Data
-                      </span>
-                    </span>
-                  }
-                />
-                <FlatButton
+                >
+                  <span className="module-tabs footer-tabs pointer" id="download-footer-icon">
+                    <svg>
+                      <use xlinkHref="#icon-download" />
+                    </svg>
+                  </span>
+                  <span className="analysis-footer-label download-data-label">Download Data</span>
+                </button>
+                <button
                   onClick={this.discardAnalysis}
                   className="analysis__nav__item analysis-footer-click"
-                  icon={
-                    <span>
-                      <span className="module-tabs footer-tabs pointer" id="discard-footer-icon">
-                        <svg>
-                          <use xlinkHref="#icon-analysis-remove" />
-                        </svg>
-                      </span>
-                      <span className="analysis-footer-label discard-label">Discard Analysis</span>
-                    </span>
-                  }
-                />
+                >
+                  <span className="module-tabs footer-tabs pointer" id="discard-footer-icon">
+                    <svg>
+                      <use xlinkHref="#icon-analysis-remove" />
+                    </svg>
+                  </span>
+                  <span className="analysis-footer-label discard-label">Discard Analysis</span>
+                </button>
               </div>
             </div>
           </div>

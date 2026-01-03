@@ -6,6 +6,7 @@ IF OBJECT_ID('tempdb..#list_data') IS NOT NULL
 -- create temporary table for storing data from EACH organization
 CREATE TABLE #list_data
 (
+  organization_id INT,
   organization NVARCHAR(MAX),
   list_name NVARCHAR(MAX),
   list_id INT,
@@ -211,8 +212,9 @@ BEGIN
                   
                 -- inserts the collected data into #list_data
                 INSERT into #list_data
-                (organization, list_name, list_id, country, commodity, analysis_area, locations_count, list_status, is_api_list)
-                SELECT @org_name		
+                (organization_id, organization, list_name, list_id, country, commodity, analysis_area, locations_count, list_status, is_api_list)
+                SELECT @org_id
+                  , @org_name		
                   , @list_table_name
                   , gli.list_id
                   , gli.country					

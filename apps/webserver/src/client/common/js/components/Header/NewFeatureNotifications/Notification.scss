@@ -1,15 +1,17 @@
 .new-feature-notification {
   border-bottom: 1px solid lightgrey;
   color: black;
-  width: 100%;
   padding: 15px;
-  &--read {
+  box-sizing: border-box;
+  &.new-feature-notification--read {
     background-color: #e6e6e6;
     color: gray;
   }
   &__menu-item {
     height: 100%;
     display: flex;
+    width: 100%;
+    min-width: 0;
     > div > div {
       display: flex;
     }
@@ -18,15 +20,17 @@
     display: flex;
     align-items: start;
     height: 48px;
-    padding-right: 16px;
-    width: 10%;
+    padding-right: 15px;
+    flex: 0 0 48px;
   }
   &__heading {
     display: flex;
     justify-content: space-between;
   }
   &__container {
-    width: 90%;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
   }
   &__title {
     font-weight: bold;
@@ -39,10 +43,22 @@
   }
   &__description {
     font-size: 14px;
-    max-width: 400px;
     white-space: break-spaces;
+    display: flex;
+    flex-direction: column;
     line-height: normal;
-    text-align: justify;
+    text-align: left;
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    p,
+    ul,
+    ol,
+    li {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
     a {
       font-weight: bold;
       color: black;
@@ -54,7 +70,6 @@
   &__image {
     box-shadow: -2px 2px 4px 4px rgba(0, 0, 0, 0.2);
     position: relative;
-    max-width: 400px;
     border-radius: 2px;
     z-index: 9999;
   }

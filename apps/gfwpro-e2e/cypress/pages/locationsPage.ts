@@ -42,8 +42,7 @@ class LocationsPage {
     newNameListCell: () => cy.get('[placeholder="Name your new list"]'),
     newListNameInput: () => cy.get('input[placeholder="Name your new list"]'),
     newLocationName: () => cy.get('input[name="locationName"]'),
-    enterPolygonCoordsBtn: () =>
-      cy.get('.css-seoeeh-MuiButtonBase-root-MuiButton-root > .MuiTypography-root'),
+    enterPolygonCoordsBtn: () => cy.get('[data-testid="enter-polygon-coords-btn"]'),
     enterPointCoordsBtn: () => cy.get('.css-p6lt5n > :nth-child(1) > .MuiTypography-root'),
     checkbox: () => '.rt-td.td-checkbox',
     downloadListBtn: () => cy.contains('Download…'),
@@ -226,7 +225,8 @@ class LocationsPage {
   }
 
   clickOnLocationsList(name: string) {
-    cy.contains(name).click();
+    // Wait for the list to be visible and clickable before clicking
+    cy.contains(name).should('be.visible').click();
   }
 
   clickOnAddLocationsBtn() {

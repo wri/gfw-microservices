@@ -14,12 +14,13 @@ import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
 import { ListTemplate, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { traceContext } from '@wri-monorepos/shared';
 import { ServerConfigType } from '../../validators/server-config';
+import { RedisQueueService } from './redis-queue.service';
 
 // Mock ConvertPoint2Polygon to avoid dynamic import requirements
 jest.mock('./chain/convert.point.2.polygon', () => {
   const { AbstractHandler } = jest.requireActual('./chain/types');
   return {
-    ConvertPoint2Polygon: class extends AbstractHandler<any> {},
+    ConvertPoint2Polygon: class extends AbstractHandler<unknown> {},
   };
 });
 
@@ -53,35 +54,83 @@ jest.mock('@wri-monorepos/sql', () => {
 
 jest.mock('../common/check.listSizelimit');
 
-// Mock the fastq module to actually execute the provided worker
-jest.mock('fastq', () => {
-  return jest.fn().mockImplementation((workerFn: any) => ({
-    push: jest.fn().mockImplementation((data: any, callback?: (err: Error | null) => void) => {
-      // Execute the worker synchronously so tests can observe side effects immediately
-      try {
-        workerFn(data, (err?: Error) => (callback ? callback(err || null) : undefined));
-      } catch (err) {
-        if (callback) {
-          callback(err as Error);
-        }
-      }
-      return Promise.resolve();
-    }),
-    unshift: jest.fn(),
-    pause: jest.fn(),
-    resume: jest.fn(),
-    running: jest.fn().mockReturnValue(0),
-    idle: jest.fn(),
-    length: jest.fn().mockReturnValue(0),
-    getQueue: jest.fn(),
-    kill: jest.fn(),
-    killAndDrain: jest.fn(),
-    error: jest.fn(),
-    concurrency: 1,
-    drain: jest.fn(),
-    empty: jest.fn(),
-    saturated: jest.fn(),
-  }));
+// Mock RedisQueueService to execute worker synchronously for tests
+type WorkerFunction = (
+  input: {
+    request: RequestLargeListProcess;
+    config: ConfigService<ServerConfigType, true>;
+    emailService: EmailService;
+    traceId?: string;
+  },
+  cb: (error: Error | null) => void
+) => void | Promise<void>;
+
+let workerFn: WorkerFunction | null = null;
+
+jest.mock('./redis-queue.service', () => {
+  return {
+    RedisQueueService: class {
+      setWorker = jest.fn().mockImplementation((fn: WorkerFunction) => {
+        workerFn = fn;
+      });
+      setEmailService = jest.fn();
+      push = jest
+        .fn()
+        .mockImplementation(
+          async (data: {
+            request: RequestLargeListProcess;
+            config: ConfigService<ServerConfigType, true>;
+            emailService: EmailService;
+            traceId?: string;
+          }) => {
+            // Execute the worker and wait for it to complete
+            if (workerFn) {
+              // The worker function is async and uses a callback pattern
+              // We need to wait for the callback to be invoked
+              return new Promise((resolve, reject) => {
+                let callbackInvoked = false;
+
+                const callback = (err?: Error) => {
+                  callbackInvoked = true;
+                  if (err) {
+                    reject(err);
+                  } else {
+                    // Resolve after a microtask to ensure all async operations complete
+                    Promise.resolve().then(() => {
+                      resolve(undefined);
+                    });
+                  }
+                };
+
+                try {
+                  // Call the worker (which is async)
+                  const workerPromise = workerFn(data, callback);
+
+                  // The worker is async, so it returns a promise
+                  // But the callback is what signals completion
+                  // We wait for the callback, but also handle promise rejections
+                  if (workerPromise && typeof workerPromise.then === 'function') {
+                    workerPromise.catch((err) => {
+                      if (!callbackInvoked) {
+                        reject(err);
+                      }
+                    });
+                  }
+                } catch (err) {
+                  if (!callbackInvoked) {
+                    reject(err);
+                  }
+                }
+              });
+            }
+            return Promise.resolve(undefined);
+          }
+        );
+      length = jest.fn().mockResolvedValue(0);
+      runningCount = jest.fn().mockReturnValue(0);
+      getConcurrency = jest.fn().mockReturnValue(1);
+    },
+  };
 });
 
 describe('StartAnalysisService', () => {
@@ -95,6 +144,15 @@ describe('StartAnalysisService', () => {
   let mockDataSource: DataSource;
   let uploadStatusSpy: jest.SpyInstance;
   let runFullChainSpy: jest.SpyInstance;
+  let redisQueueService: RedisQueueService;
+  let mockRedisQueueService: {
+    setWorker: jest.Mock;
+    setEmailService: jest.Mock;
+    push: jest.Mock;
+    length: jest.Mock;
+    runningCount: jest.Mock;
+    getConcurrency: jest.Mock;
+  };
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -119,12 +177,23 @@ describe('StartAnalysisService', () => {
     sandbox.stub(AbstractHandler.prototype, 'handle').resolves({});
     uploadStatusSpy = jest
       .spyOn(
-        AbstractHandler as unknown as { updateListsUploadStatus: any },
+        AbstractHandler as unknown as {
+          updateListsUploadStatus: (
+            chainType: unknown,
+            status: string,
+            errorMessage: string
+          ) => Promise<void>;
+        },
         'updateListsUploadStatus'
       )
       .mockResolvedValue(undefined);
     runFullChainSpy = jest
-      .spyOn(AbstractHandler as unknown as { runFullChain: any }, 'runFullChain')
+      .spyOn(
+        AbstractHandler as unknown as {
+          runFullChain: (handler: unknown, chainType: unknown) => Promise<unknown>;
+        },
+        'runFullChain'
+      )
       .mockResolvedValue(undefined);
 
     // Create service stubs
@@ -169,6 +238,89 @@ describe('StartAnalysisService', () => {
       findOne: sandbox.stub().resolves({}),
     };
 
+    // Create mock Redis queue service
+    mockRedisQueueService = {
+      setWorker: jest.fn().mockImplementation((fn: WorkerFunction) => {
+        workerFn = fn;
+      }),
+      setEmailService: jest.fn(),
+      push: jest
+        .fn()
+        .mockImplementation(
+          async (data: {
+            request: RequestLargeListProcess;
+            config: ConfigService<ServerConfigType, true>;
+            emailService: EmailService;
+            traceId?: string;
+            organizationId?: number;
+            userId?: number;
+          }) => {
+            // Execute the worker and wait for it to complete
+            if (workerFn) {
+              return new Promise((resolve, reject) => {
+                let callbackInvoked = false;
+
+                const callback = (err?: Error) => {
+                  callbackInvoked = true;
+                  if (err) {
+                    reject(err);
+                  } else {
+                    // Resolve after ensuring all microtasks complete
+                    // Use setTimeout instead of setImmediate for better compatibility
+                    setTimeout(() => {
+                      resolve(undefined);
+                    }, 0);
+                  }
+                };
+
+                try {
+                  // Call the worker (which is async)
+                  const workerPromise = workerFn(data, callback);
+
+                  // Await the worker promise to ensure all async operations complete
+                  // The callback will be called during the worker's execution
+                  if (workerPromise && typeof workerPromise.then === 'function') {
+                    workerPromise
+                      .then(() => {
+                        // Give the callback a chance to be invoked if it hasn't been yet
+                        if (!callbackInvoked) {
+                          // Wait a bit more for the callback
+                          setTimeout(() => {
+                            if (!callbackInvoked) {
+                              // Callback should have been called by now
+                              resolve(undefined);
+                            }
+                          }, 10);
+                        }
+                      })
+                      .catch((err) => {
+                        if (!callbackInvoked) {
+                          reject(err);
+                        }
+                      });
+                  } else if (!callbackInvoked) {
+                    // If no promise, wait a bit for callback
+                    setTimeout(() => {
+                      if (!callbackInvoked) {
+                        resolve(undefined);
+                      }
+                    }, 10);
+                  }
+                } catch (err) {
+                  if (!callbackInvoked) {
+                    reject(err);
+                  }
+                }
+              });
+            }
+            return Promise.resolve(undefined);
+          }
+        ),
+      length: jest.fn().mockResolvedValue(0),
+      runningCount: jest.fn().mockReturnValue(0),
+      getConcurrency: jest.fn().mockReturnValue(1),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StartAnalysisService,
@@ -196,10 +348,25 @@ describe('StartAnalysisService', () => {
           provide: DataSource,
           useValue: mockDataSource,
         },
+        {
+          provide: RedisQueueService,
+          useValue: mockRedisQueueService,
+        },
       ],
     }).compile();
 
     service = module.get<StartAnalysisService>(StartAnalysisService);
+    redisQueueService = module.get<RedisQueueService>(RedisQueueService);
+
+    // The service constructor calls setWorker, which should set workerFn
+    // Verify that setWorker was called
+    expect(redisQueueService.setWorker).toHaveBeenCalled();
+
+    // Get the worker function that was set
+    const setWorkerCalls = (redisQueueService.setWorker as jest.Mock).mock.calls;
+    if (setWorkerCalls.length > 0) {
+      workerFn = setWorkerCalls[0][0]; // First argument is the worker function
+    }
   });
 
   afterEach(() => {
@@ -299,9 +466,12 @@ describe('StartAnalysisService', () => {
     const result = await service.run(request);
     expect(result).toHaveProperty('startDate');
 
-    // allow worker microtasks to flush
-    await new Promise((r) => setTimeout(r, 0));
-    await new Promise((r) => setTimeout(r, 0));
+    // Wait for the worker to complete - the push mock should have awaited it
+    // But give it a bit more time for all async operations to complete
+    await new Promise((r) => setTimeout(r, 100));
+
+    // Verify runFullChain was called (which means worker executed)
+    expect(runFullChainSpy).toHaveBeenCalled();
 
     // Upload status should be updated
     expect(uploadStatusSpy).toHaveBeenCalled();
@@ -337,9 +507,12 @@ describe('StartAnalysisService', () => {
     );
 
     await expect(service.run(request)).resolves.toBeDefined();
-    // allow worker microtasks to flush
-    await new Promise((r) => setTimeout(r, 0));
-    await new Promise((r) => setTimeout(r, 0));
+    // Wait for the worker to complete
+    await new Promise((r) => setTimeout(r, 100));
+
+    // Verify runFullChain was called (which means worker executed)
+    expect(runFullChainSpy).toHaveBeenCalled();
+
     expect(uploadStatusSpy).toHaveBeenCalled();
   });
 
@@ -360,8 +533,8 @@ describe('StartAnalysisService', () => {
 
       (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
 
-      // Get the queue push mock to inspect what was passed
-      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+      // Get the redisQueue push mock to inspect what was passed
+      const queuePushSpy = jest.spyOn(redisQueueService, 'push');
 
       // Run within a trace context
       await traceContext.run(testTraceId, async () => {
@@ -372,6 +545,8 @@ describe('StartAnalysisService', () => {
       expect(queuePushSpy).toHaveBeenCalled();
       const queuedData = queuePushSpy.mock.calls[0][0] as {
         traceId?: string;
+        organizationId?: number;
+        userId?: number;
         request: RequestLargeListProcess;
         config: ConfigService<ServerConfigType, true>;
         emailService: EmailService;
@@ -395,7 +570,7 @@ describe('StartAnalysisService', () => {
 
       (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
 
-      const queuePushSpy = jest.spyOn((service as any).queue, 'push');
+      const queuePushSpy = jest.spyOn(redisQueueService, 'push');
       const generateTraceIdSpy = jest.spyOn(traceContext, 'generateTraceId');
 
       // Run without trace context
@@ -406,6 +581,8 @@ describe('StartAnalysisService', () => {
       expect(queuePushSpy).toHaveBeenCalled();
       const queuedData = queuePushSpy.mock.calls[0][0] as {
         traceId?: string;
+        organizationId?: number;
+        userId?: number;
         request: RequestLargeListProcess;
         config: ConfigService<ServerConfigType, true>;
         emailService: EmailService;
@@ -448,8 +625,8 @@ describe('StartAnalysisService', () => {
       const capturedTraceIds: string[] = [];
 
       // Mock the worker to capture trace IDs
-      const originalPush = (service as any).queue.push;
-      (service as any).queue.push = jest.fn((data: any) => {
+      const originalPush = (service as any).redisQueue.push;
+      (service as any).redisQueue.push = jest.fn((data: any) => {
         // Simulate worker execution with trace context
         return traceContext.run(data.traceId, async () => {
           capturedTraceIds.push(traceContext.getTraceId());
@@ -493,8 +670,8 @@ describe('StartAnalysisService', () => {
       let traceIdInWorker = '';
 
       // Mock the worker to capture trace ID during execution
-      const originalPush = (service as any).queue.push;
-      (service as any).queue.push = jest.fn((data: any) => {
+      const originalPush = (service as any).redisQueue.push;
+      (service as any).redisQueue.push = jest.fn((data: any) => {
         return traceContext.run(data.traceId, async () => {
           // Simulate async work in worker
           await new Promise((resolve) => setTimeout(resolve, 10));
@@ -512,6 +689,144 @@ describe('StartAnalysisService', () => {
 
       // Verify trace ID was preserved in worker
       expect(traceIdInWorker).toBe(testTraceId);
+    });
+
+    it('should preserve organizationId and userId when queuing request', async () => {
+      const testTraceId = 'test-trace-id-org-user';
+      const testOrgId = 123;
+      const testUserId = 456;
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      const queuePushSpy = mockRedisQueueService.push;
+
+      // Run within a trace context with organization and user IDs
+      await traceContext.run(
+        testTraceId,
+        async () => {
+          await service.run(request);
+        },
+        testOrgId,
+        testUserId
+      );
+
+      // Verify that organization ID and user ID were passed to the queue
+      expect(queuePushSpy).toHaveBeenCalled();
+      const queuedData = queuePushSpy.mock.calls[0][0] as {
+        traceId?: string;
+        organizationId?: number;
+        userId?: number;
+        request: RequestLargeListProcess;
+        config: ConfigService<ServerConfigType, true>;
+        emailService: EmailService;
+      };
+      expect(queuedData.traceId).toBe(testTraceId);
+      expect(queuedData.organizationId).toBe(testOrgId);
+      expect(queuedData.userId).toBe(testUserId);
+    });
+
+    it('should preserve organizationId and userId in background worker execution', async () => {
+      const testTraceId = 'test-trace-id-worker-org-user';
+      const testOrgId = 789;
+      const testUserId = 101112;
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      let orgIdInWorker: number | undefined;
+      let userIdInWorker: number | undefined;
+
+      // Mock the worker to capture organization and user IDs
+      const originalPush = mockRedisQueueService.push;
+      mockRedisQueueService.push = jest.fn((data: any) => {
+        return traceContext.run(
+          data.traceId,
+          async () => {
+            // Simulate async work in worker
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            orgIdInWorker = traceContext.getOrganizationId();
+            userIdInWorker = traceContext.getUserId();
+            return originalPush.call(mockRedisQueueService, data);
+          },
+          data.organizationId,
+          data.userId
+        );
+      }) as any;
+
+      await traceContext.run(
+        testTraceId,
+        async () => {
+          await service.run(request);
+        },
+        testOrgId,
+        testUserId
+      );
+
+      // Allow async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      // Verify organization and user IDs were preserved in worker
+      expect(orgIdInWorker).toBe(testOrgId);
+      expect(userIdInWorker).toBe(testUserId);
+    });
+
+    it('should handle missing organizationId and userId gracefully', async () => {
+      const testTraceId = 'test-trace-id-no-org-user';
+      const request: RequestLargeListProcess = {
+        organization_id: 1,
+        subscription_status_id: 1,
+        organization_database: 'test-database',
+        list_id: 1,
+        path: 's3://test-bucket/test-file.csv',
+        user_id: 1,
+        startAnalysis: true,
+        saveAsDraft: false,
+        commodity: 'test-commodity',
+      };
+
+      (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+      const queuePushSpy = mockRedisQueueService.push;
+
+      // Run without organization and user IDs
+      await traceContext.run(testTraceId, async () => {
+        await service.run(request);
+      });
+
+      // Verify that undefined values are passed (not errors)
+      expect(queuePushSpy).toHaveBeenCalled();
+      const queuedData = queuePushSpy.mock.calls[0][0] as {
+        traceId?: string;
+        organizationId?: number;
+        userId?: number;
+        request: RequestLargeListProcess;
+        config: ConfigService<ServerConfigType, true>;
+        emailService: EmailService;
+      };
+      expect(queuedData.traceId).toBe(testTraceId);
+      expect(queuedData.organizationId).toBeUndefined();
+      expect(queuedData.userId).toBeUndefined();
     });
   });
 });

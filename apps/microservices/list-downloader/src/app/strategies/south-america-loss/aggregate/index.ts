@@ -1,5 +1,5 @@
-import { ArgentinaOTBNStrategy } from './argentina-otbn.strategy';
 import { BrazilBiomesStrategy } from './brazil-biomes.strategy';
+import { ArgentinaOTBNStrategy } from './argentina-otbn.strategy';
 import DefaultStrategy from './default.strategy';
 import { StrategyFieldType } from './type';
 
@@ -18,7 +18,7 @@ export interface SouthAmericaLossAggregateStrategy {
 const labelStrategies = {
   'Brazil Biomes': new BrazilBiomesStrategy(),
   'Argentina OTBN': new ArgentinaOTBNStrategy(),
-  default: new DefaultStrategy(), //handle the cases where the analysis is not coming from argentina nor brazil
+  default: new DefaultStrategy(), //handle the cases where the analysis is not coming from brazil
 };
 
 export default class SouthAmericaLossAggregateHandler {

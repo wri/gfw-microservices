@@ -49,11 +49,12 @@ export class ReadmeService {
   getPathDir(key: string) {
     const dirName = `wri-${key}`;
     try {
-      if (this.configService.get('NODE_ENV', { infer: true }) === 'test') {
-        return `/tmp/${dirName}/`;
-      } else {
-        return path.join('/tmp', `${dirName}`);
-      }
+      const basePath =
+        this.configService.get('NODE_ENV', { infer: true }) === 'test'
+          ? `/tmp/${dirName}`
+          : path.join('/tmp', `${dirName}`);
+      // Always return path with trailing slash for consistency
+      return basePath.endsWith('/') ? basePath : `${basePath}/`;
     } catch (error) {
       this.logger.error(`Error getting path dir: ${error.message}`);
     }

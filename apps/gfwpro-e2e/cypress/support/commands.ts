@@ -119,22 +119,21 @@ Cypress.Commands.add('dismissCookieBanner', () => {
   // NOTE: This handles third-party Osano cookie consent banner
   // We cannot add data-cy attributes to third-party components
   // Using Osano's stable class names as primary selectors with text fallback
-  cy.get('body', { timeout: 10000 }).then(($body) => {
-    // Try to find Osano accept button with specific class names first
-    const osanoAcceptButton = $body.find('.osano-cm-accept, .osano-cm-accept-all');
 
-    if (osanoAcceptButton.length > 0) {
-      cy.log('Osano cookie banner accept button found by class, clicking...');
-      cy.get('.osano-cm-accept, .osano-cm-accept-all').first().should('be.visible').click();
+  // Try to find and click the accept button, but don't fail if it doesn't exist
+  cy.get('body', { timeout: 5000 }).then(($body) => {
+    const banner = $body.find('.osano-cm-dialog, .osano-cm-window__dialog');
+    const bannerVisible = banner.length > 0 && banner.is(':visible');
+    const acceptButton = $body.find('.osano-cm-accept, .osano-cm-accept-all');
+    const buttonVisible = acceptButton.length > 0 && acceptButton.is(':visible');
+
+    if (bannerVisible && buttonVisible) {
+      // Banner and button are visible, click it directly without timeout since we verified it exists
+      cy.wrap(acceptButton.first()).click({ force: true });
       cy.log('Cookie banner dismissed');
     } else {
-      // Fallback: Look for any button with "Accept" text using cy.contains
-      cy.log('Attempting to find cookie banner accept button by text...');
-      cy.contains('button', /accept/i, { timeout: 5000 })
-        .first()
-        .should('be.visible')
-        .click();
-      cy.log('Cookie banner dismissed');
+      // Banner or button not found/visible - may already be dismissed or not loaded yet
+      cy.log('Osano cookie banner not found or not ready - may already be dismissed');
     }
   });
 });

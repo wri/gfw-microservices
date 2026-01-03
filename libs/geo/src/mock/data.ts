@@ -89,9 +89,6 @@ export const mockData = {
       commodityThreatFires:
         '{"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":4.5,"2022":25.0}',
       dissolvedDataLocationInfo: '{}',
-      // Removed treeCoverLossArgOtbnYearly - data now available in treeCoverLossByCountryClassifiedRegionYearly.ARG
-      argOtbnArea: '{"Category II":4629.1739,"Category III":0.4241}',
-      argentinaPresence: 'true',
       protectedAreasByCategoryArea: '{"Not Reported":3335.8852}',
       landmarkByCategoryArea: '{"Not Reported":7851.0114}',
       countrySpecificDeforestationYearly:
@@ -193,9 +190,6 @@ export const mockData = {
         '{"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":11.5,"2022":40.5}',
       dissolvedGeomObjectKey:
         's3://gfwpro-geotrellis-pre-data/latest/dissolved/858487bb706b46838bcadb88fde326f5_20240323191131.geojson',
-      // Removed treeCoverLossArgOtbnYearly - data now available in treeCoverLossByCountryClassifiedRegionYearly.ARG
-      argOtbnArea: '{"Category I":2489.7019,"Category II":32551.4955,"Category III":7839.8143}',
-      argentinaPresence: 'true',
       protectedAreasByCategoryArea:
         '{"Not Reported":3335.8852,"Category Ia":1612.4059,"Category VI":0.2748,"Category II":16760.1523}',
       landmarkByCategoryArea: '{"Not Reported":30228.7055}',

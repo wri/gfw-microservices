@@ -64,7 +64,11 @@ export class ReadmeService {
     const { selectedTimeframe } = filters;
 
     if (selectedTimeframe === AlertsTimeframes.DAY) {
-      return ['global_integrated_disturbance_alerts_daily_readme.csv', 'daily_alerts_readme.csv'];
+      return [
+        'global_integrated_disturbance_alerts_daily_readme.csv',
+        'daily_alerts_readme.csv',
+        'alerts_readme.csv',
+      ];
     }
 
     const alertsFilesByTimeFrame = {

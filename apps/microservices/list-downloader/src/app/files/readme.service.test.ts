@@ -77,6 +77,7 @@ describe('ReadmeService', () => {
       [
         '/mock/source/dir/global_integrated_disturbance_alerts_daily_readme.csv',
         '/mock/source/dir/daily_alerts_readme.csv',
+        '/mock/source/dir/alerts_readme.csv',
       ],
       null,
       '/tmp/wri-test-key/',
@@ -121,6 +122,7 @@ describe('ReadmeService', () => {
     expect(result).toEqual([
       'global_integrated_disturbance_alerts_daily_readme.csv',
       'daily_alerts_readme.csv',
+      'alerts_readme.csv',
     ]);
   });
 

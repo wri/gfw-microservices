@@ -1,57 +1,57 @@
-CSV Name,Description,Column,Column Description,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,List(s),Name of List,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Alert Type,Selected Alert Type,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Timeframe,Selected Time Period,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Total Locations with alerts data,Count of Locations with Alerts Data Available (GLAD Excludes areas outside Tropics),,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Total Locations,Count of Total Locations in the List,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Locations with Alerts,Count of Locations with at least 1 alert during the selected time period,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Percentage Locations with Alerts of All Locations,Percentage of Locations with Alerts Data Available that have experienced Alerts,,
-Test List_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Number of Alerts,Total Number of Alerts,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,List Name,Name of List,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Sub State,Name of Sub-State,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,State,Name of State,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Country,Name of Country,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Alert Type,Selected Alert Type,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Timeframe,Selected Time Period,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Start Date,Start Date of Selected Time Period,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,End Date,End Date of Selected Time Period,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,# of Sub State Level Alerts,Count of Alerts in the Sub-State,,
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,# of State Level Alerts,Count of Alerts in the State (Note, this number repeats for all sub-states in the state),
-Test List_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,# of Country Level Alerts,Count of Alerts in the Country (Note, this number repeats for all sub-states in the Country),
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,List Name,Name of List,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Location Name,Name of Location,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Sub State,Sub-state the Location's Center Point is in,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,State,State the Location's Center Point is in,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Country,Country the Location's Center Point is in,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Alert Type,Selected Alert Type,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Timeframe,Selected Time Period,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Start Date,Start Date of Selected Time Period,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,End Date,End Date of Selected Time Period,,
-Test List_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,# of Location Level Alerts,Count of Alerts in the Location during the Selected Time Period,,
-Test List_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),List Name,Name of List,,
-Test List_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Alert Type,Selected Alert Type,,
-Test List_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Timeframe,Selected Time Period,,
-Test List_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Number of Alerts,Count of Alerts in the Sub Time Period for List,,
-Test List_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Start Date,Start Date of Sub Time Period (Month, Week, or Day)
-Test List_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),End Date,End Date of Sub Time Period (Month, Week, or Day)
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,List Name,Name of List,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Sub State,Name of Sub-State,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,State,Name of State,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Country,Name of Country,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Alert Type,Selected Alert Type,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Timeframe,Selected Time Period,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Start Date,Start Date of Selected Time Period,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,End Date,End Date of Selected Time Period,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Current Density of Sub State Level Alerts (Alerts / 1000 ha),Density of Alerts in the Sub-State,,
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Current Density of State Level Alerts (Alerts / 1000 ha),Density of Alerts in the State (Note, this number repeats for all substates in the state),
-Test List_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Current Density of Country Level Alerts (Alerts / 1000 ha),Density of Alerts in the Densityry (Note, this number repeats for all substates in the Densityry),
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,List Name,Name of List,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Location Name,Name of Location,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Sub State,Sub-state the Location's Center Point is in,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,State,State the Location's Center Point is in,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Country,Country the Location's Center Point is in,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Alert Type,Selected Alert Type,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Timeframe,Selected Time Period,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Start Date,Start Date of Selected Time Period,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,End Date,End Date of Selected Time Period,,
-Test List_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Current Density of Location Level Alerts (Alerts / 1000 ha),Density of Alerts in the Location,,
+CSV Name,Description,Version,Column,Column Description
+<LISTNAME>__AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,List(s),Name of List
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Timeframe,Selected Time Period
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Total Locations with alerts data,Count of Locations with Alerts Data Available (GLAD Excludes areas outside Tropics)
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Total Locations,Count of Total Locations in the List
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Locations with Alerts,Count of Locations with at least 1 alert during the selected time period
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Percentage Locations with Alerts of All Locations,Percentage of Locations with Alerts Data Available that have experienced Alerts
+<LISTNAME>_AlertsSummary,Overall summary of selected Alert within the Selected Time Period,Deprecated,Number of Alerts,Total Number of Alerts
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,List Name,Name of List
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,Sub State,Name of Sub-State
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,State,Name of State
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,Country,Name of Country
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,Timeframe,Selected Time Period
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,Start Date,Start Date of Selected Time Period
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,End Date,End Date of Selected Time Period
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,# of Sub State Level Alerts,Count of Alerts in the Sub-State
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,# of State Level Alerts,Count of Alerts in the State (Note, this number repeats for all sub-states in the state),
+<LISTNAME>_Alerts_AdminAreasLevel,Count of Selected Alerts in each Sub-state in the Selected Time Period,Deprecated,# of Country Level Alerts,Count of Alerts in the Country (Note, this number repeats for all sub-states in the Country),
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,List Name,Name of List
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,Location Name,Name of Location
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,Sub State,Sub-state the Location's Center Point is in
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,State,State the Location's Center Point is in
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,Country,Country the Location's Center Point is in
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,Timeframe,Selected Time Period
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,Start Date,Start Date of Selected Time Period
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,End Date,End Date of Selected Time Period
+<LISTNAME>_Alerts_LocationsLevel,Count of Selected Alerts in each Location in the Selected Time Period,Deprecated,# of Location Level Alerts,Count of Alerts in the Location during the Selected Time Period
+<LISTNAME>_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Deprecated,List Name,Name of List
+<LISTNAME>_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Deprecated,Timeframe,Selected Time Period
+<LISTNAME>_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Deprecated,Number of Alerts,Count of Alerts in the Sub Time Period for List
+<LISTNAME>_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Deprecated,Start Date,Start Date of Sub Time Period (Month, Week, or Day)
+<LISTNAME>_AlertsHistory,Breakdown of Alerts in Sub-Time Periods based on Selected Time Period (Corresponds to Timeline Bar Chart in Dashboard),Deprecated,End Date,End Date of Sub Time Period (Month, Week, or Day)
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,List Name,Name of List
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Sub State,Name of Sub-State
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,State,Name of State
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Country,Name of Country
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Timeframe,Selected Time Period
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Start Date,Start Date of Selected Time Period
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,End Date,End Date of Selected Time Period
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Current Density of Sub State Level Alerts (Alerts / 1000 ha),Density of Alerts in the Sub-State
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Current Density of State Level Alerts (Alerts / 1000 ha),Density of Alerts in the State (Note, this number repeats for all substates in the state),
+<LISTNAME>_AlertsPriorities_AdminAreasLevel,Admin Area Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Current Density of Country Level Alerts (Alerts / 1000 ha),Density of Alerts in the Densityry (Note, this number repeats for all substates in the Densityry),
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,List Name,Name of List
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Location Name,Name of Location
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Sub State,Sub-state the Location's Center Point is in
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,State,State the Location's Center Point is in
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Country,Country the Location's Center Point is in
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Timeframe,Selected Time Period
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Start Date,Start Date of Selected Time Period
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,End Date,End Date of Selected Time Period
+<LISTNAME>_AlertsPriorities_LocationsLevel,Location Alert Density compared to Tree Cover Extent of Selected Alert in Selected Time Period,Deprecated,Current Density of Location Level Alerts (Alerts / 1000 ha),Density of Alerts in the Location

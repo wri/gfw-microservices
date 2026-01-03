@@ -11,7 +11,6 @@ import { finished } from 'stream/promises';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
-import { FilterTimeframeIntegratedAlerts } from '../transform/filter.timeframe.integrated.alerts';
 import { GlobalIntegratedDisturbanceAlertsDaily } from '../transform/global.integrated.disturbance.alerts.daily';
 import { FormatNumber } from '../transform/format.number';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
@@ -49,21 +48,6 @@ export class AlertsGlobalIntegratedDisturbanceDailyService extends IPipeService 
   private organizeStream(filters: AlertFieldsFileRequest) {
     const { listId, startDate, endDate, key, listName } = filters;
 
-    const inputColumns: string[] = [
-      'integratedAlertsAreaAllNominal',
-      'integratedAlertsAreaAllHigh',
-      'integratedAlertsAreaAllHighest',
-      'integratedAlertsAreaSbtnNaturalForestsNominal',
-      'integratedAlertsAreaSbtnNaturalForestsHigh',
-      'integratedAlertsAreaSbtnNaturalForestsHighest',
-      'integratedAlertsAreaSbtnNaturalEcosystemNominal',
-      'integratedAlertsAreaSbtnNaturalEcosystemHigh',
-      'integratedAlertsAreaSbtnNaturalEcosystemHighest',
-      'integratedAlertsAreaJrcNominal',
-      'integratedAlertsAreaJrcHigh',
-      'integratedAlertsAreaJrcHighest',
-    ];
-
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', async (err) => {
@@ -77,7 +61,7 @@ export class AlertsGlobalIntegratedDisturbanceDailyService extends IPipeService 
 
     this.inputStream
       .pipe(new AlertsGetLocationOrListData(false))
-      .pipe(new FilterTimeframeIntegratedAlerts(inputColumns, startDate, endDate))
+      // FilterTimeframeIntegratedAlerts removed - SQL now handles date filtering and aggregation
       .pipe(new GlobalIntegratedDisturbanceAlertsDaily(listName, startDate, endDate))
       .pipe(new FormatNumber())
       .pipe(

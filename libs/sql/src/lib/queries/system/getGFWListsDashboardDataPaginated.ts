@@ -6,6 +6,10 @@
  * @rowsPerPage INT - number of rows per page
  *
  * Returns type DashboardDataType (same as getDashboardData)
+ *
+ * NOTE: This query now parses JSON in SQL and returns numeric sums instead of JSON strings
+ * for integrated alerts fields. This prevents RangeError issues in NodeJS when handling
+ * large datasets with many dates.
  */
 export const getGFWListsDashboardDataPaginated = `
   -- SET NOCOUNT ON added to prevent extra result sets from
@@ -17,8 +21,40 @@ export const getGFWListsDashboardDataPaginated = `
   SELECT @list_table_name = list_table_name FROM dbo.GFWLists WHERE id = @listId
 
   DECLARE @TEMPLATE NVARCHAR(MAX)
-    DECLARE @SQL NVARCHAR(MAX)
+  DECLARE @SQL NVARCHAR(MAX)
+  
+  -- Build CTE to parse and sum JSON alert data
   SET @TEMPLATE = '
+    ;WITH ParsedAlerts AS (
+      SELECT
+        list_id,
+        location_id,
+        -- Parse and sum integrated_alerts_daily fields (count-based)
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_all_nominal)), 0) AS integratedAlertsDailyAllNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_all_high)), 0) AS integratedAlertsDailyAllHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_all_highest)), 0) AS integratedAlertsDailyAllHighest,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_sbtn_nominal)), 0) AS integratedAlertsDailySbtnNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_sbtn_high)), 0) AS integratedAlertsDailySbtnHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_sbtn_highest)), 0) AS integratedAlertsDailySbtnHighest,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_jrc_nominal)), 0) AS integratedAlertsDailyJrcNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_jrc_high)), 0) AS integratedAlertsDailyJrcHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(integrated_alerts_daily_jrc_highest)), 0) AS integratedAlertsDailyJrcHighest,
+        -- Parse and sum intdist_alerts_area fields (hectare-based)
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_all_nominal)), 0) AS integratedAlertsAreaAllNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_all_high)), 0) AS integratedAlertsAreaAllHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_all_highest)), 0) AS integratedAlertsAreaAllHighest,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_sbtn_natural_forests_nominal)), 0) AS integratedAlertsAreaSbtnNaturalForestsNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_sbtn_natural_forests_high)), 0) AS integratedAlertsAreaSbtnNaturalForestsHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_sbtn_natural_forests_highest)), 0) AS integratedAlertsAreaSbtnNaturalForestsHighest,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_sbtn_natural_ecosystem_nominal)), 0) AS integratedAlertsAreaSbtnNaturalEcosystemNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_sbtn_natural_ecosystem_high)), 0) AS integratedAlertsAreaSbtnNaturalEcosystemHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_sbtn_natural_ecosystem_highest)), 0) AS integratedAlertsAreaSbtnNaturalEcosystemHighest,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_jrc_nominal)), 0) AS integratedAlertsAreaJrcNominal,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_jrc_high)), 0) AS integratedAlertsAreaJrcHigh,
+        ISNULL((SELECT SUM(CAST([value] AS FLOAT)) FROM OPENJSON(intdist_alerts_area_jrc_highest)), 0) AS integratedAlertsAreaJrcHighest
+      FROM dbo.[Analyses-Dashboard]
+      WHERE list_id = {LIST_ID}
+    )
     SELECT AD.list_id,
       AD.location_id,
       AD.gadm_id,
@@ -29,15 +65,28 @@ export const getGFWListsDashboardDataPaginated = `
       AD.viirs_alerts_daily,
       AD.tree_cover_extent_total,
       AD.integrated_alerts_coverage as integratedAlertsCoverage,
-      AD.integrated_alerts_daily_all_nominal as integratedAlertsDailyAllNominal,
-      AD.integrated_alerts_daily_all_high as integratedAlertsDailyAllHigh,
-      AD.integrated_alerts_daily_all_highest as integratedAlertsDailyAllHighest,
-      AD.integrated_alerts_daily_sbtn_nominal as integratedAlertsDailySbtnNominal,
-      AD.integrated_alerts_daily_sbtn_high as integratedAlertsDailySbtnHigh,
-      AD.integrated_alerts_daily_sbtn_highest as integratedAlertsDailySbtnHighest,
-      AD.integrated_alerts_daily_jrc_nominal as integratedAlertsDailyJrcNominal,
-      AD.integrated_alerts_daily_jrc_high as integratedAlertsDailyJrcHigh,
-      AD.integrated_alerts_daily_jrc_highest as integratedAlertsDailyJrcHighest,
+      -- Use parsed numeric values from CTE
+      PA.integratedAlertsDailyAllNominal,
+      PA.integratedAlertsDailyAllHigh,
+      PA.integratedAlertsDailyAllHighest,
+      PA.integratedAlertsDailySbtnNominal,
+      PA.integratedAlertsDailySbtnHigh,
+      PA.integratedAlertsDailySbtnHighest,
+      PA.integratedAlertsDailyJrcNominal,
+      PA.integratedAlertsDailyJrcHigh,
+      PA.integratedAlertsDailyJrcHighest,
+      PA.integratedAlertsAreaAllNominal,
+      PA.integratedAlertsAreaAllHigh,
+      PA.integratedAlertsAreaAllHighest,
+      PA.integratedAlertsAreaSbtnNaturalForestsNominal,
+      PA.integratedAlertsAreaSbtnNaturalForestsHigh,
+      PA.integratedAlertsAreaSbtnNaturalForestsHighest,
+      PA.integratedAlertsAreaSbtnNaturalEcosystemNominal,
+      PA.integratedAlertsAreaSbtnNaturalEcosystemHigh,
+      PA.integratedAlertsAreaSbtnNaturalEcosystemHighest,
+      PA.integratedAlertsAreaJrcNominal,
+      PA.integratedAlertsAreaJrcHigh,
+      PA.integratedAlertsAreaJrcHighest,
       AA.[Country],
       AA.[State],
       AA.[Sub State],
@@ -51,6 +100,9 @@ export const getGFWListsDashboardDataPaginated = `
       L.location_lat, L.location_lon,
       L.location_name
     FROM dbo.[Analyses-Dashboard] AD
+    
+    LEFT JOIN ParsedAlerts PA ON PA.list_id = AD.list_id AND PA.location_id = AD.location_id
+    
     OUTER APPLY (
       SELECT TOP 1 gadmid, [Country], [State], [Sub State], [Location Name], Latitude, Longitude
       FROM (

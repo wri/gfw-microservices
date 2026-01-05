@@ -94,8 +94,8 @@ const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
       rowObj = filterBelowEndYear(rowObj);
       value = lastYearPriorityParser(rowObj);
     }
-    // Fill the value in the correct column
-    currentRow[idx] = value;
+    // Fill the value in the correct column after existing dataRow columns
+    currentRow[dataRow.length + idx] = value;
   });
   csvData.push(currentRow);
 };

@@ -55,7 +55,7 @@ const aggregateParser = (totalProp) => {
     }
     return acc;
   }, 0);
-  return val !== 0 ? val : '';
+  return val;
 };
 
 const lastYearPriorityParser = (rowObj) => {

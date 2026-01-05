@@ -135,6 +135,9 @@ const {
 const sqlUtils = require('../privateutils/sql.utils');
 const errorUtils = require('../privateutils/error.utils');
 
+// Get references to mocked modules to avoid lazy-loading issues
+const sqlMocks = require('@wri-monorepos/sql');
+
 describe('Test getWorstStatusId function', () => {
   test('When it is empty should return undefined', () => {
     const code = getWorstStatusId([]);
@@ -2186,8 +2189,7 @@ describe('Test getPaginatedAnalysisDataForUserList function', () => {
     };
     const mockData = [{ id: 1, analysis_data: 'data' }];
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(mockData);
-    const { getListJsonAttributesColumnsSqlParam } = require('@wri-monorepos/sql');
-    getListJsonAttributesColumnsSqlParam.mockResolvedValue('[]');
+    sqlMocks.getListJsonAttributesColumnsSqlParam.mockResolvedValue('[]');
 
     const result = await getPaginatedAnalysisDataForUserList(mockReq, listId, filters);
 
@@ -2208,8 +2210,7 @@ describe('Test getPaginatedAnalysisDataForUserList function', () => {
       code: 'FAILED_TO_GET_LIST',
       message: 'Failed to get paginated analysis data',
     });
-    const { getListJsonAttributesColumnsSqlParam } = require('@wri-monorepos/sql');
-    getListJsonAttributesColumnsSqlParam.mockResolvedValue('[]');
+    sqlMocks.getListJsonAttributesColumnsSqlParam.mockResolvedValue('[]');
 
     await expect(getPaginatedAnalysisDataForUserList(mockReq, listId, filters)).rejects.toEqual({
       code: 'FAILED_TO_GET_LIST',
@@ -2383,26 +2384,24 @@ describe('Test deleteListIfEmpty function', () => {
       },
     };
     jest.clearAllMocks();
-    const { DeleteListTypeOrm } = require('@wri-monorepos/sql');
-    DeleteListTypeOrm.mockClear();
+    sqlMocks.DeleteListTypeOrm.mockClear();
   });
 
   test('Should delete list when it is empty', async () => {
     const listID = 1;
     const listUtils = require('../privateutils/list.utils');
-    const { DeleteListTypeOrm } = require('@wri-monorepos/sql');
-    
+
     listUtils.getListNameSchema.mockResolvedValue({
       list_name: 'empty-list',
       id: listID,
     });
-    
+
     // Mock DeleteListTypeOrm
     const mockDelete = jest.fn().mockResolvedValue(undefined);
-    DeleteListTypeOrm.mockImplementation(() => ({
+    sqlMocks.DeleteListTypeOrm.mockImplementation(() => ({
       delete: mockDelete,
     }));
-    
+
     sqlUtils.executeOrganizationStoredProcedure
       .mockResolvedValueOnce([{ isListEmpty: true }]) // uspCheckIfListIsEmpty
       .mockResolvedValueOnce([{ lock_status: Date.now(), lock_user_id: 123 }]); // uspGetListLockStatus
@@ -2510,22 +2509,21 @@ describe('Test deleteList function', () => {
   test('Should delete list successfully', async () => {
     const listId = 1;
     const listUtils = require('../privateutils/list.utils');
-    const { DeleteListTypeOrm } = require('@wri-monorepos/sql');
-    
+
     // Mock getListLockStatus
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValueOnce([
       { lock_status: Date.now(), lock_user_id: 123 },
     ]);
-    
+
     // Mock getListNameSchema
     listUtils.getListNameSchema.mockResolvedValue({
       list_name: 'test-list',
       id: listId,
     });
-    
+
     // Mock DeleteListTypeOrm
     const mockDelete = jest.fn().mockResolvedValue(undefined);
-    DeleteListTypeOrm.mockImplementation(() => ({
+    sqlMocks.DeleteListTypeOrm.mockImplementation(() => ({
       delete: mockDelete,
     }));
 
@@ -2537,32 +2535,31 @@ describe('Test deleteList function', () => {
   test('Should reject when list is locked by another user', async () => {
     const listId = 2;
     const listUtils = require('../privateutils/list.utils');
-    const { DeleteListTypeOrm } = require('@wri-monorepos/sql');
-    
+
     // Clear all previous mocks
     jest.clearAllMocks();
-    
+
     // Mock getListLockStatus - locked by another user
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([
       { lock_status: Date.now(), lock_user_id: 999 }, // Different user
     ]);
-    
+
     listUtils.getListNameSchema.mockResolvedValue({
       list_name: 'test-list',
       id: listId,
     });
-    
+
     errorUtils.createErrorMessage.mockReturnValue({
       code: 'FAILED_TO_DELETE_LIST',
       message: 'Failed to delete list',
     });
-    
+
     // Mock DeleteListTypeOrm (won't be called but needed for module import)
     const mockDelete = jest.fn().mockResolvedValue(undefined);
-    DeleteListTypeOrm.mockImplementation(() => ({
+    sqlMocks.DeleteListTypeOrm.mockImplementation(() => ({
       delete: mockDelete,
     }));
-    
+
     // deleteList wraps the validation error in an error object
     await expect(deleteList(mockReq, listId)).rejects.toEqual({
       code: 'FAILED_TO_DELETE_LIST',
@@ -2573,25 +2570,24 @@ describe('Test deleteList function', () => {
   test('Should reject when deletion fails', async () => {
     const listId = 3;
     const listUtils = require('../privateutils/list.utils');
-    const { DeleteListTypeOrm } = require('@wri-monorepos/sql');
     const error = new Error('Deletion failed');
-    
+
     // Mock successful lock check
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([
       { lock_status: Date.now(), lock_user_id: 123 },
     ]);
-    
+
     listUtils.getListNameSchema.mockResolvedValue({
       list_name: 'test-list',
       id: listId,
     });
-    
+
     // Mock DeleteListTypeOrm to fail
     const mockDelete = jest.fn().mockRejectedValue(error);
-    DeleteListTypeOrm.mockImplementation(() => ({
+    sqlMocks.DeleteListTypeOrm.mockImplementation(() => ({
       delete: mockDelete,
     }));
-    
+
     errorUtils.createErrorMessage.mockReturnValueOnce({
       code: 'FAILED_TO_DELETE_LIST',
       message: 'Failed to delete list',
@@ -2812,7 +2808,6 @@ describe('Test moveLocations function', () => {
 
     const srcList = { id: srcListId, list_name: 'source-list' };
     const destList = { id: destListId, list_name: 'dest-list' };
-    const { DeleteListTypeOrm } = require('@wri-monorepos/sql');
 
     listUtils.getListNameSchema
       .mockResolvedValueOnce(srcList)
@@ -2820,7 +2815,7 @@ describe('Test moveLocations function', () => {
       .mockResolvedValueOnce(srcList); // For deleteList
 
     const mockDelete = jest.fn().mockResolvedValue(undefined);
-    DeleteListTypeOrm.mockImplementation(() => ({
+    sqlMocks.DeleteListTypeOrm.mockImplementation(() => ({
       delete: mockDelete,
     }));
 
@@ -2863,5 +2858,3 @@ describe('Test moveLocations function', () => {
     });
   });
 });
-
-

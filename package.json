@@ -12,7 +12,8 @@
     "start:eapi": "nx serve microservices-externalapi",
     "build": "nx build",
     "test": "nx test",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "formatCheck": "node node_modules/prettier/bin-prettier.js --check ."
   },
   "private": true,
   "dependencies": {

@@ -104,6 +104,14 @@ const NewFeatureNotifications = () => {
         className="new-feature-notifications"
         open={showList}
         anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         onClose={handleClose}
       >
         <div>

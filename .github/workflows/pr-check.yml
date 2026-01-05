@@ -43,7 +43,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Check code format
-        run: npx nx format:check
+        run: npx npm run formatCheck
 
   Check-lint:
     runs-on: ubuntu-latest

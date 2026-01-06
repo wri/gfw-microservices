@@ -10,7 +10,7 @@ CSV Name,Description,Version,Column,Column Description
 <LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,End Date,End date of the selected time period
 <LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Date,Date of the Alert event
 <LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Confidence Level,High confidence Alerts are detected multiple times by the same system. Highest confidence Alerts are detected by multiple systems.
-<LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Total alert hectares,Total area of detected disturbance Alerts in hectares, regardless of land type
+<LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Total alert hectares,"Total area of detected disturbance Alerts in hectares, regardless of land type"
 <LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Hectares of alerts in SBTN Natural Forest,Hectares of Alerts detected within SBTN Natural Forest only
 <LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Hectares of alerts in SBTN Natural Open Ecosystems,Hectares of Alerts detected within SBTN natural non-forest open ecosystems only
 <LISTNAME>_Global_Integrated_Disturbance_Alerts_Daily,Daily Alerts by location,1.0,Hectares of alerts in JRC Forest,Hectares of Alerts detected within JRC Forest

@@ -10,6 +10,8 @@ import { ServerConfigType } from '../../validators/server-config';
 import { PreviewStep } from './chain/preview.step';
 import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
 import { ValidateLocationName } from './chain/validate.location.name';
+import { AdjustGeoData } from './chain/adjust.geo.data';
+import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
 
 @Injectable()
 export class PreviewListUploadService {
@@ -32,17 +34,21 @@ export class PreviewListUploadService {
 
     const downloadS3File = new DownloadS3File(this.s3Service, this.config);
     const parseData = new ParserData();
+    const adjustGeoData = new AdjustGeoData();
     const gadmService = new GADMService();
     const previewStep = new PreviewStep();
     const validateMandatoryFields = new ValidateMandatoryFields();
     const validateLocationName = new ValidateLocationName();
+    const convertPoint2Polygon = new ConvertPoint2Polygon();
 
     downloadS3File
       .setNext(parseData)
       .setNext(previewStep)
-      .setNext(validateMandatoryFields)
+      .setNext(adjustGeoData) // ensures analysisArea is set and lat/long are extracted
+      .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
       .setNext(validateLocationName)
-      .setNext(gadmService);
+      .setNext(convertPoint2Polygon) // converts points with analysisArea/analysisRadius to polygons
+      .setNext(gadmService); // depends on convertPoint2Polygon
 
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);
 

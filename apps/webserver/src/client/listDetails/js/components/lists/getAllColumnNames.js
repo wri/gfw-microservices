@@ -109,10 +109,9 @@ const getAllColumnNames = (
     const analysis = columns.post_2020_risk.slice();
     columnNames.combinedColumns = [checkbox, ...analysis, ...columnNames.list];
   } else if (listView === ALERTS) {
-    const { columns: alertsAnalysisColumns, ...alertsAnalysisRestOfProperties } =
-      columns.alerts_analysis;
+    const analysis = columns.alerts_analysis.slice();
 
-    const filteredColumns = alertsAnalysisColumns.filter((col) => {
+    const filteredColumns = analysis.filter((col) => {
       if (forestDataset === forestDataSet.NaturalForestMap) {
         return col.Header?.()?.props?.label !== columnHeaders.alertsInJrc;
       }
@@ -125,22 +124,10 @@ const getAllColumnNames = (
       return true;
     });
 
-    const sortableColumns = filteredColumns.map((col) => {
-      return {
-        ...col,
-        sortable: false,
-      };
-    });
-
-    const analysis = {
-      columns: sortableColumns,
-      ...alertsAnalysisRestOfProperties,
-    };
-
     columnNames.combinedColumns = [
       ...defaultShownColumns,
       ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
-      analysis,
+      ...filteredColumns,
       ...gfwColumns,
       ...columnNames.list,
     ];

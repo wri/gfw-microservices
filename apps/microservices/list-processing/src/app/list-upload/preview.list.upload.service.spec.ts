@@ -1,13 +1,45 @@
+// Mock ConvertPoint2Polygon to avoid dynamic import requirements (must be before imports)
+jest.mock('./chain/convert.point.2.polygon', () => {
+  const { AbstractHandler } = jest.requireActual('./chain/types');
+  class MockConvertPoint2Polygon extends AbstractHandler<unknown> {
+    setNext() {
+      return this;
+    }
+    async handle(request: unknown) {
+      return Promise.resolve(request);
+    }
+  }
+  return {
+    ConvertPoint2Polygon: MockConvertPoint2Polygon,
+  };
+});
+
+// Mock AdjustGeoData
+jest.mock('./chain/adjust.geo.data', () => {
+  const { AbstractHandler } = jest.requireActual('./chain/types');
+  class MockAdjustGeoData extends AbstractHandler<unknown> {
+    setNext() {
+      return this;
+    }
+    async handle(request: unknown) {
+      return Promise.resolve(request);
+    }
+  }
+  return {
+    AdjustGeoData: MockAdjustGeoData,
+  };
+});
+
+jest.mock('./chain/download.s3.file');
+jest.mock('./chain/parser.data');
+jest.mock('./chain/gadm.service');
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { PreviewListUploadService } from './preview.list.upload.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { DownloadS3File } from './chain/download.s3.file';
 import { FeatureCollection } from '@wri-monorepos/geo';
-
-jest.mock('./chain/download.s3.file');
-jest.mock('./chain/parser.data');
-jest.mock('./chain/gadm.service');
 
 describe('ListUploadService', () => {
   let service: PreviewListUploadService;

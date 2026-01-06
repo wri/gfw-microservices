@@ -122,21 +122,19 @@ export class GADMService extends AbstractHandler<ChainType> {
   // remove very tiny polygons that sometimes appear due to GADM level
   private discardTinyPolygons(geometry: Polygon): void {
     const TINY_LAT_LONG_DIFF = 0.0000001; // approx 1 cm
-    geometry.coordinates = geometry.coordinates.filter(
-      (coords) => {
-        // Keep non-array items as-is (shouldn't happen but defensive coding)
-        if (!Array.isArray(coords)) {
-          this.logger.warn('Unexpected non-array coordinate ring in geometry:', coords);
-          return true;
-        }
-        // Filter out tiny polygons where all points are essentially the same
-        return !coords.every(
-          ([x, y]) =>
-            Math.abs(x - coords[0][0]) < TINY_LAT_LONG_DIFF &&
-            Math.abs(y - coords[0][1]) < TINY_LAT_LONG_DIFF
-        );
+    geometry.coordinates = geometry.coordinates.filter((coords) => {
+      // Keep non-array items as-is (shouldn't happen but defensive coding)
+      if (!Array.isArray(coords)) {
+        this.logger.warn('Unexpected non-array coordinate ring in geometry:', coords);
+        return true;
       }
-    );
+      // Filter out tiny polygons where all points are essentially the same
+      return !coords.every(
+        ([x, y]) =>
+          Math.abs(x - coords[0][0]) < TINY_LAT_LONG_DIFF &&
+          Math.abs(y - coords[0][1]) < TINY_LAT_LONG_DIFF
+      );
+    });
   }
 
   addGeoReferenceData = async (feature: Feature): Promise<any> => {

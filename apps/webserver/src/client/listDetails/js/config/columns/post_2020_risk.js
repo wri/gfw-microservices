@@ -1,4 +1,5 @@
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
+import { columnHeaders } from './columnHeaders.constants';
 import {
   renderPercentageValueWithIndicator,
   renderFormattedDeforestationValueWithIndicator,
@@ -13,7 +14,7 @@ import {
   DISPLAY_FORMAT_PERCENTAGE,
 } from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
 
-const sizeLabel = Transifex.live.translateText('Size (ha)');
+const sizeLabel = Transifex.live.translateText(columnHeaders.sizeInHa);
 
 // Function that creates columns array with getter properties for show
 const getColumnsWithCurrentState = () => {

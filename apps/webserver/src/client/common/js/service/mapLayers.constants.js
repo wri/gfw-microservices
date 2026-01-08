@@ -2719,7 +2719,7 @@ export const mapLayers = [
               },
             ],
             name: 'Geographic Coverage',
-            source: '(every 6-12 days, 10m, select countries, WUR)',
+            source: '',
             color: '#dc6699',
           },
         ],

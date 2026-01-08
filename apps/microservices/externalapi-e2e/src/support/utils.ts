@@ -9,13 +9,13 @@ export async function postRedirectHeaders(url, body, headers) {
       maxRedirects: 0,
       validateStatus: (status) => status < 400 || status === 302,
     });
-    
+
     // Handle 302 redirect in success path
     if (response.status === 302) {
       const location = response.headers.location;
       return postRedirectHeaders(location, body, headers);
     }
-    
+
     // Return only the necessary parts to avoid circular JSON serialization
     // Convert headers to plain object to avoid circular references
     return {

@@ -106,8 +106,8 @@ describe('Filter Component', () => {
       render(<Filter {...defaultProps} listView={ALERTS} />);
       // Look for the Select component by its role
       expect(screen.getByRole('combobox')).toBeInTheDocument();
-      // Verify "Forest Dataset" text appears somewhere in the rendered output
-      expect(screen.getAllByText('Forest Dataset').length).toBeGreaterThan(0);
+      // Verify "Land Cover Dataset" text appears somewhere in the rendered output
+      expect(screen.getAllByText('Land Cover Dataset').length).toBeGreaterThan(0);
     });
 
     it('renders InfoBubble for Land Cover Dataset in ALERTS view', () => {
@@ -115,7 +115,7 @@ describe('Filter Component', () => {
       expect(screen.getByTestId('info-bubble')).toBeInTheDocument();
     });
 
-    it('calls onForestDatasetChange when forest dataset is changed', () => {
+    it('calls onForestDatasetChange when land cover dataset is changed', () => {
       const onForestDatasetChange = jest.fn();
       render(
         <Filter {...defaultProps} listView={ALERTS} onForestDatasetChange={onForestDatasetChange} />

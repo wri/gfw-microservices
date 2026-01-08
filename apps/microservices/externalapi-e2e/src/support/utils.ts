@@ -7,9 +7,10 @@ export async function postRedirectHeaders(url, body, headers) {
     return await axios.post(url, body, {
       ...headers,
       maxRedirects: 0,
+      validateStatus: (status) => status < 400 || status === 302,
     });
   } catch (error) {
-    if (error.response.status === 302) {
+    if (error.response?.status === 302) {
       return postRedirectHeaders(error.response.headers.location, body, headers);
     } else {
       throw error;

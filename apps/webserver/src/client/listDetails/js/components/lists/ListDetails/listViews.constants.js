@@ -5,5 +5,5 @@ export const FOREST_CHANGE_VIEW = 'forest_change';
 
 export const forestDataSet = {
   NaturalForestMap: 'SBTN Natural Lands',
-  JrcForestLoss: 'JRC Forest Loss',
+  JrcForestLoss: 'JRC Global Forest Cover',
 };

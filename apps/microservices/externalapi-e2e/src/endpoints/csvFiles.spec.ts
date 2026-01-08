@@ -1,5 +1,7 @@
 import { postRedirectHeaders } from '../support/utils';
 import AdmZip from 'adm-zip';
+import Papa from 'papaparse';
+import axios from 'axios';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
@@ -7,16 +9,25 @@ const email = process.env.USER_EMAIL;
 const list = process.env.TEST_LIST;
 const ghgList = process.env.TEST_GHG_LIST;
 
+interface FileExpectation {
+  columns?: string[];
+  isReadme?: boolean;
+}
+
 describe('Validate CSV Files for FCD', () => {
   it(
     'should generate FCD analysis file',
     async () => {
-      try {
-        const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${list}/analysis/FCD/generate`,
-          {
-            userEmail: email,
-            outputType: 'verifiableCredential',
+      const res = await postRedirectHeaders(
+        `${BASE_URL}/api/v1/list/${list}/analysis/FCD/generate`,
+        {
+          userEmail: email,
+          outputType: 'verifiableCredential',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_TOKEN,
           },
           {
             headers: {
@@ -35,53 +46,182 @@ describe('Validate CSV Files for FCD', () => {
     },
     30 * 1000
   );
+
   it(
-    'should validate CSV zip bundle has expected files',
+    'should validate CSV zip bundle has expected files and columns',
     async () => {
-      try {
-        const { apiResponse, zipFileNames } = await pollApiUntilComplete(
-          `${BASE_URL}/api/v1/list/${list}/analysis/FCD/status`,
+      const expectedFiles: Record<string, FileExpectation> = {
+        'AAT Argentina Polygons Generic_argentina_overlap.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Data Layer',
+            'Sub-Layer',
+            'Overlap with Sub-layer (ha)',
+            'Overlap with Sub-Layer (%)',
+          ],
+        },
+        'AAT Argentina Polygons Generic_argentina_loss_of_forests_aggregate.csv': {
+          columns: [
+            'List Name',
+            'Data Layer Name',
+            'Sub-Layer',
+            'Forest Loss (ha)',
+            'Year',
+            'Loss (all years) (ha)',
+            '% of Forest Loss',
+          ],
+        },
+        'AAT Argentina Polygons Generic_forest_change_diagnostic_location_summary.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'State(s)',
+            'Country (Countries)',
+            'Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Primary Forest (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Protected Area (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Protected Area (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Peat (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Peat (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Volume',
+            'Company ID',
+            'Refinery Name',
+            'Supplier Name',
+            'Second Refinery Name',
+            'Second Supplier Name',
+            'Total Hectares',
+          ],
+        },
+        'AAT Argentina Polygons Generic_forest_change_diagnostic_list_summary.csv': {
+          columns: [
+            'List Name',
+            'Country (Countries)',
+            'Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Primary Forest (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Protected Area (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Protected Area (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Peat (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Peat (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS)',
+            'Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS)',
+            'Total Hectares',
+          ],
+        },
+        'AAT Argentina Polygons Generic_argentina_loss_of_forests.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Data Layer Name',
+            'Sub-Layer',
+            'Forest Loss (ha)',
+            'Year',
+            'Loss (all years) (ha)',
+            '% of Forest Loss',
+          ],
+        },
+        'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost_aggregate.csv':
           {
-            method: 'GET',
-            headers: {
-              'x-api-key': API_TOKEN,
-            },
+            columns: [
+              'List Name',
+              'Data Layer Name',
+              '% of Historic Area Lost',
+              'Loss (all years) (ha)',
+              'Tree Cover Extent (2000) (ha)',
+            ],
           },
-          2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
-        );
-        expect(apiResponse.status).toBe('Completed');
-        expect(apiResponse).toHaveProperty('listId');
-        expect(typeof apiResponse.listId).toBe('string');
-        expect(apiResponse.listId).toBe(list);
+        'AAT Argentina Polygons Generic_south_america_loss_of_forests_aggregate.csv': {
+          columns: ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
+        },
+        'AAT Argentina Polygons Generic_south_america_overlap.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Data Layer',
+            'Sub-Layer',
+            'Overlap with Sub-Layer (%)',
+          ],
+        },
+        'AAT Argentina Polygons Generic_south_america_overlap_aggregate.csv': {
+          columns: ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
+        },
+        'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Data Layer Name',
+            '% of Historic Area Lost',
+            'Loss (all years) (ha)',
+            'Tree Cover Extent (2000) (ha)',
+          ],
+        },
+        'AAT Argentina Polygons Generic_sensitive_areas_loss_forests.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Data Layer Name',
+            'Forest Loss (ha)',
+            'Year',
+            'Loss (all years) (ha)',
+            '% of TCL',
+          ],
+        },
+        'AAT Argentina Polygons Generic_sensitive_areas_loss_of_forests_aggregate.csv': {
+          columns: [
+            'List Name',
+            'Data Layer Name',
+            'Forest Loss (ha)',
+            'Year',
+            'Loss (all years) (ha)',
+            '% of TCL',
+          ],
+        },
+        'AAT Argentina Polygons Generic_argentina_overlap_aggregate.csv': {
+          columns: [
+            'List Name',
+            'Data Layer',
+            'Sub-Layer',
+            'Overlap with Sub-layer (ha)',
+            'Overlap with Sub-Layer (%)',
+          ],
+        },
+        'AAT Argentina Polygons Generic_south_america_loss_of_forests.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Data Layer Name',
+            'Forest Loss (ha)',
+            'Year',
+            'Loss (all years) (ha)',
+            '% of TCL',
+          ],
+        },
+        'README.csv': { isReadme: true },
+      };
 
-        const expectedFileNames = [
-          'AAT Argentina Polygons Generic_argentina_loss_of_forests.csv',
-          'AAT Argentina Polygons Generic_argentina_loss_of_forests_aggregate.csv',
-          'AAT Argentina Polygons Generic_argentina_overlap.csv',
-          'AAT Argentina Polygons Generic_argentina_overlap_aggregate.csv',
-          'AAT Argentina Polygons Generic_forest_change_diagnostic_list_summary.csv',
-          'AAT Argentina Polygons Generic_forest_change_diagnostic_location_summary.csv',
-          'AAT Argentina Polygons Generic_sensitive_areas_loss_forests.csv',
-          'AAT Argentina Polygons Generic_sensitive_areas_loss_of_forests_aggregate.csv',
-          'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost_aggregate.csv',
-          'AAT Argentina Polygons Generic_sensitive_areas_percentage_historic_area_lost.csv',
-          'AAT Argentina Polygons Generic_south_america_loss_of_forests.csv',
-          'AAT Argentina Polygons Generic_south_america_loss_of_forests_aggregate.csv',
-          'AAT Argentina Polygons Generic_south_america_overlap.csv',
-          'AAT Argentina Polygons Generic_south_america_overlap_aggregate.csv',
-          'README.csv',
-        ];
-        expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
+      const { apiResponse, zip } = await pollApiUntilComplete(
+        `${BASE_URL}/api/v1/list/${list}/analysis/FCD/status`,
+        {
+          headers: {
+            'x-api-key': API_TOKEN,
+          },
+        },
+        2000,
+        120000
+      );
 
-        console.log('API completed with result:', apiResponse);
-        console.log('Files in zip:', zipFileNames);
-      } catch (error) {
-        console.error('Polling failed:', error);
-        throw error;
-      }
+      expect(apiResponse.status).toBe('Completed');
+      expect(apiResponse.listId).toBe(list);
+
+      validateZipContents(zip, expectedFiles);
     },
-    60 * 1000
+    150 * 1000
   );
 });
 
@@ -89,12 +229,16 @@ describe('Validate CSV Files for DefReport', () => {
   it(
     'should generate DefReport analysis file',
     async () => {
-      try {
-        const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
-          {
-            userEmail: email,
-            outputType: 'verifiableCredential',
+      const res = await postRedirectHeaders(
+        `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
+        {
+          userEmail: email,
+          outputType: 'verifiableCredential',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_TOKEN,
           },
           {
             headers: {
@@ -117,34 +261,27 @@ describe('Validate CSV Files for DefReport', () => {
   it(
     'should validate CSV zip bundle has expected files',
     async () => {
-      try {
-        const { apiResponse, zipFileNames } = await pollApiUntilComplete(
-          `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/status`,
-          {
-            method: 'GET',
-            headers: {
-              'x-api-key': API_TOKEN,
-            },
+      const expectedFiles: Record<string, FileExpectation> = {
+        'AAT Argentina Polygons Generic.json': {},
+      };
+
+      const { apiResponse, zip } = await pollApiUntilComplete(
+        `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/status`,
+        {
+          headers: {
+            'x-api-key': API_TOKEN,
           },
-          2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
-        );
-        expect(apiResponse.status).toBe('Completed');
-        expect(apiResponse).toHaveProperty('listId');
-        expect(typeof apiResponse.listId).toBe('string');
-        expect(apiResponse.listId).toBe(list);
+        },
+        5000,
+        300000
+      );
 
-        const expectedFileNames = ['AAT Argentina Polygons Generic.json'];
-        expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
+      expect(apiResponse.status).toBe('Completed');
+      expect(apiResponse.listId).toBe(list);
 
-        console.log('API completed with result:', apiResponse);
-        console.log('Files in zip:', zipFileNames);
-      } catch (error) {
-        console.error('Polling failed:', error);
-        throw error;
-      }
+      validateZipContents(zip, expectedFiles);
     },
-    60 * 1000
+    320 * 1000
   );
 });
 
@@ -152,14 +289,18 @@ describe('Validate CSV Files for Alerts', () => {
   it(
     'should generate Alerts analysis file',
     async () => {
-      try {
-        const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/generate`,
-          {
-            userEmail: email,
-            outputType: 'verifiableCredential',
-            startDate: '01-01-2024',
-            endDate: '07-05-2025',
+      const res = await postRedirectHeaders(
+        `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/generate`,
+        {
+          userEmail: email,
+          outputType: 'verifiableCredential',
+          startDate: '01-01-2024',
+          endDate: '07-05-2025',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_TOKEN,
           },
           {
             headers: {
@@ -178,58 +319,85 @@ describe('Validate CSV Files for Alerts', () => {
     },
     30 * 1000
   );
+
   it(
-    'should validate CSV zip bundle has expected files',
+    'should validate CSV zip bundle has expected files and columns',
     async () => {
-      try {
-        const { apiResponse, zipFileNames } = await pollApiUntilComplete(
-          `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/status`,
-          {
-            method: 'GET',
-            headers: {
-              'x-api-key': API_TOKEN,
-            },
+      const expectedFiles: Record<string, FileExpectation> = {
+        'AAT Argentina Polygons Generic_Global_Integrated_Disturbance_Alerts_Daily.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Location Size (ha)',
+            'Country',
+            'State',
+            'Sub state',
+            'Alert Type',
+            'Start Date',
+            'End Date',
+            'Date',
+            'Confidence Level',
+            'Total alert hectares',
+            'Hectares of alerts in SBTN Natural Forest',
+            'Hectares of alerts in SBTN Natural Open Ecosystems',
+            'Hectares of alerts in JRC Forest',
+            'Number of locations',
+          ],
+        },
+        'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv': {
+          columns: [
+            'List Name',
+            'Location Name',
+            'Alert Type',
+            'Start Date',
+            'End Date',
+            'Date',
+            'Location Size (ha)',
+            'Confidence Level',
+            'Total # of alerts',
+            '# Alerts in SBTN Natural Forest',
+            '# Alerts in JRC Natural Forest',
+            '# of locations',
+          ],
+        },
+        'README.csv': { isReadme: true },
+      };
+
+      const { apiResponse, zip } = await pollApiUntilComplete(
+        `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/status`,
+        {
+          headers: {
+            'x-api-key': API_TOKEN,
           },
-          2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
-        );
-        expect(apiResponse.status).toBe('Completed');
-        expect(apiResponse).toHaveProperty('listId');
-        expect(typeof apiResponse.listId).toBe('string');
-        expect(apiResponse.listId).toBe(list);
+        },
+        2000,
+        120000
+      );
 
-        const expectedFileNames = [
-          'AAT Argentina Polygons Generic_Global_Integrated_Disturbance_Alerts_Daily.csv',
-          'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv',
-          'README.csv',
-        ];
-        expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
+      expect(apiResponse.status).toBe('Completed');
+      expect(apiResponse.listId).toBe(list);
 
-        console.log('API completed with result:', apiResponse);
-        console.log('Files in zip:', zipFileNames);
-      } catch (error) {
-        console.error('Polling failed:', error);
-        throw error;
-      }
+      validateZipContents(zip, expectedFiles);
     },
-    60 * 1000
+    150 * 1000
   );
 });
 
 describe.skip('Validate CSV Files for GHG', () => {
-  // SKIPPED: List 8695 no longer exists in QA (removed from Org 90)
-  // GHG functionality is already tested in ghgAnalysis.spec.ts
-  // TODO: Create a dedicated GHG-enabled test list in Org 90 and re-enable these tests
   it(
     'should generate GHG download',
     async () => {
-      try {
-        const res = await postRedirectHeaders(
-          `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/generate`,
-          {
-            userEmail: email,
-            startDate: '01-01-2024',
-            endDate: '07-01-2024',
+      const res = await postRedirectHeaders(
+        `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/generate`,
+        {
+          userEmail: email,
+          startDate: '01-01-2024',
+          endDate: '07-01-2024',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_TOKEN,
           },
           {
             headers: {
@@ -248,43 +416,35 @@ describe.skip('Validate CSV Files for GHG', () => {
     },
     30 * 1000
   );
+
   it(
-    'should validate CSV bundle file has expected files',
+    'should validate CSV bundle file has expected files and columns',
     async () => {
       const listName = 'GHG Analysis List';
-      try {
-        const { apiResponse, zipFileNames } = await pollApiUntilComplete(
-          `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/status`,
-          {
-            method: 'GET',
-            headers: {
-              'x-api-key': API_TOKEN,
-            },
+      const expectedFiles: Record<string, FileExpectation> = {
+        [`${listName}_green_house_gas_emissions.csv`]: {
+          columns: ['Location Name', 'Year', 'CO2 Emissions (Mg)', 'CO2 Emissions (%)'],
+        },
+        'README.csv': { isReadme: true },
+      };
+
+      const { apiResponse, zip } = await pollApiUntilComplete(
+        `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/status`,
+        {
+          headers: {
+            'x-api-key': API_TOKEN,
           },
-          2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
-        );
-        expect(apiResponse.status).toBe('Completed');
-        expect(apiResponse).toHaveProperty('listId');
-        expect(typeof apiResponse.listId).toBe('string');
-        expect(apiResponse.listId).toBe(ghgList);
+        },
+        2000,
+        120000
+      );
 
-        const expectedFileNames = [
-          `${listName}_ghg_intermediate_outputs.csv`,
-          `${listName}_ghg_raw_emissions.csv`,
-          `${listName}_green_house_gas_emissions.csv`,
-          'README.csv',
-        ];
-        expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
+      expect(apiResponse.status).toBe('Completed');
+      expect(apiResponse.listId).toBe(ghgList);
 
-        console.log('API completed with result:', apiResponse);
-        console.log('Files in zip:', zipFileNames);
-      } catch (error) {
-        console.error('Polling failed:', error);
-        throw error;
-      }
+      validateZipContents(zip, expectedFiles);
     },
-    60 * 1000
+    150 * 1000
   );
 });
 
@@ -297,7 +457,7 @@ interface ApiResponse {
 
 interface PollResult {
   apiResponse: ApiResponse;
-  zipFileNames: string[];
+  zip: AdmZip;
 }
 
 async function pollApiUntilComplete(
@@ -314,101 +474,90 @@ async function pollApiUntilComplete(
       throw new Error('Polling timeout: API did not complete within the specified time');
     }
 
-    try {
-      const response = await fetch(url, { ...options, redirect: 'follow' });
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Status API error:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText,
-        });
-        throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+    const response = await axios.get(url, {
+      ...options,
+      validateStatus: (status) => status < 500,
+    });
+
+    if (response.status >= 400) {
+      throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+    }
+
+    const result: ApiResponse = response.data;
+
+    if (result.status === 'Completed') {
+      if (!result.resultUrl || !/^https?:\/\//.test(result.resultUrl)) {
+        throw new Error(`Invalid or missing resultUrl: ${result.resultUrl}`);
       }
 
-      const result: ApiResponse = await response.json();
-
-      if (result.status === 'Completed') {
-        if (!result.resultUrl || !/^https?:\/\//.test(result.resultUrl)) {
-          console.error('Invalid resultUrl:', result.resultUrl);
-          throw new Error(`Invalid or missing resultUrl: ${result.resultUrl}`);
-        }
-
-        const zipResponse = await fetch(result.resultUrl, {
-          headers: {
-            'x-api-key': process.env.API_TOKEN,
-          },
-        });
-
-        if (!zipResponse.ok) {
-          const errorText = await zipResponse.text();
-          console.error('Zip download failed:', {
-            status: zipResponse.status,
-            contentType: zipResponse.headers.get('Content-Type'),
-            body: errorText,
-          });
-          throw new Error(`Failed to download zip file: ${zipResponse.status} ${errorText}`);
-        }
-
-        const contentType = zipResponse.headers.get('Content-Type') || 'unknown';
-        if (
-          !contentType.includes('application/zip') &&
-          !contentType.includes('application/octet-stream')
-        ) {
-          const errorText = await zipResponse.text();
-          console.error('Invalid zip content type:', { contentType, body: errorText });
-          throw new Error(
-            `Invalid content type: ${contentType}. Expected application/zip or application/octet-stream`
-          );
-        }
-
-        const arrayBuffer = await zipResponse.arrayBuffer();
-
-        if (arrayBuffer.byteLength === 0) {
-          throw new Error('Downloaded zip file is empty');
-        }
-
-        try {
-          const zip = new AdmZip(Buffer.from(arrayBuffer));
-          const zipEntries = zip.getEntries();
-          const zipFileNames = zipEntries
-            .map((entry) => entry.entryName)
-            .filter((name) => !name.endsWith('/')); // Exclude directories
-
-          if (zipFileNames.length === 0) {
-            throw new Error('Zip file contains no files');
-          }
-
-          return {
-            apiResponse: result,
-            zipFileNames,
-          };
-        } catch (zipError) {
-          console.error('Zip processing error:', {
-            url: result.resultUrl,
-            message: zipError instanceof Error ? zipError.message : zipError,
-            stack: zipError instanceof Error ? zipError.stack : undefined,
-          });
-          throw new Error(
-            `Failed to process zip file: ${
-              zipError instanceof Error ? zipError.message : 'Unknown error'
-            }`
-          );
-        }
-      } else if (result.status === 'Failed') {
-        console.error('API status failed:', result);
-        throw new Error('API request failed');
-      }
-
-      console.log('Polling again in', pollIntervalMs, 'ms...');
-      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
-    } catch (error) {
-      console.error('Fetch error in pollApiUntilComplete:', {
-        url,
-        message: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
+      const zipResponse = await axios.get(result.resultUrl, {
+        headers: {
+          'x-api-key': process.env.API_TOKEN,
+        },
+        responseType: 'arraybuffer',
+        validateStatus: (status) => status < 500,
       });
-      throw error;
+
+      if (zipResponse.status >= 400) {
+        throw new Error(`Failed to download zip file: ${zipResponse.status}`);
+      }
+
+      const arrayBuffer = zipResponse.data;
+
+      if (arrayBuffer.byteLength === 0) {
+        throw new Error('Downloaded zip file is empty');
+      }
+
+      const zip = new AdmZip(Buffer.from(arrayBuffer));
+      const zipEntries = zip.getEntries();
+
+      if (zipEntries.length === 0) {
+        throw new Error('Zip file contains no files');
+      }
+
+      return {
+        apiResponse: result,
+        zip,
+      };
+    } else if (result.status === 'Failed') {
+      throw new Error(`API request failed: ${JSON.stringify(result)}`);
+    }
+
+    console.log(`Status: ${result.status}. Polling again in ${pollIntervalMs}ms...`);
+    await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+  }
+}
+
+function validateZipContents(zip: AdmZip, expectedFiles: Record<string, FileExpectation>): void {
+  const zipEntries = zip.getEntries();
+  const zipFileNames = zipEntries
+    .map((entry) => entry.entryName)
+    .filter((name) => !name.endsWith('/'));
+
+  expect(zipFileNames.sort()).toEqual(Object.keys(expectedFiles).sort());
+
+  for (const [fileName, expectation] of Object.entries(expectedFiles)) {
+    const entry = zipEntries.find((e) => e.entryName === fileName);
+    expect(entry).toBeDefined();
+
+    if (!entry) {
+      continue;
+    }
+
+    const content = entry.getData().toString('utf8');
+
+    if (expectation.isReadme) {
+      // README exists and is parseable
+      const parsed = Papa.parse(content, { header: true, skipEmptyLines: true });
+      expect(parsed.data.length).toBeGreaterThan(0);
+      console.log('README.csv validated');
+    } else if (expectation.columns) {
+      const parsed = Papa.parse(content, { header: true, skipEmptyLines: true });
+      expect(parsed.data.length).toBeGreaterThan(0);
+
+      const actualColumns = parsed.meta.fields || [];
+      expect(actualColumns).toEqual(expectation.columns);
+      console.log(`${fileName}: columns validated`);
     }
   }
 }

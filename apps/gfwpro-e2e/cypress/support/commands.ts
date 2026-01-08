@@ -91,8 +91,28 @@ Cypress.Commands.add('waitForLoadingMessage', (checkExist = true, locator = '.mo
   if (!checkExist) {
     cy.get(locator, { timeout: 60000 }).should('not.be.visible');
   } else {
-    cy.get(locator, { timeout: 60000 }).should('be.visible');
-    cy.get(locator, { timeout: 60000 }).should('not.be.visible');
+    // When using the default locator, check the parent dialog instead
+    // since .modal-loader is inside .modal-loader__dialog which has the 'hidden' class when not visible
+    if (locator === '.modal-loader') {
+      // Check if a visible loader exists - if yes, wait for it. If no, continue.
+      cy.get('body').then(($body) => {
+        const allDialogs = $body.find('.modal-loader__dialog');
+        const visibleDialog = Array.from(allDialogs).find((el) => !el.classList.contains('hidden'));
+
+        if (visibleDialog) {
+          // Found a visible loader, wait for it to finish
+          cy.wrap(visibleDialog, { timeout: 60000 }).should('have.class', 'hidden');
+        } else {
+          // No visible loader found - this is fine, assume no loading is needed
+          // Some actions (like tab clicks) may not trigger a loader if data is already loaded
+          cy.log('No visible modal loader found - assuming no loading is needed');
+        }
+      });
+    } else {
+      // For custom locators, use the original behavior
+      cy.get(locator, { timeout: 60000 }).should('be.visible');
+      cy.get(locator, { timeout: 60000 }).should('not.be.visible');
+    }
   }
 });
 

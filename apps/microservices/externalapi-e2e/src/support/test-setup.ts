@@ -27,20 +27,8 @@ module.exports = async function () {
       };
     },
     (error) => {
-      // If there's a response in the error, clean it up too
-      if (error.response) {
-        const cleanError: any = new Error(error.message);
-        cleanError.name = error.name;
-        cleanError.stack = error.stack;
-        cleanError.response = {
-          status: error.response.status,
-          statusText: error.response.statusText,
-          headers: { ...error.response.headers },
-          data: error.response.data,
-        };
-        cleanError.status = error.response.status;
-        throw cleanError;
-      }
+      // Don't intercept errors - let them pass through naturally
+      // The postRedirectHeaders function needs to handle 302 errors itself
       throw error;
     }
   );

@@ -27,7 +27,7 @@ const NaturalForestLossDataSourceToggle = () => {
             value={JRC_NATURAL_FOREST_LOSS}
             data-cy="data-source-toggle-JRC"
           >
-            JRC Natural Forest Loss
+            JRC Global Forest Cover
           </MenuItem>
           <MenuItem
             key={SBTN_NATURAL_FOREST_LOSS}

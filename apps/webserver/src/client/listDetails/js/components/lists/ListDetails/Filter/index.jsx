@@ -309,11 +309,11 @@ export default function Filter({
                       size="small"
                       sx={{ width: 230, mt: shouldRenderLocationsWithErrorsCheckbox ? 1 : 0 }}
                     >
-                      <InputLabel>Forest Dataset</InputLabel>
+                      <InputLabel>Land Cover Dataset</InputLabel>
                       <Select
                         value={forestDataset}
                         onChange={onForestDatasetChange}
-                        label="Forest Dataset"
+                        label="Land Cover Dataset"
                       >
                         <MenuItem value={forestDataSet.NaturalForestMap}>
                           {forestDataSet.NaturalForestMap}

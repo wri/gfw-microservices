@@ -4,13 +4,23 @@ import axios from 'axios';
 // This function is used to forward headers to redirected endpoints.
 export async function postRedirectHeaders(url, body, headers) {
   try {
-    return await axios.post(url, body, {
+    const response = await axios.post(url, body, {
       ...headers,
       maxRedirects: 0,
     });
+    // Return only the necessary parts to avoid circular JSON serialization
+    // Convert headers to plain object to avoid circular references
+    return {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.data,
+      headers: { ...response.headers },
+    };
   } catch (error) {
-    if (error.response.status === 302) {
-      return postRedirectHeaders(error.response.headers.location, body, headers);
+    if (error.response?.status === 302) {
+      // Extract location before recursing to avoid keeping the error object alive
+      const location = error.response.headers.location;
+      return postRedirectHeaders(location, body, headers);
     } else {
       throw error;
     }

@@ -224,7 +224,7 @@ describe('GHGAnalysis', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBeTruthy();
       } catch (error) {
-        console.error('GHG error', error.stack || error, error.response.data);
+        console.error('GHG error', error.stack || error, error?.response?.data);
         throw error;
       }
       await deleteList(uploadNewRes.data.listId);

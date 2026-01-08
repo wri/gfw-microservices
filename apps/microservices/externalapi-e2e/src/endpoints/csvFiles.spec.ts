@@ -29,7 +29,7 @@ describe('Validate CSV Files for FCD', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-        console.error('endpoints error', error.stack || error, error.response.data);
+        console.error('endpoints error', error.stack || error, error?.response?.data);
         throw error;
       }
     },
@@ -78,6 +78,7 @@ describe('Validate CSV Files for FCD', () => {
         console.log('Files in zip:', zipFileNames);
       } catch (error) {
         console.error('Polling failed:', error);
+        throw error;
       }
     },
     60 * 1000
@@ -106,7 +107,7 @@ describe('Validate CSV Files for DefReport', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-        console.error('endpoints error', error.stack || error, error.response.data);
+        console.error('endpoints error', error.stack || error, error?.response?.data);
         throw error;
       }
     },
@@ -140,6 +141,7 @@ describe('Validate CSV Files for DefReport', () => {
         console.log('Files in zip:', zipFileNames);
       } catch (error) {
         console.error('Polling failed:', error);
+        throw error;
       }
     },
     60 * 1000
@@ -170,7 +172,7 @@ describe('Validate CSV Files for Alerts', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-        console.error('endpoints error', error.stack || error, error.response.data);
+        console.error('endpoints error', error.stack || error, error?.response?.data);
         throw error;
       }
     },
@@ -197,6 +199,7 @@ describe('Validate CSV Files for Alerts', () => {
         expect(apiResponse.listId).toBe(list);
 
         const expectedFileNames = [
+          'AAT Argentina Polygons Generic_Global_Integrated_Disturbance_Alerts_Daily.csv',
           'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv',
           'README.csv',
         ];
@@ -206,13 +209,17 @@ describe('Validate CSV Files for Alerts', () => {
         console.log('Files in zip:', zipFileNames);
       } catch (error) {
         console.error('Polling failed:', error);
+        throw error;
       }
     },
     60 * 1000
   );
 });
 
-describe('Validate CSV Files for GHG', () => {
+describe.skip('Validate CSV Files for GHG', () => {
+  // SKIPPED: List 8695 no longer exists in QA (removed from Org 90)
+  // GHG functionality is already tested in ghgAnalysis.spec.ts
+  // TODO: Create a dedicated GHG-enabled test list in Org 90 and re-enable these tests
   it(
     'should generate GHG download',
     async () => {
@@ -235,7 +242,7 @@ describe('Validate CSV Files for GHG', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-        console.error('GHG/generate error', error.stack || error, error.response.data);
+        console.error('GHG/generate error', error.stack || error, error?.response?.data);
         throw error;
       }
     },
@@ -262,13 +269,19 @@ describe('Validate CSV Files for GHG', () => {
         expect(typeof apiResponse.listId).toBe('string');
         expect(apiResponse.listId).toBe(ghgList);
 
-        const expectedFileNames = [`${listName}_green_house_gas_emissions.csv`, 'README.csv'];
+        const expectedFileNames = [
+          `${listName}_ghg_intermediate_outputs.csv`,
+          `${listName}_ghg_raw_emissions.csv`,
+          `${listName}_green_house_gas_emissions.csv`,
+          'README.csv',
+        ];
         expect(zipFileNames.sort()).toEqual(expectedFileNames.sort());
 
         console.log('API completed with result:', apiResponse);
         console.log('Files in zip:', zipFileNames);
       } catch (error) {
         console.error('Polling failed:', error);
+        throw error;
       }
     },
     60 * 1000
@@ -371,7 +384,7 @@ async function pollApiUntilComplete(
             zipFileNames,
           };
         } catch (zipError) {
-          console.error('Admin System: Zip error:', {
+          console.error('Zip processing error:', {
             url: result.resultUrl,
             message: zipError instanceof Error ? zipError.message : zipError,
             stack: zipError instanceof Error ? zipError.stack : undefined,

@@ -1,8 +1,15 @@
 import axios from 'axios';
 
+const MAX_REDIRECTS = 10; // Maximum number of redirects to follow
+
 // Axios does not send headers when following 302 redirects for POST requests
 // This function is used to forward headers to redirected endpoints.
-export async function postRedirectHeaders(url, body, headers) {
+export async function postRedirectHeaders(url, body, headers, redirectCount = 0) {
+  // Prevent infinite redirect loops
+  if (redirectCount >= MAX_REDIRECTS) {
+    throw new Error(`Maximum redirect limit (${MAX_REDIRECTS}) exceeded`);
+  }
+
   try {
     const response = await axios.post(url, body, {
       ...headers,
@@ -13,7 +20,7 @@ export async function postRedirectHeaders(url, body, headers) {
     // Handle 302 redirect in success path
     if (response.status === 302) {
       const location = response.headers.location;
-      return postRedirectHeaders(location, body, headers);
+      return postRedirectHeaders(location, body, headers, redirectCount + 1);
     }
 
     // Return only the necessary parts to avoid circular JSON serialization

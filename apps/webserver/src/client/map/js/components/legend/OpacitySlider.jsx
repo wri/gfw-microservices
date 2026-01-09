@@ -13,7 +13,6 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
   const handleChange = (e) => {
     // Convert 0-100 range back to 0-1 for the parent component
     const newValue = Number(e.target.value) / 100;
-    console.log('Slider changed:', newValue);
     onChange(newValue);
   };
 
@@ -106,6 +105,9 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
               onChange={handleChange}
               className="opacity-range"
               disabled={disabled}
+              style={{
+                background: `linear-gradient(to right, #ff6699 0%, #ff6699 ${displayValue}%, #e0e0e0 ${displayValue}%, #e0e0e0 100%)`,
+              }}
             />
             <div className="slider-labels">
               <span>0%</span>

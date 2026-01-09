@@ -20,12 +20,10 @@ export const GlobalIntegratedDisturbanceAlertsLayerLegend = ({
 }: GlobalIntegratedDisturbanceAlertsLayerLegendProps) => {
   const dispatch = useDispatch();
 
-  const { globalIntegratedDisturbanceAlertsFilter, visibleLayers } = useSelector(
-    (state: MapReducerRootState) => ({
-      globalIntegratedDisturbanceAlertsFilter: state.globalIntegratedDisturbanceAlertsFilter,
-      visibleLayers: state.visibleLayers,
-    })
+  const globalIntegratedDisturbanceAlertsFilter = useSelector(
+    (state: MapReducerRootState) => state.globalIntegratedDisturbanceAlertsFilter
   );
+  const visibleLayers = useSelector((state: MapReducerRootState) => state.visibleLayers);
 
   const [vegetationType, setVegetationType] = useState(
     globalIntegratedDisturbanceAlertsFilter.vegetationType

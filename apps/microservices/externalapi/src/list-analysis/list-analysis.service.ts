@@ -23,7 +23,7 @@ import {
 } from './list-upload-new.dto';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { retryWithBackoff, isRetryableError } from '@wri-monorepos/shared/utils/retry';
+import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import {
   CREATE_ANALYSIS,
@@ -441,13 +441,13 @@ export class ListAnalysisService {
       commodity: string;
     }
   ): Promise<{ data: { list_id: number } }> {
-    return retryWithBackoff(
+    return retryWithDelay(
       async () => {
         const response = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
         return response;
       },
       {
-        retries: 3,
+        retries: retriesLeft,
         delayMs: 1000,
         isRetryable: isRetryableError,
         logger: this.logger,

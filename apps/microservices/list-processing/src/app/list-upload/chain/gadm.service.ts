@@ -6,7 +6,7 @@ import { Position } from 'typeorm/driver/types/GeoJsonTypes';
 import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
 import { yieldIfLong } from './shared';
 import { Feature, FeatureCollection, Polygon } from '@wri-monorepos/geo';
-import { retryWithBackoff, isRetryableError } from '@wri-monorepos/shared/utils/retry';
+import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
@@ -17,7 +17,7 @@ export class GADMService extends AbstractHandler<ChainType> {
     retriesLeft: number,
     requestData: Record<string, unknown>
   ): Promise<any> {
-    return retryWithBackoff(
+    return retryWithDelay(
       async () => {
         const response = await axios.post(
           'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',

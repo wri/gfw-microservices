@@ -16,7 +16,7 @@ const {
 import { analysisTypes, listStatus } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import axios from 'axios';
-import { retryWithBackoff, isRetryableError } from '@wri-monorepos/shared/utils/retry';
+import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID
@@ -245,7 +245,7 @@ export const getPreviewData = async (req, res) => {
   try {
     const url = `${process.env.LISTS_MICROSERVICE_URL}/list/upload/preview`; // preview.list.upload.controller.ts
 
-    const { data } = await retryWithBackoff(
+    const { data } = await retryWithDelay(
       () => axios.post(url, { path }, { headers: { 'Content-Type': 'application/json' } }),
       { retries: 3, delayMs: 1000, isRetryable: isRetryableError, logger }
     );

@@ -60,7 +60,25 @@ export default class LegendCheckbox extends Component {
     super(props);
     this.state = {
       layerHidden: false,
+      layerOpacity: store.getState().layerOpacity || {},
     };
+  }
+
+  componentDidMount() {
+    // Subscribe to store changes to update opacity
+    this.unsubscribe = store.subscribe(() => {
+      const newLayerOpacity = store.getState().layerOpacity || {};
+      if (newLayerOpacity !== this.state.layerOpacity) {
+        this.setState({ layerOpacity: newLayerOpacity });
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    // Clean up subscription
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -150,9 +168,9 @@ export default class LegendCheckbox extends Component {
   };
 
   handleOpacityChange(opacity) {
-    const { layer, dispatch } = this.props;
+    const { layer } = this.props;
     if (layer && layer.id) {
-      dispatch(setLayerOpacity({ layerId: layer.id, opacity }));
+      store.dispatch(setLayerOpacity({ layerId: layer.id, opacity }));
     }
   }
 
@@ -270,7 +288,7 @@ export default class LegendCheckbox extends Component {
     }
     const isInfoButtonVisible = !!layer.metadataId;
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
-    const opacity = this.props.layerOpacity?.[this.props.layer.id] ?? 1;
+    const opacity = this.state.layerOpacity?.[this.props.layer.id] ?? 1;
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}

@@ -16,6 +16,7 @@ import { AnalysisRspoOilPalmConcessions } from './analysisRspoPalmConcessions';
 import { UserRoutes } from './user-route.entity';
 import { ExternalAPIKey } from './external-api-key.entity';
 import { ConverterStatus } from './converter-status.entity';
+import { ChargeRate } from './charge-rate.entity';
 
 export * from './organization.entity';
 export * from './gfw.list.entity';
@@ -35,24 +36,26 @@ export * from './analysisRspoPalmConcessions';
 export * from './user-route.entity';
 export * from './external-api-key.entity';
 export * from './converter-status.entity';
+export * from './charge-rate.entity';
 
 export const systemEntities = [
-  ConverterStatus,
-  Organization,
-  GFWList,
-  FeatureFlag,
-  ListTemplate,
-  ListGFWLists,
-  ListAdministrativeAreas,
-  ListOilPalmConcessions,
-  ListsPalmOilMills,
-  ListProtectedAreas,
-  RspoOilPalmConcessions,
   AnalysisAdministrativesAreas,
   AnalysisOilPalmConcessions,
   AnalysisPalmOilMills,
   AnalysisProtectedAreas,
   AnalysisRspoOilPalmConcessions,
-  UserRoutes,
+  ChargeRate,
+  ConverterStatus,
   ExternalAPIKey,
+  FeatureFlag,
+  GFWList,
+  ListAdministrativeAreas,
+  ListGFWLists,
+  ListOilPalmConcessions,
+  ListProtectedAreas,
+  ListTemplate,
+  ListsPalmOilMills,
+  Organization,
+  RspoOilPalmConcessions,
+  UserRoutes,
 ];

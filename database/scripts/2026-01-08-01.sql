@@ -1,3 +1,5 @@
+-- GPV-5225: DB Create ChargeRate table
+
 /*
 ChargeRate table stores token pricing by analysis_type with effective start dates.
 - analysis_type: category of analysis (e.g., AFI, GHG).
@@ -7,12 +9,16 @@ ChargeRate table stores token pricing by analysis_type with effective start date
 Supports evolving prices over time without changing past data.
 */
 
-CREATE TABLE ChargeRate (
-    id INT IDENTITY(1,1) PRIMARY KEY,
+USE [gfwpro];
+GO
+
+CREATE TABLE [dbo].[ChargeRate] (
+    id INT IDENTITY(1,1) NOT NULL,
     analysis_type NVARCHAR(50) NOT NULL,
     effective_date DATETIME NOT NULL,
     list_rate DECIMAL(10, 4) NOT NULL,
     location_rate DECIMAL(10, 4) NOT NULL,
+    CONSTRAINT PK_ChargeRate PRIMARY KEY (id),
     CONSTRAINT UO_ChargeRate_AnalysisType_StartDate UNIQUE (analysis_type, effective_date)
 );
 

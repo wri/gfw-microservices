@@ -38,7 +38,7 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
             if (err) {
               reject(err);
             }
-            const lineCount = content.split('\n').filter(line => line.trim()).length;
+            const lineCount = content.split('\n').filter((line) => line.trim()).length;
             // Include files with header + at least one data row
             if (lineCount >= 2) {
               array.push(file);

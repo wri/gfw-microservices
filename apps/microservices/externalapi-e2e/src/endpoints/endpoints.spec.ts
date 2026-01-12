@@ -204,7 +204,7 @@ describe('API Endpoints', () => {
           expect(res.status).toBe(201);
           expect(res.data).toBe('');
         } catch (error) {
-          console.error('endpoints error', error.stack || error, error.response.data);
+          console.error('endpoints error', error.stack || error, error?.response?.data);
           throw error;
         }
       },

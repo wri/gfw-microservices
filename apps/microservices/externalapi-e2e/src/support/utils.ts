@@ -1,20 +1,51 @@
 import axios from 'axios';
 
+const MAX_REDIRECTS = 10; // Maximum number of redirects to follow
+
 // Axios does not send headers when following 302 redirects for POST requests
 // This function is used to forward headers to redirected endpoints.
-export async function postRedirectHeaders(url, body, headers) {
+export async function postRedirectHeaders(url, body, headers, redirectCount = 0) {
+  // Prevent infinite redirect loops
+  if (redirectCount >= MAX_REDIRECTS) {
+    throw new Error(`Maximum redirect limit (${MAX_REDIRECTS}) exceeded`);
+  }
+
   try {
-    return await axios.post(url, body, {
+    const response = await axios.post(url, body, {
       ...headers,
       maxRedirects: 0,
       validateStatus: (status) => status < 400 || status === 302,
     });
-  } catch (error) {
-    if (error.response?.status === 302) {
-      return postRedirectHeaders(error.response.headers.location, body, headers);
-    } else {
-      throw error;
+
+    // Handle 302 redirect in success path
+    if (response.status === 302) {
+      const location = response.headers.location;
+      return postRedirectHeaders(location, body, headers, redirectCount + 1);
     }
+
+    // Return only the necessary parts to avoid circular JSON serialization
+    // Convert headers to plain object to avoid circular references
+    return {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.data,
+      headers: { ...response.headers },
+    };
+  } catch (error) {
+    // Clean up circular references in the error before re-throwing
+    if (error.response) {
+      const cleanError: any = new Error(error.message);
+      cleanError.name = error.name;
+      cleanError.stack = error.stack;
+      cleanError.response = {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        headers: { ...error.response.headers },
+        data: error.response.data,
+      };
+      throw cleanError;
+    }
+    throw error;
   }
 }
 

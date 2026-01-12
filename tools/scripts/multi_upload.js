@@ -207,7 +207,7 @@ async function runSingleUpload(processId) {
   colorLog(colors.YELLOW, `[Process ${processId}] Step 4: Monitoring analysis status...`);
   let status = 'Pending';
   let counter = 0;
-  const MAX_ATTEMPTS = 30; // Check every minute for up to 30 minutes
+  const MAX_ATTEMPTS = 120; // Check every minute for up to 2 hours
 
   while (status === 'Pending' && counter < MAX_ATTEMPTS) {
     // 1 minute delay done at beginning of each loop because analysis will not be ready immediately

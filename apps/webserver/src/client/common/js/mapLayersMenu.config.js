@@ -104,17 +104,24 @@ const forestChangeLayers = [
     order: 115,
   },
   {
+    id: proLayers.disturbanceAlertsDriversGeographicCoverageId,
+    group: 'forest-change',
+    subGroup: 'disturbance-alerts',
+    ignored: true,
+    order: 116,
+  },
+  {
     id: proLayers.integratedAlertsGeographicCoverageID,
     group: 'forest-change',
     subGroup: 'disturbance-alerts',
-    order: 116,
+    order: 117,
     ignored: true,
   },
   {
     id: proLayers.viirsActiveFiresID,
     group: 'forest-change',
     subGroup: 'fire-alerts',
-    order: 117,
+    order: 118,
     popupTemplate: {
       title: null,
       content:
@@ -129,13 +136,6 @@ const forestChangeLayers = [
       { id: 'BRIGHT_TI5', text: 'Bright TI5' },
       { id: 'CONFIDENCE', text: 'Confidence' },
     ],
-  },
-  {
-    id: proLayers.disturbanceAlertsDriversGeographicCoverageId,
-    group: 'forest-change',
-    subGroup: 'disturbance-alerts',
-    ignored: true,
-    order: 118,
   },
   {
     id: proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId,

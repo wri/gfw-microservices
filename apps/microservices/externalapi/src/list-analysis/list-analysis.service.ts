@@ -23,6 +23,7 @@ import {
 } from './list-upload-new.dto';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
+import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import {
   CREATE_ANALYSIS,
@@ -430,6 +431,30 @@ export class ListAnalysisService {
     }
   }
 
+  private async retryCreateLargeList(
+    retriesLeft: number,
+    data: {
+      list_name: string;
+      user_id: number;
+      client_database: string;
+      analysisIds: string[];
+      commodity: string;
+    }
+  ): Promise<{ data: { list_id: number } }> {
+    return retryWithDelay(
+      async () => {
+        const response = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
+        return response;
+      },
+      {
+        retries: retriesLeft,
+        delayMs: 1000,
+        isRetryable: isRetryableError,
+        logger: this.logger,
+      }
+    );
+  }
+
   async uploadNewList(
     newListDetails: ListUploadNewRequestSchema,
     organizationId: number
@@ -476,7 +501,7 @@ export class ListAnalysisService {
         analysisIds: newListDetails.analysisIDs,
         commodity: newListDetails.commodity,
       };
-      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, data);
+      largeListCreated = await this.retryCreateLargeList(3, data);
     } catch (error) {
       const errorMessage = (error?.response?.data?.message || error?.message || '').toString();
       if (error?.response?.status === HttpStatus.CONFLICT) {

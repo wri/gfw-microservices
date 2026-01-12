@@ -20,6 +20,10 @@ describe('Palm Risk Analysis Service', () => {
   const filePath = `${dir}/${filters.listName}_palm_risk_analysis.csv`;
 
   beforeAll(() => {
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
     palmRiskAnalysisService.startEmail = jest.fn();
     palmRiskAnalysisService.errorEmail = jest.fn();
     palmRiskAnalysisService.finishedEmail = jest.fn();
@@ -28,6 +32,10 @@ describe('Palm Risk Analysis Service', () => {
   afterAll(() => {
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
+    }
+    // Clean up the directory
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
     }
   });
 

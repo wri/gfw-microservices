@@ -34,12 +34,13 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
         const array = [];
         let count = 1;
         files.forEach((file) => {
-          fs.stat(`/tmp/wri-${key}/${file}`, (err, stats) => {
+          fs.readFile(`/tmp/wri-${key}/${file}`, 'utf8', (err, content) => {
             if (err) {
               reject(err);
             }
-            // Only skip files that are truly empty (size 0)
-            if (stats.size > 0) {
+            const lineCount = content.split('\n').filter(line => line.trim()).length;
+            // Include files with header + at least one data row
+            if (lineCount >= 2) {
               array.push(file);
             }
             if (files.length === count) {

@@ -104,11 +104,14 @@ export default class PalmRiskList extends Component {
             console.error(`No data found for ${attr.attribute}`);
           }
           const yearlyData = getLastYear(this.filterUpToYear(lastYear, attributeValue));
-          // If value is 0 or missing, show 'Low' instead of '--'
-          millValue =
-            Number.isNaN(yearlyData) || yearlyData === 0
-              ? 'Low'
-              : prettifyNum(formatNum(yearlyData));
+          // Distinguish between missing data (N/A) and actual zero values (0)
+          if (Number.isNaN(yearlyData)) {
+            millValue = 'N/A';
+          } else if (yearlyData === 0) {
+            millValue = '0';
+          } else {
+            millValue = prettifyNum(formatNum(yearlyData));
+          }
         }
 
         // Mill Risk

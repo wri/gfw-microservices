@@ -1,79 +1,67 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
-import { Feature, FeatureCollection, Polygon } from '@wri-monorepos/geo';
 import axios from 'axios';
-import axiosRetry from 'axios-retry';
-import { yieldIfLong, isRetryableError } from './shared';
 import wkx from 'wkx';
+
 import { Position } from 'typeorm/driver/types/GeoJsonTypes';
-
-const DEFAULT_DELAY = 1000;
-
-axiosRetry(axios, {
-  retries: 6,
-  retryDelay: (retryCount) => {
-    const baseDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 30000);
-    const jitter = Math.random() * DEFAULT_DELAY;
-    return baseDelay + jitter;
-  },
-  retryCondition: isRetryableError,
-});
+import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
+import { yieldIfLong } from './shared';
+import { Feature, FeatureCollection, Polygon } from '@wri-monorepos/geo';
+import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
   private BATCH_SIZE = 50;
 
-  private async retryDataAPI(retriesLeft: number, requestData: any, feature: Feature) {
-    try {
-      const response = await axios.post(
-        'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
-        requestData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': process.env.GFW_DATA_API_KEY,
-          },
-          timeout: 30000, // 30 second timeout
+  private async retryDataAPI(
+    retriesLeft: number,
+    requestData: Record<string, unknown>
+  ): Promise<any> {
+    return retryWithDelay(
+      async () => {
+        const response = await axios.post(
+          'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
+          requestData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': process.env.GFW_DATA_API_KEY,
+            },
+            timeout: 30000, // 30 second timeout
+          }
+        );
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch data: ${response.statusText}`);
         }
-      );
+        // Check if response looks like HTML (common error response format)
+        if (
+          typeof response.data === 'string' &&
+          (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
+        ) {
+          throw new Error(
+            `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
+          );
+        }
 
-      if (response.status !== 200) {
-        throw new Error(`Failed to fetch data: ${response.statusText}`);
+        // Check if the response has the expected structure
+        const data = response.data?.data;
+        if (!data || !Array.isArray(data) || !data.length || !data[0]) {
+          throw new Error(
+            `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
+              response.data
+            )}`
+          );
+        }
+        return data;
+      },
+      {
+        retries: retriesLeft,
+        delayMs: 1000,
+        isRetryable: isRetryableError,
+        logger: this.logger,
       }
-      // Check if response looks like HTML (common error response format)
-      if (
-        typeof response.data === 'string' &&
-        (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
-      ) {
-        throw new Error(
-          `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
-        );
-      }
-
-      // Check if the response has the expected structure
-      const data = response.data?.data;
-      if (!data || !Array.isArray(data) || !data.length || !data[0]) {
-        throw new Error(
-          `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
-            response.data
-          )}`
-        );
-      }
-      return data;
-    } catch (error) {
-      const statusCode = error.response?.status || error.code;
-      // retry only for certain timeout/network errors
-      if (retriesLeft > 0 && isRetryableError(error)) {
-        this.logger.warn(
-          `Retryable error in request (${statusCode}). Retries left: ${retriesLeft}. Retrying...`,
-          error.response?.data || error.message
-        );
-        await new Promise((resolve) => setTimeout(resolve, DEFAULT_DELAY));
-        return this.retryDataAPI(retriesLeft - 1, requestData, feature);
-      }
-      throw error;
-    }
+    );
   }
 
   /**
@@ -116,7 +104,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       sql: sql,
     };
 
-    return await this.retryDataAPI(3, requestData, feature);
+    return await this.retryDataAPI(3, requestData);
   };
 
   // remove very tiny polygons that sometimes appear due to GADM level

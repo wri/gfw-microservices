@@ -18,22 +18,27 @@ describe('Validate CSV Files for FCD', () => {
   it(
     'should generate FCD analysis file',
     async () => {
-      const res = await postRedirectHeaders(
-        `${BASE_URL}/api/v1/list/${list}/analysis/FCD/generate`,
-        {
-          userEmail: email,
-          outputType: 'verifiableCredential',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_TOKEN,
+      try {
+        const res = await postRedirectHeaders(
+          `${BASE_URL}/api/v1/list/${list}/analysis/FCD/generate`,
+          {
+            userEmail: email,
+            outputType: 'verifiableCredential',
           },
-        }
-      );
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_TOKEN,
+            },
+          }
+        );
 
-      expect(res.status).toBe(201);
-      expect(res.data).toBe('');
+        expect(res.status).toBe(201);
+        expect(res.data).toBe('');
+      } catch (error) {
+        console.error('endpoints error', error.stack || error, error?.response?.data);
+        throw error;
+      }
     },
     30 * 1000
   );
@@ -48,7 +53,7 @@ describe('Validate CSV Files for FCD', () => {
             'Location Name',
             'Data Layer',
             'Sub-Layer',
-            'Overlap with Sub-layer (ha)',
+            'Overlap with Sub-layer (Ha)',
             'Overlap with Sub-Layer (%)',
           ],
         },
@@ -178,7 +183,7 @@ describe('Validate CSV Files for FCD', () => {
             'List Name',
             'Data Layer',
             'Sub-Layer',
-            'Overlap with Sub-layer (ha)',
+            'Overlap with Sub-layer (Ha)',
             'Overlap with Sub-Layer (%)',
           ],
         },
@@ -220,22 +225,27 @@ describe('Validate CSV Files for DefReport', () => {
   it(
     'should generate DefReport analysis file',
     async () => {
-      const res = await postRedirectHeaders(
-        `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
-        {
-          userEmail: email,
-          outputType: 'verifiableCredential',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_TOKEN,
+      try {
+        const res = await postRedirectHeaders(
+          `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/generate`,
+          {
+            userEmail: email,
+            outputType: 'verifiableCredential',
           },
-        }
-      );
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_TOKEN,
+            },
+          }
+        );
 
-      expect(res.status).toBe(201);
-      expect(res.data).toBe('');
+        expect(res.status).toBe(201);
+        expect(res.data).toBe('');
+      } catch (error) {
+        console.error('endpoints error', error.stack || error, error?.response?.data);
+        throw error;
+      }
     },
     30 * 1000
   );
@@ -271,24 +281,29 @@ describe('Validate CSV Files for Alerts', () => {
   it(
     'should generate Alerts analysis file',
     async () => {
-      const res = await postRedirectHeaders(
-        `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/generate`,
-        {
-          userEmail: email,
-          outputType: 'verifiableCredential',
-          startDate: '01-01-2024',
-          endDate: '07-05-2025',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_TOKEN,
+      try {
+        const res = await postRedirectHeaders(
+          `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/generate`,
+          {
+            userEmail: email,
+            outputType: 'verifiableCredential',
+            startDate: '01-01-2024',
+            endDate: '07-05-2025',
           },
-        }
-      );
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_TOKEN,
+            },
+          }
+        );
 
-      expect(res.status).toBe(201);
-      expect(res.data).toBe('');
+        expect(res.status).toBe(201);
+        expect(res.data).toBe('');
+      } catch (error) {
+        console.error('endpoints error', error.stack || error, error?.response?.data);
+        throw error;
+      }
     },
     30 * 1000
   );
@@ -325,7 +340,7 @@ describe('Validate CSV Files for Alerts', () => {
             'Start Date',
             'End Date',
             'Date',
-            'Location Size (ha)',
+            'Location Size (HA)',
             'Confidence Level',
             'Total # of alerts',
             '# Alerts in SBTN Natural Forest',
@@ -360,23 +375,28 @@ describe.skip('Validate CSV Files for GHG', () => {
   it(
     'should generate GHG download',
     async () => {
-      const res = await postRedirectHeaders(
-        `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/generate`,
-        {
-          userEmail: email,
-          startDate: '01-01-2024',
-          endDate: '07-01-2024',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_TOKEN,
+      try {
+        const res = await postRedirectHeaders(
+          `${BASE_URL}/api/v1/list/${ghgList}/analysis/GHG/generate`,
+          {
+            userEmail: email,
+            startDate: '01-01-2024',
+            endDate: '07-01-2024',
           },
-        }
-      );
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': API_TOKEN,
+            },
+          }
+        );
 
-      expect(res.status).toBe(201);
-      expect(res.data).toBe('');
+        expect(res.status).toBe(201);
+        expect(res.data).toBe('');
+      } catch (error) {
+        console.error('GHG/generate error', error.stack || error, error?.response?.data);
+        throw error;
+      }
     },
     30 * 1000
   );

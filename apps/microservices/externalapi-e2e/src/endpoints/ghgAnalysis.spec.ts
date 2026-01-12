@@ -122,7 +122,7 @@ describe('GHGAnalysis', () => {
           }
         );
       } catch (err) {
-        expect(err.status).toBe(400);
+        expect(err.response?.status).toBe(400);
         expect(err.message).toBe('Request failed with status code 400');
       }
       await deleteList(uploadNewRes.data.listId);
@@ -224,7 +224,7 @@ describe('GHGAnalysis', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBeTruthy();
       } catch (error) {
-        console.error('GHG error', error.stack || error, error.response.data);
+        console.error('GHG error', error.stack || error, error?.response?.data);
         throw error;
       }
       await deleteList(uploadNewRes.data.listId);
@@ -330,7 +330,7 @@ describe('GHGAnalysis', () => {
             }
           );
         } catch (err) {
-          expect(err.status).toBe(400);
+          expect(err.response?.status).toBe(400);
           expect(err.message).toBe('Request failed with status code 400');
         }
         await deleteList(uploadNewRes.data.listId);
@@ -392,7 +392,7 @@ describe('GHGAnalysis', () => {
             }
           );
         } catch (err) {
-          expect(err.status).toBe(400);
+          expect(err.response?.status).toBe(400);
           expect(err.message).toBe('Request failed with status code 400');
         }
         await deleteList(uploadNewRes.data.listId);

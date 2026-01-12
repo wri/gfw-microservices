@@ -29,7 +29,7 @@ describe('Alerts Analysis', () => {
         expect(res.status).toBe(201);
         expect(res.data).toBe('');
       } catch (error) {
-        console.error('Alerts/generate error', error.stack || error, error.response.data);
+        console.error('Alerts/generate error', error.stack || error, error?.response?.data);
         throw error;
       }
     },
@@ -70,7 +70,7 @@ describe('Alerts Analysis', () => {
         expect(typeof res.data.expirationDate).toBe('string');
       }
     } catch (error) {
-      console.error('Alerts/status error', error.stack || error, error.response.data);
+      console.error('Alerts/status error', error.stack || error, error?.response?.data);
       throw error;
     }
   }, 30000);

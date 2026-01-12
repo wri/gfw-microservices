@@ -12,6 +12,7 @@ const {
   treeBiomassLossID,
   treeCoverID,
   globalVegetationDisturbanceAlertsGeographicCoverageId,
+  disturbanceAlertsDriversGeographicCoverageId,
 } = proLayers;
 
 export const layersWithCanopyDensityThresholdControl = [
@@ -33,6 +34,7 @@ export const deforestationAlertsGeographicCoverageIds = [
   gladS2GeographicCoverageID,
   raddCoverageID,
   globalVegetationDisturbanceAlertsGeographicCoverageId,
+  disturbanceAlertsDriversGeographicCoverageId,
 ];
 
 export const deforestationAlertsLayerToCoverageMap = {

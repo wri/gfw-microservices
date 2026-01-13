@@ -5,7 +5,7 @@ import ListDetailsPage from '../../pages/listDetailsPage';
 describe('Move List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-  const timestamp = Date.now();
+  const timestamp = Date.now() + Math.floor(Math.random() * 1000);
   const listsToCreate = [
     `testregressionmovelistfrom${timestamp}`,
     `testregressionmovelistto${timestamp}`,

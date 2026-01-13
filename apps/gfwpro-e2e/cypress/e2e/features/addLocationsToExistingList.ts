@@ -1,13 +1,18 @@
-import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
 describe('Add Locations to Existing List', () => {
   const locationsPage = new LocationsPage();
   const list = 'AAT ADD LOCATION TEST';
-  const timestamp = Date.now();
-  const locationName = `testAddLocation${timestamp}`;
+  let timestamp: number;
+  let locationName: string;
   const longitude = '-78.14';
   const latitude = '-6.31';
+
+  Before(() => {
+    timestamp = Date.now() + Math.floor(Math.random() * 1000);
+    locationName = `testAddLocation${timestamp}`;
+  });
 
   When('I login in the landing page', () => {
     cy.loginUI();

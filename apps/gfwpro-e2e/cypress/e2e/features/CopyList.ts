@@ -1,12 +1,19 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
 describe('Copy List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-  const timestamp = Date.now();
-  const listsToCreate = [`testregressioncopylist${timestamp}`];
+  let timestamp: number;
+  let listsToCreate: string[];
+
+  // Generate unique timestamp for each scenario to avoid collisions when running all tests together
+  Before(() => {
+    // Add small random component to ensure uniqueness even if tests run in quick succession
+    timestamp = Date.now() + Math.floor(Math.random() * 1000);
+    listsToCreate = [`testregressioncopylist${timestamp}`];
+  });
 
   When('I login in the landing page', () => {
     cy.loginUI();

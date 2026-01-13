@@ -1,21 +1,28 @@
-import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
 describe('List Copy Feature', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-  const timestamp = Date.now();
-  const listsToCreate = {
-    'RSPO Palm Concessions': `testregressioncopylistGFW RSPO ${timestamp}`,
-    'Oil Palm Concessions': `testregressioncopylistGFW OilPalm ${timestamp}`,
-    'Administrative Areas': `testregressioncopylistGFW Admin ${timestamp}`,
-    'Protected Areas': `testregressioncopylistGFW Protected ${timestamp}`,
-    'Palm Oil Mills': `testregressioncopylistGFW Mills ${timestamp}`,
-  };
+  let timestamp: number;
+  let listsToCreate: Record<string, string>;
   let currentListName = '';
   const checkboxLocations = [1, 2];
   const isGFW = true;
+
+  // Generate unique timestamp for each scenario to avoid collisions when running all tests together
+  Before(() => {
+    // Add small random component to ensure uniqueness even if tests run in quick succession
+    timestamp = Date.now() + Math.floor(Math.random() * 1000);
+    listsToCreate = {
+      'RSPO Palm Concessions': `testregressioncopylistGFW RSPO ${timestamp}`,
+      'Oil Palm Concessions': `testregressioncopylistGFW OilPalm ${timestamp}`,
+      'Administrative Areas': `testregressioncopylistGFW Admin ${timestamp}`,
+      'Protected Areas': `testregressioncopylistGFW Protected ${timestamp}`,
+      'Palm Oil Mills': `testregressioncopylistGFW Mills ${timestamp}`,
+    };
+  });
   Given('I login in the landing page', () => {
     cy.loginUI();
     cy.visit('/locations');

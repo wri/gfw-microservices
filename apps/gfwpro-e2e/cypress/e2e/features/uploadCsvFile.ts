@@ -1,11 +1,16 @@
-import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
 describe('Upload File Csv', () => {
   const filePath = 'cypress/fixtures/uploadCsv.xlsx';
-  const timestamp = Date.now();
-  const listToUploadSingleLocation = `uploadfilecsv${timestamp}`;
+  let timestamp: number;
+  let listToUploadSingleLocation: string;
   const locationsPage = new LocationsPage();
+
+  Before(() => {
+    timestamp = Date.now() + Math.floor(Math.random() * 1000);
+    listToUploadSingleLocation = `uploadfilecsv${timestamp}`;
+  });
   Given('I login in the landing page', () => {
     cy.loginUI();
   });

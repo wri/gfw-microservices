@@ -1,15 +1,21 @@
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
 describe('Move List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-  const timestamp = Date.now();
-  const listsToCreate = [
-    `testregressionmovelistfrom${timestamp}`,
-    `testregressionmovelistto${timestamp}`,
-  ];
+  let timestamp: number;
+  let listsToCreate: string[];
+
+  // Generate unique timestamp for each scenario to avoid collisions when running all tests together
+  Before(() => {
+    timestamp = Date.now() + Math.floor(Math.random() * 1000);
+    listsToCreate = [
+      `testregressionmovelistfrom${timestamp}`,
+      `testregressionmovelistto${timestamp}`,
+    ];
+  });
 
   When('I login in the landing page', () => {
     cy.loginUI();

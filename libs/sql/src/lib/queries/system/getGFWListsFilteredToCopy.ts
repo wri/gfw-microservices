@@ -112,55 +112,54 @@ export const getGFWListsFilteredToCopy = `
 
 
 	-- ADD Filters
-	IF @Country IS NOT NULL
-	  SET @Filters = + @Filters + ' AND Country = @Country'
+    IF @Country IS NOT NULL
+      SET @Filters = + @Filters + ' AND Country = @Country'
 
-	IF @State IS NOT NULL
-	  SET @Filters = + @Filters + ' AND State = @State'
+    IF @State IS NOT NULL
+      SET @Filters = + @Filters + ' AND State = @State'
 
-	IF @SubState IS NOT NULL
-	  SET @Filters = + @Filters + ' AND [Sub State] = @SubState'
+    IF @SubState IS NOT NULL
+      SET @Filters = + @Filters + ' AND [Sub State] = @SubState'
 
 	IF @LocationLogic IS NOT NULL AND @LocationIds IS NOT NULL
-	BEGIN
-		IF CHARINDEX('IN', @LocationLogic) > 0
-			BEGIN
-				SET @LocationStatement = 'AND location_id ' + @LocationLogic + ' (' + @LocationIds + ')'
-				SET @Filters = CONCAT(@Filters, ' ', @LocationStatement);
-			END
-		IF CHARINDEX('BETWEEN', @LocationLogic) > 0
-			BEGIN
-				DECLARE @BetweenLogic NVARCHAR(1000) = ' AND location_id ' + @LocationLogic;
-				WITH LocationIdsCTE AS (
-					SELECT value AS locations FROM STRING_SPLIT(@LocationIds, ',')
-				)
+    BEGIN
+        IF CHARINDEX('IN', @LocationLogic) > 0
+            BEGIN
+                SET @LocationStatement = 'AND list_location_id ' + @LocationLogic + ' (' + @LocationIds + ')'
+                SET @Filters = CONCAT(@Filters, ' ', @LocationStatement);
+            END
+        IF CHARINDEX('BETWEEN', @LocationLogic) > 0
+            BEGIN
+                DECLARE @BetweenLogic NVARCHAR(1000) = ' AND list_location_id ' + @LocationLogic;
+                WITH LocationIdsCTE AS (
+                    SELECT value AS locations FROM STRING_SPLIT(@LocationIds, ',')
+                )
 
-				SELECT @LocationStatement = STRING_AGG(locations, @BetweenLogic)
-				FROM LocationIdsCTE;
+                SELECT @LocationStatement = STRING_AGG(locations, @BetweenLogic)
+                FROM LocationIdsCTE;
 
-				SET @Filters = CONCAT(@Filters,' AND location_id ', @LocationLogic, ' ', @LocationStatement);
-			END
-	END
+                SET @Filters = CONCAT(@Filters,' AND list_location_id ', @LocationLogic, ' ', @LocationStatement);
+            END
+    END
 
-	IF @SearchString IS NOT NULL
-	BEGIN
+    IF @SearchString IS NOT NULL
+    BEGIN
 
-		SELECT @listLocationTableCols = STUFF(
-		  (
-			SELECT '], [' + [name] FROM sys.columns
-			WHERE
-			  [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
-			  AND [name] NOT IN ('Geometry', 'location_id')
-				AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
-			  FOR XML PATH('')
-		  ),1,3,' ') + ']';
+        SELECT @listLocationTableCols = STUFF(
+          (
+            SELECT '], [' + [name] FROM sys.columns
+            WHERE
+              [object_id] = (SELECT [object_id] FROM sys.objects WHERE [name] = @listLocationTableName)
+              AND [name] NOT IN ('Geometry', 'location_id')
+                AND user_type_id IN (SELECT user_type_id FROM sys.types WHERE name IN ('char', 'nchar', 'varchar', 'nvarchar'))
+              FOR XML PATH('')
+          ),1,3,' ') + ']';
 
-		DECLARE @SearchLogic NVARCHAR(MAX) = 'CONCAT({LIST_TABLE_CHAR_COLS}) LIKE ''%{SEARCH_STRING}%'' ';
-		SET @SearchLogic = REPLACE(@SearchLogic, '{LIST_TABLE_CHAR_COLS}', @listLocationTableCols);
-		SET @SearchLogic = REPLACE(@SearchLogic, '{SEARCH_STRING}', @SearchString);
-		--PRINT @SearchLogic;
-		SET @Filters = CONCAT(@Filters,' AND ', @SearchLogic);
-	END
+        DECLARE @SearchLogic NVARCHAR(MAX) = 'CONCAT({LIST_TABLE_CHAR_COLS}) LIKE ''%{SEARCH_STRING}%'' ';
+        SET @SearchLogic = REPLACE(@SearchLogic, '{LIST_TABLE_CHAR_COLS}', @listLocationTableCols);
+        SET @SearchLogic = REPLACE(@SearchLogic, '{SEARCH_STRING}', @SearchString);
+        SET @Filters = CONCAT(@Filters,' AND ', @SearchLogic);
+    END
 
 
 	IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
@@ -180,22 +179,22 @@ export const getGFWListsFilteredToCopy = `
 	END
 
 	IF @SelectedLocations IS NOT NULL
-	BEGIN
-		SET @Filters = CONCAT(@Filters,' AND location_id IN(',@SelectedLocations ,')');
-	END
+    BEGIN
+        SET @Filters = CONCAT(@Filters,' AND list_location_id IN(',@SelectedLocations ,')');
+    END
 
 	-- END Filters
 
 	-- Return data from both tables
 	SET @SQL = @SQL + ' MyAnalysisTable AS(
-							SELECT {LIST_ID} As analysis_list_id, {ANALYSIS_COLUMNS}
-							FROM [{ANALYSIS_TABLE}] A
-							WHERE ' + @AnalysisFilters + '
-						)
-						SELECT * FROM MyListTable
-						INNER JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
-						WHERE 1=1 '+@Filters+'
-						ORDER BY '+ @OrderByColumn + ' '+ @Order
+                            SELECT {LIST_ID} As analysis_list_id, {ANALYSIS_COLUMNS}
+                            FROM [{ANALYSIS_TABLE}] A
+                            WHERE ' + @AnalysisFilters + '
+                        )
+                        SELECT * FROM MyListTable
+                        LEFT JOIN MyAnalysisTable ON MyListTable.list_id = MyAnalysisTable.analysis_list_id AND MyListTable.list_location_id = MyAnalysisTable.location_id
+                        WHERE 1=1 '+@Filters+'
+                        ORDER BY '+ @OrderByColumn + ' '+ @Order
 
 	SET @SQL = REPLACE(@SQL, '{LIST_ID}', @listID);
 	SET @SQL = REPLACE(@SQL, '{LOCATION_COLUMNS}', @list_location_table_cols_output);
@@ -203,7 +202,9 @@ export const getGFWListsFilteredToCopy = `
 	SET @SQL = REPLACE(@SQL, '{ANALYSIS_COLUMNS}', @analysis_location_table_cols_output);
 	SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName);
 
-	EXEC sp_executesql @SQL,
+
+    PRINT 'Final SQL Query: ' + @SQL
+    EXEC sp_executesql @SQL,
 			  N'@OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT',
 			  @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax;
 `;

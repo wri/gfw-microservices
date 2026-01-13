@@ -101,7 +101,6 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
-<<<<<<< HEAD
 
     // Check header
     expect(lines[0]).toBe(
@@ -124,13 +123,5 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
 
     // Check that last line is empty
     expect(lines[lines.length - 1]).toBe('');
-=======
-    expect(lines).toStrictEqual([
-      'List Name,Location Name,Location Size (Ha),Commodity,Data Layer Name,CO2 Raw Emissions,CH4 Raw Emissions,N2O Raw Emissions,Combined Raw Emissions,Year',
-      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,2026',
-      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,2026',
-      '',
-    ]);
->>>>>>> 46a99aeb (Fix tests)
   });
 });

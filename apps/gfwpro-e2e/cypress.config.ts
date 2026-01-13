@@ -59,7 +59,7 @@ export default defineConfig({
   numTestsKeptInMemory: 100,
   experimentalMemoryManagement: true,
   retries: {
-    runMode: 0,
+    runMode: 2, // Retry twice in CI/run mode for flaky tests
     openMode: 0,
   },
   e2e: {

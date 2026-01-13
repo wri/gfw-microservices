@@ -7,9 +7,12 @@ describe('Location diagnostics', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
   const diagnosticsPage = new DiagnosticsPage();
+  const LOGIN_SESSION_KEY = 'locationDiagnostics-login';
 
   When('I login in the landing page', () => {
-    cy.loginUI();
+    cy.session(LOGIN_SESSION_KEY, () => {
+      cy.loginUI();
+    });
     cy.visit('/locations');
   });
 

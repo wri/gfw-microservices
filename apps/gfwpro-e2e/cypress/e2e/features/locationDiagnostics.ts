@@ -1,4 +1,4 @@
-import { Before, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
@@ -7,12 +7,6 @@ describe('Location diagnostics', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
   const diagnosticsPage = new DiagnosticsPage();
-
-  // Ensure clean state before each scenario
-  Before(() => {
-    // Small delay to prevent rapid successive logins
-    cy.wait(100);
-  });
 
   When('I login in the landing page', () => {
     cy.loginUI();

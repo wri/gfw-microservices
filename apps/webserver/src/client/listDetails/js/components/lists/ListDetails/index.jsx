@@ -1882,6 +1882,7 @@ export default class ListDetails extends Component {
       [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
       [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
       [COMMODITY_RISK_VIEW]: analysisTypes.PALM_RISK,
+      [ALERTS]: analysisTypes.ALERTS,
     };
 
     const compareAnalysisStatus = (id, statusToCompareWith) =>

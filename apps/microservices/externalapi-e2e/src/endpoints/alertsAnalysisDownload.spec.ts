@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { postRedirectHeaders } from '../support/utils';
+import { postRedirectHeaders, sanitizeError } from '../support/utils';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
@@ -30,7 +30,7 @@ describe('Alerts Analysis', () => {
         expect(res.data).toBe('');
       } catch (error) {
         console.error('Alerts/generate error', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000
@@ -71,7 +71,7 @@ describe('Alerts Analysis', () => {
       }
     } catch (error) {
       console.error('Alerts/status error', error.stack || error, error?.response?.data);
-      throw error;
+      throw sanitizeError(error);
     }
   }, 30000);
 });

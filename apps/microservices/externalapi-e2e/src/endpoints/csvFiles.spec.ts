@@ -1,4 +1,4 @@
-import { postRedirectHeaders } from '../support/utils';
+import { postRedirectHeaders, sanitizeError, ensureAnalysesNotExpired } from '../support/utils';
 import AdmZip from 'adm-zip';
 import Papa from 'papaparse';
 import axios from 'axios';
@@ -15,6 +15,11 @@ interface FileExpectation {
 }
 
 describe('Validate CSV Files for FCD', () => {
+  beforeAll(async () => {
+    // Ensure FCD analysis is not expired before running tests
+    await ensureAnalysesNotExpired(Number(list), ['FCD']);
+  });
+
   it(
     'should generate FCD analysis file',
     async () => {
@@ -37,7 +42,7 @@ describe('Validate CSV Files for FCD', () => {
         expect(res.data).toBe('');
       } catch (error) {
         console.error('endpoints error', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000
@@ -222,6 +227,11 @@ describe('Validate CSV Files for FCD', () => {
 });
 
 describe('Validate CSV Files for DefReport', () => {
+  beforeAll(async () => {
+    // Ensure DefReport analysis is not expired before running tests
+    await ensureAnalysesNotExpired(Number(list), ['DefReport']);
+  });
+
   it(
     'should generate DefReport analysis file',
     async () => {
@@ -244,7 +254,7 @@ describe('Validate CSV Files for DefReport', () => {
         expect(res.data).toBe('');
       } catch (error) {
         console.error('endpoints error', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000
@@ -253,6 +263,8 @@ describe('Validate CSV Files for DefReport', () => {
   it(
     'should validate CSV zip bundle has expected files',
     async () => {
+      // Note: When using outputType: 'verifiableCredential', DefReport returns a JSON file
+      // instead of CSV files. This is the expected behavior.
       const expectedFiles: Record<string, FileExpectation> = {
         'AAT Argentina Polygons Generic.json': {},
       };
@@ -278,6 +290,11 @@ describe('Validate CSV Files for DefReport', () => {
 });
 
 describe('Validate CSV Files for Alerts', () => {
+  beforeAll(async () => {
+    // Ensure Alerts analysis is not expired before running tests
+    await ensureAnalysesNotExpired(Number(list), ['Alerts']);
+  });
+
   it(
     'should generate Alerts analysis file',
     async () => {
@@ -302,7 +319,7 @@ describe('Validate CSV Files for Alerts', () => {
         expect(res.data).toBe('');
       } catch (error) {
         console.error('endpoints error', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000
@@ -395,7 +412,7 @@ describe.skip('Validate CSV Files for GHG', () => {
         expect(res.data).toBe('');
       } catch (error) {
         console.error('GHG/generate error', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000

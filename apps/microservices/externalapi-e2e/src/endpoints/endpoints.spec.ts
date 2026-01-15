@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
-import { postRedirectHeaders } from '../support/utils';
+import { postRedirectHeaders, sanitizeError } from '../support/utils';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
@@ -205,7 +205,7 @@ describe('API Endpoints', () => {
           expect(res.data).toBe('');
         } catch (error) {
           console.error('endpoints error', error.stack || error, error?.response?.data);
-          throw error;
+          throw sanitizeError(error);
         }
       },
       30 * 1000

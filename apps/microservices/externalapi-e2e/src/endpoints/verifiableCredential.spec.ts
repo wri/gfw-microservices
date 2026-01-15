@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { postRedirectHeaders } from '../support/utils';
+import { postRedirectHeaders, sanitizeError, ensureAnalysesNotExpired } from '../support/utils';
 import AdmZip from 'adm-zip';
 import * as jsonld from 'jsonld';
 import * as cache from 'memory-cache';
@@ -149,7 +149,7 @@ async function pollApiUntilComplete(
         message: error instanceof Error ? error.message : error,
         stack: error instanceof Error ? error.stack : undefined,
       });
-      throw error;
+      throw sanitizeError(error);
     }
   }
 }
@@ -158,6 +158,11 @@ describe('Verifiable Credential Verification', () => {
   let publicKey: any;
   let verifiableCredential: any;
   let generateTimestamp: Date; // Track when we triggered the analysis
+
+  beforeAll(async () => {
+    // Ensure DefReport analysis is not expired before running tests
+    await ensureAnalysesNotExpired(Number(list), ['DefReport']);
+  });
 
   it(
     'should retrieve the public key',
@@ -177,7 +182,7 @@ describe('Verifiable Credential Verification', () => {
         console.log('Retrieved public key:', publicKey.id);
       } catch (error) {
         console.error('Issue retrieving public key', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000
@@ -213,7 +218,7 @@ describe('Verifiable Credential Verification', () => {
           error.stack || error,
           error?.response?.data
         );
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000
@@ -262,7 +267,7 @@ describe('Verifiable Credential Verification', () => {
         console.log('VC Proof type:', verifiableCredential.proof.type);
       } catch (error) {
         console.error('Polling or extraction failed:', error);
-        throw error;
+        throw sanitizeError(error);
       }
     },
     60 * 1000
@@ -367,7 +372,7 @@ describe('Verifiable Credential Verification', () => {
           console.error('Error message:', error.message);
           console.error('Error stack:', error.stack);
         }
-        throw error;
+        throw sanitizeError(error);
       }
     },
     30 * 1000

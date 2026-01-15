@@ -34,6 +34,7 @@ class ListDetailsPage {
     post2020Tab: () => cy.get('[data-cy="post-2020-tab"]'),
     post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),
     palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
+    alertsTab: () => cy.get('[data-cy="alerts-tab"]'),
     hiddenElement: () => cy.get('.rt-tr-group').eq(0).find('.rt-td.default-cell.td-num').last(),
     moreOptionsBtn: () => cy.get('[data-cy="row-more-options-button"]').eq(0),
     moreOptionsTableColumnBtn: () => cy.get('[data-testid="MoreVertIcon"]'),
@@ -43,6 +44,11 @@ class ListDetailsPage {
     listActionDialog: () => cy.get('.list-diagnostics-dialog'),
     tableRow: () => cy.get('.rt-tbody').find('[data-testid="custom-row"]'),
     gridCell: () => cy.get('[role="gridcell"]'),
+    alertsLandCoverSelect: () =>
+      cy
+        .contains('label', 'Land Cover Dataset')
+        .parent()
+        .find('[role="combobox"], [role="button"][aria-haspopup="listbox"]'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
@@ -210,6 +216,9 @@ class ListDetailsPage {
   clickOnPalmRiskAssessmentTab() {
     this.elements.palmRiskAssessmentTab().click();
   }
+  clickOnAlertsTab() {
+    this.elements.alertsTab().click();
+  }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();
   }
@@ -249,6 +258,13 @@ class ListDetailsPage {
   clickOnShapefileOption() {
     this.elements.downloadShapefileptionListDetail().click();
   }
+  openAlertsLandCoverSelect() {
+    this.elements.alertsLandCoverSelect().click();
+  }
+  selectAlertsLandCoverOption(option: string) {
+    this.openAlertsLandCoverSelect();
+    cy.contains('li[role="option"]', option).click();
+  }
   clickCloseAlertDownload() {
     this.elements.closeAlertDownloadBtn().click();
   }
@@ -276,6 +292,15 @@ class ListDetailsPage {
       .get('[role="gridcell"]')
       .find('svg[class="list-icons"]')
       .its('length');
+  }
+  sanitizeColumnLabel(label: string) {
+    return label.replace(/\s+/g, '-');
+  }
+  getColumnHeader(label: string) {
+    return cy.get(`[data-cy="column-header-${this.sanitizeColumnLabel(label)}"]`);
+  }
+  findColumnHeader(label: string) {
+    return cy.get('body').find(`[data-cy="column-header-${this.sanitizeColumnLabel(label)}"]`);
   }
   validateLocationColumn() {
     this.elements.tableRow().each((row, index) => {

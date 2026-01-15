@@ -14,7 +14,7 @@ const NaturalForestLossDataSourceToggle = () => {
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <FormControl variant="outlined" sx={{ ...selectStyle, width: 'auto' }}>
-        <InputLabel sx={{ background: 'white', padding: '0px 10px' }}>Forest Dataset </InputLabel>
+        <InputLabel sx={{ background: 'white', padding: '0px 10px' }}>Forest Dataset</InputLabel>
         <Select
           value={store.getState().naturalForestLossDataSource}
           sx={{ fontSize: '0.875rem' }}

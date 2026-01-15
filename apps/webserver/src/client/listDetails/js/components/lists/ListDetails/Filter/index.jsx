@@ -306,11 +306,13 @@ export default function Filter({
                 {listView === ALERTS && (
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <FormControl
+                      data-cy="alerts-land-cover-select-container"
                       size="small"
                       sx={{ width: 230, mt: shouldRenderLocationsWithErrorsCheckbox ? 1 : 0 }}
                     >
-                      <InputLabel>Land Cover Dataset</InputLabel>
+                      <InputLabel data-cy="alerts-land-cover-label">Land Cover Dataset</InputLabel>
                       <Select
+                        data-cy="alerts-land-cover-select"
                         value={forestDataset}
                         onChange={onForestDatasetChange}
                         label="Land Cover Dataset"

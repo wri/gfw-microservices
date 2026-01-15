@@ -167,7 +167,6 @@ export async function ensureAnalysesNotExpired(
 ): Promise<void> {
   const BASE_URL = process.env.HOST;
   const API_TOKEN = process.env.API_TOKEN;
-  const USER_EMAIL = process.env.USER_EMAIL;
 
   interface AnalysisStatusResponse {
     status: string;

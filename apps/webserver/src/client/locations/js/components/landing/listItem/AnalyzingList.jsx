@@ -3,11 +3,11 @@ import PublicIcon from '@mui/icons-material/Public';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
-import sharedColumnText from './sharedColumnText';
 import { locationsPage } from '../../../../../common/js/config';
+import sharedColumnText from './sharedColumnText';
 import AnalysisListChips from './AnalysisListChips';
 
-// returns 'anaylizing' (also called 'pending') list items
+// returns 'analyzing' (also called 'pending') list items
 function AnalyzingList({ list, isAListSharedWithMe, showSharedColumn }) {
   const { id, list_name, is_shared, listAnalysesStatus } = list;
 

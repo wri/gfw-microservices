@@ -1,4 +1,4 @@
-import { deleteListByName } from '../support/utils';
+import { deleteListByName, sanitizeError } from '../support/utils';
 
 describe('Check and Delete Lists created for testing purposes', () => {
   it(
@@ -17,7 +17,7 @@ describe('Check and Delete Lists created for testing purposes', () => {
           message: error.message,
           stack: error.stack,
         });
-        throw error;
+        throw sanitizeError(error);
       }
     },
     120 * 100000

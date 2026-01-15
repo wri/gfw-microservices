@@ -6,6 +6,7 @@ export default {
   globalTeardown: '<rootDir>/src/support/global-teardown.ts',
   setupFiles: ['<rootDir>/src/support/test-setup.ts', '<rootDir>/jest.set.env.ts'],
   testEnvironment: 'node',
+  maxWorkers: 1, // Run tests serially to avoid circular JSON serialization issues
   transform: {
     '^.+\\.[tj]s$': [
       'ts-jest',

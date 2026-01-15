@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
-import { postRedirectHeaders } from '../support/utils';
+import { postRedirectHeaders, sanitizeError } from '../support/utils';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
@@ -225,7 +225,7 @@ describe('GHGAnalysis', () => {
         expect(res.data).toBeTruthy();
       } catch (error) {
         console.error('GHG error', error.stack || error, error?.response?.data);
-        throw error;
+        throw sanitizeError(error);
       }
       await deleteList(uploadNewRes.data.listId);
     },

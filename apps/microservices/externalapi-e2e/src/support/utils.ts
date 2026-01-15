@@ -236,8 +236,8 @@ export async function ensureAnalysesNotExpired(
     const allAnalysesToRegenerate = [...new Set([...expiredAnalyses, ...missingAnalyses])];
     allAnalysesToRegenerate.forEach((analysisType) => {
       errorMessages.push(
-        `  curl -L --post302 -H "x-api-key: ${API_TOKEN}" -H "Content-Type: application/json" \\`,
-        `    -X POST -d '{"userEmail": "${USER_EMAIL}"}' \\`,
+        `  curl -L --post302 -H "x-api-key: YOUR_API_TOKEN" -H "Content-Type: application/json" \\`,
+        `    -X POST -d '{"userEmail": "YOUR_EMAIL"}' \\`,
         `    "${BASE_URL}/api/v1/list/${listId}/analysis/${analysisType}/analyze"\n`
       );
     });
@@ -250,7 +250,7 @@ export async function ensureAnalysesNotExpired(
 
     errorMessages.push('Method 2 - Find a different test list:');
     errorMessages.push(
-      `HOST=${BASE_URL} API_TOKEN=${API_TOKEN} npx ts-node -P apps/microservices/externalapi-e2e/tsconfig.json \\`,
+      `HOST=${BASE_URL} API_TOKEN=YOUR_API_TOKEN npx ts-node -P apps/microservices/externalapi-e2e/tsconfig.json \\`,
       `    apps/microservices/externalapi-e2e/src/support/find-valid-test-list.ts\n`
     );
 

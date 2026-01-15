@@ -44,11 +44,7 @@ class ListDetailsPage {
     listActionDialog: () => cy.get('.list-diagnostics-dialog'),
     tableRow: () => cy.get('.rt-tbody').find('[data-testid="custom-row"]'),
     gridCell: () => cy.get('[role="gridcell"]'),
-    alertsLandCoverSelect: () =>
-      cy
-        .contains('label', 'Land Cover Dataset')
-        .parent()
-        .find('[role="combobox"], [role="button"][aria-haspopup="listbox"]'),
+    alertsLandCoverSelect: () => cy.get('[data-cy="alerts-land-cover-select"]'),
   };
   clickOnLocationsList(name: string) {
     cy.contains(name).click();

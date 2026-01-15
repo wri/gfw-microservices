@@ -5,7 +5,7 @@ import ListDetailsPage from '../../pages/listDetailsPage';
 const SBTN_NATURAL_LANDS_OPTION = 'SBTN Natural Lands';
 const JRC_GLOBAL_FOREST_OPTION = 'JRC Global Forest Cover';
 
-describe('List Details - alerts tab', () => {
+describe('List Details - Alerts Tab', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
 

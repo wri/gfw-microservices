@@ -2,7 +2,7 @@ import { Component } from 'react';
 import store from '../../store';
 import _range from 'lodash/range';
 import { Box, Typography } from '@mui/material';
-import { HelperTextWithPopover, Switch } from '../../../../components';
+import { HelperTextWithPopover, Switch, YearRangeSlider } from '../../../../components';
 import {
   toggleLayer,
   turnLayerOff,
@@ -31,6 +31,8 @@ const {
   aboveGroundBiomassId,
   treeBiomassLossID,
   treeCoverLossID,
+  treeCoverGainID,
+  prodesDeforestationID,
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
@@ -54,7 +56,6 @@ import {
 import './LegendCheckbox.scss';
 import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
 import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
-import { ProdesDeforestation } from './custom/ProdesDeforestation';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -95,6 +96,24 @@ export default class LegendCheckbox extends Component {
 
   updateBiomassMax = (evt) => {
     store.dispatch(setBiomassMaxRange(evt.target.value));
+  };
+
+  handleBiomassTimelineChange = (startYear, endYear) => {
+    if (typeof this.props.setBiomassTimeline === 'function') {
+      this.props.setBiomassTimeline(startYear, endYear);
+    }
+  };
+
+  handleTreeCoverTimelineChange = (startYear, endYear) => {
+    if (typeof this.props.setLossTimeline === 'function') {
+      this.props.setLossTimeline(startYear, endYear);
+    }
+  };
+
+  handleProdesTimelineChange = (startYear, endYear) => {
+    if (typeof this.props.setProdesTimeline === 'function') {
+      this.props.setProdesTimeline(startYear, endYear);
+    }
   };
 
   hideLayer = () => {
@@ -272,6 +291,65 @@ export default class LegendCheckbox extends Component {
     const isInfoButtonVisible = !!layer.metadataId;
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
     const opacity = this.props.layerOpacity?.[this.props.layer.id] ?? 1;
+    const biomassLossYears = mapPage.biomassLossYears || [];
+    const biomassMinYear = biomassLossYears[0];
+    const biomassMaxYear = biomassLossYears[biomassLossYears.length - 1];
+    const biomassLossDateRange = this.props.biomassLossDateRange || {};
+    const selectedBiomassStartYear =
+      typeof biomassLossDateRange.startYear === 'number'
+        ? biomassLossDateRange.startYear
+        : biomassMinYear;
+    const selectedBiomassEndYear =
+      typeof biomassLossDateRange.endYear === 'number'
+        ? biomassLossDateRange.endYear
+        : biomassMaxYear;
+    const biomassSliderDisabled =
+      grayed === 'grayed' || typeof this.props.setBiomassTimeline !== 'function';
+    const biomassMarks =
+      biomassLossYears.length > 1
+        ? [
+            { value: biomassMinYear, label: String(biomassMinYear) },
+            { value: biomassMaxYear, label: String(biomassMaxYear) },
+          ]
+        : undefined;
+    const treeCoverLossYears = mapPage.treeCoverLossYearsFC || [];
+    const treeCoverMinYear = treeCoverLossYears[0];
+    const treeCoverMaxYear = treeCoverLossYears[treeCoverLossYears.length - 1];
+    const treeCoverLossDateRange = this.props.treeCoverLossDateRange || {};
+    const selectedTreeCoverStartYear =
+      typeof treeCoverLossDateRange.startYear === 'number'
+        ? treeCoverLossDateRange.startYear
+        : treeCoverMinYear;
+    const selectedTreeCoverEndYear =
+      typeof treeCoverLossDateRange.endYear === 'number'
+        ? treeCoverLossDateRange.endYear
+        : treeCoverMaxYear;
+    const treeCoverSliderDisabled =
+      grayed === 'grayed' || typeof this.props.setLossTimeline !== 'function';
+    const treeCoverMarks =
+      treeCoverLossYears.length > 1
+        ? [
+            { value: treeCoverMinYear, label: String(treeCoverMinYear) },
+            { value: treeCoverMaxYear, label: String(treeCoverMaxYear) },
+          ]
+        : undefined;
+    const prodesLossYears = mapPage.prodesLossYears || [];
+    const prodesMinYear = prodesLossYears[0];
+    const prodesMaxYear = prodesLossYears[prodesLossYears.length - 1];
+    const prodesDateRange = this.props.prodesDateRange || {};
+    const selectedProdesStartYear =
+      typeof prodesDateRange.startYear === 'number' ? prodesDateRange.startYear : prodesMinYear;
+    const selectedProdesEndYear =
+      typeof prodesDateRange.endYear === 'number' ? prodesDateRange.endYear : prodesMaxYear;
+    const prodesSliderDisabled =
+      grayed === 'grayed' || typeof this.props.setProdesTimeline !== 'function';
+    const prodesMarks =
+      prodesLossYears.length > 1
+        ? [
+            { value: prodesMinYear, label: String(prodesMinYear) },
+            { value: prodesMaxYear, label: String(prodesMaxYear) },
+          ]
+        : undefined;
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
@@ -348,13 +426,13 @@ export default class LegendCheckbox extends Component {
           </div>
         </div>
 
-        {layer.id === soyPlantedArea ? this.soyPlantedYearPicker(layer) : null}
+        {layer.id === soyPlantedArea && this.soyPlantedYearPicker(layer)}
 
-        {symbolsLength > 1 && layer.id !== soyPlantedArea ? (
+        {symbolsLength > 1 && layer.id !== soyPlantedArea && (
           <ul className="layer-legend">{layer.legendConfig.items.map(this.layerLegendMap)}</ul>
-        ) : null}
+        )}
 
-        {store.getState().clarkLabsLayers && layer.id === clarkLabsAquacultureLandCover ? (
+        {store.getState().clarkLabsLayers && layer.id === clarkLabsAquacultureLandCover && (
           <ClarkLabsLayerLeyend
             disabled={grayed}
             landCoverLayer={layer}
@@ -362,7 +440,7 @@ export default class LegendCheckbox extends Component {
               (layer) => layer.id === clarkLabsAquacultureLandChange
             )}
           />
-        ) : null}
+        )}
 
         {deforestationAlertsIds.includes(layer.id) && (
           <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
@@ -380,19 +458,39 @@ export default class LegendCheckbox extends Component {
           <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={grayed} />
         )}
 
-        {layer.id === proLayers.prodesDeforestationID && <ProdesDeforestation disabled={grayed} />}
+        {layer.id === prodesDeforestationID && prodesLossYears.length > 0 && (
+          <Box sx={{ mr: 2.5, mt: 2 }}>
+            <YearRangeSlider
+              startYear={selectedProdesStartYear}
+              endYear={selectedProdesEndYear}
+              minYear={prodesMinYear}
+              maxYear={prodesMaxYear}
+              marks={prodesMarks}
+              disabled={prodesSliderDisabled}
+              onYearChange={this.handleProdesTimelineChange}
+              sliderSx={{
+                '& .MuiSlider-markLabel:first-of-type': {
+                  left: '3%',
+                },
+                '& .MuiSlider-markLabel:last-of-type': {
+                  left: '70%',
+                },
+              }}
+            />
+          </Box>
+        )}
 
         {symbolsLength === 1 &&
-        categoriesLength > 0 &&
-        !deforestationAlertsIds.includes(layer.id) &&
-        layer.id !== clarkLabsAquacultureLandCover &&
-        layer.id !== soyPlantedArea ? (
-          <ul className="layer-legend">
-            {layer.legendConfig.items[0].categories.map(this.layerLegendMap)}
-          </ul>
-        ) : null}
+          categoriesLength > 0 &&
+          !deforestationAlertsIds.includes(layer.id) &&
+          layer.id !== clarkLabsAquacultureLandCover &&
+          layer.id !== soyPlantedArea && (
+            <ul className="layer-legend">
+              {layer.legendConfig.items[0].categories.map(this.layerLegendMap)}
+            </ul>
+          )}
 
-        {layer.id === aboveGroundBiomassId ? (
+        {layer.id === aboveGroundBiomassId && (
           <p className="layer-legend-message">
             {mapPage.groundBiomassStart}
             <span
@@ -401,8 +499,8 @@ export default class LegendCheckbox extends Component {
             >{`>${this.props.canopyDensity}%`}</span>
             {mapPage.densityLossEnd}
           </p>
-        ) : null}
-        {densityDisplayLayers.indexOf(layer.id) > -1 ? (
+        )}
+        {densityDisplayLayers.indexOf(layer.id) > -1 && (
           <p className="layer-legend-message">
             {mapPage.densityLossStart}
             <span
@@ -411,8 +509,8 @@ export default class LegendCheckbox extends Component {
             >{`>30%`}</span>
             {mapPage.densityLossEnd}
           </p>
-        ) : null}
-        {layer.id === treeCoverLossID ? (
+        )}
+        {layer.id === treeCoverLossID && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
             <Box onClick={this.handleTclSwitchClick} sx={{ '&:hover': { cursor: 'pointer' } }}>
               <Switch
@@ -421,11 +519,12 @@ export default class LegendCheckbox extends Component {
                 checked={isTclSwitchOn}
               />
             </Box>
-            {!isTclSwitchOn ? (
+            {!isTclSwitchOn && (
               <p className="layer-legend-message layer-legend-message--tcl">
                 No canopy density filter applied.
               </p>
-            ) : (
+            )}
+            {isTclSwitchOn && (
               <p className="layer-legend-message layer-legend-message--tcl">
                 Displaying loss with
                 <span
@@ -453,43 +552,87 @@ export default class LegendCheckbox extends Component {
               </Box>
             </HelperTextWithPopover>
           </Box>
-        ) : null}
-        {layer.id === treeBiomassLossID ? (
-          <div className="layer-details carbon-stocks">
-            <ul className="carbon-labels">
-              <li>0</li>
-              <li>
-                917
-                <span className="units">
-                  {' '}
-                  t CO2 ha <sup>-1</sup>
+        )}
+        {layer.id === treeBiomassLossID && (
+          <>
+            {biomassLossYears.length > 0 && (
+              <Box sx={{ mr: 2.5, mt: 2 }}>
+                <YearRangeSlider
+                  startYear={selectedBiomassStartYear}
+                  endYear={selectedBiomassEndYear}
+                  minYear={biomassMinYear}
+                  maxYear={biomassMaxYear}
+                  marks={biomassMarks}
+                  disabled={biomassSliderDisabled}
+                  onYearChange={this.handleBiomassTimelineChange}
+                  sliderSx={{
+                    '& .MuiSlider-markLabel:first-of-type': {
+                      left: '3%',
+                    },
+                    '& .MuiSlider-markLabel:last-of-type': {
+                      left: '70%',
+                    },
+                  }}
+                />
+              </Box>
+            )}
+            <div className="layer-details carbon-stocks">
+              <ul className="carbon-labels">
+                <li>0</li>
+                <li>
+                  917
+                  <span className="units">
+                    {' '}
+                    t CO2 ha <sup>-1</sup>
+                  </span>
+                </li>
+              </ul>
+              <div className="quartile-tree-biomass-loss"></div>
+              <p className="canopy-range">Show values between</p>
+              <span className="canopy-range-wrapper">
+                <span className="canopy-range-button">
+                  <input
+                    type="number"
+                    step="1"
+                    onChange={this.updateBiomassMin}
+                    value={this.props.biomassRange.min}
+                  />
                 </span>
-              </li>
-            </ul>
-            <div className="quartile-tree-biomass-loss"></div>
-            <p className="canopy-range">Show values between</p>
-            <span className="canopy-range-wrapper">
-              <span className="canopy-range-button">
-                <input
-                  type="number"
-                  step="1"
-                  onChange={this.updateBiomassMin}
-                  value={this.props.biomassRange.min}
-                />
+                to
+                <span className="canopy-range-button">
+                  <input
+                    type="number"
+                    step="1"
+                    onChange={this.updateBiomassMax}
+                    value={this.props.biomassRange.max}
+                  />
+                </span>
               </span>
-              to
-              <span className="canopy-range-button">
-                <input
-                  type="number"
-                  step="1"
-                  onChange={this.updateBiomassMax}
-                  value={this.props.biomassRange.max}
-                />
-              </span>
-            </span>
-          </div>
-        ) : null}
-        {layer.id === aboveGroundBiomassId ? (
+            </div>
+          </>
+        )}
+        {layer.id === treeCoverGainID && treeCoverLossYears.length > 0 && (
+          <Box sx={{ mr: 2.5, mt: 2 }}>
+            <YearRangeSlider
+              startYear={selectedTreeCoverStartYear}
+              endYear={selectedTreeCoverEndYear}
+              minYear={treeCoverMinYear}
+              maxYear={treeCoverMaxYear}
+              marks={treeCoverMarks}
+              disabled={treeCoverSliderDisabled}
+              onYearChange={this.handleTreeCoverTimelineChange}
+              sliderSx={{
+                '& .MuiSlider-markLabel:first-of-type': {
+                  left: '3%',
+                },
+                '& .MuiSlider-markLabel:last-of-type': {
+                  left: '70%',
+                },
+              }}
+            />
+          </Box>
+        )}
+        {layer.id === aboveGroundBiomassId && (
           <div className="layer-details carbon-stocks">
             <ul className="carbon-labels">
               <li>0</li>
@@ -509,16 +652,16 @@ export default class LegendCheckbox extends Component {
               </a>
             </p>
           </div>
-        ) : null}
-        {layerWarning ? (
+        )}
+        {layerWarning && (
           <p className="layer-legend-message">
             {layerWarning.title}
             <span onClick={this.displayWarning} className="layer-legend-warning-source">
               ?
             </span>
           </p>
-        ) : null}
-        {layer.id === viirsActiveFiresID ? (
+        )}
+        {layer.id === viirsActiveFiresID && (
           <p className="layer-legend-message">
             For more information about this layer{' '}
             <a
@@ -532,7 +675,7 @@ export default class LegendCheckbox extends Component {
               </svg>
             </a>
           </p>
-        ) : null}
+        )}
       </div>
     );
   }

@@ -100,11 +100,8 @@ import ControlPanel from './controls/ControlPanel';
 import Warning from './controls/Warning';
 import AdhocAnalysis from './controls/AdhocAnalysis';
 import Legend from './legend/Legend';
-import BiomassControls from './layerPanel/BiomassControls';
 import FiresControls from './layerPanel/FiresControls';
 import LayerPanel from './layerPanel/LayerPanel';
-import LossControls from './layerPanel/LossControls';
-import ProdesControls from './layerPanel/ProdesControls';
 import DrawShapeNoteDetailsModal from './modals/DrawShapeNoteDetailsModal';
 import BasemapModal from './modals/BasemapModal';
 import { CanopyModal } from './modals/CanopyModal';
@@ -2841,28 +2838,6 @@ class Map extends Component {
 
         <AdhocAnalysis visibleLayers={visibleLayers} dateSliderDateRange={gladDateRange} />
 
-        <ProdesControls
-          loaded={this.view && this.view.ready}
-          visible={visibleLayers.indexOf(prodesDeforestationID) > -1}
-          setProdesTimeline={this.setProdesTimeline}
-        />
-
-        <BiomassControls
-          loaded={this.view && this.view.ready}
-          visible={visibleLayers.indexOf(treeBiomassLossID) > -1}
-          setBiomassTimeline={this.setBiomassTimeline}
-        />
-
-        <LossControls
-          loaded={this.view && this.view.ready}
-          visible={
-            visibleLayers.includes(treeCoverLossID) ||
-            visibleLayers.includes(argentineanNativeForestsLoss) ||
-            visibleLayers.includes(treeCoverGainID)
-          }
-          setLossTimeline={this.setLossTimeline}
-        />
-
         <FiresControls
           fireDays={this.state.fireDays}
           visible={visibleLayers.indexOf(viirsActiveFiresID) > -1}
@@ -2976,10 +2951,16 @@ class Map extends Component {
           gfwListDef={gfwListDef}
           visibleLayers={visibleLayers}
           biomassRange={biomassRange}
+          biomassLossDateRange={this.state.biomassLossDateRange}
+          treeCoverLossDateRange={this.state.treeCoverLossDateRange}
+          prodesDateRange={this.state.prodesDateRange}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
           layerOpacity={this.state.layerOpacity}
           dispatch={store.dispatch}
+          setBiomassTimeline={this.setBiomassTimeline}
+          setLossTimeline={this.setLossTimeline}
+          setProdesTimeline={this.setProdesTimeline}
         />
 
         <div style={containerStyle} className="map-container">

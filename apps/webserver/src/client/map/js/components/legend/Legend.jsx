@@ -42,6 +42,9 @@ export default class Legend extends Component {
   createLayerLegend = (layer, i) => (
     <LegendCheckbox
       biomassRange={this.props.biomassRange}
+      biomassLossDateRange={this.props.biomassLossDateRange}
+      treeCoverLossDateRange={this.props.treeCoverLossDateRange}
+      prodesDateRange={this.props.prodesDateRange}
       canopyDensity={this.props.canopyDensity}
       treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
       key={i}
@@ -54,6 +57,9 @@ export default class Legend extends Component {
       gfwListDef={this.props.gfwListDef}
       selectedLists={this.props.selectedLists}
       mapLayers={this.props.mapLayers}
+      setBiomassTimeline={this.props.setBiomassTimeline}
+      setLossTimeline={this.props.setLossTimeline}
+      setProdesTimeline={this.props.setProdesTimeline}
     />
   );
 

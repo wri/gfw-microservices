@@ -83,18 +83,12 @@ export const noLocationLayers = [proLayers.brazilBiomesID];
 
 export const exclusiveDrawLayers = [
   proLayers.treeCoverLossID,
-  proLayers.treeCoverGainID,
-  proLayers.prodesDeforestationID,
-  proLayers.treeBiomassLossID,
   proLayers.gladAlertsID,
   proLayers.viirsActiveFiresID,
 ];
 
 export const exclusiveLayers = [
   proLayers.treeCoverLossID,
-  proLayers.treeCoverGainID,
-  proLayers.prodesDeforestationID,
-  proLayers.treeBiomassLossID,
   proLayers.gladAlertsID,
   proLayers.gladS2AlertsID,
   proLayers.raddAlertsID,

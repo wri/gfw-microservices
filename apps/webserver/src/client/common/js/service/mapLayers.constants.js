@@ -209,7 +209,7 @@ export const mapLayers = [
     id: '62bd1e7f-3fd7-4622-808c-733730bc25bd',
     type: 'layer',
     attributes: {
-      name: 'PRODES Deforestation Vizz Brazil',
+      name: proLayers.prodesDeforestationVizzBrazil,
       slug: 'PRODES-Deforestation-Vizz-Brazil_1',
       dataset: 'ae3275ec-6334-46b8-8904-4000cec04f50',
       application: ['gfw-pro'],
@@ -256,7 +256,7 @@ export const mapLayers = [
     id: 'b10fa690-8379-475f-abe4-4d44e4d77b17',
     type: 'layer',
     attributes: {
-      name: 'PRODES Deforestation Vizz',
+      name: proLayers.prodesDeforestationID,
       slug: 'PRODES-Deforestation-Vizz_1',
       dataset: 'ae3275ec-6334-46b8-8904-4000cec04f50',
       application: ['gfw-pro'],

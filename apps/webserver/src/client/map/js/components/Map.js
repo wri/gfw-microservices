@@ -50,6 +50,7 @@ import {
   toggleTreeCoverLossCanopyModal,
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
+import { UPDATE_PRODES_DEFORESTATION_FILTER } from '../constants/actionTypes';
 
 import {
   DATA_API_URL,
@@ -452,6 +453,7 @@ class Map extends Component {
       driverOfDisturbanceAlertsFilter,
       globalVegetationDisturbanceAlertsFilter,
       globalIntegratedDisturbanceAlertsFilter,
+      prodesDeforestationFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -851,6 +853,25 @@ class Map extends Component {
         duplicate.visible = true;
         this.view.map.layers.reorder(duplicate, index);
       });
+    }
+
+    if (
+      prodesDeforestationFilter &&
+      prevState.prodesDeforestationFilter &&
+      hasFilterChanged(prevState.prodesDeforestationFilter, prodesDeforestationFilter)
+    ) {
+      const { prodesDateRange } = this.state;
+
+      if (
+        !prodesDateRange ||
+        prodesDateRange.startYear !== prodesDeforestationFilter.startYear ||
+        prodesDateRange.endYear !== prodesDeforestationFilter.endYear
+      ) {
+        this.setProdesTimeline(
+          prodesDeforestationFilter.startYear,
+          prodesDeforestationFilter.endYear
+        );
+      }
     }
 
     if (
@@ -2611,6 +2632,18 @@ class Map extends Component {
   };
 
   setProdesTimeline = (startYear, endYear) => {
+    const currentFilter = store.getState().prodesDeforestationFilter;
+    if (
+      !currentFilter ||
+      currentFilter.startYear !== startYear ||
+      currentFilter.endYear !== endYear
+    ) {
+      store.dispatch({
+        type: UPDATE_PRODES_DEFORESTATION_FILTER,
+        payload: { startYear, endYear },
+      });
+    }
+
     this.updateProdesVectorTileLayerStyle(startYear, endYear);
 
     const newState = { startYear, endYear };

@@ -54,6 +54,7 @@ import {
 import './LegendCheckbox.scss';
 import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
 import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
+import { ProdesDeforestation } from './custom/ProdesDeforestation';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -378,6 +379,8 @@ export default class LegendCheckbox extends Component {
         {layer.id === globalIntegratedDisturbanceAlertsId && (
           <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={grayed} />
         )}
+
+        {layer.id === proLayers.prodesDeforestationID && <ProdesDeforestation disabled={grayed} />}
 
         {symbolsLength === 1 &&
         categoriesLength > 0 &&

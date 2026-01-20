@@ -33,6 +33,7 @@ import {
   updateDriverOfDisturbanceAlertsFilter,
   updateGlobalVegetationDisturbanceAlertsFilter,
   updateGlobalIntegratedDisturbanceAlertsFilter,
+  updateProdesDeforestationFilter,
 } from './mapReducer';
 import * as analysisReducer from './analysisReducer';
 
@@ -76,6 +77,7 @@ const appReducer = combineReducers({
   driverOfDisturbanceAlertsFilter: updateDriverOfDisturbanceAlertsFilter,
   globalVegetationDisturbanceAlertsFilter: updateGlobalVegetationDisturbanceAlertsFilter,
   globalIntegratedDisturbanceAlertsFilter: updateGlobalIntegratedDisturbanceAlertsFilter,
+  prodesDeforestationFilter: updateProdesDeforestationFilter,
 });
 
 const rootReducer = (state, action) => {

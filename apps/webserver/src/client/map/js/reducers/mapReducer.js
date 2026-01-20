@@ -35,11 +35,13 @@ import {
   UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
+  UPDATE_PRODES_DEFORESTATION_FILTER,
 } from '../constants/actionTypes';
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
   dcfAlertsDateRange,
+  mapPage,
 } from '../../../common/js/config';
 import {
   proLayers,
@@ -95,6 +97,10 @@ const initialLocationState = {
     endDate: dcfAlertsDateRange.max,
     vegetationType: 'all-vegetation',
     onlyHighConfidenceAlerts: false,
+  },
+  prodesDeforestationFilter: {
+    startYear: mapPage.prodesLossYears[0],
+    endYear: mapPage.prodesLossYears[mapPage.prodesLossYears.length - 1],
   },
 };
 
@@ -323,6 +329,22 @@ export function updateGlobalIntegratedDisturbanceAlertsFilter(
   return action.type !== UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER
     ? state
     : action.payload;
+}
+
+export function updateProdesDeforestationFilter(
+  state = initialLocationState.prodesDeforestationFilter,
+  action
+) {
+  if (action.type !== UPDATE_PRODES_DEFORESTATION_FILTER) {
+    return state;
+  }
+
+  const { startYear, endYear } = action.payload;
+  if (state.startYear === startYear && state.endYear === endYear) {
+    return state;
+  }
+
+  return action.payload;
 }
 
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(

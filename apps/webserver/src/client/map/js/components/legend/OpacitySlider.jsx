@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import './OpacitySlider.scss';
 
 const OpacitySlider = ({ value, onChange, disabled }) => {
@@ -12,7 +12,8 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
 
   const handleChange = (e) => {
     // Convert 0-100 range back to 0-1 for the parent component
-    onChange(Number(e.target.value) / 100);
+    const newValue = Number(e.target.value) / 100;
+    onChange(newValue);
   };
 
   const togglePopup = (e) => {
@@ -32,7 +33,7 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
     setIsOpen(!isOpen);
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = useCallback((event) => {
     if (
       popupRef.current &&
       !popupRef.current.contains(event.target) &&
@@ -41,7 +42,7 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
     ) {
       setIsOpen(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,22 +51,30 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, handleClickOutside]);
 
   return (
     <div className="opacity-slider-wrapper">
-      <div ref={iconRef} className="opacity-icon" onClick={togglePopup}>
+      <button
+        ref={iconRef}
+        className="opacity-icon"
+        onClick={togglePopup}
+        disabled={disabled}
+        type="button"
+        aria-label="Adjust opacity"
+      >
         <svg
           width="11"
           height="10"
           viewBox="0 0 11 10"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
         >
-          <g clip-path="url(#clip0_8567_5104)">
+          <g clipPath="url(#clip0_8567_5104)">
             <path
               d="M8.35714 0.896071V9.10357C7.92571 9.40464 7.44464 9.63929 6.92857 9.79286V0.207143C7.44464 0.360714 7.92571 0.595357 8.35714 0.896429V0.896071ZM9.78571 2.42321C10.2393 3.17571 10.5 4.0575 10.5 5C10.5 5.9425 10.2393 6.82429 9.78571 7.57679V2.42321ZM5.5 0V10C2.73857 10 0.5 7.76143 0.5 5C0.5 2.23857 2.73857 0 5.5 0Z"
-              fill="#5C5959"
+              fill="currentColor"
             />
           </g>
           <defs>
@@ -74,7 +83,7 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
             </clipPath>
           </defs>
         </svg>
-      </div>
+      </button>
 
       {isOpen && (
         <div
@@ -96,6 +105,9 @@ const OpacitySlider = ({ value, onChange, disabled }) => {
               onChange={handleChange}
               className="opacity-range"
               disabled={disabled}
+              style={{
+                background: `linear-gradient(to right, #ff6699 0%, #ff6699 ${displayValue}%, #e0e0e0 ${displayValue}%, #e0e0e0 100%)`,
+              }}
             />
             <div className="slider-labels">
               <span>0%</span>

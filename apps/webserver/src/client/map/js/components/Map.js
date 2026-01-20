@@ -48,12 +48,14 @@ import {
   updateTreeCoverLossCanopyDensity,
   toggleCanopyModal,
   toggleTreeCoverLossCanopyModal,
+  updateDeforestationAlertsDateRange,
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
 import { UPDATE_PRODES_DEFORESTATION_FILTER } from '../constants/actionTypes';
 
 import {
   DATA_API_URL,
+  deforestationAlertDateRange,
   disturbanceAlertsVegetationTypes,
   mapPage,
   supportedGeostoreAnalysis,
@@ -98,7 +100,6 @@ import { getQueryParams } from './getQueryParams';
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
 import Warning from './controls/Warning';
-import AdhocAnalysis from './controls/AdhocAnalysis';
 import Legend from './legend/Legend';
 import FiresControls from './layerPanel/FiresControls';
 import LayerPanel from './layerPanel/LayerPanel';
@@ -897,11 +898,13 @@ class Map extends Component {
       });
     }
 
-    const { gladDateRange, biomassRange } = this.state;
+    const { deforestationAlertsDateRanges, biomassRange } = this.state;
+    const currentGladRange = deforestationAlertsDateRanges?.[gladAlertsID] || {};
+    const previousGladRange = prevState.deforestationAlertsDateRanges?.[gladAlertsID] || {};
 
     if (
-      prevState.gladDateRange?.start !== gladDateRange?.start ||
-      prevState.gladDateRange?.end !== gladDateRange?.end
+      previousGladRange.startDate !== currentGladRange.startDate ||
+      previousGladRange.endDate !== currentGladRange.endDate
     ) {
       this.updateActiveAnalysis();
     }
@@ -1625,8 +1628,17 @@ class Map extends Component {
       //get the URL first, then fetch the data and update the store
       const dataApi__analysisGLAD = `${DATA_API_URL}/dataApi/analysisGLAD/`;
       const GROUP_BY_COLUMN = 'umd_glad_landsat_alerts__date';
-      const start_date = format(new Date(this.state.gladDateRange.start), 'yyyy-MM-dd');
-      const end_date = format(new Date(this.state.gladDateRange.end), 'yyyy-MM-dd');
+      const gladLayerRange =
+        this.state.deforestationAlertsDateRanges?.[gladAlertsID] || deforestationAlertDateRange;
+      const startIso =
+        gladLayerRange.startDate || gladLayerRange.minDate || deforestationAlertDateRange.startDate;
+      const endIso =
+        gladLayerRange.endDate ||
+        gladLayerRange.maxDate ||
+        deforestationAlertDateRange.endDate ||
+        new Date().toISOString().split('T')[0];
+      const start_date = format(new Date(startIso), 'yyyy-MM-dd');
+      const end_date = format(new Date(endIso), 'yyyy-MM-dd');
       const analysisURL = `${dataApi__analysisGLAD}?geostore_origin=${origin}&geostoreID=${geostoreID}&group_by=${GROUP_BY_COLUMN}&start_date=${start_date}&end_date=${end_date}`;
 
       fetch(analysisURL, {
@@ -2373,13 +2385,22 @@ class Map extends Component {
           resolve();
         });
         promise.then(() => {
-          if (selectedTimeframe === 'QUARTER') {
-            store.dispatch(analysisActions.setGLADEndDate(firstDayOfThisMonth));
-          }
-          if (selectedTimeframe === 'MONTH') {
-            store.dispatch(analysisActions.setGLADEndDate(new Date()));
-          }
-          store.dispatch(analysisActions.setGLADStartDate(startDate));
+          const layerIdsToUpdate = [gladAlertsID, integratedDeforestationAlertsID].filter((id) =>
+            visibleLayers?.includes(id)
+          );
+          const endDate = selectedTimeframe === 'QUARTER' ? firstDayOfThisMonth : new Date();
+          const startIso = startDate.toISOString().split('T')[0];
+          const endIso = endDate.toISOString().split('T')[0];
+
+          layerIdsToUpdate.forEach((layerId) => {
+            store.dispatch(
+              updateDeforestationAlertsDateRange({
+                layerId,
+                startDate: startIso,
+                endDate: endIso,
+              })
+            );
+          });
         });
       } else if (visibleLayers?.includes(viirsActiveFiresID)) {
         let fireDays = 1;
@@ -2761,7 +2782,6 @@ class Map extends Component {
       canopyDensity,
       treeCoverLossCanopyDensity,
       drawingActive,
-      gladDateRange,
       biomassRange,
       prodesDateRange,
       analysisResults,
@@ -2778,6 +2798,7 @@ class Map extends Component {
       isMapLoading,
       listNotAccessible,
       selectedList,
+      deforestationAlertsDateRanges,
     } = this.state;
 
     const { userLists, locationCount, gfwLists, userSharedLists } = this.props;
@@ -2835,8 +2856,6 @@ class Map extends Component {
           zoomOut={this.zoomOut}
           zoomIn={this.zoomIn}
         />
-
-        <AdhocAnalysis visibleLayers={visibleLayers} dateSliderDateRange={gladDateRange} />
 
         <FiresControls
           fireDays={this.state.fireDays}
@@ -2921,11 +2940,11 @@ class Map extends Component {
           selectedAnalysis={selectedAnalysis}
           visibleLayers={visibleLayers}
           analysisWarning={analysisWarning}
-          gladDateRange={gladDateRange}
           biomassRange={biomassRange}
           prodesDateRange={prodesDateRange}
           fireDays={fireDays}
           treeCoverLossDateRange={treeCoverLossDateRange}
+          deforestationAlertsDateRanges={deforestationAlertsDateRanges}
           canopyDensity={canopyDensity}
           treeCoverLossCanopyDensity={treeCoverLossCanopyDensity}
           sketchTool={sketchTool}

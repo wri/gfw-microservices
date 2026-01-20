@@ -1,4 +1,6 @@
 import errorLogger from '../../../common/js/utils/errorLogger';
+import { deforestationAlertDateRange } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 
 const utils = {
   /**
@@ -188,18 +190,35 @@ const utils = {
     let valueLabel = '';
     switch (label) {
       case 'GLAD':
-        date = props.gladDateRange;
-        startDate = `${date.start.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.start.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        endDate = `${date.end.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.end.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        valueLabel = `total alerts (${startDate} to ${endDate})`;
+        date = props.deforestationAlertsDateRanges?.[proLayers.gladAlertsID];
+        startDate = date?.startDate || date?.minDate || deforestationAlertDateRange.startDate;
+        endDate = date?.endDate || date?.maxDate || deforestationAlertDateRange.endDate;
+
+        const parseDateValue = (value) => {
+          if (!value) {
+            return null;
+          }
+          const parsed = new Date(value);
+          return Number.isNaN(parsed.getTime()) ? null : parsed;
+        };
+
+        const formatMonthYear = (dateValue) => {
+          if (!dateValue) {
+            return '--';
+          }
+          return `${dateValue.toLocaleString('en-us', {
+            month: 'short',
+          })}-${dateValue.toLocaleString('en-us', {
+            year: 'numeric',
+          })}`;
+        };
+
+        const startDateObj = parseDateValue(startDate);
+        const endDateObj = parseDateValue(endDate);
+
+        valueLabel = `total alerts (${formatMonthYear(startDateObj)} to ${formatMonthYear(
+          endDateObj
+        )})`;
         break;
       case 'LOSS':
         date = props.treeCoverLossDateRange;

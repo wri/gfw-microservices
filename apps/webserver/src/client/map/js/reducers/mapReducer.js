@@ -36,11 +36,13 @@ import {
   UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
   UPDATE_PRODES_DEFORESTATION_FILTER,
+  UPDATE_DEFORESTATION_ALERTS_DATE_RANGE,
 } from '../constants/actionTypes';
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
   dcfAlertsDateRange,
+  deforestationAlertDateRange,
   mapPage,
 } from '../../../common/js/config';
 import {
@@ -49,6 +51,20 @@ import {
   visibleLayers,
   DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY,
 } from '../../../common/js/proLayers.config';
+
+const DEFORESTATION_ALERT_LAYER_IDS = [
+  proLayers.integratedDeforestationAlertsID,
+  proLayers.raddAlertsID,
+  proLayers.gladAlertsID,
+  proLayers.gladS2AlertsID,
+];
+
+const buildDefaultDeforestationAlertDateRanges = () => {
+  return DEFORESTATION_ALERT_LAYER_IDS.reduce((acc, layerId) => {
+    acc[layerId] = deforestationAlertDateRange;
+    return acc;
+  }, {});
+};
 
 const initialLocationState = {
   mapLayers: [],
@@ -102,6 +118,7 @@ const initialLocationState = {
     startYear: mapPage.prodesLossYears[0],
     endYear: mapPage.prodesLossYears[mapPage.prodesLossYears.length - 1],
   },
+  deforestationAlertsDateRanges: buildDefaultDeforestationAlertDateRanges(),
 };
 
 export function layerOpacity(state = initialLocationState.layerOpacity, action) {
@@ -354,4 +371,43 @@ export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(
   return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS
     ? state
     : !state;
+}
+
+export function updateDeforestationAlertsDateRanges(
+  state = initialLocationState.deforestationAlertsDateRanges,
+  action
+) {
+  switch (action.type) {
+    case UPDATE_DEFORESTATION_ALERTS_DATE_RANGE: {
+      const { layerId, startDate, endDate } = action.payload || {};
+      if (!layerId) {
+        return state;
+      }
+
+      const currentRange = state[layerId] || deforestationAlertDateRange;
+      const nextRange = { ...currentRange };
+      let hasChanges = false;
+
+      if (startDate && startDate !== currentRange.startDate) {
+        nextRange.startDate = startDate;
+        hasChanges = true;
+      }
+
+      if (endDate && endDate !== currentRange.endDate) {
+        nextRange.endDate = endDate;
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        return state;
+      }
+
+      return {
+        ...state,
+        [layerId]: nextRange,
+      };
+    }
+    default:
+      return state;
+  }
 }

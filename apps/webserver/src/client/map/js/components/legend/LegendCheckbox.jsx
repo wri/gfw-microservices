@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import store from '../../store';
 import _range from 'lodash/range';
 import { Box, Typography } from '@mui/material';
@@ -15,7 +15,7 @@ import {
   updateGFWLocations,
   updateSoyYear,
   updateTreeCoverLossCanopyDensity,
-  setLayerOpacity,
+  setLayerOpacity as setLayerOpacityAction,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
 import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
@@ -55,50 +55,51 @@ import './LegendCheckbox.scss';
 import { GlobalVegetationDisturbanceAlertsLayerLegend } from './custom/GlobalVegetationDisturbanceAlertsLayerLegend';
 import { GlobalIntegratedDisturbanceAlertsLayerLegend } from './custom/GlobalIntegratedDisturbanceAlertsLayerLegend';
 
-export default class LegendCheckbox extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      layerHidden: false,
-    };
-  }
+const LegendCheckbox = (props) => {
+  const { layer, visibleLayers, iconLoading, gfwListDef } = props;
 
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.visibleLayers.includes(this.props.layer.id) &&
-      !this.props.visibleLayers.includes(this.props.layer.id) &&
-      this.state.layerHidden
-    ) {
-      this.hardShow();
-    }
-  }
+  const [layerHidden, setLayerHidden] = useState(false);
+  const [layerOpacity, setLayerOpacity] = useState(store.getState().layerOpacity || {});
 
-  hardShow = () => {
-    this.setState({
-      layerHidden: false,
+  // Subscribe to store changes to update opacity
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      const newLayerOpacity = store.getState().layerOpacity || {};
+      setLayerOpacity(newLayerOpacity);
     });
-  };
 
-  clearGFWFilter = () => {
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // componentDidUpdate equivalent - check if layer was removed from visibleLayers
+  useEffect(() => {
+    if (!visibleLayers.includes(layer.id) && layerHidden) {
+      setLayerHidden(false);
+    }
+  }, [visibleLayers, layer.id, layerHidden]);
+
+  const clearGFWFilter = useCallback(() => {
     store.dispatch(updateGFWLocations({}));
-  };
+  }, []);
 
-  showInfo = () => {
-    store.dispatch(showLoading(this.props.layer.id));
-    store.dispatch(getLayerInfo(this.props.layer));
-  };
+  const showInfo = useCallback(() => {
+    store.dispatch(showLoading(layer.id));
+    store.dispatch(getLayerInfo(layer));
+  }, [layer]);
 
-  updateBiomassMin = (evt) => {
+  const updateBiomassMin = useCallback((evt) => {
     store.dispatch(setBiomassMinRange(evt.target.value));
-  };
+  }, []);
 
-  updateBiomassMax = (evt) => {
+  const updateBiomassMax = useCallback((evt) => {
     store.dispatch(setBiomassMaxRange(evt.target.value));
-  };
+  }, []);
 
-  hideLayer = () => {
+  const hideLayer = useCallback(() => {
     const { visibleLayers } = store.getState();
-    const layerId = this.props.layer.id;
+    const layerId = layer.id;
 
     if (deforestationAlertsIds.includes(layerId)) {
       // Toggle the layer itself
@@ -129,35 +130,36 @@ export default class LegendCheckbox extends Component {
       store.dispatch(toggleLayer(layerId));
     }
 
-    if (this.props.gfwListDef[layerId]) {
-      this.clearGFWFilter();
+    if (gfwListDef[layerId]) {
+      clearGFWFilter();
     }
-  };
+  }, [layer.id, gfwListDef, clearGFWFilter]);
 
-  handleToggleCanopyModal = () => {
+  const handleToggleCanopyModal = useCallback(() => {
     store.dispatch(toggleCanopyModal());
-  };
+  }, []);
 
-  handleToggleTreeCoverLossCanopyModal = () => {
+  const handleToggleTreeCoverLossCanopyModal = useCallback(() => {
     store.dispatch(toggleTreeCoverLossCanopyModal());
-  };
+  }, []);
 
-  handleTclSwitchClick = () => {
-    const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
+  const handleTclSwitchClick = useCallback(() => {
+    const isTclSwitchOn = props.treeCoverLossCanopyDensity > 0;
     store.dispatch(
       updateTreeCoverLossCanopyDensity(isTclSwitchOn ? 0 : DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY)
     );
-  };
+  }, [props.treeCoverLossCanopyDensity]);
 
-  handleOpacityChange(opacity) {
-    const { layer, dispatch } = this.props;
-    if (layer && layer.id) {
-      dispatch(setLayerOpacity({ layerId: layer.id, opacity }));
-    }
-  }
+  const handleOpacityChange = useCallback(
+    (opacity) => {
+      if (layer && layer.id) {
+        store.dispatch(setLayerOpacityAction({ layerId: layer.id, opacity }));
+      }
+    },
+    [layer]
+  );
 
-  toggleLayerVisibility = async () => {
-    const { layer, visibleLayers, toggleLayerVisibility } = this.props;
+  const toggleLayerVisibility = useCallback(async () => {
     const layerId = layer.id;
     let layersToToggle = [layerId]; // Start with the main layer
 
@@ -183,14 +185,12 @@ export default class LegendCheckbox extends Component {
       }
     }
 
-    layersToToggle.forEach((id) => toggleLayerVisibility(id)); // Toggle all collected layers
+    layersToToggle.forEach((id) => props.toggleLayerVisibility(id)); // Toggle all collected layers
 
-    this.setState((prev) => ({
-      layerHidden: !prev.layerHidden,
-    }));
-  };
+    setLayerHidden((prev) => !prev);
+  }, [layer.id, visibleLayers, props]);
 
-  layerLegendMap = (symbol, i) => {
+  const layerLegendMap = useCallback((symbol, i) => {
     const symbolStyle = {
       background: symbol.color,
     };
@@ -207,330 +207,327 @@ export default class LegendCheckbox extends Component {
         )}
       </li>
     );
-  };
+  }, []);
 
-  displayWarning = () => {
-    const layerWarning = layerWarnings.find((warning) => warning.id === this.props.layer.id);
-
-    store.dispatch(showBasemapInfo(layerWarning.content));
-  };
-
-  soyPlantedYearPicker = (layer) => {
-    const { soyYear } = store.getState();
-    const years = _range(soyPlantedYearsRange[0], soyPlantedYearsRange[1] + 1);
-    return (
-      <>
-        <ul className="layer-legend">{layer.legendConfig.items.map(this.layerLegendMap)}</ul>
-        <div className="soy-year-picker">
-          <p className="layer-legend-message">{'Displaying Soy planted area in'}</p>
-          <div className="landsat-dropdown-root">
-            <GfwSelect
-              options={years}
-              value={soyYear}
-              onChange={(evt) => {
-                store.dispatch(updateSoyYear(evt.value));
-              }}
-            />
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  render() {
-    const { layer, visibleLayers, iconLoading, gfwListDef } = this.props;
-    const label = layer.legendConfig.items[0].name;
-    const grayed = this.state.layerHidden ? 'grayed' : '';
-    const symbolsLength = layer.legendConfig.items ? layer.legendConfig.items.length : 0;
-    const categoriesLength =
-      symbolsLength === 1 && layer.legendConfig.items[0].categories
-        ? layer.legendConfig.items[0].categories.length
-        : 0;
+  const displayWarning = useCallback(() => {
     const layerWarning = layerWarnings.find((warning) => warning.id === layer.id);
+    store.dispatch(showBasemapInfo(layerWarning.content));
+  }, [layer.id]);
 
-    const symbolStyle = {
-      fill: 'green',
-    };
-
-    if (symbolsLength === 1) {
-      symbolStyle.fill = layer.legendConfig.items[0].color;
-    }
-
-    let hidden;
-
-    if (layer.id === clarkLabsAquacultureLandCover) {
-      hidden = store.getState().clarkLabsLayers ? '' : 'hidden';
-    } else {
-      // we hide the legend for deforestationAlertsGeographicCoverageIds as they depend on the deforestation alerts
-      hidden =
-        visibleLayers.indexOf(layer.id) === -1 ||
-        deforestationAlertsGeographicCoverageIds.includes(layer.id)
-          ? 'hidden'
-          : '';
-    }
-    const isInfoButtonVisible = !!layer.metadataId;
-    const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
-    const opacity = this.props.layerOpacity?.[this.props.layer.id] ?? 1;
-    return (
-      <div
-        className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
-        id={layer.id + '-layer-checkbox'}
-      >
-        <div style={{ display: 'flex', marginBottom: '10px' }}>
-          <div style={{ flex: 1 }}>
-            <span
-              onClick={this.toggleLayerVisibility}
-              className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
-                iconLoading === layer.id ? 'iconLoading' : ''
-              }`}
-            >
-              {grayed === 'grayed' ? (
-                <svg>
-                  <use xlinkHref="#icon-hide-layer-map" />
-                </svg>
-              ) : (
-                <svg style={symbolStyle}>
-                  <use xlinkHref="#icon-show-layer-map" />
-                </svg>
-              )}
-            </span>
-            <span className="legend-layer-name">{layer.name}</span>
-
-            <span className="layer-checkbox-label">{label}</span>
-          </div>
-
-          <div className="layer-actions">
-            <div className="layer-actions__action-button">
-              <OpacitySlider
-                value={opacity}
-                onChange={(value) => this.handleOpacityChange(value)}
+  const soyPlantedYearPicker = useCallback(
+    (layer) => {
+      const { soyYear } = store.getState();
+      const years = _range(soyPlantedYearsRange[0], soyPlantedYearsRange[1] + 1);
+      return (
+        <>
+          <ul className="layer-legend">{layer.legendConfig.items.map(layerLegendMap)}</ul>
+          <div className="soy-year-picker">
+            <p className="layer-legend-message">{'Displaying Soy planted area in'}</p>
+            <div className="landsat-dropdown-root">
+              <GfwSelect
+                options={years}
+                value={soyYear}
+                onChange={(evt) => {
+                  store.dispatch(updateSoyYear(evt.value));
+                }}
               />
             </div>
+          </div>
+        </>
+      );
+    },
+    [layerLegendMap]
+  );
 
-            {gfwListDef &&
-              Object.keys(gfwListDef).length > 0 &&
-              Object.keys(gfwListDef)[0] === layer.id && (
-                <div className="layer-actions__action-button">
-                  <span
-                    className="legend-checkbox-icon gfw-filter pointer"
-                    onClick={this.clearGFWFilter}
-                  >
-                    <svg>
-                      <use xlinkHref="#shape-close" />
-                    </svg>
-                  </span>
-                </div>
-              )}
+  // Render function body
+  const label = layer.legendConfig.items[0].name;
+  const grayed = layerHidden ? 'grayed' : '';
+  const symbolsLength = layer.legendConfig.items ? layer.legendConfig.items.length : 0;
+  const categoriesLength =
+    symbolsLength === 1 && layer.legendConfig.items[0].categories
+      ? layer.legendConfig.items[0].categories.length
+      : 0;
+  const layerWarning = layerWarnings.find((warning) => warning.id === layer.id);
 
-            {isInfoButtonVisible && (
+  const symbolStyle = {
+    fill: 'green',
+  };
+
+  if (symbolsLength === 1) {
+    symbolStyle.fill = layer.legendConfig.items[0].color;
+  }
+
+  let hidden;
+
+  if (layer.id === clarkLabsAquacultureLandCover) {
+    hidden = store.getState().clarkLabsLayers ? '' : 'hidden';
+  } else {
+    // we hide the legend for deforestationAlertsGeographicCoverageIds as they depend on the deforestation alerts
+    hidden =
+      visibleLayers.indexOf(layer.id) === -1 ||
+      deforestationAlertsGeographicCoverageIds.includes(layer.id)
+        ? 'hidden'
+        : '';
+  }
+  const isInfoButtonVisible = !!layer.metadataId;
+  const isTclSwitchOn = props.treeCoverLossCanopyDensity > 0;
+  const opacity = layerOpacity?.[layer.id] ?? 1;
+
+  return (
+    <div
+      className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
+      id={layer.id + '-layer-checkbox'}
+    >
+      <div style={{ display: 'flex', marginBottom: '10px' }}>
+        <div style={{ flex: 1 }}>
+          <span
+            onClick={toggleLayerVisibility}
+            className={`legend-checkbox-icon icon-eye pointer ${grayed} ${
+              iconLoading === layer.id ? 'iconLoading' : ''
+            }`}
+          >
+            {grayed === 'grayed' ? (
+              <svg>
+                <use xlinkHref="#icon-hide-layer-map" />
+              </svg>
+            ) : (
+              <svg style={symbolStyle}>
+                <use xlinkHref="#icon-show-layer-map" />
+              </svg>
+            )}
+          </span>
+          <span className="legend-layer-name">{layer.name}</span>
+
+          <span className="layer-checkbox-label">{label}</span>
+        </div>
+
+        <div className="layer-actions">
+          <div className="layer-actions__action-button">
+            <OpacitySlider value={opacity} onChange={handleOpacityChange} />
+          </div>
+
+          {gfwListDef &&
+            Object.keys(gfwListDef).length > 0 &&
+            Object.keys(gfwListDef)[0] === layer.id && (
               <div className="layer-actions__action-button">
-                <span
-                  className={`legend-checkbox-icon metadata-legend pointer ${
-                    iconLoading === layer.id ? 'iconLoading' : ''
-                  }`}
-                  onClick={this.showInfo}
-                >
+                <span className="legend-checkbox-icon gfw-filter pointer" onClick={clearGFWFilter}>
                   <svg>
-                    <use xlinkHref="#shape-info" />
+                    <use xlinkHref="#shape-close" />
                   </svg>
                 </span>
               </div>
             )}
 
+          {isInfoButtonVisible && (
             <div className="layer-actions__action-button">
-              <span className="legend-checkbox-icon pointer" onClick={this.hideLayer}>
+              <span
+                className={`legend-checkbox-icon metadata-legend pointer ${
+                  iconLoading === layer.id ? 'iconLoading' : ''
+                }`}
+                onClick={showInfo}
+              >
                 <svg>
-                  <use xlinkHref="#shape-close" />
+                  <use xlinkHref="#shape-info" />
                 </svg>
               </span>
             </div>
+          )}
+
+          <div className="layer-actions__action-button">
+            <span className="legend-checkbox-icon pointer" onClick={hideLayer}>
+              <svg>
+                <use xlinkHref="#shape-close" />
+              </svg>
+            </span>
           </div>
         </div>
+      </div>
 
-        {layer.id === soyPlantedArea ? this.soyPlantedYearPicker(layer) : null}
+      {layer.id === soyPlantedArea ? soyPlantedYearPicker(layer) : null}
 
-        {symbolsLength > 1 && layer.id !== soyPlantedArea ? (
-          <ul className="layer-legend">{layer.legendConfig.items.map(this.layerLegendMap)}</ul>
-        ) : null}
+      {symbolsLength > 1 && layer.id !== soyPlantedArea ? (
+        <ul className="layer-legend">{layer.legendConfig.items.map(layerLegendMap)}</ul>
+      ) : null}
 
-        {store.getState().clarkLabsLayers && layer.id === clarkLabsAquacultureLandCover ? (
-          <ClarkLabsLayerLeyend
-            disabled={grayed}
-            landCoverLayer={layer}
-            landChangeLayer={this.props.mapLayers.find(
-              (layer) => layer.id === clarkLabsAquacultureLandChange
-            )}
-          />
-        ) : null}
+      {store.getState().clarkLabsLayers && layer.id === clarkLabsAquacultureLandCover ? (
+        <ClarkLabsLayerLeyend
+          disabled={layerHidden}
+          landCoverLayer={layer}
+          landChangeLayer={props.mapLayers.find(
+            (layer) => layer.id === clarkLabsAquacultureLandChange
+          )}
+        />
+      ) : null}
 
-        {deforestationAlertsIds.includes(layer.id) && (
-          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
-        )}
+      {deforestationAlertsIds.includes(layer.id) && (
+        <DeforestationAlertsLayerLegend disabled={layerHidden} layerId={layer.id} />
+      )}
 
-        {disturbanceAlertsDriversId.includes(layer.id) && (
-          <DriverOfDisturbanceAlertsLayerLegend disabled={grayed} />
-        )}
+      {disturbanceAlertsDriversId.includes(layer.id) && (
+        <DriverOfDisturbanceAlertsLayerLegend disabled={layerHidden} />
+      )}
 
-        {globalVegetationDisturbanceAlertsId.includes(layer.id) && (
-          <GlobalVegetationDisturbanceAlertsLayerLegend disabled={grayed} />
-        )}
+      {globalVegetationDisturbanceAlertsId.includes(layer.id) && (
+        <GlobalVegetationDisturbanceAlertsLayerLegend disabled={layerHidden} />
+      )}
 
-        {layer.id === globalIntegratedDisturbanceAlertsId && (
-          <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={grayed} />
-        )}
+      {layer.id === globalIntegratedDisturbanceAlertsId && (
+        <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={layerHidden} />
+      )}
 
-        {symbolsLength === 1 &&
-        categoriesLength > 0 &&
-        !deforestationAlertsIds.includes(layer.id) &&
-        layer.id !== clarkLabsAquacultureLandCover &&
-        layer.id !== soyPlantedArea ? (
-          <ul className="layer-legend">
-            {layer.legendConfig.items[0].categories.map(this.layerLegendMap)}
-          </ul>
-        ) : null}
+      {symbolsLength === 1 &&
+      categoriesLength > 0 &&
+      !deforestationAlertsIds.includes(layer.id) &&
+      layer.id !== clarkLabsAquacultureLandCover &&
+      layer.id !== soyPlantedArea ? (
+        <ul className="layer-legend">
+          {layer.legendConfig.items[0].categories.map(layerLegendMap)}
+        </ul>
+      ) : null}
 
-        {layer.id === aboveGroundBiomassId ? (
-          <p className="layer-legend-message">
-            {mapPage.groundBiomassStart}
-            <span
-              onClick={this.handleToggleCanopyModal}
-              className="layer-legend-loss-display"
-            >{`>${this.props.canopyDensity}%`}</span>
-            {mapPage.densityLossEnd}
-          </p>
-        ) : null}
-        {densityDisplayLayers.indexOf(layer.id) > -1 ? (
-          <p className="layer-legend-message">
-            {mapPage.densityLossStart}
-            <span
-              onClick={this.handleToggleCanopyModal}
-              className="layer-legend-loss-display"
-            >{`>30%`}</span>
-            {mapPage.densityLossEnd}
-          </p>
-        ) : null}
-        {layer.id === treeCoverLossID ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-            <Box onClick={this.handleTclSwitchClick} sx={{ '&:hover': { cursor: 'pointer' } }}>
-              <Switch
-                id={`tree-cover-loss-switch-${layer.id}`}
-                name={`treeCoverLossCanopyDensity-${layer.id}`}
-                checked={isTclSwitchOn}
-              />
-            </Box>
-            {!isTclSwitchOn ? (
-              <p className="layer-legend-message layer-legend-message--tcl">
-                No canopy density filter applied.
-              </p>
-            ) : (
-              <p className="layer-legend-message layer-legend-message--tcl">
-                Displaying loss with
-                <span
-                  onClick={this.handleToggleTreeCoverLossCanopyModal}
-                  className="layer-legend-loss-display "
-                >{`>${this.props.treeCoverLossCanopyDensity}%`}</span>
-                {mapPage.densityLossEnd}
-              </p>
-            )}
-            <HelperTextWithPopover sx={{ svg: { fontSize: '0.875rem' } }}>
-              <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
-                <Typography variant="caption">
-                  When comparing the map to the Post-2020 Risk Assessment, ensure that the canopy
-                  density filter for the Tree Cover Loss map layer is turned off and the date range
-                  is filtered to 2021 onward, then use either the {proLayers.sbtnNaturalLands} Map
-                  or the JRC Global Map of Forest Cover to assess the overlap between layers. The
-                  canopy density filter is based on the 2000 tree cover layer used in the Post-2000
-                  Forest Change analysis and allows for adjustments, while both the{' '}
-                  {proLayers.sbtnNaturalLands} Map and JRC Global Map of Forest Cover already
-                  account for canopy density. Leaving this filter on may cause relevant loss to be
-                  excluded from the map view. When comparing the map to the Post-2000 Forest Change
-                  analysis, ensure that the canopy density filter is turned on and set to 30% to
-                  match the threshold used in that analysis.
-                </Typography>
-              </Box>
-            </HelperTextWithPopover>
+      {layer.id === aboveGroundBiomassId ? (
+        <p className="layer-legend-message">
+          {mapPage.groundBiomassStart}
+          <span
+            onClick={handleToggleCanopyModal}
+            className="layer-legend-loss-display"
+          >{`>${props.canopyDensity}%`}</span>
+          {mapPage.densityLossEnd}
+        </p>
+      ) : null}
+      {densityDisplayLayers.indexOf(layer.id) > -1 ? (
+        <p className="layer-legend-message">
+          {mapPage.densityLossStart}
+          <span
+            onClick={handleToggleCanopyModal}
+            className="layer-legend-loss-display"
+          >{`>30%`}</span>
+          {mapPage.densityLossEnd}
+        </p>
+      ) : null}
+      {layer.id === treeCoverLossID ? (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+          <Box onClick={handleTclSwitchClick} sx={{ '&:hover': { cursor: 'pointer' } }}>
+            <Switch
+              id={`tree-cover-loss-switch-${layer.id}`}
+              name={`treeCoverLossCanopyDensity-${layer.id}`}
+              checked={isTclSwitchOn}
+            />
           </Box>
-        ) : null}
-        {layer.id === treeBiomassLossID ? (
-          <div className="layer-details carbon-stocks">
-            <ul className="carbon-labels">
-              <li>0</li>
-              <li>
-                917
-                <span className="units">
-                  {' '}
-                  t CO2 ha <sup>-1</sup>
-                </span>
-              </li>
-            </ul>
-            <div className="quartile-tree-biomass-loss"></div>
-            <p className="canopy-range">Show values between</p>
-            <span className="canopy-range-wrapper">
-              <span className="canopy-range-button">
-                <input
-                  type="number"
-                  step="1"
-                  onChange={this.updateBiomassMin}
-                  value={this.props.biomassRange.min}
-                />
-              </span>
-              to
-              <span className="canopy-range-button">
-                <input
-                  type="number"
-                  step="1"
-                  onChange={this.updateBiomassMax}
-                  value={this.props.biomassRange.max}
-                />
-              </span>
-            </span>
-          </div>
-        ) : null}
-        {layer.id === aboveGroundBiomassId ? (
-          <div className="layer-details carbon-stocks">
-            <ul className="carbon-labels">
-              <li>0</li>
-              <li>
-                500
-                <span className="units">
-                  {' '}
-                  Mg Ha <sup>-1</sup>
-                </span>
-              </li>
-            </ul>
-            <div className="quartile-biomass-loss"></div>
-            <p className="canopy">For more information about this layer</p>
-            <p className="canopy">
-              <a href="http://climate.globalforestwatch.org/" target="_blank">
-                Check out GFW Climate ➤
-              </a>
+          {!isTclSwitchOn ? (
+            <p className="layer-legend-message layer-legend-message--tcl">
+              No canopy density filter applied.
             </p>
-          </div>
-        ) : null}
-        {layerWarning ? (
-          <p className="layer-legend-message">
-            {layerWarning.title}
-            <span onClick={this.displayWarning} className="layer-legend-warning-source">
-              ?
+          ) : (
+            <p className="layer-legend-message layer-legend-message--tcl">
+              Displaying loss with
+              <span
+                onClick={handleToggleTreeCoverLossCanopyModal}
+                className="layer-legend-loss-display "
+              >{`>${props.treeCoverLossCanopyDensity}%`}</span>
+              {mapPage.densityLossEnd}
+            </p>
+          )}
+          <HelperTextWithPopover sx={{ svg: { fontSize: '0.875rem' } }}>
+            <Box sx={{ width: (theme) => theme.spacing(37), p: 1 }}>
+              <Typography variant="caption">
+                When comparing the map to the Post-2020 Risk Assessment, ensure that the canopy
+                density filter for the Tree Cover Loss map layer is turned off and the date range is
+                filtered to 2021 onward, then use either the {proLayers.sbtnNaturalLands} Map or the
+                JRC Global Map of Forest Cover to assess the overlap between layers. The canopy
+                density filter is based on the 2000 tree cover layer used in the Post-2000 Forest
+                Change analysis and allows for adjustments, while both the{' '}
+                {proLayers.sbtnNaturalLands} Map and JRC Global Map of Forest Cover already account
+                for canopy density. Leaving this filter on may cause relevant loss to be excluded
+                from the map view. When comparing the map to the Post-2000 Forest Change analysis,
+                ensure that the canopy density filter is turned on and set to 30% to match the
+                threshold used in that analysis.
+              </Typography>
+            </Box>
+          </HelperTextWithPopover>
+        </Box>
+      ) : null}
+      {layer.id === treeBiomassLossID ? (
+        <div className="layer-details carbon-stocks">
+          <ul className="carbon-labels">
+            <li>0</li>
+            <li>
+              917
+              <span className="units">
+                {' '}
+                t CO2 ha <sup>-1</sup>
+              </span>
+            </li>
+          </ul>
+          <div className="quartile-tree-biomass-loss"></div>
+          <p className="canopy-range">Show values between</p>
+          <span className="canopy-range-wrapper">
+            <span className="canopy-range-button">
+              <input
+                type="number"
+                step="1"
+                onChange={updateBiomassMin}
+                value={props.biomassRange.min}
+              />
             </span>
-          </p>
-        ) : null}
-        {layer.id === viirsActiveFiresID ? (
-          <p className="layer-legend-message">
-            For more information about this layer{' '}
-            <a
-              href="http://fires.globalforestwatch.org/home/"
-              target="_blank"
-              className="layer-legend-link link-viirs"
-            >
-              Check out GFW Fires
-              <svg>
-                <use xlinkHref="#icon-navigate" />
-              </svg>
+            to
+            <span className="canopy-range-button">
+              <input
+                type="number"
+                step="1"
+                onChange={updateBiomassMax}
+                value={props.biomassRange.max}
+              />
+            </span>
+          </span>
+        </div>
+      ) : null}
+      {layer.id === aboveGroundBiomassId ? (
+        <div className="layer-details carbon-stocks">
+          <ul className="carbon-labels">
+            <li>0</li>
+            <li>
+              500
+              <span className="units">
+                {' '}
+                Mg Ha <sup>-1</sup>
+              </span>
+            </li>
+          </ul>
+          <div className="quartile-biomass-loss"></div>
+          <p className="canopy">For more information about this layer</p>
+          <p className="canopy">
+            <a href="http://climate.globalforestwatch.org/" target="_blank">
+              Check out GFW Climate ➤
             </a>
           </p>
-        ) : null}
-      </div>
-    );
-  }
-}
+        </div>
+      ) : null}
+      {layerWarning ? (
+        <p className="layer-legend-message">
+          {layerWarning.title}
+          <span onClick={displayWarning} className="layer-legend-warning-source">
+            ?
+          </span>
+        </p>
+      ) : null}
+      {layer.id === viirsActiveFiresID ? (
+        <p className="layer-legend-message">
+          For more information about this layer{' '}
+          <a
+            href="http://fires.globalforestwatch.org/home/"
+            target="_blank"
+            className="layer-legend-link link-viirs"
+          >
+            Check out GFW Fires
+            <svg>
+              <use xlinkHref="#icon-navigate" />
+            </svg>
+          </a>
+        </p>
+      ) : null}
+    </div>
+  );
+};
+
+export default LegendCheckbox;

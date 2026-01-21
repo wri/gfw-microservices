@@ -2054,10 +2054,10 @@ export const mapLayers = [
     id: 'd76fc62e-8f13-4a1b-bb51-60aef1ee08b1',
     type: 'layer',
     attributes: {
-      name: 'VIIRS Global Fires',
+      name: proLayers.viirsActiveFiresID,
       slug: 'VIIRS-Global-Fires_3',
       dataset: 'cc074b15-d311-43cf-8dba-beec571d2406',
-      description: 'VIIRS Global Fires',
+      description: proLayers.viirsActiveFiresID,
       application: ['gfw-pro'],
       iso: [],
       provider: 'featureservice',

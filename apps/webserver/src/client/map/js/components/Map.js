@@ -100,7 +100,6 @@ import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
 import Warning from './controls/Warning';
 import Legend from './legend/Legend';
-import FiresControls from './layerPanel/FiresControls';
 import LayerPanel from './layerPanel/LayerPanel';
 import DrawShapeNoteDetailsModal from './modals/DrawShapeNoteDetailsModal';
 import BasemapModal from './modals/BasemapModal';
@@ -145,14 +144,11 @@ const {
   rspoConcessions,
   rspoPalmOilMills,
   treeBiomassLossID,
-  treeCoverLossID,
-  treeCoverGainID,
   treePlantationsSpecies,
   universalMillList,
   userLocations,
   viirsActiveFiresID,
   soyPlantedArea,
-  argentineanNativeForestsLoss,
   integratedDeforestationAlertsID,
   globalIntegratedDisturbanceAlertsId,
   disturbanceAlertsDriversId,
@@ -2857,11 +2853,6 @@ class Map extends Component {
           zoomIn={this.zoomIn}
         />
 
-        <FiresControls
-          fireDays={this.state.fireDays}
-          visible={visibleLayers.indexOf(viirsActiveFiresID) > -1}
-        />
-
         <div
           className={`layer-modal-container modal-wrapper ${
             visibleLayerInfo.title ? '' : 'hidden'
@@ -2973,6 +2964,7 @@ class Map extends Component {
           biomassLossDateRange={this.state.biomassLossDateRange}
           treeCoverLossDateRange={this.state.treeCoverLossDateRange}
           prodesDateRange={this.state.prodesDateRange}
+          fireDays={fireDays}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
           layerOpacity={this.state.layerOpacity}

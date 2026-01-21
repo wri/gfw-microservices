@@ -90,3 +90,12 @@
     height: 15px;
   }
 }
+
+.fires-timeframe-picker {
+  display: flex;
+  align-items: center;
+
+  .landsat-dropdown-root {
+    margin-left: 0.5rem;
+  }
+}

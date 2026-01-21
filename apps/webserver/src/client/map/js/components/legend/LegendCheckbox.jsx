@@ -16,6 +16,7 @@ import {
   updateSoyYear,
   updateTreeCoverLossCanopyDensity,
   setLayerOpacity,
+  setFireDays,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
 import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
@@ -254,6 +255,32 @@ export default class LegendCheckbox extends Component {
           </div>
         </div>
       </>
+    );
+  };
+
+  firesTimeframePicker = () => {
+    const timeframeOptions = [
+      { value: 7, label: 'Past Week' },
+      { value: 3, label: 'Past 72 Hours' },
+      { value: 2, label: 'Past 48 Hours' },
+      { value: 1, label: 'Past 24 Hours' },
+    ];
+    const currentFireDays = this.props.fireDays || 7;
+    const selectedOption = timeframeOptions.find((opt) => opt.value === currentFireDays);
+
+    return (
+      <div className="fires-timeframe-picker">
+        <p className="layer-legend-message">{'Displaying fires from'}</p>
+        <div className="landsat-dropdown-root">
+          <GfwSelect
+            options={timeframeOptions}
+            value={selectedOption}
+            onChange={(evt) => {
+              store.dispatch(setFireDays(Number(evt.value)));
+            }}
+          />
+        </div>
+      </div>
     );
   };
 
@@ -662,19 +689,22 @@ export default class LegendCheckbox extends Component {
           </p>
         )}
         {layer.id === viirsActiveFiresID && (
-          <p className="layer-legend-message">
-            For more information about this layer{' '}
-            <a
-              href="http://fires.globalforestwatch.org/home/"
-              target="_blank"
-              className="layer-legend-link link-viirs"
-            >
-              Check out GFW Fires
-              <svg>
-                <use xlinkHref="#icon-navigate" />
-              </svg>
-            </a>
-          </p>
+          <>
+            {this.firesTimeframePicker()}
+            <p className="layer-legend-message">
+              For more information about this layer{' '}
+              <a
+                href="http://fires.globalforestwatch.org/home/"
+                target="_blank"
+                className="layer-legend-link link-viirs"
+              >
+                Check out GFW Fires
+                <svg>
+                  <use xlinkHref="#icon-navigate" />
+                </svg>
+              </a>
+            </p>
+          </>
         )}
       </div>
     );

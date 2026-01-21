@@ -156,53 +156,38 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
       return action.data;
     } else {
       const newLayers = [];
-      if (analysisEnabledLayers.includes(action.data)) {
-        state.forEach((layer) => {
-          if (layer !== action.data && !analysisEnabledLayers.includes(layer)) {
-            newLayers.push(layer);
-          }
+      // Check if layer is currently visible
+      const isCurrentlyVisible = state.includes(action.data);
 
-          //Tree cover loss and Tree cover gain are exclusive but can be shown together
-          if (
-            (action.data === proLayers.treeCoverLossID && layer === proLayers.treeCoverGainID) ||
-            (action.data === proLayers.treeCoverGainID && layer === proLayers.treeCoverLossID)
-          ) {
-            newLayers.push(layer);
-          }
-        });
-        if (!state.includes(action.data)) {
-          newLayers.push(action.data);
+      // Keep all layers except the one being toggled
+      state.forEach((layer) => {
+        if (layer !== action.data) {
+          newLayers.push(layer);
         }
+      });
+
+      // If layer wasn't visible, add it
+      if (!isCurrentlyVisible) {
+        newLayers.push(action.data);
       } else {
-        state.forEach((layer) => {
-          if (layer !== action.data) {
-            newLayers.push(layer);
+        // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
+        if (action.data === proLayers.disturbanceAlertsDriversId) {
+          const index = newLayers.indexOf(proLayers.disturbanceAlertsDriversGeographicCoverageId);
+          if (index > -1) {
+            newLayers.splice(index, 1);
           }
-        });
-        if (state.length === newLayers.length) {
-          newLayers.push(action.data);
-        } else {
-          // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
-          if (action.data === proLayers.disturbanceAlertsDriversId) {
-            const index = newLayers.indexOf(proLayers.disturbanceAlertsDriversGeographicCoverageId);
-            if (index > -1) {
-              newLayers.splice(index, 1);
-            }
+        }
+        // If removing globalIntegratedDisturbanceAlertsId, also remove its geographic coverage layers
+        if (action.data === proLayers.globalIntegratedDisturbanceAlertsId) {
+          const globalVegIndex = newLayers.indexOf(
+            proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
+          );
+          if (globalVegIndex > -1) {
+            newLayers.splice(globalVegIndex, 1);
           }
-          // If removing globalIntegratedDisturbanceAlertsId, also remove its geographic coverage layers
-          if (action.data === proLayers.globalIntegratedDisturbanceAlertsId) {
-            const globalVegIndex = newLayers.indexOf(
-              proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
-            );
-            if (globalVegIndex > -1) {
-              newLayers.splice(globalVegIndex, 1);
-            }
-            const integratedIndex = newLayers.indexOf(
-              proLayers.integratedAlertsGeographicCoverageID
-            );
-            if (integratedIndex > -1) {
-              newLayers.splice(integratedIndex, 1);
-            }
+          const integratedIndex = newLayers.indexOf(proLayers.integratedAlertsGeographicCoverageID);
+          if (integratedIndex > -1) {
+            newLayers.splice(integratedIndex, 1);
           }
         }
       }

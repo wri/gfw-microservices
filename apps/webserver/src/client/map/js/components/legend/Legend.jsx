@@ -47,6 +47,7 @@ export default class Legend extends Component {
       prodesDateRange={this.props.prodesDateRange}
       canopyDensity={this.props.canopyDensity}
       treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
+      fireDays={this.props.fireDays}
       key={i}
       layer={layer}
       visibleLayers={this.props.visibleLayers}

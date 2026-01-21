@@ -81,9 +81,13 @@ export const densityDisplayLayers = [proLayers.treeCoverID, proLayers.treeBiomas
 
 export const noLocationLayers = [proLayers.brazilBiomesID];
 
-export const exclusiveDrawLayers = [];
-
-export const exclusiveLayers = [];
+export const analysisEnabledLayers = [
+  proLayers.treeCoverLossID,
+  proLayers.gladAlertsID,
+  proLayers.gladS2AlertsID,
+  proLayers.raddAlertsID,
+  proLayers.viirsActiveFiresID,
+];
 
 export const visibleLayers = [
   proLayers.treeCoverLossID,

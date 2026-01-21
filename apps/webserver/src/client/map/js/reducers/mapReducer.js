@@ -47,7 +47,7 @@ import {
 } from '../../../common/js/config';
 import {
   proLayers,
-  exclusiveLayers,
+  analysisEnabledLayers,
   visibleLayers,
   DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY,
 } from '../../../common/js/proLayers.config';
@@ -145,7 +145,7 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
     const newLayers = [];
 
     state.forEach((layer) => {
-      if (!exclusiveLayers.includes(layer)) {
+      if (!analysisEnabledLayers.includes(layer)) {
         newLayers.push(layer);
       }
     });
@@ -156,9 +156,9 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
       return action.data;
     } else {
       const newLayers = [];
-      if (exclusiveLayers.includes(action.data)) {
+      if (analysisEnabledLayers.includes(action.data)) {
         state.forEach((layer) => {
-          if (layer !== action.data && !exclusiveLayers.includes(layer)) {
+          if (layer !== action.data && !analysisEnabledLayers.includes(layer)) {
             newLayers.push(layer);
           }
 

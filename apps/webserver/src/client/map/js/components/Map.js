@@ -64,8 +64,7 @@ import {
   proLayers,
   vectorEnabledLayers,
   noLocationLayers,
-  exclusiveDrawLayers,
-  exclusiveLayers,
+  analysisEnabledLayers,
   visibleLayers as visibleLayersConstants,
   gfwListsZoomTargets,
 } from '../../../common/js/proLayers.config';
@@ -480,7 +479,7 @@ class Map extends Component {
           }
         }
 
-        if (exclusiveLayers.includes(nowVisibleLayer)) {
+        if (analysisEnabledLayers.includes(nowVisibleLayer)) {
           this.view.popup.actions.forEach((action) => {
             if (action.id === 'ANALYZE') {
               action.visible = true;
@@ -511,7 +510,7 @@ class Map extends Component {
           }
         }
 
-        if (exclusiveLayers.includes(nowHiddenLayer)) {
+        if (analysisEnabledLayers.includes(nowHiddenLayer)) {
           this.view.popup.actions.forEach((action) => {
             if (action.id === 'ANALYZE') {
               action.visible = false;
@@ -643,9 +642,8 @@ class Map extends Component {
         drawnGraphic.length > 0 ||
         activeAnalysis === 'region')
     ) {
-      const disablePolygon = !visibleLayers.some(
-        (visibleLayer) => exclusiveDrawLayers.indexOf(visibleLayer) !== -1
-      );
+      const hasAnalysisLayer = visibleLayers.some((layer) => analysisEnabledLayers.includes(layer));
+      const disablePolygon = !hasAnalysisLayer;
       if (disablePolygon && (drawnGraphic.length === 0 || activeAnalysis === 'region')) {
         if (drawnGraphic.length === 0) {
           drawnGraphic.push(this.view.graphics.items[0]);
@@ -1005,7 +1003,7 @@ class Map extends Component {
       const analyzeAction = this.view.popup.actions.items.find((item) => item.id === 'ANALYZE');
       if (analyzeAction) {
         const analysisEnabledLayerExists = this.state.visibleLayers.some((l) =>
-          exclusiveLayers.includes(l)
+          analysisEnabledLayers.includes(l)
         );
         analyzeAction.visible = analysisEnabledLayerExists;
       }
@@ -2062,7 +2060,9 @@ class Map extends Component {
       }
 
       const isPointGeometry = selectedFeat.geometry?.type === 'point';
-      const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
+      const currentForestChange = visibleLayers.some((layer) =>
+        analysisEnabledLayers.includes(layer)
+      );
 
       this.view.popup.actions.forEach((action) => {
         if (selectedFeat.layerName === viirsActiveFiresID) {

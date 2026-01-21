@@ -348,7 +348,7 @@ const LegendCheckbox = (props) => {
   }
   const isInfoButtonVisible = !!layer.metadataId;
   const isTclSwitchOn = props.treeCoverLossCanopyDensity > 0;
-  const opacity = layerOpacity?.[layer.id];
+  const opacity = layerOpacity?.[layer.id] ?? 1;
 
   const isGrayed = grayed === 'grayed';
 

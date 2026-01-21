@@ -1,27 +1,67 @@
-import store from '../../../store';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   toggleLayer,
+  updateDeforestationAlertsDateRange,
 } from '../../../actions/mapActions';
 import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 import DeforestationAlertsMapLegends from './DeforestationAlertsMapLegends';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.constants';
+import { DateRangeSlider } from '../../../../../components';
+import { formatDateValue } from '../../../../../common/js/utils/dateUtils';
 const { integratedDeforestationAlertsID } = proLayers;
 
 const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
-  const { visibleLayers, showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
+  const dispatch = useDispatch();
+  const {
+    visibleLayers,
+    showHighConfidenceAlertsOnDeforestationAlertsLayer,
+    deforestationAlertsDateRanges,
+  } = useSelector((state) => ({
+    visibleLayers: state.visibleLayers,
+    showHighConfidenceAlertsOnDeforestationAlertsLayer:
+      state.showHighConfidenceAlertsOnDeforestationAlertsLayer,
+    deforestationAlertsDateRanges: state.deforestationAlertsDateRanges,
+  }));
   const geographicCoverageLayer = deforestationAlertsLayerToCoverageMap[layerId];
+  const isDisabled = !!disabled;
+  const layerDateRange = deforestationAlertsDateRanges?.[layerId] || {};
+
+  const todayIso = formatDateValue(new Date());
+  const minDate = formatDateValue(layerDateRange.minDate) || todayIso;
+  const maxDate = formatDateValue(layerDateRange.maxDate) || todayIso;
+  const startDateValue = formatDateValue(layerDateRange.startDate) || minDate;
+  const endDateValue = formatDateValue(layerDateRange.endDate) || maxDate;
 
   const toggleGeographicCoverageLayer = () => {
-    if (!disabled) {
-      store.dispatch(toggleLayer(geographicCoverageLayer));
+    if (!isDisabled) {
+      dispatch(toggleLayer(geographicCoverageLayer));
     }
   };
 
   const toggleHighConfidenceAlerts = () => {
-    if (!disabled) {
-      store.dispatch(toggleHighConfidenceAlertsForDeforestationAlertsLayers());
+    if (!isDisabled) {
+      dispatch(toggleHighConfidenceAlertsForDeforestationAlertsLayers());
+    }
+  };
+
+  const handleDateRangeChange = (newStartDate, newEndDate) => {
+    if (isDisabled) {
+      return;
+    }
+
+    const nextStart = newStartDate || startDateValue;
+    const nextEnd = newEndDate || endDateValue;
+
+    if (nextStart !== layerDateRange.startDate || nextEnd !== layerDateRange.endDate) {
+      dispatch(
+        updateDeforestationAlertsDateRange({
+          layerId,
+          startDate: nextStart,
+          endDate: nextEnd,
+        })
+      );
     }
   };
 
@@ -38,6 +78,16 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
   return (
     <ul className="layer-legend">
       <LegendSwitcher layerId={layerId} />
+      <li>
+        <DateRangeSlider
+          startDate={startDateValue}
+          endDate={endDateValue}
+          minDate={minDate}
+          maxDate={maxDate}
+          disabled={isDisabled}
+          onDateChange={handleDateRangeChange}
+        />
+      </li>
       <li
         className={`layer-checkbox ${
           visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''

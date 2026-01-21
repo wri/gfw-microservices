@@ -147,7 +147,7 @@ export const DateRangeSlider = ({
   };
 
   return (
-    <Box sx={{ mr: 2.5, mt: 2 }}>
+    <Box sx={{ mr: 2, mt: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
         <Typography variant="body2" sx={{ fontSize: '0.8125rem' }}>
           From

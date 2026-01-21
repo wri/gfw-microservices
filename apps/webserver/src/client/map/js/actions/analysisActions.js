@@ -9,19 +9,6 @@ export function setAnalysisAdminArea(area) {
   return { type: actionTypes.SET_ANALYSIS_ADMIN_AREA, area };
 }
 
-// Actions related to ad-hoc analysis for forest change layers
-export function setGLADStartDate(date) {
-  return { type: actionTypes.SET_GLAD_START_DATE, date };
-}
-
-export function setGLADSliderDate(date) {
-  return { type: actionTypes.SET_GLAD_SLIDER_DATE, date };
-}
-
-export function setGLADEndDate(date) {
-  return { type: actionTypes.SET_GLAD_END_DATE, date };
-}
-
 export function setBiomassMinRange(value) {
   return { type: actionTypes.SET_BIOMASS_MIN_RANGE, value };
 }

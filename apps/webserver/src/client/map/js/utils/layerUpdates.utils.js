@@ -4,6 +4,7 @@ import {
 } from '../components/legend/DeforestationAlerts/deforestationAlerts.constants';
 import { proLayers } from '../../../common/js/proLayers.config';
 import { getJulianDate } from './dateUtils';
+import { parseDateValue } from '../../../common/js/utils/dateUtils';
 
 // Function to remove and add a layer
 const redrawLayer = async (map, layer) => {
@@ -40,12 +41,12 @@ const updateMapLayerAccordingToCanopy = (map, canopyDensity, layerId) => {
 export const updateInteractiveLayers = (map, prevState, state) => {
   const {
     showHighConfidenceAlertsOnDeforestationAlertsLayer,
-    gladDateRange,
     canopyDensity,
     treeCoverLossCanopyDensity,
     biomassRange,
     biomassLossDateRange,
     treeCoverLossDateRange,
+    deforestationAlertsDateRanges,
   } = state;
 
   const { treeBiomassLossID, argentineanNativeForestsLoss, treeCoverLossID, treeCoverGainID } =
@@ -94,16 +95,40 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     updateMapLayerAccordingToCanopy(map, treeCoverLossCanopyDensity, treeCoverLossID);
   }
 
+  const deforestationRangesUpdated = deforestationAlertsIds.some((layerId) => {
+    const previousRange = prevState?.deforestationAlertsDateRanges?.[layerId];
+    const nextRange = deforestationAlertsDateRanges?.[layerId];
+
+    if (!previousRange && !nextRange) {
+      return false;
+    }
+
+    return (
+      previousRange?.startDate !== nextRange?.startDate ||
+      previousRange?.endDate !== nextRange?.endDate
+    );
+  });
+
   if (
     prevState.showHighConfidenceAlertsOnDeforestationAlertsLayer !==
       showHighConfidenceAlertsOnDeforestationAlertsLayer ||
-    prevState.gladDateRange !== gladDateRange
+    deforestationRangesUpdated
   ) {
     deforestationAlertsIds.forEach((deforestationAlertsLayer) => {
       const mapLayer = map.findLayerById(deforestationAlertsLayer);
       if (mapLayer) {
-        const julianTo = parseInt(getJulianDate(gladDateRange.end), 10);
-        const julianFrom = parseInt(getJulianDate(gladDateRange.start), 10);
+        const layerRange = deforestationAlertsDateRanges?.[deforestationAlertsLayer];
+        const layerStartDate =
+          parseDateValue(layerRange?.startDate) || parseDateValue(layerRange?.minDate);
+        const layerEndDate =
+          parseDateValue(layerRange?.endDate) || parseDateValue(layerRange?.maxDate) || new Date();
+
+        if (!layerStartDate || !layerEndDate) {
+          return;
+        }
+
+        const julianTo = parseInt(getJulianDate(layerEndDate), 10);
+        const julianFrom = parseInt(getJulianDate(layerStartDate), 10);
 
         mapLayer.julianTo = julianTo;
         mapLayer.julianFrom = julianFrom;

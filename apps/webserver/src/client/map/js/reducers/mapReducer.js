@@ -35,18 +35,36 @@ import {
   UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
+  UPDATE_PRODES_DEFORESTATION_FILTER,
+  UPDATE_DEFORESTATION_ALERTS_DATE_RANGE,
 } from '../constants/actionTypes';
 import {
   PLANET_TILE_LAYER_INITIAL,
   soyPlantedYearsRange,
   dcfAlertsDateRange,
+  deforestationAlertDateRange,
+  mapPage,
 } from '../../../common/js/config';
 import {
   proLayers,
-  exclusiveLayers,
+  analysisEnabledLayers,
   visibleLayers,
   DEFAULT_TREE_COVER_LOSS_CANOPY_DENSITY,
 } from '../../../common/js/proLayers.config';
+
+const DEFORESTATION_ALERT_LAYER_IDS = [
+  proLayers.integratedDeforestationAlertsID,
+  proLayers.raddAlertsID,
+  proLayers.gladAlertsID,
+  proLayers.gladS2AlertsID,
+];
+
+const buildDefaultDeforestationAlertDateRanges = () => {
+  return DEFORESTATION_ALERT_LAYER_IDS.reduce((acc, layerId) => {
+    acc[layerId] = { ...deforestationAlertDateRange };
+    return acc;
+  }, {});
+};
 
 const initialLocationState = {
   mapLayers: [],
@@ -96,6 +114,11 @@ const initialLocationState = {
     vegetationType: 'all-vegetation',
     onlyHighConfidenceAlerts: false,
   },
+  prodesDeforestationFilter: {
+    startYear: mapPage.prodesLossYears[0],
+    endYear: mapPage.prodesLossYears[mapPage.prodesLossYears.length - 1],
+  },
+  deforestationAlertsDateRanges: buildDefaultDeforestationAlertDateRanges(),
 };
 
 export function layerOpacity(state = initialLocationState.layerOpacity, action) {
@@ -122,7 +145,7 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
     const newLayers = [];
 
     state.forEach((layer) => {
-      if (!exclusiveLayers.includes(layer)) {
+      if (!analysisEnabledLayers.includes(layer)) {
         newLayers.push(layer);
       }
     });
@@ -133,53 +156,38 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
       return action.data;
     } else {
       const newLayers = [];
-      if (exclusiveLayers.includes(action.data)) {
-        state.forEach((layer) => {
-          if (layer !== action.data && !exclusiveLayers.includes(layer)) {
-            newLayers.push(layer);
-          }
+      // Check if layer is currently visible
+      const isCurrentlyVisible = state.includes(action.data);
 
-          //Tree cover loss and Tree cover gain are exclusive but can be shown together
-          if (
-            (action.data === proLayers.treeCoverLossID && layer === proLayers.treeCoverGainID) ||
-            (action.data === proLayers.treeCoverGainID && layer === proLayers.treeCoverLossID)
-          ) {
-            newLayers.push(layer);
-          }
-        });
-        if (!state.includes(action.data)) {
-          newLayers.push(action.data);
+      // Keep all layers except the one being toggled
+      state.forEach((layer) => {
+        if (layer !== action.data) {
+          newLayers.push(layer);
         }
+      });
+
+      // If layer wasn't visible, add it
+      if (!isCurrentlyVisible) {
+        newLayers.push(action.data);
       } else {
-        state.forEach((layer) => {
-          if (layer !== action.data) {
-            newLayers.push(layer);
+        // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
+        if (action.data === proLayers.disturbanceAlertsDriversId) {
+          const index = newLayers.indexOf(proLayers.disturbanceAlertsDriversGeographicCoverageId);
+          if (index > -1) {
+            newLayers.splice(index, 1);
           }
-        });
-        if (state.length === newLayers.length) {
-          newLayers.push(action.data);
-        } else {
-          // If removing disturbanceAlertsDriversId, also remove its geographic coverage layer
-          if (action.data === proLayers.disturbanceAlertsDriversId) {
-            const index = newLayers.indexOf(proLayers.disturbanceAlertsDriversGeographicCoverageId);
-            if (index > -1) {
-              newLayers.splice(index, 1);
-            }
+        }
+        // If removing globalIntegratedDisturbanceAlertsId, also remove its geographic coverage layers
+        if (action.data === proLayers.globalIntegratedDisturbanceAlertsId) {
+          const globalVegIndex = newLayers.indexOf(
+            proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
+          );
+          if (globalVegIndex > -1) {
+            newLayers.splice(globalVegIndex, 1);
           }
-          // If removing globalIntegratedDisturbanceAlertsId, also remove its geographic coverage layers
-          if (action.data === proLayers.globalIntegratedDisturbanceAlertsId) {
-            const globalVegIndex = newLayers.indexOf(
-              proLayers.globalVegetationDisturbanceAlertsGeographicCoverageId
-            );
-            if (globalVegIndex > -1) {
-              newLayers.splice(globalVegIndex, 1);
-            }
-            const integratedIndex = newLayers.indexOf(
-              proLayers.integratedAlertsGeographicCoverageID
-            );
-            if (integratedIndex > -1) {
-              newLayers.splice(integratedIndex, 1);
-            }
+          const integratedIndex = newLayers.indexOf(proLayers.integratedAlertsGeographicCoverageID);
+          if (integratedIndex > -1) {
+            newLayers.splice(integratedIndex, 1);
           }
         }
       }
@@ -325,6 +333,22 @@ export function updateGlobalIntegratedDisturbanceAlertsFilter(
     : action.payload;
 }
 
+export function updateProdesDeforestationFilter(
+  state = initialLocationState.prodesDeforestationFilter,
+  action
+) {
+  if (action.type !== UPDATE_PRODES_DEFORESTATION_FILTER) {
+    return state;
+  }
+
+  const { startYear, endYear } = action.payload;
+  if (state.startYear === startYear && state.endYear === endYear) {
+    return state;
+  }
+
+  return action.payload;
+}
+
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(
   state = initialLocationState.showHighConfidenceAlertsOnDeforestationAlertsLayer,
   action
@@ -332,4 +356,43 @@ export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(
   return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS
     ? state
     : !state;
+}
+
+export function updateDeforestationAlertsDateRanges(
+  state = initialLocationState.deforestationAlertsDateRanges,
+  action
+) {
+  switch (action.type) {
+    case UPDATE_DEFORESTATION_ALERTS_DATE_RANGE: {
+      const { layerId, startDate, endDate } = action.payload || {};
+      if (!layerId) {
+        return state;
+      }
+
+      const currentRange = state[layerId] || deforestationAlertDateRange;
+      const nextRange = { ...currentRange };
+      let hasChanges = false;
+
+      if (startDate && startDate !== currentRange.startDate) {
+        nextRange.startDate = startDate;
+        hasChanges = true;
+      }
+
+      if (endDate && endDate !== currentRange.endDate) {
+        nextRange.endDate = endDate;
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        return state;
+      }
+
+      return {
+        ...state,
+        [layerId]: nextRange,
+      };
+    }
+    default:
+      return state;
+  }
 }

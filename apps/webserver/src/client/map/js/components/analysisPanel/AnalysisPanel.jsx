@@ -16,7 +16,7 @@ import utils from '../../utils/AppUtils';
 import { mapPage } from '../../../../common/js/config';
 import {
   proLayers,
-  exclusiveLayers,
+  analysisEnabledLayers,
   visibleLayers as visibleLayersConstants,
   downloadLinks,
 } from '../../../../common/js/proLayers.config';
@@ -66,10 +66,10 @@ export default class AnalysisPanel extends Component {
 
   componentDidUpdate(prevProps) {
     const previousForestChange = prevProps.visibleLayers.some((layer) =>
-      exclusiveLayers.includes(layer)
+      analysisEnabledLayers.includes(layer)
     );
     const currentForestChange = this.props.visibleLayers.some((layer) =>
-      exclusiveLayers.includes(layer)
+      analysisEnabledLayers.includes(layer)
     );
 
     const prevRaddLayerVisible = prevProps.visibleLayers.includes(raddAlertsID);
@@ -110,7 +110,7 @@ export default class AnalysisPanel extends Component {
 
   checkInitialAnalysisVisibility(props) {
     return (
-      visibleLayersConstants.some((layer) => exclusiveLayers.includes(layer)) &&
+      visibleLayersConstants.some((layer) => analysisEnabledLayers.includes(layer)) &&
       props.userInfo.access_level_id !== 3
     );
   }

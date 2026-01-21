@@ -23,12 +23,22 @@ export const latestTreeCoverLossYearCommodityRisk = 2024;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
 
+const todayIso = new Date().toISOString().split('T')[0];
+const defaultStartYear = latestTreeCoverLossYearForTclDataInMap + 1;
+const startIso = `${defaultStartYear}-01-01`;
+
 export const soyPlantedYearsRange = [2001, 2024];
 
 export const dcfAlertsDateRange = {
   min: '2020-01-01',
   initialStart: `${latestTreeCoverLossYearForTclDataInMap + 1}-01-01`,
-  max: new Date().toISOString().split('T')[0],
+  max: todayIso,
+};
+export const deforestationAlertDateRange = {
+  startDate: startIso,
+  endDate: todayIso,
+  minDate: `${latestTreeCoverLossYearForTclDataInMap + 1}-01-01`,
+  maxDate: todayIso,
 };
 export const disturbanceAlertsVegetationTypes = {
   AllVegetation: 'all-vegetation',

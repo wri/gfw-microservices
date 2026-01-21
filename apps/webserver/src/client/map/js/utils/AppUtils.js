@@ -1,4 +1,7 @@
 import errorLogger from '../../../common/js/utils/errorLogger';
+import { deforestationAlertDateRange } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
+import { parseDateValue, formatMonthYear } from '../../../common/js/utils/dateUtils';
 
 const utils = {
   /**
@@ -164,7 +167,7 @@ const utils = {
   /**
    * Return the query parameters from the provided string
    * @param {string} path - Path to pull querystring from, should be location.href
-   * @return {object} - Dictionary containiner the url parameters
+   * @return {object} - Dictionary containing the url parameters
    */
   getUrlParams: (path) => {
     if (!path) {
@@ -187,20 +190,19 @@ const utils = {
     let endDate = '';
     let valueLabel = '';
     switch (label) {
-      case 'GLAD':
-        date = props.gladDateRange;
-        startDate = `${date.start.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.start.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        endDate = `${date.end.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.end.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        valueLabel = `total alerts (${startDate} to ${endDate})`;
+      case 'GLAD': {
+        date = props.deforestationAlertsDateRanges?.[proLayers.gladAlertsID];
+        startDate = date?.startDate || date?.minDate || deforestationAlertDateRange.startDate;
+        endDate = date?.endDate || date?.maxDate || deforestationAlertDateRange.endDate;
+
+        const startDateObj = parseDateValue(startDate);
+        const endDateObj = parseDateValue(endDate);
+
+        valueLabel = `total alerts (${formatMonthYear(startDateObj)} to ${formatMonthYear(
+          endDateObj
+        )})`;
         break;
+      }
       case 'LOSS':
         date = props.treeCoverLossDateRange;
         startDate = `${date.startYear}`;

@@ -4,15 +4,7 @@ import {
 } from '../components/legend/DeforestationAlerts/deforestationAlerts.constants';
 import { proLayers } from '../../../common/js/proLayers.config';
 import { getJulianDate } from './dateUtils';
-
-const parseDateValue = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  const date = value instanceof Date ? value : new Date(value);
-  return Number.isNaN(date.getTime()) ? null : date;
-};
+import { parseDateValue } from '../../../common/js/utils/dateUtils';
 
 // Function to remove and add a layer
 const redrawLayer = async (map, layer) => {

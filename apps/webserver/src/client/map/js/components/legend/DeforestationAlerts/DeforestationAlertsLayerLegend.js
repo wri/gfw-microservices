@@ -9,6 +9,7 @@ import DeforestationAlertsMapLegends from './DeforestationAlertsMapLegends';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.constants';
 import { DateRangeSlider } from '../../../../../components';
+import { formatDateValue } from '../../../../../common/js/utils/dateUtils';
 const { integratedDeforestationAlertsID } = proLayers;
 
 const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
@@ -27,27 +28,11 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
   const isDisabled = !!disabled;
   const layerDateRange = deforestationAlertsDateRanges?.[layerId] || {};
 
-  const formatDateValue = (value) => {
-    if (!value) {
-      return '';
-    }
-
-    const date = value instanceof Date ? value : new Date(value);
-    const timestamp = date.getTime();
-    if (Number.isNaN(timestamp)) {
-      return '';
-    }
-
-    return date.toISOString().split('T')[0];
-  };
-
   const todayIso = formatDateValue(new Date());
-  const sliderStartDate = formatDateValue(layerDateRange.startDate) || todayIso;
-  const sliderEndDate = formatDateValue(layerDateRange.endDate) || todayIso;
-  const sliderMinDate = formatDateValue(layerDateRange.minDate) || sliderStartDate;
-  const sliderMaxDate = formatDateValue(layerDateRange.maxDate) || todayIso;
-  const startDateValue = sliderStartDate || sliderMinDate || sliderMaxDate;
-  const endDateValue = sliderEndDate || sliderMaxDate;
+  const minDate = formatDateValue(layerDateRange.minDate) || todayIso;
+  const maxDate = formatDateValue(layerDateRange.maxDate) || todayIso;
+  const startDateValue = formatDateValue(layerDateRange.startDate) || minDate;
+  const endDateValue = formatDateValue(layerDateRange.endDate) || maxDate;
 
   const toggleGeographicCoverageLayer = () => {
     if (!isDisabled) {
@@ -97,8 +82,8 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
         <DateRangeSlider
           startDate={startDateValue}
           endDate={endDateValue}
-          minDate={sliderMinDate || startDateValue}
-          maxDate={sliderMaxDate}
+          minDate={minDate}
+          maxDate={maxDate}
           disabled={isDisabled}
           onDateChange={handleDateRangeChange}
         />

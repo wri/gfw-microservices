@@ -284,6 +284,36 @@ export default class LegendCheckbox extends Component {
     );
   };
 
+  setupYearRangeConfig = (years, dateRangeProp, timelineSetterName, isGrayed) => {
+    if (!years || years.length === 0) {
+      return null;
+    }
+
+    const minYear = years[0];
+    const maxYear = years[years.length - 1];
+    const dateRange = dateRangeProp || {};
+    const selectedStartYear =
+      typeof dateRange.startYear === 'number' ? dateRange.startYear : minYear;
+    const selectedEndYear = typeof dateRange.endYear === 'number' ? dateRange.endYear : maxYear;
+    const sliderDisabled = isGrayed || typeof this.props[timelineSetterName] !== 'function';
+    const marks =
+      years.length > 1
+        ? [
+            { value: minYear, label: String(minYear) },
+            { value: maxYear, label: String(maxYear) },
+          ]
+        : undefined;
+
+    return {
+      minYear,
+      maxYear,
+      selectedStartYear,
+      selectedEndYear,
+      sliderDisabled,
+      marks,
+    };
+  };
+
   render() {
     const { layer, visibleLayers, iconLoading, gfwListDef } = this.props;
     const label = layer.legendConfig.items[0].name;
@@ -318,65 +348,26 @@ export default class LegendCheckbox extends Component {
     const isInfoButtonVisible = !!layer.metadataId;
     const isTclSwitchOn = this.props.treeCoverLossCanopyDensity > 0;
     const opacity = this.props.layerOpacity?.[this.props.layer.id] ?? 1;
-    const biomassLossYears = mapPage.biomassLossYears || [];
-    const biomassMinYear = biomassLossYears[0];
-    const biomassMaxYear = biomassLossYears[biomassLossYears.length - 1];
-    const biomassLossDateRange = this.props.biomassLossDateRange || {};
-    const selectedBiomassStartYear =
-      typeof biomassLossDateRange.startYear === 'number'
-        ? biomassLossDateRange.startYear
-        : biomassMinYear;
-    const selectedBiomassEndYear =
-      typeof biomassLossDateRange.endYear === 'number'
-        ? biomassLossDateRange.endYear
-        : biomassMaxYear;
-    const biomassSliderDisabled =
-      grayed === 'grayed' || typeof this.props.setBiomassTimeline !== 'function';
-    const biomassMarks =
-      biomassLossYears.length > 1
-        ? [
-            { value: biomassMinYear, label: String(biomassMinYear) },
-            { value: biomassMaxYear, label: String(biomassMaxYear) },
-          ]
-        : undefined;
-    const treeCoverLossYears = mapPage.treeCoverLossYearsFC || [];
-    const treeCoverMinYear = treeCoverLossYears[0];
-    const treeCoverMaxYear = treeCoverLossYears[treeCoverLossYears.length - 1];
-    const treeCoverLossDateRange = this.props.treeCoverLossDateRange || {};
-    const selectedTreeCoverStartYear =
-      typeof treeCoverLossDateRange.startYear === 'number'
-        ? treeCoverLossDateRange.startYear
-        : treeCoverMinYear;
-    const selectedTreeCoverEndYear =
-      typeof treeCoverLossDateRange.endYear === 'number'
-        ? treeCoverLossDateRange.endYear
-        : treeCoverMaxYear;
-    const treeCoverSliderDisabled =
-      grayed === 'grayed' || typeof this.props.setLossTimeline !== 'function';
-    const treeCoverMarks =
-      treeCoverLossYears.length > 1
-        ? [
-            { value: treeCoverMinYear, label: String(treeCoverMinYear) },
-            { value: treeCoverMaxYear, label: String(treeCoverMaxYear) },
-          ]
-        : undefined;
-    const prodesLossYears = mapPage.prodesLossYears || [];
-    const prodesMinYear = prodesLossYears[0];
-    const prodesMaxYear = prodesLossYears[prodesLossYears.length - 1];
-    const prodesDateRange = this.props.prodesDateRange || {};
-    const selectedProdesStartYear =
-      typeof prodesDateRange.startYear === 'number' ? prodesDateRange.startYear : prodesMinYear;
-    const selectedProdesEndYear =
-      typeof prodesDateRange.endYear === 'number' ? prodesDateRange.endYear : prodesMaxYear;
-    const prodesSliderDisabled =
-      grayed === 'grayed' || typeof this.props.setProdesTimeline !== 'function';
-    const prodesMarks =
-      prodesLossYears.length > 1
-        ? [
-            { value: prodesMinYear, label: String(prodesMinYear) },
-            { value: prodesMaxYear, label: String(prodesMaxYear) },
-          ]
-        : undefined;
+    const isGrayed = grayed === 'grayed';
+
+    const biomassConfig = this.setupYearRangeConfig(
+      mapPage.biomassLossYears,
+      this.props.biomassLossDateRange,
+      'setBiomassTimeline',
+      isGrayed
+    );
+    const treeCoverConfig = this.setupYearRangeConfig(
+      mapPage.treeCoverLossYearsFC,
+      this.props.treeCoverLossDateRange,
+      'setLossTimeline',
+      isGrayed
+    );
+    const prodesConfig = this.setupYearRangeConfig(
+      mapPage.prodesLossYears,
+      this.props.prodesDateRange,
+      'setProdesTimeline',
+      isGrayed
+    );
     return (
       <div
         className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
@@ -485,15 +476,15 @@ export default class LegendCheckbox extends Component {
           <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={grayed} />
         )}
 
-        {layer.id === prodesDeforestationID && prodesLossYears.length > 0 && (
+        {layer.id === prodesDeforestationID && prodesConfig && (
           <Box sx={{ mr: 2.5, mt: 2 }}>
             <YearRangeSlider
-              startYear={selectedProdesStartYear}
-              endYear={selectedProdesEndYear}
-              minYear={prodesMinYear}
-              maxYear={prodesMaxYear}
-              marks={prodesMarks}
-              disabled={prodesSliderDisabled}
+              startYear={prodesConfig.selectedStartYear}
+              endYear={prodesConfig.selectedEndYear}
+              minYear={prodesConfig.minYear}
+              maxYear={prodesConfig.maxYear}
+              marks={prodesConfig.marks}
+              disabled={prodesConfig.sliderDisabled}
               onYearChange={this.handleProdesTimelineChange}
               sliderSx={{
                 '& .MuiSlider-markLabel:first-of-type': {
@@ -582,15 +573,15 @@ export default class LegendCheckbox extends Component {
         )}
         {layer.id === treeBiomassLossID && (
           <>
-            {biomassLossYears.length > 0 && (
+            {biomassConfig && (
               <Box sx={{ mr: 2.5, mt: 2 }}>
                 <YearRangeSlider
-                  startYear={selectedBiomassStartYear}
-                  endYear={selectedBiomassEndYear}
-                  minYear={biomassMinYear}
-                  maxYear={biomassMaxYear}
-                  marks={biomassMarks}
-                  disabled={biomassSliderDisabled}
+                  startYear={biomassConfig.selectedStartYear}
+                  endYear={biomassConfig.selectedEndYear}
+                  minYear={biomassConfig.minYear}
+                  maxYear={biomassConfig.maxYear}
+                  marks={biomassConfig.marks}
+                  disabled={biomassConfig.sliderDisabled}
                   onYearChange={this.handleBiomassTimelineChange}
                   sliderSx={{
                     '& .MuiSlider-markLabel:first-of-type': {
@@ -638,15 +629,15 @@ export default class LegendCheckbox extends Component {
             </div>
           </>
         )}
-        {layer.id === treeCoverGainID && treeCoverLossYears.length > 0 && (
+        {layer.id === treeCoverGainID && treeCoverConfig && (
           <Box sx={{ mr: 2.5, mt: 2 }}>
             <YearRangeSlider
-              startYear={selectedTreeCoverStartYear}
-              endYear={selectedTreeCoverEndYear}
-              minYear={treeCoverMinYear}
-              maxYear={treeCoverMaxYear}
-              marks={treeCoverMarks}
-              disabled={treeCoverSliderDisabled}
+              startYear={treeCoverConfig.selectedStartYear}
+              endYear={treeCoverConfig.selectedEndYear}
+              minYear={treeCoverConfig.minYear}
+              maxYear={treeCoverConfig.maxYear}
+              marks={treeCoverConfig.marks}
+              disabled={treeCoverConfig.sliderDisabled}
               onYearChange={this.handleTreeCoverTimelineChange}
               sliderSx={{
                 '& .MuiSlider-markLabel:first-of-type': {

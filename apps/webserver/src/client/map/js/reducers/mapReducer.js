@@ -61,7 +61,7 @@ const DEFORESTATION_ALERT_LAYER_IDS = [
 
 const buildDefaultDeforestationAlertDateRanges = () => {
   return DEFORESTATION_ALERT_LAYER_IDS.reduce((acc, layerId) => {
-    acc[layerId] = deforestationAlertDateRange;
+    acc[layerId] = { ...deforestationAlertDateRange };
     return acc;
   }, {});
 };

@@ -1,4 +1,5 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { listStatus } from '@wri-monorepos/constants';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
@@ -15,8 +16,33 @@ describe('List Details - Alerts Tab', () => {
   });
 
   When('I navigate to a list details page with alerts analysis', () => {
-    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    cy.waitForLoadingMessage();
+    cy.request({ url: '/api/locations', failOnStatusCode: false }).then((response) => {
+      expect(response.status, 'locations API status').to.eq(200);
+
+      const userLists = response.body?.userLists;
+      expect(userLists, 'userLists array').to.be.an('array');
+
+      // Prefer active lists with alerts analysis to avoid tab visibility issues on drafts
+      const alertsEnabledList =
+        userLists.find(
+          (list) =>
+            list.list_status_id === listStatus.Active &&
+            Array.isArray(list.listAnalysesStatus) &&
+            list.listAnalysesStatus.some(({ analysisId }) => analysisId === 'ALERTS')
+        ) ||
+        userLists.find(
+          (list) =>
+            Array.isArray(list.listAnalysesStatus) &&
+            list.listAnalysesStatus.some(({ analysisId }) => analysisId === 'ALERTS')
+        );
+
+      if (!alertsEnabledList) {
+        throw new Error('No list with an ALERTS analysis found in /api/locations response');
+      }
+
+      locationsPage.clickOnLocationsList(alertsEnabledList.list_name);
+      cy.waitForLoadingMessage();
+    });
   });
 
   When('I switch to the alerts tab', () => {

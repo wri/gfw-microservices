@@ -26,10 +26,16 @@ export class ListAnalysisResponse {
 }
 
 const dateFormat = z.string().transform((value) => {
-  const date = parse(value, 'MM-dd-yyyy', new Date());
+  // Try US format first (MM-DD-YYYY)
+  let date = parse(value, 'MM-dd-yyyy', new Date());
+
+  // If US format doesn't work, try international format (YYYY-MM-DD)
+  if (!isValid(date)) {
+    date = parse(value, 'yyyy-MM-dd', new Date());
+  }
 
   if (!isValid(date)) {
-    throw new BadRequestException('Invalid date format, use MM-DD-YYYY');
+    throw new BadRequestException('Invalid date format, use MM-DD-YYYY or YYYY-MM-DD');
   }
 
   return date;
@@ -46,12 +52,12 @@ export type AlertsGenerateBodySchema = z.infer<typeof alertsGenerateBodySchema>;
 
 export class AlertsGenerateRequest {
   @ApiProperty({
-    example: 'mm-dd-yyyy',
+    example: 'mm-dd-yyyy or yyyy-mm-dd',
   })
   startDate?: Date;
 
   @ApiProperty({
-    example: 'mm-dd-yyyy',
+    example: 'mm-dd-yyyy or yyyy-mm-dd',
   })
   endDate?: Date;
 

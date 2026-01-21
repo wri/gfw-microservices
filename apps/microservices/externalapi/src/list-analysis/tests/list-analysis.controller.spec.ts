@@ -64,6 +64,7 @@ describe('ListAnalysisController', () => {
       getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
       deleteList: jest.fn(() => mockResponseDeleteList),
       getLocationsErrors: jest.fn().mockResolvedValue(mockLocationsWithErrors),
+      generateDownloadBundle: jest.fn().mockResolvedValue(undefined),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -270,5 +271,68 @@ describe('ListAnalysisController', () => {
       .post(`/v1/list/${listId}/analysis/${analysisId}/generate`)
       .send(alertsGenerate);
     expect(response).toEqual(expectedResult);
+  });
+
+  it('should accept US date format (MM-DD-YYYY) for alerts generate', async () => {
+    const listId = 5828;
+    const analysisId = 'Alerts';
+    const alertsGenerate = {
+      userEmail: 'email@email.com',
+      startDate: '01-15-2024',
+      endDate: '02-20-2024',
+    };
+
+    const { statusCode, body } = await request(app.getHttpServer())
+      .post(`/v1/list/${listId}/analysis/${analysisId}/generate`)
+      .send(alertsGenerate);
+
+    // Date format validation should pass - if we get 400, check it's not about date format
+    if (statusCode === 400) {
+      const errorMessage = body.message || body.errorDetails || JSON.stringify(body);
+      expect(errorMessage).not.toContain('Invalid date format');
+      expect(errorMessage).not.toContain('MM-DD-YYYY');
+      expect(errorMessage).not.toContain('YYYY-MM-DD');
+    }
+  });
+
+  it('should accept international date format (YYYY-MM-DD) for alerts generate', async () => {
+    const listId = 5828;
+    const analysisId = 'Alerts';
+    const alertsGenerate = {
+      userEmail: 'email@email.com',
+      startDate: '2024-01-15',
+      endDate: '2024-02-20',
+    };
+
+    const { statusCode, body } = await request(app.getHttpServer())
+      .post(`/v1/list/${listId}/analysis/${analysisId}/generate`)
+      .send(alertsGenerate);
+
+    // Date format validation should pass - if we get 400, check it's not about date format
+    if (statusCode === 400) {
+      const errorMessage = body.message || body.errorDetails || JSON.stringify(body);
+      expect(errorMessage).not.toContain('Invalid date format');
+      expect(errorMessage).not.toContain('MM-DD-YYYY');
+      expect(errorMessage).not.toContain('YYYY-MM-DD');
+    }
+  });
+
+  it('should reject invalid date format for alerts generate', async () => {
+    const listId = 5828;
+    const analysisId = 'Alerts';
+    const alertsGenerate = {
+      userEmail: 'email@email.com',
+      startDate: '15-01-2024',
+      endDate: '20-02-2024',
+    };
+
+    const { statusCode, body } = await request(app.getHttpServer())
+      .post(`/v1/list/${listId}/analysis/${analysisId}/generate`)
+      .send(alertsGenerate);
+
+    expect(statusCode).toBe(400);
+    // Check if error message contains date format error
+    const errorMessage = body.message || body.errorDetails || JSON.stringify(body);
+    expect(errorMessage).toContain('Invalid date format');
   });
 });

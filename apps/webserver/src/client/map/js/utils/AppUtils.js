@@ -190,7 +190,7 @@ const utils = {
     let endDate = '';
     let valueLabel = '';
     switch (label) {
-      case 'GLAD':
+      case 'GLAD': {
         date = props.deforestationAlertsDateRanges?.[proLayers.gladAlertsID];
         startDate = date?.startDate || date?.minDate || deforestationAlertDateRange.startDate;
         endDate = date?.endDate || date?.maxDate || deforestationAlertDateRange.endDate;
@@ -202,6 +202,7 @@ const utils = {
           endDateObj
         )})`;
         break;
+      }
       case 'LOSS':
         date = props.treeCoverLossDateRange;
         startDate = `${date.startYear}`;

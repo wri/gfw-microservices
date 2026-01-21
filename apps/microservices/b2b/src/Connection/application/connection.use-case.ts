@@ -66,14 +66,14 @@ export class ConnectionUseCases {
         activityType: this.b2bStatusValues.ConnectionRequested,
         userEmail: createConnectionDto.sourceEmail,
         organizationTarget: createConnectionDto.sourceOrganization,
-        description: `${createConnectionDto.sourceEmail} Has requested to make a trusted connection to ${createConnectionDto.targetOrganization}`,
+        description: `Connection requested to ${createConnectionDto.targetOrganization}`,
       });
 
       this.logsUseCases.saveActivityLog({
         activityType: this.b2bStatusValues.ConnectionRequested,
         userEmail: createConnectionDto.targetEmail,
         organizationTarget: createConnectionDto.targetOrganization,
-        description: `${createConnectionDto.sourceEmail} from ${createConnectionDto.sourceOrganization} Has requested to make a trusted conect`,
+        description: `Connection requested from ${createConnectionDto.sourceOrganization} to ${createConnectionDto.targetOrganization}`,
       });
 
       this.emailService.sendEmail(

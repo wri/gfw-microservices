@@ -4,9 +4,6 @@
  * Description: Updates old ActivityLog entries to remove personally identifiable information
  *              (names and emails) from the activity_description field.
  *              New logs already have this information removed, but old logs need to be cleaned up.
- * 
- * IMPORTANT: Run 2026-01-15-02-analyze-activitylog-pii.sql first to understand the data patterns
- *            before executing this cleanup script.
  */
 
 -- Declare variables for cursor
@@ -16,7 +13,7 @@ DECLARE @OrgDbName NVARCHAR(100);
 DECLARE @SQL NVARCHAR(MAX);
 
 PRINT '========================================';
-PRINT 'ActivityLog PII Cleanup Migration';
+PRINT 'ActivityLog Cleanup Migration';
 PRINT 'Date: ' + CONVERT(VARCHAR(20), GETDATE(), 120);
 PRINT '========================================';
 PRINT '';
@@ -48,103 +45,94 @@ BEGIN
         
         PRINT ''  Starting cleanup for ' + @OrgDbName + N''';
         
-        -- Step 1: Remove email addresses using pattern matching
-        -- Pattern: word@word.word (basic email pattern)
-        UPDATE ActivityLog
-        SET activity_description = 
-            -- Replace email-like patterns with [email redacted]
-            REPLACE(
-                REPLACE(
-                    REPLACE(
-                        REPLACE(activity_description, 
-                            SUBSTRING(
-                                activity_description,
-                                PATINDEX(''%[A-Za-z0-9]%@%[A-Za-z0-9]%.%[A-Za-z0-9]%'', activity_description),
-                                CASE 
-                                    WHEN PATINDEX(''%[A-Za-z0-9]%@%[A-Za-z0-9]%.%[A-Za-z0-9]%'', activity_description) > 0
-                                    THEN LEN(activity_description) - PATINDEX(''%[A-Za-z0-9]%@%[A-Za-z0-9]%.%[A-Za-z0-9]%'', activity_description)
-                                    ELSE 0
-                                END
-                            ),
-                            ''[email redacted]''
-                        ),
-                        ''  '', '' ''
-                    ),
-                    ''( [email redacted] )'', ''''
-                ),
-                ''([email redacted])'', ''''
-            ),
-            ''  '', '' ''
-        WHERE activity_description LIKE ''%@%''
-          AND activity_description LIKE ''%.%'';
+        -- Step 1: Create a temporary function to extract and replace emails
+        -- We''ll use a simpler iterative approach with multiple passes
         
-        SET @UpdateCount = @@ROWCOUNT;
+        -- Pass 1: Replace emails in single quotes (User ''email@domain.com'')
+        DECLARE @iteration INT = 0;
+        DECLARE @changes INT = 1;
+        
+        WHILE @iteration < 10 AND @changes > 0
+        BEGIN
+            UPDATE ActivityLog
+            SET activity_description = 
+                STUFF(activity_description,
+                    CHARINDEX('''''''', activity_description) + 1,
+                    CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1) - CHARINDEX('''''''', activity_description) - 1,
+                    ''[redacted]''
+                )
+            WHERE activity_description LIKE ''%''''%@%''''%''
+              AND CHARINDEX('''''''', activity_description) > 0
+              AND CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1) > 0
+              AND CHARINDEX(''@'', activity_description) BETWEEN CHARINDEX('''''''', activity_description) 
+                  AND CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1);
+            
+            SET @changes = @@ROWCOUNT;
+            SET @UpdateCount = @UpdateCount + @changes;
+            SET @iteration = @iteration + 1;
+        END
+        
         SET @TotalUpdated = @TotalUpdated + @UpdateCount;
-        PRINT ''  - Cleaned email patterns: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
+        PRINT ''  - Cleaned quoted emails: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
         
-        -- Step 2: Remove common PII patterns with names
-        -- Pattern: "shared with John Doe (email)" or "shared by John Doe"
-        -- Pattern: "User ''name''" patterns
+        -- Pass 2: Replace unquoted emails (simple pattern)
+        SET @UpdateCount = 0;
+        SET @iteration = 0;
+        SET @changes = 1;
+        
+        WHILE @iteration < 10 AND @changes > 0
+        BEGIN
+            -- Find and replace email-like patterns (word@word.word)
+            UPDATE ActivityLog
+            SET activity_description = 
+                STUFF(activity_description,
+                    PATINDEX(''%[a-zA-Z0-9._-]%@[a-zA-Z0-9._-]%'', activity_description),
+                    CHARINDEX('' '', activity_description + '' '', PATINDEX(''%@%'', activity_description)) - 
+                    PATINDEX(''%[a-zA-Z0-9._-]%@[a-zA-Z0-9._-]%'', activity_description),
+                    ''[redacted]''
+                )
+            WHERE activity_description LIKE ''%@%.%''
+              AND activity_description NOT LIKE ''%''''%@%''''%''
+              AND PATINDEX(''%[a-zA-Z0-9._-]%@[a-zA-Z0-9._-]%'', activity_description) > 0;
+            
+            SET @changes = @@ROWCOUNT;
+            SET @UpdateCount = @UpdateCount + @changes;
+            SET @iteration = @iteration + 1;
+        END
+        
+        SET @TotalUpdated = @TotalUpdated + @UpdateCount;
+        PRINT ''  - Cleaned unquoted emails: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
+        
+        -- Pass 3: Replace names in common patterns
+        SET @UpdateCount = 0;
+        
+        -- Pattern: "User [Name] has logged in/out"
         UPDATE ActivityLog
         SET activity_description = 
             CASE
-                -- Remove "shared with NAME" patterns
-                WHEN activity_description LIKE ''%shared with %'' AND activity_description LIKE ''%@%''
-                THEN LEFT(activity_description, CHARINDEX(''shared with '', activity_description) + 11) + ''[user]'' +
-                     CASE 
-                         WHEN CHARINDEX(''.'', activity_description, CHARINDEX(''shared with '', activity_description)) > 0
-                         THEN SUBSTRING(activity_description, 
-                              CHARINDEX(''.'', activity_description, CHARINDEX(''shared with '', activity_description)),
-                              LEN(activity_description))
-                         ELSE ''''
-                     END
-                     
-                -- Remove "shared by NAME" patterns
-                WHEN activity_description LIKE ''%shared by %'' AND activity_description LIKE ''%@%''
-                THEN LEFT(activity_description, CHARINDEX(''shared by '', activity_description) + 9) + ''[user]'' +
-                     CASE 
-                         WHEN CHARINDEX(''.'', activity_description, CHARINDEX(''shared by '', activity_description)) > 0
-                         THEN SUBSTRING(activity_description, 
-                              CHARINDEX(''.'', activity_description, CHARINDEX(''shared by '', activity_description)),
-                              LEN(activity_description))
-                         ELSE ''''
-                     END
-                     
+                WHEN activity_description LIKE ''User % has logged in%''
+                THEN ''User [user] has logged in.''
+                WHEN activity_description LIKE ''User % has logged out%''
+                THEN ''User [user] has logged out.''
                 ELSE activity_description
             END
-        WHERE (activity_description LIKE ''%shared with %'' OR activity_description LIKE ''%shared by %'')
-          AND activity_description LIKE ''%@%'';
+        WHERE activity_description LIKE ''User % has logged in%''
+           OR activity_description LIKE ''User % has logged out%'';
         
-        SET @UpdateCount = @@ROWCOUNT;
-        SET @TotalUpdated = @TotalUpdated + @UpdateCount;
-        PRINT ''  - Cleaned sharing patterns: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
+        SET @changes = @@ROWCOUNT;
+        SET @UpdateCount = @UpdateCount + @changes;
         
-        -- Step 3: Clean up any remaining email patterns in parentheses
-        -- Pattern: (email@domain.com)
+        -- Pattern: "[Name] sent to queue"
         UPDATE ActivityLog
-        SET activity_description = REPLACE(
-            activity_description,
-            SUBSTRING(
-                activity_description,
-                CHARINDEX(''('', activity_description),
-                CHARINDEX('')'', activity_description) - CHARINDEX(''('', activity_description) + 1
-            ),
-            ''''
-        )
-        WHERE activity_description LIKE ''%(%@%.%)%''
-          AND CHARINDEX(''('', activity_description) > 0
-          AND CHARINDEX('')'', activity_description) > CHARINDEX(''('', activity_description);
+        SET activity_description = ''[User] sent to queue''
+        WHERE activity_description LIKE ''% sent to queue''
+          AND activity_description NOT LIKE ''%[user]%'';
         
-        SET @UpdateCount = @@ROWCOUNT;
+        SET @changes = @@ROWCOUNT;
+        SET @UpdateCount = @UpdateCount + @changes;
+        
         SET @TotalUpdated = @TotalUpdated + @UpdateCount;
-        PRINT ''  - Cleaned parenthetical emails: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
-        
-        -- Step 4: Clean up multiple spaces that may have been created
-        UPDATE ActivityLog
-        SET activity_description = REPLACE(REPLACE(REPLACE(activity_description, ''  '', '' ''), ''  '', '' ''), ''  '', '' '')
-        WHERE activity_description LIKE ''%  %'';
-        
-        PRINT ''  - Normalized whitespace'';
+        PRINT ''  - Cleaned name patterns: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
         
         PRINT ''  Total records updated: '' + CAST(@TotalUpdated AS VARCHAR(10));
         
@@ -187,30 +175,20 @@ GO
 
 /*
  * USAGE INSTRUCTIONS:
- * 
- * 1. Run the analysis script first (2026-01-15-02-analyze-activitylog-pii.sql) to see
- *    what data will be affected
- * 
- * 2. Test this script on a development or staging environment first
- * 
- * 3. Consider backing up the ActivityLog tables before running:
+ * 1. Consider backing up the ActivityLog tables before running:
  *    -- For each organization database:
  *    SELECT * INTO ActivityLog_Backup_20260115 FROM ActivityLog;
  * 
- * 4. After running, verify the results by checking a few sample records:
+ * 2. Run the script in a development or staging environment first to verify correctness.
+ * 
+ * 3. After running, verify the results by checking a few sample records:
  *    SELECT TOP 100 activity_description FROM ActivityLog 
  *    WHERE activity_time < ''2026-01-15''
  *    ORDER BY activity_time DESC;
  * 
- * 5. If you need to revert, you can restore from the backup table
+ * 4. If you need to revert, you can restore from the backup table
  * 
  * LIMITATIONS:
  * - SQL Server's pattern matching is limited compared to regex
  * - Some edge cases may not be caught
- * - Very complex PII patterns might need manual review
- * 
- * If more sophisticated cleaning is needed, consider:
- * - Using a CLR function with .NET regex capabilities
- * - Exporting data to a script/application for processing
- * - Manual review of edge cases identified by the analysis script
  */

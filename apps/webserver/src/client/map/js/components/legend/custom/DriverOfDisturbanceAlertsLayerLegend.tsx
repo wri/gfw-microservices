@@ -10,12 +10,10 @@ import './DriverOfDisturbanceAlertsLayerLegend.scss';
 
 export const DriverOfDisturbanceAlertsLayerLegend = ({ disabled }) => {
   const dispatch = useDispatch();
-  const { driverOfDisturbanceAlertsFilter, visibleLayers } = useSelector(
-    (state: MapReducerRootState) => ({
-      driverOfDisturbanceAlertsFilter: state.driverOfDisturbanceAlertsFilter,
-      visibleLayers: state.visibleLayers,
-    })
+  const driverOfDisturbanceAlertsFilter = useSelector(
+    (state: MapReducerRootState) => state.driverOfDisturbanceAlertsFilter
   );
+  const visibleLayers = useSelector((state: MapReducerRootState) => state.visibleLayers);
 
   const { startDate, endDate } = driverOfDisturbanceAlertsFilter;
 

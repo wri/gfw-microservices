@@ -15,8 +15,12 @@ describe('List Details - Alerts Tab', () => {
   });
 
   When('I navigate to a list details page with alerts analysis', () => {
-    cy.request('/api/locations').then(({ body }) => {
-      const userLists = body.userLists || [];
+    cy.request({ url: '/api/locations', failOnStatusCode: false }).then((response) => {
+      expect(response.status, 'locations API status').to.eq(200);
+
+      const userLists = response.body?.userLists;
+      expect(userLists, 'userLists array').to.be.an('array');
+
       // Prefer active lists with alerts analysis to avoid tab visibility issues on drafts
       const alertsEnabledList =
         userLists.find(
@@ -30,10 +34,14 @@ describe('List Details - Alerts Tab', () => {
             Array.isArray(list.listAnalysesStatus) &&
             list.listAnalysesStatus.some(({ analysisId }) => analysisId === 'ALERTS')
         );
-      const listName = alertsEnabledList?.list_name ?? 'AAT Argentina Points Generic';
-      locationsPage.clickOnLocationsList(listName);
+
+      if (!alertsEnabledList) {
+        throw new Error('No list with an ALERTS analysis found in /api/locations response');
+      }
+
+      locationsPage.clickOnLocationsList(alertsEnabledList.list_name);
+      cy.waitForLoadingMessage();
     });
-    cy.waitForLoadingMessage();
   });
 
   When('I switch to the alerts tab', () => {

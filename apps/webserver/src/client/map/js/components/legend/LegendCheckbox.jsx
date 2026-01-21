@@ -633,7 +633,7 @@ const LegendCheckbox = (props) => {
             maxYear={treeCoverConfig.maxYear}
             marks={treeCoverConfig.marks}
             disabled={treeCoverConfig.sliderDisabled}
-              onYearChange={handleTreeCoverTimelineChange}
+            onYearChange={handleTreeCoverTimelineChange}
             sliderSx={{
               '& .MuiSlider-markLabel:first-of-type': {
                 left: '3%',

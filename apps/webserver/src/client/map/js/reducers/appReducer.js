@@ -33,6 +33,8 @@ import {
   updateDriverOfDisturbanceAlertsFilter,
   updateGlobalVegetationDisturbanceAlertsFilter,
   updateGlobalIntegratedDisturbanceAlertsFilter,
+  updateProdesDeforestationFilter,
+  updateDeforestationAlertsDateRanges,
 } from './mapReducer';
 import * as analysisReducer from './analysisReducer';
 
@@ -64,7 +66,6 @@ const appReducer = combineReducers({
   listsVisible: showLists,
   activeAnalysis: analysisReducer.handleActiveAnalysis,
   adminArea: analysisReducer.handleAdminArea,
-  gladDateRange: analysisReducer.handleGLADDates,
   biomassRange: analysisReducer.handleBiomassRange,
   analysisWarning: analysisReducer.toggleWarning,
   selectedAnalysis: analysisReducer.setAnalysis,
@@ -76,6 +77,8 @@ const appReducer = combineReducers({
   driverOfDisturbanceAlertsFilter: updateDriverOfDisturbanceAlertsFilter,
   globalVegetationDisturbanceAlertsFilter: updateGlobalVegetationDisturbanceAlertsFilter,
   globalIntegratedDisturbanceAlertsFilter: updateGlobalIntegratedDisturbanceAlertsFilter,
+  prodesDeforestationFilter: updateProdesDeforestationFilter,
+  deforestationAlertsDateRanges: updateDeforestationAlertsDateRanges,
 });
 
 const rootReducer = (state, action) => {

@@ -32,6 +32,7 @@ import {
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
   SET_LAYER_OPACITY,
+  UPDATE_DEFORESTATION_ALERTS_DATE_RANGE,
 } from '../constants/actionTypes';
 
 export function populateLayers(data) {
@@ -163,4 +164,8 @@ export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(data) {
 
 export function setLayerOpacity(data) {
   return { type: SET_LAYER_OPACITY, data };
+}
+
+export function updateDeforestationAlertsDateRange(payload) {
+  return { type: UPDATE_DEFORESTATION_ALERTS_DATE_RANGE, payload };
 }

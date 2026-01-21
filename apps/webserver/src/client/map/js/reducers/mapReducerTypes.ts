@@ -15,4 +15,8 @@ export interface MapReducerRootState {
     onlyHighConfidenceAlerts: boolean;
     vegetationType: string;
   };
+  prodesDeforestationFilter: {
+    startYear: number;
+    endYear: number;
+  };
 }

@@ -1,16 +1,9 @@
 /* eslint-disable default-param-last */
 import * as actionTypes from '../constants/actionTypes';
-import { latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/config';
 
 const initialAnalysisState = {
   activeAnalysis: 'draw',
   adminArea: {},
-  gladDates: {
-    start: new Date(`${latestTreeCoverLossYearForTclDataInMap + 1}-01-01 00:00:00`),
-    minDate: new Date('2019-01-01 00:00:00'),
-    sliderDate: new Date('2021-01-01 00:00:00'),
-    end: new Date(),
-  },
   biomassRanges: {
     min: 0,
     max: 917,
@@ -27,19 +20,6 @@ export function handleActiveAnalysis(state = initialAnalysisState.activeAnalysis
 
 export function handleAdminArea(state = initialAnalysisState.adminArea, action) {
   return action.type === actionTypes.SET_ANALYSIS_ADMIN_AREA ? action.area : state;
-}
-
-export function handleGLADDates(state = initialAnalysisState.gladDates, action) {
-  switch (action.type) {
-    case actionTypes.SET_GLAD_START_DATE:
-      return { ...state, start: action.date };
-    case actionTypes.SET_GLAD_SLIDER_DATE:
-      return { ...state, sliderDate: action.date };
-    case actionTypes.SET_GLAD_END_DATE:
-      return { ...state, end: action.date };
-    default:
-      return state;
-  }
 }
 
 export function handleBiomassRange(state = initialAnalysisState.biomassRanges, action) {

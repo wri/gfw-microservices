@@ -48,11 +48,14 @@ import {
   updateTreeCoverLossCanopyDensity,
   toggleCanopyModal,
   toggleTreeCoverLossCanopyModal,
+  updateDeforestationAlertsDateRange,
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
+import { UPDATE_PRODES_DEFORESTATION_FILTER } from '../constants/actionTypes';
 
 import {
   DATA_API_URL,
+  deforestationAlertDateRange,
   disturbanceAlertsVegetationTypes,
   mapPage,
   supportedGeostoreAnalysis,
@@ -61,8 +64,7 @@ import {
   proLayers,
   vectorEnabledLayers,
   noLocationLayers,
-  exclusiveDrawLayers,
-  exclusiveLayers,
+  analysisEnabledLayers,
   visibleLayers as visibleLayersConstants,
   gfwListsZoomTargets,
 } from '../../../common/js/proLayers.config';
@@ -97,13 +99,8 @@ import { getQueryParams } from './getQueryParams';
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
 import Warning from './controls/Warning';
-import AdhocAnalysis from './controls/AdhocAnalysis';
 import Legend from './legend/Legend';
-import BiomassControls from './layerPanel/BiomassControls';
-import FiresControls from './layerPanel/FiresControls';
 import LayerPanel from './layerPanel/LayerPanel';
-import LossControls from './layerPanel/LossControls';
-import ProdesControls from './layerPanel/ProdesControls';
 import DrawShapeNoteDetailsModal from './modals/DrawShapeNoteDetailsModal';
 import BasemapModal from './modals/BasemapModal';
 import { CanopyModal } from './modals/CanopyModal';
@@ -147,14 +144,11 @@ const {
   rspoConcessions,
   rspoPalmOilMills,
   treeBiomassLossID,
-  treeCoverLossID,
-  treeCoverGainID,
   treePlantationsSpecies,
   universalMillList,
   userLocations,
   viirsActiveFiresID,
   soyPlantedArea,
-  argentineanNativeForestsLoss,
   integratedDeforestationAlertsID,
   globalIntegratedDisturbanceAlertsId,
   disturbanceAlertsDriversId,
@@ -452,6 +446,7 @@ class Map extends Component {
       driverOfDisturbanceAlertsFilter,
       globalVegetationDisturbanceAlertsFilter,
       globalIntegratedDisturbanceAlertsFilter,
+      prodesDeforestationFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -480,7 +475,7 @@ class Map extends Component {
           }
         }
 
-        if (exclusiveLayers.includes(nowVisibleLayer)) {
+        if (analysisEnabledLayers.includes(nowVisibleLayer)) {
           this.view.popup.actions.forEach((action) => {
             if (action.id === 'ANALYZE') {
               action.visible = true;
@@ -511,7 +506,7 @@ class Map extends Component {
           }
         }
 
-        if (exclusiveLayers.includes(nowHiddenLayer)) {
+        if (analysisEnabledLayers.includes(nowHiddenLayer)) {
           this.view.popup.actions.forEach((action) => {
             if (action.id === 'ANALYZE') {
               action.visible = false;
@@ -643,9 +638,8 @@ class Map extends Component {
         drawnGraphic.length > 0 ||
         activeAnalysis === 'region')
     ) {
-      const disablePolygon = !visibleLayers.some(
-        (visibleLayer) => exclusiveDrawLayers.indexOf(visibleLayer) !== -1
-      );
+      const hasAnalysisLayer = visibleLayers.some((layer) => analysisEnabledLayers.includes(layer));
+      const disablePolygon = !hasAnalysisLayer;
       if (disablePolygon && (drawnGraphic.length === 0 || activeAnalysis === 'region')) {
         if (drawnGraphic.length === 0) {
           drawnGraphic.push(this.view.graphics.items[0]);
@@ -854,6 +848,25 @@ class Map extends Component {
     }
 
     if (
+      prodesDeforestationFilter &&
+      prevState.prodesDeforestationFilter &&
+      hasFilterChanged(prevState.prodesDeforestationFilter, prodesDeforestationFilter)
+    ) {
+      const { prodesDateRange } = this.state;
+
+      if (
+        !prodesDateRange ||
+        prodesDateRange.startYear !== prodesDeforestationFilter.startYear ||
+        prodesDateRange.endYear !== prodesDeforestationFilter.endYear
+      ) {
+        this.setProdesTimeline(
+          prodesDeforestationFilter.startYear,
+          prodesDeforestationFilter.endYear
+        );
+      }
+    }
+
+    if (
       prevState.planetTileLayer !== planetTileLayer ||
       prevState.planetTileColor !== planetTileColor
     ) {
@@ -879,11 +892,13 @@ class Map extends Component {
       });
     }
 
-    const { gladDateRange, biomassRange } = this.state;
+    const { deforestationAlertsDateRanges, biomassRange } = this.state;
+    const currentGladRange = deforestationAlertsDateRanges?.[gladAlertsID] || {};
+    const previousGladRange = prevState.deforestationAlertsDateRanges?.[gladAlertsID] || {};
 
     if (
-      prevState.gladDateRange?.start !== gladDateRange?.start ||
-      prevState.gladDateRange?.end !== gladDateRange?.end
+      previousGladRange.startDate !== currentGladRange.startDate ||
+      previousGladRange.endDate !== currentGladRange.endDate
     ) {
       this.updateActiveAnalysis();
     }
@@ -984,7 +999,7 @@ class Map extends Component {
       const analyzeAction = this.view.popup.actions.items.find((item) => item.id === 'ANALYZE');
       if (analyzeAction) {
         const analysisEnabledLayerExists = this.state.visibleLayers.some((l) =>
-          exclusiveLayers.includes(l)
+          analysisEnabledLayers.includes(l)
         );
         analyzeAction.visible = analysisEnabledLayerExists;
       }
@@ -1607,8 +1622,17 @@ class Map extends Component {
       //get the URL first, then fetch the data and update the store
       const dataApi__analysisGLAD = `${DATA_API_URL}/dataApi/analysisGLAD/`;
       const GROUP_BY_COLUMN = 'umd_glad_landsat_alerts__date';
-      const start_date = format(new Date(this.state.gladDateRange.start), 'yyyy-MM-dd');
-      const end_date = format(new Date(this.state.gladDateRange.end), 'yyyy-MM-dd');
+      const gladLayerRange =
+        this.state.deforestationAlertsDateRanges?.[gladAlertsID] || deforestationAlertDateRange;
+      const startIso =
+        gladLayerRange.startDate || gladLayerRange.minDate || deforestationAlertDateRange.startDate;
+      const endIso =
+        gladLayerRange.endDate ||
+        gladLayerRange.maxDate ||
+        deforestationAlertDateRange.endDate ||
+        new Date().toISOString().split('T')[0];
+      const start_date = format(new Date(startIso), 'yyyy-MM-dd');
+      const end_date = format(new Date(endIso), 'yyyy-MM-dd');
       const analysisURL = `${dataApi__analysisGLAD}?geostore_origin=${origin}&geostoreID=${geostoreID}&group_by=${GROUP_BY_COLUMN}&start_date=${start_date}&end_date=${end_date}`;
 
       fetch(analysisURL, {
@@ -2032,7 +2056,9 @@ class Map extends Component {
       }
 
       const isPointGeometry = selectedFeat.geometry?.type === 'point';
-      const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
+      const currentForestChange = visibleLayers.some((layer) =>
+        analysisEnabledLayers.includes(layer)
+      );
 
       this.view.popup.actions.forEach((action) => {
         if (selectedFeat.layerName === viirsActiveFiresID) {
@@ -2355,13 +2381,22 @@ class Map extends Component {
           resolve();
         });
         promise.then(() => {
-          if (selectedTimeframe === 'QUARTER') {
-            store.dispatch(analysisActions.setGLADEndDate(firstDayOfThisMonth));
-          }
-          if (selectedTimeframe === 'MONTH') {
-            store.dispatch(analysisActions.setGLADEndDate(new Date()));
-          }
-          store.dispatch(analysisActions.setGLADStartDate(startDate));
+          const layerIdsToUpdate = [gladAlertsID, integratedDeforestationAlertsID].filter((id) =>
+            visibleLayers?.includes(id)
+          );
+          const endDate = selectedTimeframe === 'QUARTER' ? firstDayOfThisMonth : new Date();
+          const startIso = startDate.toISOString().split('T')[0];
+          const endIso = endDate.toISOString().split('T')[0];
+
+          layerIdsToUpdate.forEach((layerId) => {
+            store.dispatch(
+              updateDeforestationAlertsDateRange({
+                layerId,
+                startDate: startIso,
+                endDate: endIso,
+              })
+            );
+          });
         });
       } else if (visibleLayers?.includes(viirsActiveFiresID)) {
         let fireDays = 1;
@@ -2611,6 +2646,18 @@ class Map extends Component {
   };
 
   setProdesTimeline = (startYear, endYear) => {
+    const currentFilter = store.getState().prodesDeforestationFilter;
+    if (
+      !currentFilter ||
+      currentFilter.startYear !== startYear ||
+      currentFilter.endYear !== endYear
+    ) {
+      store.dispatch({
+        type: UPDATE_PRODES_DEFORESTATION_FILTER,
+        payload: { startYear, endYear },
+      });
+    }
+
     this.updateProdesVectorTileLayerStyle(startYear, endYear);
 
     const newState = { startYear, endYear };
@@ -2731,7 +2778,6 @@ class Map extends Component {
       canopyDensity,
       treeCoverLossCanopyDensity,
       drawingActive,
-      gladDateRange,
       biomassRange,
       prodesDateRange,
       analysisResults,
@@ -2748,6 +2794,7 @@ class Map extends Component {
       isMapLoading,
       listNotAccessible,
       selectedList,
+      deforestationAlertsDateRanges,
     } = this.state;
 
     const { userLists, locationCount, gfwLists, userSharedLists } = this.props;
@@ -2804,35 +2851,6 @@ class Map extends Component {
           panelsVisible={panelsVisible}
           zoomOut={this.zoomOut}
           zoomIn={this.zoomIn}
-        />
-
-        <AdhocAnalysis visibleLayers={visibleLayers} dateSliderDateRange={gladDateRange} />
-
-        <ProdesControls
-          loaded={this.view && this.view.ready}
-          visible={visibleLayers.indexOf(prodesDeforestationID) > -1}
-          setProdesTimeline={this.setProdesTimeline}
-        />
-
-        <BiomassControls
-          loaded={this.view && this.view.ready}
-          visible={visibleLayers.indexOf(treeBiomassLossID) > -1}
-          setBiomassTimeline={this.setBiomassTimeline}
-        />
-
-        <LossControls
-          loaded={this.view && this.view.ready}
-          visible={
-            visibleLayers.includes(treeCoverLossID) ||
-            visibleLayers.includes(argentineanNativeForestsLoss) ||
-            visibleLayers.includes(treeCoverGainID)
-          }
-          setLossTimeline={this.setLossTimeline}
-        />
-
-        <FiresControls
-          fireDays={this.state.fireDays}
-          visible={visibleLayers.indexOf(viirsActiveFiresID) > -1}
         />
 
         <div
@@ -2913,11 +2931,11 @@ class Map extends Component {
           selectedAnalysis={selectedAnalysis}
           visibleLayers={visibleLayers}
           analysisWarning={analysisWarning}
-          gladDateRange={gladDateRange}
           biomassRange={biomassRange}
           prodesDateRange={prodesDateRange}
           fireDays={fireDays}
           treeCoverLossDateRange={treeCoverLossDateRange}
+          deforestationAlertsDateRanges={deforestationAlertsDateRanges}
           canopyDensity={canopyDensity}
           treeCoverLossCanopyDensity={treeCoverLossCanopyDensity}
           sketchTool={sketchTool}
@@ -2943,10 +2961,17 @@ class Map extends Component {
           gfwListDef={gfwListDef}
           visibleLayers={visibleLayers}
           biomassRange={biomassRange}
+          biomassLossDateRange={this.state.biomassLossDateRange}
+          treeCoverLossDateRange={this.state.treeCoverLossDateRange}
+          prodesDateRange={this.state.prodesDateRange}
+          fireDays={fireDays}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
           layerOpacity={this.state.layerOpacity}
           dispatch={store.dispatch}
+          setBiomassTimeline={this.setBiomassTimeline}
+          setLossTimeline={this.setLossTimeline}
+          setProdesTimeline={this.setProdesTimeline}
         />
 
         <div style={containerStyle} className="map-container">

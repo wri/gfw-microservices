@@ -1,4 +1,5 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { listStatus } from '@wri-monorepos/constants';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
@@ -25,7 +26,7 @@ describe('List Details - Alerts Tab', () => {
       const alertsEnabledList =
         userLists.find(
           (list) =>
-            list.list_status_id === 2 &&
+            list.list_status_id === listStatus.Active &&
             Array.isArray(list.listAnalysesStatus) &&
             list.listAnalysesStatus.some(({ analysisId }) => analysisId === 'ALERTS')
         ) ||

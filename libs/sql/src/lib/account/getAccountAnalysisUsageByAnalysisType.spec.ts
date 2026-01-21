@@ -185,8 +185,7 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     const secondAndWhereParams = secondAndWhere[1] as { endDateTime: Date };
     expect(secondAndWhereParams.endDateTime).toEqual(new Date('2025-01-31T23:59:59.997Z'));
 
-    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBe('lp.userId IS NOT NULL');
-    expect(mockQueryBuilder.andWhere.mock.calls[2][0]).toBeInstanceOf(Brackets);
+    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBeInstanceOf(Brackets);
 
     const result = await getAccountAnalysisUsageByAnalysisType({
       startDate: '2024-12-31',

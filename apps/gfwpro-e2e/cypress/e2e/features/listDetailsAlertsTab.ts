@@ -15,7 +15,24 @@ describe('List Details - Alerts Tab', () => {
   });
 
   When('I navigate to a list details page with alerts analysis', () => {
-    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
+    cy.request('/api/locations').then(({ body }) => {
+      const userLists = body.userLists || [];
+      // Prefer active lists with alerts analysis to avoid tab visibility issues on drafts
+      const alertsEnabledList =
+        userLists.find(
+          (list) =>
+            list.list_status_id === 2 &&
+            Array.isArray(list.listAnalysesStatus) &&
+            list.listAnalysesStatus.some(({ analysisId }) => analysisId === 'ALERTS')
+        ) ||
+        userLists.find(
+          (list) =>
+            Array.isArray(list.listAnalysesStatus) &&
+            list.listAnalysesStatus.some(({ analysisId }) => analysisId === 'ALERTS')
+        );
+      const listName = alertsEnabledList?.list_name ?? 'AAT Argentina Points Generic';
+      locationsPage.clickOnLocationsList(listName);
+    });
     cy.waitForLoadingMessage();
   });
 

@@ -102,12 +102,12 @@ BEGIN
         SET @TotalUpdated = @TotalUpdated + @UpdateCount;
         PRINT ''  - Cleaned name patterns: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
         
-        -- Pass 4: Replace "The endpoint X was accessed by user email@domain.com" with "The endpoint X was accessed by user ID"
+        -- Pass 4: Replace "The endpoint X was accessed by user email@domain.com" with "The endpoint X was accessed by user 32"
         SET @UpdateCount = 0;
         
         UPDATE ActivityLog
         SET activity_description = 
-            SUBSTRING(activity_description, 1, CHARINDEX(''was accessed by user '', activity_description) + 19) +
+            SUBSTRING(activity_description, 1, CHARINDEX(''was accessed by user '', activity_description) + 20) +
             CAST(user_id AS NVARCHAR(20))
         WHERE activity_description LIKE ''The endpoint % was accessed by user %@%''
           AND CHARINDEX(''was accessed by user '', activity_description) > 0

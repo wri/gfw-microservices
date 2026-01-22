@@ -228,11 +228,14 @@ describe('Verifiable Credential Verification', () => {
     'should download and extract the Verifiable Credential from the analysis result',
     async () => {
       try {
-        // NOTE: We accept cached results instead of forcing fresh generation.
-        // When an analysis was recently run, the backend returns the cached result instead of generating a new one.
-        // Previously, the test was timing out because it kept waiting for "new" results that never came
-        // (the backend kept returning the cached version).
-        console.log('Polling for analysis results (may be cached)...');
+        // Wait for fresh analysis results created after we triggered the generation
+        // Set minCreationDate to 10 seconds before trigger to handle clock synchronization issues
+        // between test runner and backend server
+        const minCreationDate = new Date(generateTimestamp.getTime() - 10 * 1000);
+        console.log(
+          'Polling for fresh analysis results created after:',
+          minCreationDate.toISOString()
+        );
 
         const { apiResponse, verifiableCredential: vc } = await pollApiUntilComplete(
           `${BASE_URL}/api/v1/list/${list}/analysis/DefReport/status`,
@@ -243,8 +246,8 @@ describe('Verifiable Credential Verification', () => {
             },
           },
           2000, // Poll every 2 seconds
-          60000 // Timeout after 60 seconds
-          // No minCreationDate parameter - accept any completed result (fresh or cached)
+          180000, // Timeout after 3 minutes (increased from 60 seconds)
+          minCreationDate // Only accept results created after we triggered the analysis (with 10s buffer)
         );
 
         expect(apiResponse.status).toBe('Completed');

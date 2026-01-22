@@ -229,11 +229,12 @@ describe('Verifiable Credential Verification', () => {
     async () => {
       try {
         // Wait for fresh analysis results created after we triggered the generation
-        // Using the generateTimestamp ensures we test newly generated results, not stale cached ones
-        // Increased timeout to 3 minutes to allow backend sufficient time to complete generation
+        // Set minCreationDate to 10 seconds before trigger to handle clock synchronization issues
+        // between test runner and backend server
+        const minCreationDate = new Date(generateTimestamp.getTime() - 10 * 1000);
         console.log(
           'Polling for fresh analysis results created after:',
-          generateTimestamp.toISOString()
+          minCreationDate.toISOString()
         );
 
         const { apiResponse, verifiableCredential: vc } = await pollApiUntilComplete(
@@ -246,7 +247,7 @@ describe('Verifiable Credential Verification', () => {
           },
           2000, // Poll every 2 seconds
           180000, // Timeout after 3 minutes (increased from 60 seconds)
-          generateTimestamp // Only accept results created after we triggered the analysis
+          minCreationDate // Only accept results created after we triggered the analysis (with 10s buffer)
         );
 
         expect(apiResponse.status).toBe('Completed');

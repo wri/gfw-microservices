@@ -35,10 +35,9 @@ BEGIN
         SET @SQL = N'
         USE [' + @OrgDbName + N'];
         
-        BEGIN TRANSACTION;
-        
         DECLARE @UpdateCount INT = 0;
         DECLARE @TotalUpdated INT = 0;
+        DECLARE @changes INT = 0;
         
         -- Create a function to remove email addresses from text
         -- Note: This uses PATINDEX to find email patterns
@@ -48,85 +47,54 @@ BEGIN
         -- Step 1: Create a temporary function to extract and replace emails
         -- We''ll use a simpler iterative approach with multiple passes
         
-        -- Pass 1: Replace emails in single quotes (User ''email@domain.com'')
-        DECLARE @iteration INT = 0;
-        DECLARE @changes INT = 1;
+        -- Pass 1: Replace "User ''email@domain.com'' has..." with "User ID X has..."
+        UPDATE ActivityLog
+        SET activity_description = 
+            REPLACE(
+                activity_description,
+                SUBSTRING(
+                    activity_description,
+                    1,
+                    CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1) + 1
+                ),
+                ''User ID '' + CAST(user_id AS NVARCHAR(20)) + '' ''
+            )
+        WHERE activity_description LIKE ''User ''''%''''%''
+          AND CHARINDEX('''''''', activity_description) > 0
+          AND CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1) > 0;
         
-        WHILE @iteration < 10 AND @changes > 0
-        BEGIN
-            UPDATE ActivityLog
-            SET activity_description = 
-                STUFF(activity_description,
-                    CHARINDEX('''''''', activity_description) + 1,
-                    CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1) - CHARINDEX('''''''', activity_description) - 1,
-                    ''[redacted]''
-                )
-            WHERE activity_description LIKE ''%''''%@%''''%''
-              AND CHARINDEX('''''''', activity_description) > 0
-              AND CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1) > 0
-              AND CHARINDEX(''@'', activity_description) BETWEEN CHARINDEX('''''''', activity_description) 
-                  AND CHARINDEX('''''''', activity_description, CHARINDEX('''''''', activity_description) + 1);
-            
-            SET @changes = @@ROWCOUNT;
-            SET @UpdateCount = @UpdateCount + @changes;
-            SET @iteration = @iteration + 1;
-        END
-        
+        SET @UpdateCount = @@ROWCOUNT;
         SET @TotalUpdated = @TotalUpdated + @UpdateCount;
-        PRINT ''  - Cleaned quoted emails: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
+        PRINT ''  - Updated User ''''email'''' pattern: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
         
-        -- Pass 2: Replace unquoted emails (simple pattern)
-        SET @UpdateCount = 0;
-        SET @iteration = 0;
-        SET @changes = 1;
-        
-        WHILE @iteration < 10 AND @changes > 0
-        BEGIN
-            -- Find and replace email-like patterns (word@word.word)
-            UPDATE ActivityLog
-            SET activity_description = 
-                STUFF(activity_description,
-                    PATINDEX(''%[a-zA-Z0-9._-]%@[a-zA-Z0-9._-]%'', activity_description),
-                    CHARINDEX('' '', activity_description + '' '', PATINDEX(''%@%'', activity_description)) - 
-                    PATINDEX(''%[a-zA-Z0-9._-]%@[a-zA-Z0-9._-]%'', activity_description),
-                    ''[redacted]''
-                )
-            WHERE activity_description LIKE ''%@%.%''
-              AND activity_description NOT LIKE ''%''''%@%''''%''
-              AND PATINDEX(''%[a-zA-Z0-9._-]%@[a-zA-Z0-9._-]%'', activity_description) > 0;
-            
-            SET @changes = @@ROWCOUNT;
-            SET @UpdateCount = @UpdateCount + @changes;
-            SET @iteration = @iteration + 1;
-        END
-        
-        SET @TotalUpdated = @TotalUpdated + @UpdateCount;
-        PRINT ''  - Cleaned unquoted emails: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
-        
-        -- Pass 3: Replace names in common patterns
+        -- Pass 2: Replace "User Name has logged in/out" with "User ID X has logged in/out."
         SET @UpdateCount = 0;
         
-        -- Pattern: "User [Name] has logged in/out"
         UPDATE ActivityLog
         SET activity_description = 
             CASE
                 WHEN activity_description LIKE ''User % has logged in%''
-                THEN ''User [user] has logged in.''
+                THEN ''User ID '' + CAST(user_id AS NVARCHAR(20)) + '' has logged in.''
                 WHEN activity_description LIKE ''User % has logged out%''
-                THEN ''User [user] has logged out.''
+                THEN ''User ID '' + CAST(user_id AS NVARCHAR(20)) + '' has logged out.''
                 ELSE activity_description
             END
-        WHERE activity_description LIKE ''User % has logged in%''
-           OR activity_description LIKE ''User % has logged out%'';
+        WHERE (activity_description LIKE ''User % has logged in%''
+           OR activity_description LIKE ''User % has logged out%'')
+          AND activity_description NOT LIKE ''User ID % has logged%'';
         
         SET @changes = @@ROWCOUNT;
         SET @UpdateCount = @UpdateCount + @changes;
+        SET @TotalUpdated = @TotalUpdated + @UpdateCount;
+        PRINT ''  - Updated login/logout pattern: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
         
-        -- Pattern: "[Name] sent to queue"
+        -- Pass 3: Replace "[Name] sent to queue" with "User ID X sent to queue"
+        SET @UpdateCount = 0;
+        
         UPDATE ActivityLog
-        SET activity_description = ''[User] sent to queue''
+        SET activity_description = ''User ID '' + CAST(user_id AS NVARCHAR(20)) + '' sent to queue''
         WHERE activity_description LIKE ''% sent to queue''
-          AND activity_description NOT LIKE ''%[user]%'';
+          AND activity_description NOT LIKE ''User ID % sent to queue'';
         
         SET @changes = @@ROWCOUNT;
         SET @UpdateCount = @UpdateCount + @changes;
@@ -134,9 +102,24 @@ BEGIN
         SET @TotalUpdated = @TotalUpdated + @UpdateCount;
         PRINT ''  - Cleaned name patterns: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
         
+        -- Pass 4: Replace "The endpoint X was accessed by user email@domain.com" with "The endpoint X was accessed by user ID"
+        SET @UpdateCount = 0;
+        
+        UPDATE ActivityLog
+        SET activity_description = 
+            SUBSTRING(activity_description, 1, CHARINDEX(''was accessed by user '', activity_description) + 19) +
+            CAST(user_id AS NVARCHAR(20))
+        WHERE activity_description LIKE ''The endpoint % was accessed by user %@%''
+          AND CHARINDEX(''was accessed by user '', activity_description) > 0
+          AND CHARINDEX(''@'', activity_description) > 0;
+        
+        SET @changes = @@ROWCOUNT;
+        SET @UpdateCount = @UpdateCount + @changes;
+        SET @TotalUpdated = @TotalUpdated + @UpdateCount;
+        PRINT ''  - Updated endpoint access pattern: '' + CAST(@UpdateCount AS VARCHAR(10)) + '' records'';
+        
         PRINT ''  Total records updated: '' + CAST(@TotalUpdated AS VARCHAR(10));
         
-        COMMIT TRANSACTION;
         PRINT ''  Successfully completed cleanup for ' + @OrgDbName + N''';
         ';
         

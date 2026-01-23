@@ -1,4 +1,3 @@
-import * as readline from 'readline';
 import * as archiver from 'archiver';
 import * as fs from 'fs';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
@@ -35,15 +34,15 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
         const array = [];
         let count = 1;
         files.forEach((file) => {
-          getSpecificLine(`/tmp/wri-${key}/${file}`, 2, (err, line) => {
+          fs.readFile(`/tmp/wri-${key}/${file}`, 'utf8', (err, content) => {
             if (err) {
               reject(err);
             }
-
-            if (line.trim() !== '') {
+            const lineCount = content.split('\n').filter((line) => line.trim()).length;
+            // Include files with header + at least one data row
+            if (lineCount >= 2) {
               array.push(file);
             }
-
             if (files.length === count) {
               resolve(array);
             }
@@ -64,50 +63,6 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
       });
     });
   });
-};
-
-const getSpecificLine = (path, row, callback) => {
-  let i = 0;
-  let content = '';
-  const rs = fs
-    .createReadStream(path, {
-      encoding: 'utf8',
-      autoClose: false,
-    })
-    .on('error', function (err) {
-      rs.destroy();
-      callback(err, content);
-    });
-  path = null;
-  try {
-    readline
-      .createInterface({
-        input: rs,
-        terminal: false,
-      })
-      .on('line', function (line) {
-        ++i;
-        if (row == i) {
-          try {
-            content = line;
-          } catch (e) {
-            console.error(e);
-          }
-          this.close();
-        }
-      })
-      .on('close', function () {
-        rs.destroy();
-        callback(null, content);
-      })
-      .on('error', function (err) {
-        rs.destroy();
-        callback(err, content);
-      });
-  } catch (err) {
-    console.error(err);
-    callback(err, content);
-  }
 };
 
 export { getAllFilesAndZip, createDirectory };

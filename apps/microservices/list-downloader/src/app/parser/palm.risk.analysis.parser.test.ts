@@ -2,9 +2,9 @@ import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
 import { palmRiskAnalysisParser } from './palm.risk.analysis.parser';
 
 describe('Palm Risk Analysis Parser', () => {
-  test('Receive empty data and return empty array', () => {
+  test('Receive empty data and return one empty row', () => {
     const csvData = [];
-    const dataRow = [];
+    const dataRow = [''];
     palmRiskAnalysisParser({
       operation: {
         fields: [
@@ -19,12 +19,14 @@ describe('Palm Risk Analysis Parser', () => {
       dataRow,
       csvData,
     });
-    expect(csvData.length).toEqual(0);
+    expect(csvData.length).toEqual(1);
+    // Value is now at index 1 (after the initial dataRow element)
+    expect(csvData[0][1]).toBe('Low');
   });
 
   test('Receive[commodity_value_protected_areas_level, yearly, category] and get ["Medium"]', () => {
     const csvData = [];
-    const dataRow = [];
+    const dataRow = [''];
     palmRiskAnalysisParser({
       operation: {
         fields: [
@@ -43,12 +45,13 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0][0]).toEqual('Medium');
+    // Value is now at index 1 (after the initial dataRow element)
+    expect(csvData[0][1]).toEqual('Medium');
   });
 
   test('Receive[commodity_value_protected_areas_level, yearly, last] and get [55118.3046]', () => {
     const csvData = [];
-    const dataRow = [];
+    const dataRow = [''];
     palmRiskAnalysisParser({
       operation: {
         fields: [
@@ -67,12 +70,13 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0][0]).toBeCloseTo(55118.3046);
+    // Value is now at index 1 (after the initial dataRow element)
+    expect(csvData[0][1]).toBeCloseTo(55118.3046);
   });
 
   test('Receive[commodity_value_protected_areas_level, yearly, aggregate] and get [1047247.7874000005,]', () => {
     const csvData = [];
-    const dataRow = [];
+    const dataRow = [''];
     const data = {
       commodity_value_protected_areas:
         '{"2002":55118.3046,"2003":55118.3046,"2004":55118.3046,"2005":55118.3046,"2006":55118.3046,"2007":55118.3046,"2008":55118.3046,"2009":55118.3046,"2010":55118.3046,"2011":55118.3046,"2012":55118.3046,"2013":55118.3046,"2014":55118.3046,"2015":55118.3046,"2016":55118.3046,"2017":55118.3046,"2018":55118.3046,"2019":55118.3046,"2020":55118.3046,"2023":55118.3046,"2024":55118.3046}',
@@ -102,12 +106,13 @@ describe('Palm Risk Analysis Parser', () => {
     }, 0);
 
     expect(csvData.length).toEqual(1);
-    expect(csvData[0][0]).toBeCloseTo(expected);
+    // Value is now at index 1 (after the initial dataRow element)
+    expect(csvData[0][1]).toBeCloseTo(expected);
   });
 
   test('Receive[commodity_value_protected_areas_level, lastYear] and get ["High"]', () => {
     const csvData = [];
-    const dataRow = [];
+    const dataRow = [''];
     palmRiskAnalysisParser({
       operation: {
         fields: [
@@ -125,12 +130,13 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0][0]).toEqual('High');
+    // Value is now at index 1 (after the initial dataRow element)
+    expect(csvData[0][1]).toEqual('High');
   });
 
   test('Receive[commodity_value_protected_areas_level, lastYear] and get ["Low"]', () => {
     const csvData = [];
-    const dataRow = [];
+    const dataRow = [''];
     palmRiskAnalysisParser({
       operation: {
         fields: [
@@ -147,6 +153,7 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0][0]).toEqual('Low');
+    // Value is now at index 1 (after the initial dataRow element)
+    expect(csvData[0][1]).toEqual('Low');
   });
 });

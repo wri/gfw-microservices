@@ -9,69 +9,95 @@ const filterBelowEndYear = (ax) =>
     return acc;
   }, {});
 
+const PriorityLevel = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High',
+};
+
 const priorityLabel = {
-  0: 'Low',
-  1: 'Medium',
-  2: 'High',
+  0: PriorityLevel.LOW,
+  1: PriorityLevel.MEDIUM,
+  2: PriorityLevel.HIGH,
 };
 
 const categoryParser = ({ totalProp, currentRow }) => {
-  const lastYear = totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
-
-  const label = priorityLabel[lastYear];
-  if (label) {
-    currentRow.push(label);
+  const lastYearKey = Object.keys(totalProp)[Object.keys(totalProp).length - 1];
+  if (lastYearKey !== undefined) {
+    const lastYear = totalProp[lastYearKey];
+    const label = priorityLabel[lastYear];
+    currentRow.push(label !== undefined ? label : PriorityLevel.LOW);
+  } else {
+    currentRow.push(PriorityLevel.LOW);
   }
 };
 
 const lastYearParser = ({ totalProp, currentRow }) => {
   const years = Object.keys(totalProp);
   if (years && years.length > 0) {
-    currentRow.push(totalProp[years[years.length - 1]]);
+    const val = totalProp[years[years.length - 1]];
+    if (val === undefined) {
+      currentRow.push('');
+    } else if (val === 0) {
+      currentRow.push(0);
+    } else {
+      currentRow.push(val);
+    }
   } else {
     currentRow.push('');
   }
 };
 
+const aggregateParser = (totalProp) => {
+  const val = Object.entries(totalProp).reduce((acc, [, value]) => {
+    if (typeof value === 'number') {
+      return acc + value;
+    }
+    return acc;
+  }, 0);
+  return val;
+};
+
+const lastYearPriorityParser = (rowObj) => {
+  const years = Object.keys(rowObj);
+  if (years.length > 0) {
+    const value = rowObj[years[years.length - 1]];
+    const priority = priorityLabel[value];
+    return priority !== undefined ? priority : PriorityLevel.LOW;
+  } else {
+    return PriorityLevel.LOW;
+  }
+};
+
 const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
+  // Always start with a cloned dataRow for compatibility
   const currentRow = cloneRow(dataRow);
-  operation.fields.forEach((field) => {
+  operation.fields.forEach((field, idx) => {
+    let value;
     if (field.type === 'yearly') {
       let totalProp = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
-
       totalProp = filterBelowEndYear(totalProp);
-      const val = Object.entries(totalProp).reduce((acc, [, value]) => {
-        if (typeof value === 'number') {
-          return acc + value;
-        }
-        return acc;
-      }, 0);
-
       if (field.parsed === 'category') {
-        categoryParser({ totalProp, currentRow });
-      } else if (field.parsed === 'aggregate' && val) {
-        currentRow.push(val);
+        const tempRow = [];
+        categoryParser({ totalProp, currentRow: tempRow });
+        value = tempRow[0];
+      } else if (field.parsed === 'aggregate') {
+        value = aggregateParser(totalProp);
       } else if (field.parsed === 'last') {
-        lastYearParser({ totalProp, currentRow });
+        const tempRow = [];
+        lastYearParser({ totalProp, currentRow: tempRow });
+        value = tempRow[0];
       }
     } else if (field.type === 'lastYear') {
       const rowValue = data[field.attribute];
       let rowObj = JSON.parse(rowValue);
       rowObj = filterBelowEndYear(rowObj);
-
-      const years = Object.keys(rowObj);
-      const value = rowObj[years[years.length - 1]] || 0;
-      const priority = priorityLabel[value];
-
-      if (priority) {
-        currentRow.push(priority);
-      }
+      value = lastYearPriorityParser(rowObj);
     }
+    // Place value after existing columns (list_name, Location Name, etc.)
+    currentRow[dataRow.length + idx] = value;
   });
-
-  if (currentRow.length > 0) {
-    csvData.push(currentRow);
-  }
+  csvData.push(currentRow);
 };
 
 export { palmRiskAnalysisParser };

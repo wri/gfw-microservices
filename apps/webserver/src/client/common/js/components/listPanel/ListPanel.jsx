@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { locationsPage, userAccessLevel } from '../../config';
 import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
-import store from '../../../../dashboard/js/store';
-import { updateLocationFilter } from '../../../../dashboard/js/actions/dashboardActions';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import FailedTooltip from '../CustomTooltip/FailedTooltip';
 import InlineLoader from '../Loaders/InlineLoader';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
-import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
-function selectTooltipMessage(currentUser, list, listDraftStatus, listContext) {
+function selectTooltipMessage(currentUser, list, listDraftStatus) {
   const userIsOwner = currentUser.id === list.user_id;
   const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
   const showNonOwnerDraft = !userIsAdmin && !userIsOwner && listDraftStatus;
@@ -18,16 +15,8 @@ function selectTooltipMessage(currentUser, list, listDraftStatus, listContext) {
     'This list is in draft form. All locations in draft lists can be viewed on the map. To receive analysis for the list, please navigate to the Locations page and click Submit.';
   const TOOLTIP__MESSAGE_MAP_NON_OWNER =
     'This list is in draft form. All locations in draft lists can be viewed on the map. To recieve analysis for the list, the list owner will need to submit the list for analysis.';
-  const TOOLTIP__MESSAGE_DASHBOARD =
-    'This list is in draft form. Draft lists cannot be viewed on the Dashboard. To view alerts for this list on the dashboard, please navigate to the Locations page and click Submit.';
-  const TOOLTIP__MESSAGE_DASHBOARD_NON_OWNER =
-    'This list is in draft form. Draft lists cannot be viewed on the Dashboard. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.';
-  if (listContext === 'map') {
-    // we are in map
-    return showNonOwnerDraft ? TOOLTIP__MESSAGE_MAP_NON_OWNER : TOOLTIP__MESSAGE_MAP;
-  }
-  // we are in dashboard
-  return showNonOwnerDraft ? TOOLTIP__MESSAGE_DASHBOARD_NON_OWNER : TOOLTIP__MESSAGE_DASHBOARD;
+
+  return showNonOwnerDraft ? TOOLTIP__MESSAGE_MAP_NON_OWNER : TOOLTIP__MESSAGE_MAP;
 }
 
 function ListPanel({
@@ -36,30 +25,12 @@ function ListPanel({
   gfwLists,
   userSharedLists,
   selectedListCallback,
-  listContext,
   selectedList,
   currentUser,
 }) {
   const [showListPanel, setShowListPanel] = useState(false);
 
   const handleSelectedList = (listObj) => {
-    const { locationFilters } = store.getState();
-    let locationFiltersToggledOn = false;
-    Object.keys(locationFilters).forEach((key) => {
-      if (locationFilters[key] === true) {
-        locationFiltersToggledOn = true;
-      }
-    });
-
-    if (locationFiltersToggledOn) {
-      const filterObject = {
-        ALERTS: false,
-        FLAGGED: false,
-        NOALERTS: false,
-      };
-      store.dispatch(updateLocationFilter(filterObject));
-    }
-
     const joinAllLists = [...userLists, ...gfwLists, ...userSharedLists];
 
     const currentlySelectedList = joinAllLists.filter(
@@ -74,12 +45,7 @@ function ListPanel({
 
   const createListsRenderer = (list, index) => {
     const listDraftStatus = list.list_status_id === listStatus.Draft;
-    const tooltipMessage = selectTooltipMessage(currentUser, list, listDraftStatus, listContext);
-
-    const hasAlertsAnalysisActive = list?.listAnalysesStatus?.some(
-      ({ status, analysisId }) =>
-        status === listStatus.Active && analysisId === analysisTypes.ALERTS
-    );
+    const tooltipMessage = selectTooltipMessage(currentUser, list, listDraftStatus);
 
     let className = '';
     if (list.list_status_id === listStatus.Pending) {
@@ -88,25 +54,13 @@ function ListPanel({
     } else if (list.list_status_id === listStatus.Inactive) {
       // Inactive
       className = 'locations-list-name__failed';
-    } else if (listDraftStatus && listContext === 'map') {
+    } else if (listDraftStatus) {
       // Draft in Map
       className = 'locations-list-name__map_draft';
-    } else if (
-      !list?.GFWList &&
-      (!hasAlertsAnalysisActive || listDraftStatus) &&
-      listContext === 'dashboard' // TODO: unreachable code: listContext is always 'map'
-    ) {
-      // Draft in Dashboard
-      className = 'locations-list-name__dash_draft';
     }
     const onClickHandler = () => {
       togglePanel();
-      if (
-        (hasAlertsAnalysisActive && !listDraftStatus && listContext === 'dashboard') ||
-        (list.list_status_id === listStatus.Active && listContext === 'map') ||
-        (listDraftStatus && listContext === 'map') ||
-        list?.GFWList
-      ) {
+      if (list.list_status_id === listStatus.Active || listDraftStatus || list?.GFWList) {
         handleSelectedList(list);
       }
     };

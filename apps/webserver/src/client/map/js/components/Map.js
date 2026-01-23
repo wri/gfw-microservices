@@ -2840,7 +2840,6 @@ class Map extends Component {
               view={this.view}
               selectedListCallback={this.updateSelectedLists}
               userSharedLists={userSharedLists}
-              listContext={'map'}
               currentUser={this.props.userInfo}
             />
           </div>

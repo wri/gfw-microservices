@@ -21,22 +21,15 @@ interface SelectedListDescriptionProps {
   totalNumberOfLocationsInAccount?: number;
   userSharedLists?: SharedList[];
   redirectToAlerts?: boolean;
-  listContext?: 'map' | 'dashboard';
 }
 
 const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
   totalNumberOfLocationsInAccount = 0,
   userSharedLists = [],
-  redirectToAlerts,
-  listContext,
 }) => {
-  // we use this component in dashboard and in the map
-  // the selected list is stored as an array in map (selectedLists)
-  // in dashboard the selected list is stored directly (selectedList)
-  const selectedList =
-    listContext === 'map'
-      ? useSelector((state: RootState) => state.selectedLists[0])
-      : useSelector((state: RootState) => state.selectedList);
+  // This component is only used in the map
+  // The selected list is stored as an array in map (selectedLists)
+  const selectedList = useSelector((state: RootState) => state.selectedLists[0]);
 
   // if there is a list selected
   const isListSelected = typeof selectedList === 'object' && Object.keys(selectedList).length;
@@ -73,11 +66,7 @@ const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
       event_category: 'Map Click',
       event_label: 'User click on a GO TO MAP link',
     });
-    if (redirectToAlerts) {
-      window.location.href = '/dashboard?from_map';
-    } else {
-      goToList();
-    }
+    goToList();
   };
 
   return (

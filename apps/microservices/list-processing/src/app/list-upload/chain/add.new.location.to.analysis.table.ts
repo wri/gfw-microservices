@@ -28,13 +28,15 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       name: analysisTable,
     });
 
-    const dataToInsert = request.geojson.features.map(({ properties }) => {
-      const { locationId } = properties;
-      return {
-        locationId,
-        locationStatusId: 1,
-      };
-    });
+    const dataToInsert = request.geojson.features
+      .filter(({ properties }) => properties?.locationId !== undefined)
+      .map(({ properties }) => {
+        const { locationId } = properties;
+        return {
+          locationId,
+          locationStatusId: 1,
+        };
+      });
 
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       AnalysisEntity,

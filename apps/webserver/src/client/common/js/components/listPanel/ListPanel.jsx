@@ -14,7 +14,7 @@ function selectTooltipMessage(currentUser, list, listDraftStatus) {
   const TOOLTIP__MESSAGE_MAP =
     'This list is in draft form. All locations in draft lists can be viewed on the map. To receive analysis for the list, please navigate to the Locations page and click Submit.';
   const TOOLTIP__MESSAGE_MAP_NON_OWNER =
-    'This list is in draft form. All locations in draft lists can be viewed on the map. To recieve analysis for the list, the list owner will need to submit the list for analysis.';
+    'This list is in draft form. All locations in draft lists can be viewed on the map. To receive analysis for the list, the list owner will need to submit the list for analysis.';
 
   return showNonOwnerDraft ? TOOLTIP__MESSAGE_MAP_NON_OWNER : TOOLTIP__MESSAGE_MAP;
 }

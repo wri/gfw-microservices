@@ -20,7 +20,6 @@ interface RootState {
 interface SelectedListDescriptionProps {
   totalNumberOfLocationsInAccount?: number;
   userSharedLists?: SharedList[];
-  redirectToAlerts?: boolean;
 }
 
 const SelectedListDescription: FC<SelectedListDescriptionProps> = ({

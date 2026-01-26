@@ -57,7 +57,7 @@ export const getAllAccountsList = (req) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('loginFailed');
+      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
@@ -95,7 +95,7 @@ export const getAllUsersList = (req) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('loginFailed');
+      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
@@ -257,7 +257,7 @@ export const activatePendingAccount = (req, pendingAccountId, unit_test = false)
 
         // ensure user is a pro manager
         if (!UserManager.isProManager(req)) {
-          const userMessage = langResources.getResourceString('loginFailed');
+          const userMessage = langResources.getResourceString('userIsNotAnAdmin');
           const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
           throw new errorUtils.createErrorMessage(
             req,
@@ -435,7 +435,7 @@ export const closePendingAccount = async (req, pendingAccountId) => {
 export const deletePendingAccountRequest = async (req, pendingAccountId) => {
   // Check to make sure the user is a proper pro manager.
   if (!UserManager.isProManager(req)) {
-    const userMessage = langResources.getResourceString('loginFailed');
+    const userMessage = langResources.getResourceString('userIsNotAnAdmin');
     const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
     throw errorUtils.createErrorMessage(
       req,
@@ -470,7 +470,7 @@ export const deletePendingAccountRequest = async (req, pendingAccountId) => {
 export const deleteOrganization = (req, orgName) => {
   return new Promise((resolve, reject) => {
     if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('loginFailed');
+      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
@@ -510,7 +510,7 @@ export const deleteUser = (req, email) => {
   return new Promise((resolve, reject) => {
     // Check to make sure the user is a proper pro manager.
     if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('loginFailed');
+      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
@@ -737,7 +737,7 @@ export const updateAccountAnalysisLimits = async (request, payload) => {
  */
 export const updateOrgName = async (req, id, name) => {
   if (!UserManager.isProManager(req)) {
-    const userMessage = langResources.getResourceString('loginFailed');
+    const userMessage = langResources.getResourceString('userIsNotAnAdmin');
     const sysMessage = `UserEmail: ${req.session.user_email} is not authorized to update org names.`;
     throw errorUtils.createErrorMessage(
       req,

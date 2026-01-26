@@ -196,7 +196,7 @@ export const getPolicyList = (req) => {
 export const getAllPolicyList = (req) => {
   return new Promise((resolve, reject) => {
     if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('loginFailed');
+      const userMessage = langResources.getResourceString('invalidUsernameOrPassword');
       const sysMessage = 'UserEmail: ' + req.session.user_email + ' is not a GFW Pro Root User.';
       const eo = errorUtils.createErrorMessage(
         req,

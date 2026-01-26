@@ -475,7 +475,7 @@ export const createNewUser = (
         logger.logActivity(
           req,
           logger.listActivityTypes.User.UserCreated,
-          `User ID ${user_id} has been created in status "Pending."`
+          `User ID ${user_id} has been created in status "Pending".`
         );
         resolve(user_id);
       })

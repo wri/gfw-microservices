@@ -26,7 +26,8 @@
   "moduleNameMapper": {
     "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
     "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",
-    "\\.(css|scss)$": "<rootDir>/test/__mocks__/object.js",
+    "^.+\\.css$": "<rootDir>/test/__mocks__/object.js",
+    "^.+\\.scss$": "<rootDir>/test/__mocks__/object.js",
     "\\.(jpe?g|png|gif|svg)$": "<rootDir>/test/__mocks__/object.js",
     "@arcgis/core/symbols/SimpleFillSymbol": "<rootDir>/test/__mocks__/SimpleFillSymbol.js",
     "@arcgis": "<rootDir>/test/__mocks__/object.js",

@@ -18,15 +18,9 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const {
-      organization_database: organizationDatabase,
-      analysisTable,
-      hasUnanalyzableError,
-    } = request.request as RequestNewList;
-    if (hasUnanalyzableError) {
-      // Skip analysis table if list is not going to be analyzed
-      return request;
-    }
+    const { organization_database: organizationDatabase, analysisTable } =
+      request.request as RequestNewList;
+
     this.logger.log('add new locations to the analysis table');
 
     const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({

@@ -157,7 +157,9 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
               isGeometryValid = this.validatePolygon(geometry as unknown as Polygon);
             } else {
               // geometry.type === 'MultiPolygon'
-              isGeometryValid = await this.validateMultiPolygon(geometry as unknown as MultiPolygon);
+              isGeometryValid = await this.validateMultiPolygon(
+                geometry as unknown as MultiPolygon
+              );
             }
             if (!isGeometryValid) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];

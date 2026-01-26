@@ -19,7 +19,6 @@ secrets/*.secrets
 
 src/cert.pem
 src/key.pem
-src/client/dashboard/test/*
 coverage/
 
 *.mbtiles

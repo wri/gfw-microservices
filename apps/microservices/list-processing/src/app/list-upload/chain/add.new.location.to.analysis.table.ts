@@ -18,15 +18,9 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
   }
 
   async handle(request: ChainType): Promise<ChainType> {
-    const {
-      organization_database: organizationDatabase,
-      analysisTable,
-      hasUnanalyzableError,
-    } = request.request as RequestNewList;
-    if (hasUnanalyzableError) {
-      // Skip analysis table if list is not going to be analyzed
-      return request;
-    }
+    const { organization_database: organizationDatabase, analysisTable } =
+      request.request as RequestNewList;
+
     this.logger.log('add new locations to the analysis table');
 
     const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
@@ -34,13 +28,15 @@ export class AddNewLocationToAnalysisTable extends AbstractHandler<ChainType> {
       name: analysisTable,
     });
 
-    const dataToInsert = request.geojson.features.map(({ properties }) => {
-      const { locationId } = properties;
-      return {
-        locationId,
-        locationStatusId: 1,
-      };
-    });
+    const dataToInsert = request.geojson.features
+      .filter(({ properties }) => properties?.locationId !== undefined)
+      .map(({ properties }) => {
+        const { locationId } = properties;
+        return {
+          locationId,
+          locationStatusId: 1,
+        };
+      });
 
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
       AnalysisEntity,

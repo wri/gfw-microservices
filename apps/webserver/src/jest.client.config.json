@@ -41,7 +41,6 @@
     "^change(.*)$": "<rootDir>/client/change$1",
     "^changeExist(.*)$": "<rootDir>/client/changeExist$1",
     "^common(.*)$": "<rootDir>/client/common$1",
-    "^dashboard(.*)$": "<rootDir>/client/dashboard$1",
     "^diagnostics(.*)$": "<rootDir>/client/diagnostics$1",
     "^forgot(.*)$": "<rootDir>/client/forgot$1",
     "^listDetails(.*)$": "<rootDir>/client/listDetails$1",

@@ -72,8 +72,6 @@ export const sharedUrlDict = {
 export const loaderMessages = {
   defaultMessage: 'This may take a few minutes. Please do not navigate away from this page.',
   uploadHeader: 'Your locations are being uploaded.',
-  dashboardMessage:
-    'Please leave this window open while alerts are processing. Results will appear on the Dashboard shortly. Lists larger than 1,000 locations may take up to 5 minutes to process. Please try again if the list fails to process after 5 minutes.',
 };
 
 export const nav = {
@@ -111,12 +109,6 @@ export const nav = {
     sharing: 'Sharing',
     sharingLink:
       'http://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/GFW%20Pro%20Information%20Sharing%20One%20Pager_April2019.pdf',
-  },
-};
-
-export const dashboardPage = {
-  infoBubbleConfig: {
-    locationsAlertMap: 'locations_alert_map',
   },
 };
 

@@ -13,6 +13,7 @@ import { ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER } from '../shared/c
 import { finished } from 'stream/promises';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 import { IntegratedAlertsNaturalForest } from '../transform/integrated.alerts.natural.forest';
+import { FilterTimeframeIntegratedAlerts } from '../transform/filter.timeframe.integrated.alerts';
 import { FormatNumber } from '../transform/format.number';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
@@ -44,6 +45,18 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
   private organizeStream(filters: AlertFieldsFileRequest) {
     const { listId, startDate, endDate, key, listName } = filters;
 
+    const inputColumns: string[] = [
+      'integratedAlertsDailyAllNominal',
+      'integratedAlertsDailyAllHigh',
+      'integratedAlertsDailyAllHighest',
+      'integratedAlertsDailySbtnNominal',
+      'integratedAlertsDailySbtnHigh',
+      'integratedAlertsDailySbtnHighest',
+      'integratedAlertsDailyJrcNominal',
+      'integratedAlertsDailyJrcHigh',
+      'integratedAlertsDailyJrcHighest',
+    ];
+
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', async (err) => {
@@ -57,7 +70,7 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
 
     this.inputStream
       .pipe(new AlertsGetLocationOrListData(false))
-      // FilterTimeframeIntegratedAlerts removed - SQL now handles date filtering and aggregation
+      .pipe(new FilterTimeframeIntegratedAlerts(inputColumns, startDate, endDate))
       .pipe(new IntegratedAlertsNaturalForest(listName, startDate, endDate))
       .pipe(new FormatNumber())
       .pipe(new ConvertObject2CSV(Object.keys(ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER)))

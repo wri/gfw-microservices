@@ -763,3 +763,145 @@ export async function getAlertsListAnalyses(list_id, page, pageSize, clientDatab
 
   return { listAnalyses: formattedListAnalyses, numberOfResults };
 }
+
+export async function getDashboardDataPaginatedByList(
+  list_id,
+  page,
+  pageSize,
+  clientDatabase,
+  filters
+) {
+  const {
+    orderType,
+    sortByAttribute,
+    searchString,
+    country,
+    state,
+    subState,
+
+    // commodity risk filters:
+    selectedSupplier,
+    selectedSecondSupplier,
+    selectedParentCompany,
+    showRSPOCertified,
+  } = filters;
+  const parameters = [
+    { field: 'listId', type: sql.Int, value: list_id },
+    { field: 'rowsPerPage', type: sql.Int, value: pageSize },
+    { field: 'pageNumber', type: sql.Int, value: page === 0 ? page : page - 1 },
+    { field: 'orderType', type: sql.NVarChar(255), value: orderType || 'ASC' },
+    { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
+    {
+      field: 'selectedSecondSupplier',
+      type: sql.NVarChar(255),
+      value:
+        selectedSecondSupplier !== '' && selectedSecondSupplier ? selectedSecondSupplier : null,
+    },
+    {
+      field: 'selectedParentCompany',
+      type: sql.NVarChar(255),
+      value: selectedParentCompany !== '' && selectedParentCompany ? selectedParentCompany : null,
+    },
+    { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+    {
+      field: 'SearchString',
+      type: sql.NVarChar(255),
+      value: searchString !== '' && searchString ? searchString : null,
+    },
+    {
+      field: 'Country',
+      type: sql.NVarChar(255),
+      value: country !== '' && country ? country : null,
+    },
+    {
+      field: 'State',
+      type: sql.NVarChar(255),
+      value: state !== '' && state ? state : null,
+    },
+    {
+      field: 'SubState',
+      type: sql.NVarChar(255),
+      value: subState !== '' && subState ? subState : null,
+    },
+  ];
+
+  parameters.push({
+    field: 'sortByAttribute',
+    type: sql.NVarChar(255),
+    value: sortByAttribute,
+  });
+
+  const listDashboardAnalyses = await SQLUtilsLibSql.queryDB<DashboardDataPaginated[]>(
+    clientDatabase,
+    getDashboardDataPaginated,
+    parameters
+  );
+  const numberOfResults = await SQLUtilsLibSql.queryDBFirstRow<CountDashboardDataType>(
+    clientDatabase,
+    getCountDashboardData,
+    parameters
+  );
+  const numberOfPages = Math.ceil(numberOfResults.quantity / pageSize > 0 ? pageSize : 1);
+  for (let i = 0; i < listDashboardAnalyses.length; i++) {
+    let accIntegratedAlertsDailySbtn = 0;
+    let accIntegratedAlertsDailyJRC = 0;
+
+    // Calculate SBTN Alerts
+    accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailySbtnNominal'
+    );
+    accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailySbtnHigh'
+    );
+    accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailySbtnHighest'
+    );
+
+    // Calculate JRC Alerts
+    accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailyJrcNominal'
+    );
+    accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailyJrcHigh'
+    );
+    accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailyJrcHighest'
+    );
+
+    //Adding calculated alerts to the list
+    listDashboardAnalyses[i]['alertsInSBTN'] = accIntegratedAlertsDailySbtn;
+    listDashboardAnalyses[i]['alertsInJRC'] = accIntegratedAlertsDailyJRC;
+    listDashboardAnalyses[i]['alertsInSBTNPerHA'] =
+      listDashboardAnalyses[i]['alertsInSBTN'] > 0 && listDashboardAnalyses[i]['totalHa'] > 0
+        ? listDashboardAnalyses[i]['alertsInSBTN'] / listDashboardAnalyses[i]['totalHa']
+        : 0;
+    listDashboardAnalyses[i]['alertsInJRCPerHA'] =
+      listDashboardAnalyses[i]['alertsInJRC'] > 0 && listDashboardAnalyses[i]['totalHa'] > 0
+        ? listDashboardAnalyses[i]['alertsInJRC'] / listDashboardAnalyses[i]['totalHa']
+        : 0;
+  }
+
+  return {
+    listDashboardAnalyses,
+    numberOfResults,
+    numberOfPages,
+  };
+}
+function sumAccumulatedAlerts(analysis, alertType): number {
+  let accIntegratedAlerts = 0;
+  if (Object.keys(analysis[alertType]).length > 0) {
+    accIntegratedAlerts += Object.entries(JSON.parse(analysis[alertType]))
+      .filter(
+        ([key]) =>
+          new Date(key.toString()) > new Date(DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR.toString())
+      )
+      .reduce((acc, [, value]) => acc + (value as number), 0);
+  }
+  return accIntegratedAlerts;
+}

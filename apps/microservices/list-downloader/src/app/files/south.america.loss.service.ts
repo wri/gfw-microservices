@@ -91,6 +91,32 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
           });
         }
 
+        if (
+          attribute === 'tree_cover_loss_prodes_yearly' ||
+          attribute === 'tree_cover_loss_prodes_wdpa_yearly'
+        ) {
+          Object.keys(yearlyData).forEach((year) => {
+            const yearNum = parseInt(year, 10);
+            if (
+              yearNum < DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_START_YEAR ||
+              yearNum > DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_END_YEAR
+            ) {
+              delete yearlyData[year];
+            }
+          });
+
+          // Fill in missing years with 0
+          for (
+            let year = DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_START_YEAR;
+            year <= DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_END_YEAR;
+            year++
+          ) {
+            if (!yearlyData[year]) {
+              yearlyData[year] = 0;
+            }
+          }
+        }
+
         let totalSubCategory = 0;
         if (!Object.values(DATA_LAYER).some((dataLayer) => label == dataLayer)) {
           Object.keys(yearlyData).forEach((yr) => {

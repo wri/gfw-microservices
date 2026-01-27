@@ -238,7 +238,7 @@ const LegendCheckbox = (props) => {
   const soyPlantedYearPicker = useCallback(
     (layer) => {
       const { soyYear } = store.getState();
-      const years = _range(soyPlantedYearsRange[0], soyPlantedYearsRange[1] + 1);
+      const years = _range(soyPlantedYearsRange.from, soyPlantedYearsRange.to + 1);
       return (
         <>
           <ul className="layer-legend">{layer.legendConfig.items.map(layerLegendMap)}</ul>

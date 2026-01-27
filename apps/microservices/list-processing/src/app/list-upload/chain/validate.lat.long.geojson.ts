@@ -83,7 +83,8 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
     return kinks.features.length === 0;
   }
 
-  validateMultiPolygon(geometry: MultiPolygon): boolean {
+  async validateMultiPolygon(geometry: MultiPolygon): Promise<boolean> {
+    let lastYieldTimestamp = Date.now();
     for (let index = 0; index < geometry.coordinates.length; index++) {
       const polyToValidate: Polygon = {
         type: 'Polygon',
@@ -118,6 +119,7 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
       ) {
         return false;
       }
+      lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
     }
 
     return true;
@@ -155,7 +157,9 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
               isGeometryValid = this.validatePolygon(geometry as unknown as Polygon);
             } else {
               // geometry.type === 'MultiPolygon'
-              isGeometryValid = this.validateMultiPolygon(geometry as unknown as MultiPolygon);
+              isGeometryValid = await this.validateMultiPolygon(
+                geometry as unknown as MultiPolygon
+              );
             }
             if (!isGeometryValid) {
               feature.properties.errorDetails = feature.properties.errorDetails || [];

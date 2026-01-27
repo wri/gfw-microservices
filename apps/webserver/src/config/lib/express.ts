@@ -11,7 +11,7 @@ const favicon = require('serve-favicon');
 import * as logger from '../privateutils/logger.utils';
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
-const helmet = require('helmet');
+import helmet from 'helmet';
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
 import config from '../config';
@@ -161,20 +161,43 @@ const configureHelmetHeaders = (app: Application) => {
    * dnsPrefetchControl - controls browser DNS prefetching
    * frameguard - to prevent clickjacking
    * hidePoweredBy - to remove the X-Powered-By header
-   * hsts - for HTTP Strict Transport Security
-   * ieNoOpen - sets X-Download-Options for IE8+
+   * hsts - for HTTP Strict Transport Security (prod/staging only)
    * noSniff - to keep clients from sniffing the MIME type
    * xssFilter - adds some small XSS protections
    */
+  const isProdOrStaging = ['production', 'staging'].includes(process.env.NODE_ENV);
+  app.use(helmet());
+  if (isProdOrStaging) {
+    app.use(
+      helmet.hsts({
+        maxAge: 31536000, // 1 year expiration
+        includeSubDomains: true,
+        preload: true,
+      })
+    );
+  }
   app.use(
-    helmet({
-      hsts: true, // off until https us working
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+      },
     })
   );
-  /**
-   * TODO: Add content security policy configuration via helmet.contentSecurityPolicy({ ... })
-   * @see https://github.com/helmetjs/helmet
-   */
+  // Set Permissions-Policy header manually (Helmet v6+ does not provide this middleware)
+  app.use((req, res, next) => {
+    res.setHeader(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=*, payment=()'
+    );
+    next();
+  });
 };
 
 /**

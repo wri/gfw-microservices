@@ -843,19 +843,36 @@ export async function getDashboardDataPaginatedByList(
   );
   const numberOfPages = Math.ceil(numberOfResults.quantity / pageSize > 0 ? pageSize : 1);
   for (let i = 0; i < listDashboardAnalyses.length; i++) {
-    // SQL now returns numeric values instead of JSON strings - no parsing needed
     let accIntegratedAlertsDailySbtn = 0;
     let accIntegratedAlertsDailyJRC = 0;
 
-    // Calculate SBTN Alerts - values are already numbers from SQL
-    accIntegratedAlertsDailySbtn += listDashboardAnalyses[i].integratedAlertsDailySbtnNominal || 0;
-    accIntegratedAlertsDailySbtn += listDashboardAnalyses[i].integratedAlertsDailySbtnHigh || 0;
-    accIntegratedAlertsDailySbtn += listDashboardAnalyses[i].integratedAlertsDailySbtnHighest || 0;
+    // Calculate SBTN Alerts
+    accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailySbtnNominal'
+    );
+    accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailySbtnHigh'
+    );
+    accIntegratedAlertsDailySbtn += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailySbtnHighest'
+    );
 
-    // Calculate JRC Alerts - values are already numbers from SQL
-    accIntegratedAlertsDailyJRC += listDashboardAnalyses[i].integratedAlertsDailyJrcNominal || 0;
-    accIntegratedAlertsDailyJRC += listDashboardAnalyses[i].integratedAlertsDailyJrcHigh || 0;
-    accIntegratedAlertsDailyJRC += listDashboardAnalyses[i].integratedAlertsDailyJrcHighest || 0;
+    // Calculate JRC Alerts
+    accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailyJrcNominal'
+    );
+    accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailyJrcHigh'
+    );
+    accIntegratedAlertsDailyJRC += sumAccumulatedAlerts(
+      listDashboardAnalyses[i],
+      'integratedAlertsDailyJrcHighest'
+    );
 
     //Adding calculated alerts to the list
     listDashboardAnalyses[i]['alertsInSBTN'] = accIntegratedAlertsDailySbtn;
@@ -875,4 +892,16 @@ export async function getDashboardDataPaginatedByList(
     numberOfResults,
     numberOfPages,
   };
+}
+function sumAccumulatedAlerts(analysis, alertType): number {
+  let accIntegratedAlerts = 0;
+  if (Object.keys(analysis[alertType]).length > 0) {
+    accIntegratedAlerts += Object.entries(JSON.parse(analysis[alertType]))
+      .filter(
+        ([key]) =>
+          new Date(key.toString()) > new Date(DIAGNOSTIC_ANALYSIS_PERIOD.END_YEAR.toString())
+      )
+      .reduce((acc, [, value]) => acc + (value as number), 0);
+  }
+  return accIntegratedAlerts;
 }

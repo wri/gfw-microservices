@@ -34,38 +34,41 @@ export class IntegratedAlertsNaturalForest extends Transform {
   _transform(chunk, encoding, callback) {
     try {
       if (isEmptyObject(chunk)) {
-        return callback(null, []);
+        return callback([]);
       }
 
-      // SQL now returns pre-summed numeric values for the entire date range
-      // We return a single row per confidence level with the aggregated totals
       const output: Array<Array<string | number>> = [];
+      for (
+        let date = new Date(this.startDate);
+        date <= this.endDate;
+        date.setDate(date.getDate() + 1)
+      ) {
+        const dateString = date.toISOString().split('T')[0];
 
-      const nominalRow = this.mountRow(chunk, nominal, 'Nominal');
-      const highRow = this.mountRow(chunk, high, 'High');
-      const highestRow = this.mountRow(chunk, highest, 'Highest');
-
-      nominalRow.length > 0 && output.push(nominalRow);
-      highRow.length > 0 && output.push(highRow);
-      highestRow.length > 0 && output.push(highestRow);
-
+        const nominalRow = this.mountRow(chunk, dateString, nominal, 'Nominal');
+        const highRow = this.mountRow(chunk, dateString, high, 'High');
+        const highestRow = this.mountRow(chunk, dateString, highest, 'Highest');
+        nominalRow.length > 0 && output.push(nominalRow);
+        highRow.length > 0 && output.push(highRow);
+        highestRow.length > 0 && output.push(highestRow);
+      }
       callback(null, output);
     } catch (err) {
       callback(err, []);
     }
   }
 
-  private mountRow(
-    data: Record<string, any>,
+  mountRow(
+    data,
+    dateString: string,
     group: string[],
     confidenceLevel: string
   ): Array<string | number> {
     const { location_name, totalHa } = data;
 
-    // Values are now already aggregated numbers from SQL
-    const all = this.getNumericValue(data[group[0]]);
-    const sbtn = this.getNumericValue(data[group[1]]);
-    const jrc = this.getNumericValue(data[group[2]]);
+    const all = JSON.parse(data[group[0]])[dateString] || 0;
+    const sbtn = JSON.parse(data[group[1]])[dateString] || 0;
+    const jrc = JSON.parse(data[group[2]])[dateString] || 0;
 
     if (all || sbtn || jrc) {
       return [
@@ -74,7 +77,7 @@ export class IntegratedAlertsNaturalForest extends Transform {
         'Deforestation (Integrated Alerts)',
         this.startDate.toISOString().split('T')[0],
         this.endDate.toISOString().split('T')[0],
-        'all-time', // Since SQL aggregates all dates, we use 'all-time' as the date label
+        dateString,
         totalHa,
         confidenceLevel,
         all,
@@ -84,13 +87,5 @@ export class IntegratedAlertsNaturalForest extends Transform {
       ];
     }
     return [];
-  }
-
-  private getNumericValue(value: any): number {
-    if (value === undefined || value === null) {
-      return 0;
-    }
-    const numValue = typeof value === 'number' ? value : parseFloat(value);
-    return isNaN(numValue) ? 0 : numValue;
   }
 }

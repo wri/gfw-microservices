@@ -2,6 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { DashboardDataType } from '@wri-monorepos/sql';
 import { AlertsRepository } from './alerts.repository';
 
+const ALERT_PIXEL_SIZE_HA = 0.09;
+
+interface GlobalIntegratedDisturbanceDailyRow {
+  day: string;
+  totalAlertCount: number;
+  totalAlertHectares: number;
+  sbtnNaturalForestCount: number;
+  sbtnNaturalForestHectares: number;
+  sbtnNaturalOpenEcosystemsCount: number;
+  sbtnNaturalOpenEcosystemsHectares: number;
+  jrcForestCount: number;
+  jrcForestHectares: number;
+}
+
+interface GlobalIntegratedDisturbanceDaily {
+  nominal: GlobalIntegratedDisturbanceDailyRow[];
+  high: GlobalIntegratedDisturbanceDailyRow[];
+  highest: GlobalIntegratedDisturbanceDailyRow[];
+}
+
 @Injectable()
 export class AlertsService {
   constructor(private readonly alertsRepository: AlertsRepository) {}
@@ -70,73 +90,7 @@ export class AlertsService {
             ? l.gladAlerts.trim().toLowerCase() === 'true'
             : l.gladAlerts;
 
-        // SQL now returns pre-aggregated numeric values, no JSON parsing needed
-        // Only create rows if there are actual values (not zero or undefined)
-        const hasNominalData =
-          (l.integratedAlertsDailyAllNominal || 0) > 0 ||
-          (l.integratedAlertsDailySbtnNominal || 0) > 0 ||
-          (l.integratedAlertsDailyJrcNominal || 0) > 0;
-
-        const hasHighData =
-          (l.integratedAlertsDailyAllHigh || 0) > 0 ||
-          (l.integratedAlertsDailySbtnHigh || 0) > 0 ||
-          (l.integratedAlertsDailyJrcHigh || 0) > 0;
-
-        const hasHighestData =
-          (l.integratedAlertsDailyAllHighest || 0) > 0 ||
-          (l.integratedAlertsDailySbtnHighest || 0) > 0 ||
-          (l.integratedAlertsDailyJrcHighest || 0) > 0;
-
-        const globalIntegratedDisturbanceDaily = {
-          nominal: hasNominalData
-            ? [
-                {
-                  day: 'all-time',
-                  totalAlertCount: l.integratedAlertsDailyAllNominal || 0,
-                  totalAlertHectares: l.integratedAlertsAreaAllNominal || 0,
-                  sbtnNaturalForestCount: l.integratedAlertsDailySbtnNominal || 0,
-                  sbtnNaturalForestHectares: l.integratedAlertsAreaSbtnNaturalForestsNominal || 0,
-                  sbtnNaturalOpenEcosystemsCount: 0,
-                  sbtnNaturalOpenEcosystemsHectares:
-                    l.integratedAlertsAreaSbtnNaturalEcosystemNominal || 0,
-                  jrcForestCount: l.integratedAlertsDailyJrcNominal || 0,
-                  jrcForestHectares: l.integratedAlertsAreaJrcNominal || 0,
-                },
-              ]
-            : [],
-          high: hasHighData
-            ? [
-                {
-                  day: 'all-time',
-                  totalAlertCount: l.integratedAlertsDailyAllHigh || 0,
-                  totalAlertHectares: l.integratedAlertsAreaAllHigh || 0,
-                  sbtnNaturalForestCount: l.integratedAlertsDailySbtnHigh || 0,
-                  sbtnNaturalForestHectares: l.integratedAlertsAreaSbtnNaturalForestsHigh || 0,
-                  sbtnNaturalOpenEcosystemsCount: 0,
-                  sbtnNaturalOpenEcosystemsHectares:
-                    l.integratedAlertsAreaSbtnNaturalEcosystemHigh || 0,
-                  jrcForestCount: l.integratedAlertsDailyJrcHigh || 0,
-                  jrcForestHectares: l.integratedAlertsAreaJrcHigh || 0,
-                },
-              ]
-            : [],
-          highest: hasHighestData
-            ? [
-                {
-                  day: 'all-time',
-                  totalAlertCount: l.integratedAlertsDailyAllHighest || 0,
-                  totalAlertHectares: l.integratedAlertsAreaAllHighest || 0,
-                  sbtnNaturalForestCount: l.integratedAlertsDailySbtnHighest || 0,
-                  sbtnNaturalForestHectares: l.integratedAlertsAreaSbtnNaturalForestsHighest || 0,
-                  sbtnNaturalOpenEcosystemsCount: 0,
-                  sbtnNaturalOpenEcosystemsHectares:
-                    l.integratedAlertsAreaSbtnNaturalEcosystemHighest || 0,
-                  jrcForestCount: l.integratedAlertsDailyJrcHighest || 0,
-                  jrcForestHectares: l.integratedAlertsAreaJrcHighest || 0,
-                },
-              ]
-            : [],
-        };
+        const globalIntegratedDisturbanceDaily = this.buildGlobalIntegratedDisturbanceDaily(l);
 
         return {
           ...l,
@@ -173,6 +127,90 @@ export class AlertsService {
       dissolvedGeoJSON: { features: diss },
       geojson: { features: geo },
     };
+  }
+
+  private buildGlobalIntegratedDisturbanceDaily(
+    data: DashboardDataType
+  ): GlobalIntegratedDisturbanceDaily {
+    return {
+      nominal: this.buildConfidenceLevelRows(
+        data.integratedAlertsDailyAllNominal,
+        data.integratedAlertsDailySbtnNominal,
+        data.integratedAlertsDailyJrcNominal
+      ),
+      high: this.buildConfidenceLevelRows(
+        data.integratedAlertsDailyAllHigh,
+        data.integratedAlertsDailySbtnHigh,
+        data.integratedAlertsDailyJrcHigh
+      ),
+      highest: this.buildConfidenceLevelRows(
+        data.integratedAlertsDailyAllHighest,
+        data.integratedAlertsDailySbtnHighest,
+        data.integratedAlertsDailyJrcHighest
+      ),
+    };
+  }
+
+  private buildConfidenceLevelRows(
+    allCounts: string | undefined,
+    sbtnCounts: string | undefined,
+    jrcCounts: string | undefined
+  ): GlobalIntegratedDisturbanceDailyRow[] {
+    const all = this.parseAlertsCounts(allCounts);
+    const sbtn = this.parseAlertsCounts(sbtnCounts);
+    const jrc = this.parseAlertsCounts(jrcCounts);
+
+    const dates = new Set<string>([...Object.keys(all), ...Object.keys(sbtn), ...Object.keys(jrc)]);
+
+    return Array.from(dates)
+      .sort()
+      .map((day) => {
+        const totalAlertCount = all[day] ?? 0;
+        const sbtnNaturalForestCount = sbtn[day] ?? 0;
+        const jrcForestCount = jrc[day] ?? 0;
+        const sbtnNaturalOpenEcosystemsCount = 0;
+
+        return {
+          day,
+          totalAlertCount,
+          totalAlertHectares: this.toHectares(totalAlertCount),
+          sbtnNaturalForestCount,
+          sbtnNaturalForestHectares: this.toHectares(sbtnNaturalForestCount),
+          sbtnNaturalOpenEcosystemsCount,
+          sbtnNaturalOpenEcosystemsHectares: this.toHectares(sbtnNaturalOpenEcosystemsCount),
+          jrcForestCount,
+          jrcForestHectares: this.toHectares(jrcForestCount),
+        };
+      });
+  }
+
+  private parseAlertsCounts(alerts: string | undefined): Record<string, number> {
+    if (!alerts || alerts === '{}') {
+      return {};
+    }
+
+    if (typeof alerts !== 'string') {
+      return {};
+    }
+
+    try {
+      const parsed = JSON.parse(alerts);
+      if (parsed && typeof parsed === 'object') {
+        return Object.entries(parsed).reduce<Record<string, number>>((acc, [day, value]) => {
+          const numericValue = typeof value === 'number' ? value : Number(value);
+          acc[day] = Number.isFinite(numericValue) ? numericValue : 0;
+          return acc;
+        }, {});
+      }
+    } catch (error) {
+      return {};
+    }
+
+    return {};
+  }
+
+  private toHectares(count: number): number {
+    return Number((count * ALERT_PIXEL_SIZE_HA).toFixed(2));
   }
 
   formatDates(dateString: string) {

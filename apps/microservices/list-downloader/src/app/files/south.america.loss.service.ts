@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
-import { cloneRow } from '../shared/functions';
+import { cloneRow, filterProdesYearlyData } from '../shared/functions';
 import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -95,26 +95,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
           attribute === 'tree_cover_loss_prodes_yearly' ||
           attribute === 'tree_cover_loss_prodes_wdpa_yearly'
         ) {
-          Object.keys(yearlyData).forEach((year) => {
-            const yearNum = parseInt(year, 10);
-            if (
-              yearNum < DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_START_YEAR ||
-              yearNum > DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_END_YEAR
-            ) {
-              delete yearlyData[year];
-            }
-          });
-
-          // Fill in missing years with 0
-          for (
-            let year = DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_START_YEAR;
-            year <= DIAGNOSTIC_ANALYSIS_PERIOD.PRODES_END_YEAR;
-            year++
-          ) {
-            if (!yearlyData[year]) {
-              yearlyData[year] = 0;
-            }
-          }
+          yearlyData = filterProdesYearlyData(yearlyData, DIAGNOSTIC_ANALYSIS_PERIOD);
         }
 
         let totalSubCategory = 0;

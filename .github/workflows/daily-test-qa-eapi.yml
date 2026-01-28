@@ -49,6 +49,8 @@ jobs:
           echo "${{secrets.EAPI_E2E_SETTINGS}}" > ./apps/microservices/externalapi-e2e/jest.set.env.ts
 
       - name: Run QA e2e tests for external API
+        env:
+          API_TOKEN: ${{ secrets.EAPI_QA_API_TOKEN }}
         run: |
           npx nx e2e externalapi-e2e --configuration=qa
 

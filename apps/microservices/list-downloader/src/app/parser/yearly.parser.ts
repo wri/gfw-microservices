@@ -1,5 +1,5 @@
 import { NESTED_JSON_ATTRIBUTES } from '../shared/constants';
-import { cloneRow, formatPct, validatePct } from '../shared/functions';
+import { cloneRow, formatPct, validatePct, filterProdesYearlyData } from '../shared/functions';
 import { commodityMillPriorityLevelYearly } from './mill.priority.parser';
 import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
@@ -48,6 +48,13 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
           delete yearlyData[year];
         }
       });
+    }
+
+    if (
+      field.attribute === 'tree_cover_loss_prodes_yearly' ||
+      field.attribute === 'tree_cover_loss_prodes_wdpa_yearly'
+    ) {
+      yearlyData = filterProdesYearlyData(yearlyData, DIAGNOSTIC_ANALYSIS_PERIOD);
     }
 
     if (NESTED_JSON_ATTRIBUTES.indexOf(field.attribute) === -1) {

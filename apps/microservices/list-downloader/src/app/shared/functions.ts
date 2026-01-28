@@ -164,3 +164,42 @@ export const filterYearsByDateRange = (data, startYear: number, endYear: number)
 
   return data;
 };
+
+/**
+ * Filters PRODES yearly data to the configured date range and fills missing years with 0.
+ * This ensures consistent data structure when the PRODES period changes.
+ *
+ * @param yearlyData - Object with year keys and numeric values
+ * @param diagnosticPeriod - Object containing PRODES_START_YEAR and PRODES_END_YEAR
+ * @returns Filtered and filled yearly data object
+ */
+export const filterProdesYearlyData = (
+  yearlyData: Record<string, number>,
+  diagnosticPeriod: { PRODES_START_YEAR: number; PRODES_END_YEAR: number }
+): Record<string, number> => {
+  const filteredData = { ...yearlyData };
+
+  // Remove years outside the PRODES range
+  Object.keys(filteredData).forEach((year) => {
+    const yearNum = parseInt(year, 10);
+    if (
+      yearNum < diagnosticPeriod.PRODES_START_YEAR ||
+      yearNum > diagnosticPeriod.PRODES_END_YEAR
+    ) {
+      delete filteredData[year];
+    }
+  });
+
+  // Fill in missing years with 0
+  for (
+    let year = diagnosticPeriod.PRODES_START_YEAR;
+    year <= diagnosticPeriod.PRODES_END_YEAR;
+    year++
+  ) {
+    if (!filteredData[year]) {
+      filteredData[year] = 0;
+    }
+  }
+
+  return filteredData;
+};

@@ -12,7 +12,11 @@ import {
   validatePct,
   getFormattedTooltipForDiagnosticsChart,
 } from '../../../common/js/utils/diagnostics.utils';
-import { latestTreeCoverLossYearForTclDataInMap, locationsPage } from '../../../common/js/config';
+import {
+  latestTreeCoverLossYearForTclDataInMap,
+  locationsPage,
+  prodesYearsRange,
+} from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import '../../../common/css/_irsBase.scss';
@@ -24,7 +28,6 @@ const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearForTclDataInMap;
 const END_YEAR_SOY_PLANTED = 2023; // This is a workaround for soy planted data end year to be different from the others; revert the code that uses this constant once this validation is no longer needed.
 const HARVEST_YEAR = END_YEAR - 1;
-const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;
 const transifex = Transifex.live.translateText;
 export default class SouthAmericaRegionsWithoutArgentina extends Component {
@@ -44,21 +47,30 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
     };
   }
 
+  getYearsRange = () => {
+    const { prodesChecked, paChecked } = this.state;
+    if (prodesChecked && !paChecked) {
+      return _range(prodesYearsRange.from, prodesYearsRange.to + 1);
+    }
+    return _range(START_YEAR, END_YEAR + 1);
+  };
+
   componentDidMount() {
     const { brazilianBiomes, cerradoBiome } = this.state;
     isMounted = true;
 
     if ($('#south-american-slider').ionRangeSlider) {
+      const yearsRange = this.getYearsRange();
       $('#south-american-slider').ionRangeSlider({
         type: 'double',
-        values: YEARS_RANGE,
+        values: yearsRange,
         hide_min_max: true,
         from_min: 0,
-        from_max: END_YEAR - START_YEAR,
+        from_max: yearsRange.length - 1,
         grid: true,
         grid_snap: true,
         from: 0,
-        to: END_YEAR - START_YEAR,
+        to: yearsRange.length - 1,
         onChange: this.sliderChanging,
         onFinish: this.changeCanopyDensity,
         prettify: (value) => value,
@@ -147,6 +159,28 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
       // if a checkbox to select a chart changed, re render the chart
       this.renderChart(this.refs.soyChart);
       this.renderPie(this.refs.southAmericanPie);
+
+      // Update slider when prodesChecked or paChecked changes
+      if (prevState.prodesChecked !== prodesChecked || prevState.paChecked !== paChecked) {
+        const yearsRange = this.getYearsRange();
+        const newStartYear = yearsRange[0];
+        const newEndYear = yearsRange[yearsRange.length - 1];
+        const slider = $('#south-american-slider').data('ionRangeSlider');
+        if (slider) {
+          slider.update({
+            values: yearsRange,
+            from_max: yearsRange.length - 1,
+            to: yearsRange.length - 1,
+          });
+        }
+        // Update startYear and endYear state to match the new range
+        if (isMounted && (startYear !== newStartYear || endYear !== newEndYear)) {
+          this.setState({
+            startYear: newStartYear,
+            endYear: newEndYear,
+          });
+        }
+      }
     }
 
     if (
@@ -163,7 +197,8 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
 
   updateIonRangeSliderLabels = (data) => {
     const { from_value, to_value } = data;
-    YEARS_RANGE.forEach((year) => {
+    const yearsRange = this.getYearsRange();
+    yearsRange.forEach((year) => {
       if (year > to_value || year < from_value) {
         $(`.south-america-slider__container .irs-grid-text:contains("${year}")`).addClass(
           'irs-inactive-year'
@@ -524,16 +559,8 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
   };
 
   renderSouthAmericaTable = (totals) => {
-    const {
-      soyChecked,
-      prodesChecked,
-      paChecked,
-      saTCLChecked,
-      biomesChecked,
-      brazilianBiomes,
-      startYear,
-      endYear,
-    } = this.state;
+    const { soyChecked, prodesChecked, paChecked, saTCLChecked, biomesChecked, brazilianBiomes } =
+      this.state;
 
     let checked;
     let onChange;
@@ -670,7 +697,9 @@ export default class SouthAmericaRegionsWithoutArgentina extends Component {
             )}
           </tr>
           {prodesChecked && label === 'PRODES' && (
-            <ProdesLegend data={this.props.getYearlyData('prodes', startYear, endYear)} />
+            <ProdesLegend
+              data={this.props.getYearlyData('prodes', this.state.startYear, this.state.endYear)}
+            />
           )}
         </Fragment>
       );

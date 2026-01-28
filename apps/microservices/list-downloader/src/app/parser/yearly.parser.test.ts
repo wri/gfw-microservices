@@ -266,9 +266,13 @@ describe('Yearly Parser.', () => {
       csvData,
     });
 
-    expect(csvData.length).toEqual(2);
-    expect(csvData[0]).toEqual(['Protected Areas', 10, '2018']);
-    expect(csvData[1]).toEqual(['Protected Areas', 20, '2019']);
+    // Should have 18 years (2008-2025) with only 2018 and 2019 having data
+    expect(csvData.length).toEqual(18);
+    expect(csvData.find((row) => row[2] === '2018')).toEqual(['Protected Areas', 10, '2018']);
+    expect(csvData.find((row) => row[2] === '2019')).toEqual(['Protected Areas', 20, '2019']);
+    // Check some years are filled with 0
+    expect(csvData.find((row) => row[2] === '2008')).toEqual(['Protected Areas', 0, '2008']);
+    expect(csvData.find((row) => row[2] === '2025')).toEqual(['Protected Areas', 0, '2025']);
   });
 
   test('Falls back to tree_cover_loss_prodes_wdpa_yearly when BRA-specific WDPA is absent', () => {
@@ -293,8 +297,101 @@ describe('Yearly Parser.', () => {
       csvData,
     });
 
-    expect(csvData.length).toEqual(2);
-    expect(csvData[0]).toEqual(['Protected Areas', 5, '2018']);
-    expect(csvData[1]).toEqual(['Protected Areas', 6, '2019']);
+    // Should have 18 years (2008-2025) with only 2018 and 2019 having data
+    expect(csvData.length).toEqual(18);
+    expect(csvData.find((row) => row[2] === '2018')).toEqual(['Protected Areas', 5, '2018']);
+    expect(csvData.find((row) => row[2] === '2019')).toEqual(['Protected Areas', 6, '2019']);
+    // Check some years are filled with 0
+    expect(csvData.find((row) => row[2] === '2010')).toEqual(['Protected Areas', 0, '2010']);
+    expect(csvData.find((row) => row[2] === '2024')).toEqual(['Protected Areas', 0, '2024']);
+  });
+
+  test('PRODES data filters years outside the PRODES date range (2008-2025) and fills missing years with 0', () => {
+    const dataRow = [];
+    const csvData = [];
+
+    yearlyParser({
+      operation: {
+        composites: [
+          {
+            attribute: 'tree_cover_loss_prodes_yearly',
+            label: 'PRODES',
+          },
+        ],
+      },
+      data: {
+        tree_cover_loss_prodes_yearly: JSON.stringify({
+          2007: 100, // Should be filtered out (before start year 2008)
+          2008: 50,
+          2009: 60,
+          // 2010-2022 missing - should be filled with 0
+          2023: 70,
+          // 2024 missing - should be filled with 0
+          2025: 80,
+          2026: 90, // Should be filtered out (after end year 2025)
+        }),
+      },
+      dataRow,
+      csvData,
+    });
+
+    // Should have all years from 2008 to 2025 (18 years)
+    expect(csvData.length).toBe(18);
+
+    // Check year 2007 was filtered out
+    expect(csvData.find((row) => row[2] === '2007')).toBeUndefined();
+
+    // Check year 2008 is present
+    expect(csvData.find((row) => row[2] === '2008')).toEqual(['PRODES', 50, '2008']);
+
+    // Check missing year 2010 was filled with 0
+    expect(csvData.find((row) => row[2] === '2010')).toEqual(['PRODES', 0, '2010']);
+
+    // Check missing year 2024 was filled with 0
+    expect(csvData.find((row) => row[2] === '2024')).toEqual(['PRODES', 0, '2024']);
+
+    // Check year 2025 is present
+    expect(csvData.find((row) => row[2] === '2025')).toEqual(['PRODES', 80, '2025']);
+
+    // Check year 2026 was filtered out
+    expect(csvData.find((row) => row[2] === '2026')).toBeUndefined();
+  });
+
+  test('PRODES WDPA data filters years outside the PRODES date range and fills missing years with 0', () => {
+    const dataRow = [];
+    const csvData = [];
+
+    yearlyParser({
+      operation: {
+        composites: [
+          {
+            attribute: 'tree_cover_loss_prodes_wdpa_yearly',
+            label: 'Protected Areas',
+          },
+        ],
+      },
+      data: {
+        tree_cover_loss_prodes_wdpa_yearly: JSON.stringify({
+          2007: 40, // Should be filtered out
+          2008: 30,
+          2015: 35,
+          2025: 45,
+          2026: 50, // Should be filtered out
+        }),
+      },
+      dataRow,
+      csvData,
+    });
+
+    // Should have all years from 2008 to 2025 (18 years)
+    expect(csvData.length).toBe(18);
+
+    // Check years are within range
+    expect(csvData.find((row) => row[2] === '2007')).toBeUndefined();
+    expect(csvData.find((row) => row[2] === '2008')).toEqual(['Protected Areas', 30, '2008']);
+    expect(csvData.find((row) => row[2] === '2009')).toEqual(['Protected Areas', 0, '2009']); // Filled with 0
+    expect(csvData.find((row) => row[2] === '2015')).toEqual(['Protected Areas', 35, '2015']);
+    expect(csvData.find((row) => row[2] === '2025')).toEqual(['Protected Areas', 45, '2025']);
+    expect(csvData.find((row) => row[2] === '2026')).toBeUndefined();
   });
 });

@@ -323,7 +323,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         break;
 
       case 'soy-planted': {
-        const url = layer.layerConfig.body.url.replace('{year}', `${soyPlantedYearsRange[1]}`);
+        const url = layer.layerConfig.body.url.replace('{year}', `${soyPlantedYearsRange.to}`);
         layers.push(
           new WebTileLayer({
             urlTemplate: url,

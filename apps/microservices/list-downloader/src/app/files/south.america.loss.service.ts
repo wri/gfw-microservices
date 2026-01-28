@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
-import { cloneRow } from '../shared/functions';
+import { cloneRow, filterProdesYearlyData } from '../shared/functions';
 import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -89,6 +89,13 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
               delete yearlyData[year];
             }
           });
+        }
+
+        if (
+          attribute === 'tree_cover_loss_prodes_yearly' ||
+          attribute === 'tree_cover_loss_prodes_wdpa_yearly'
+        ) {
+          yearlyData = filterProdesYearlyData(yearlyData, DIAGNOSTIC_ANALYSIS_PERIOD);
         }
 
         let totalSubCategory = 0;

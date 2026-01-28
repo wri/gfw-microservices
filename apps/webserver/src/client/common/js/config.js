@@ -27,7 +27,11 @@ const todayIso = new Date().toISOString().split('T')[0];
 const defaultStartYear = latestTreeCoverLossYearForTclDataInMap + 1;
 const startIso = `${defaultStartYear}-01-01`;
 
-export const soyPlantedYearsRange = [2001, 2024];
+export const soyPlantedYearsRange = { from: 2001, to: 2024 };
+export const prodesYearsRange = {
+  from: 2008,
+  to: 2025,
+};
 
 export const dcfAlertsDateRange = {
   min: '2020-01-01',

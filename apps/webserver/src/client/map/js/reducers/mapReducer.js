@@ -94,7 +94,7 @@ const initialLocationState = {
   listsVisible: false,
   sketchTool: {},
   landsatYear: 2017,
-  soyYear: soyPlantedYearsRange[1],
+  soyYear: soyPlantedYearsRange.to,
   planetTileLayer: PLANET_TILE_LAYER_INITIAL,
   planetTileColor: 'rgb',
   showHighConfidenceAlertsOnDeforestationAlertsLayer: false,

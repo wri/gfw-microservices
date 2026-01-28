@@ -186,7 +186,7 @@ const configureHelmetHeaders = (app: Application) => {
           'https://cmp.osano.com',
           'https://cdn.transifex.com',
           'https://static.zdassets.com',
-          "'unsafe-inline'"
+          "'unsafe-inline'",
         ],
         styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
@@ -199,10 +199,7 @@ const configureHelmetHeaders = (app: Application) => {
   );
   // Set Permissions-Policy header manually (Helmet v6+ does not provide this middleware)
   app.use((req, res, next) => {
-    res.setHeader(
-      'Permissions-Policy',
-      'camera=(), microphone=(), geolocation=*, payment=()'
-    );
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=*, payment=()');
     next();
   });
 };

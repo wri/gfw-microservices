@@ -24,7 +24,8 @@ export const PlanetTilesOptions = () => {
           const yearAndMonth = match && match[0]?.replace(/_/g, '-');
           const res = {
             tileName: tile.name,
-            label: format(new Date(yearAndMonth), 'MMM yyyy'),
+            // Parse as UTC to avoid timezone issues
+            label: format(new Date(`${yearAndMonth}-01T00:00:00Z`), 'MMM yyyy'),
           };
           return res;
         });

@@ -4,7 +4,7 @@ import { toggleLayer, turnLayerOff } from '../../actions/mapActions';
 
 const { clarkLabsAquacultureLandChange, clarkLabsAquacultureLandCover } = proLayers;
 
-const ClarkLabsLayerLeyend = ({ disabled, landCoverLayer, landChangeLayer }) => {
+const ClarkLabsLayerLegend = ({ disabled, landCoverLayer, landChangeLayer }) => {
   const toggleLandCover = async () => {
     if (!disabled) {
       await store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
@@ -78,4 +78,4 @@ const ClarkLabsLayerLeyend = ({ disabled, landCoverLayer, landChangeLayer }) => 
   );
 };
 
-export default ClarkLabsLayerLeyend;
+export default ClarkLabsLayerLegend;

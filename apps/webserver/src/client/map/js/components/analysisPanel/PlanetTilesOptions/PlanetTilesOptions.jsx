@@ -21,6 +21,8 @@ export const PlanetTilesOptions = () => {
           // sample tile name: global_monthly_2023-01_mosaic
           const match = tile.name.match(/\d{4}_\d{2}/);
           const yearAndMonth = match && match[0]?.replace(/_/g, '-');
+          // Format month/year in a timezone-agnostic way using UTC, so the label is always correct regardless of user timezone.
+          // If the tile name does not match the expected pattern, show 'Invalid date' for easier debugging.
           let label;
           if (yearAndMonth) {
             const [year, month] = yearAndMonth.split('-');

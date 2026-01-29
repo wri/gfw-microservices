@@ -17,12 +17,6 @@ const forestChangeLayers = [
     order: 101,
   },
   {
-    id: proLayers.prodesDeforestationID,
-    group: 'forest-change',
-    subGroup: 'tree-cover-change',
-    order: 102,
-  },
-  {
     id: proLayers.treeBiomassLossID,
     group: 'forest-change',
     subGroup: 'tree-cover-change',
@@ -343,7 +337,7 @@ const regionLayers = [
   {
     id: proLayers.prodesDeforestationVizzBrazil,
     group: 'region',
-    subGroup: 'forest-change',
+    subGroup: '',
     region: 'south-america',
     country: 'Brazil',
     countryCode: 'BRA',

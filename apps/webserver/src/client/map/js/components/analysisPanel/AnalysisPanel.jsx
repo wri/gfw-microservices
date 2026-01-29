@@ -33,7 +33,6 @@ import CountryOrRegionAnalysis from './CountryOrRegionAnalysis';
 
 const {
   gladAlertsID,
-  prodesDeforestationID,
   raddAlertsID,
   treeBiomassLossID,
   treeCoverGainID,
@@ -370,7 +369,6 @@ export default class AnalysisPanel extends Component {
       selectedAnalysis,
       spinnerOn: isSpinnerVisible,
       visibleLayers,
-      prodesDateRange,
     } = this.props;
     const { isAnalysisDisabled, activeAnalysis } = this.state;
     let className = 'analysis-tools ';
@@ -401,10 +399,6 @@ export default class AnalysisPanel extends Component {
         totalSelected = format(source.areaHa);
         value = format(source.gain);
         valueLabel = 'GAIN';
-      } else if (isVisible(prodesDeforestationID)) {
-        totalSelected = format(attributes.areaHa);
-        value = format(attributes.value);
-        valueLabel = `PRODES TREE COVER LOSS (${prodesDateRange.startYear}-${prodesDateRange.endYear})`;
       } else if (isVisible(treeBiomassLossID)) {
         totalSelected = format(attributes.areaHa);
         value = format(attributes.biomassLoss);

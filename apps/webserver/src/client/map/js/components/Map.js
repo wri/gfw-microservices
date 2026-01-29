@@ -51,7 +51,6 @@ import {
   updateDeforestationAlertsDateRange,
 } from '../actions/mapActions';
 import * as analysisActions from '../actions/analysisActions';
-import { UPDATE_PRODES_DEFORESTATION_FILTER } from '../constants/actionTypes';
 
 import {
   DATA_API_URL,
@@ -115,7 +114,6 @@ import {
 } from './legend/DeforestationAlerts/deforestationAlerts.constants';
 
 import viirsLayer, { fetchViirsFeatures } from '../layers/VIIRSLayerUtil';
-import { getProdesUpdatedVectorTileStyle } from '../layers/Prodes_LayerUtil';
 
 // Configs
 import {
@@ -139,7 +137,6 @@ const {
   brazilBiomesID,
   gladAlertsID,
   oilPalmConcessions,
-  prodesDeforestationID,
   protectedAreas,
   rspoConcessions,
   rspoPalmOilMills,
@@ -192,7 +189,7 @@ class Map extends Component {
     // Default Popup Actions
     this.defaultPopupActions;
 
-    const { treeCoverLossYearsFC, biomassLossYears, prodesLossYears } = mapPage;
+    const { treeCoverLossYearsFC, biomassLossYears } = mapPage;
     this.state = Object.assign(store.getState(), {
       userInfo: props.userInfo,
       dialogOpen: false,
@@ -213,11 +210,6 @@ class Map extends Component {
         startYear: biomassLossYears[0],
         endYear: biomassLossYears[biomassLossYears.length - 1],
       },
-      prodesDateRange: {
-        startYear: prodesLossYears[0],
-        endYear: prodesLossYears[prodesLossYears.length - 1],
-      },
-      prodesInitialVectorTileStyle: null,
       listSelectDropDownOpen: false,
       selectedListFromDropdown: false,
       // the above property is so the 'selected list' banner displays correctly. Once we have selected a list
@@ -446,7 +438,6 @@ class Map extends Component {
       driverOfDisturbanceAlertsFilter,
       globalVegetationDisturbanceAlertsFilter,
       globalIntegratedDisturbanceAlertsFilter,
-      prodesDeforestationFilter,
     } = this.state;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
@@ -845,25 +836,6 @@ class Map extends Component {
         duplicate.visible = true;
         this.view.map.layers.reorder(duplicate, index);
       });
-    }
-
-    if (
-      prodesDeforestationFilter &&
-      prevState.prodesDeforestationFilter &&
-      hasFilterChanged(prevState.prodesDeforestationFilter, prodesDeforestationFilter)
-    ) {
-      const { prodesDateRange } = this.state;
-
-      if (
-        !prodesDateRange ||
-        prodesDateRange.startYear !== prodesDeforestationFilter.startYear ||
-        prodesDateRange.endYear !== prodesDeforestationFilter.endYear
-      ) {
-        this.setProdesTimeline(
-          prodesDeforestationFilter.startYear,
-          prodesDeforestationFilter.endYear
-        );
-      }
     }
 
     if (
@@ -1572,17 +1544,12 @@ class Map extends Component {
   geostoreAnalysisCall = async (totalAreaHa, type, geostoreID, origin = 'rw') => {
     this.setState({ spinnerOn: true });
 
-    if (type === 'viirs' || type === 'prodes') {
+    if (type === 'viirs') {
       let queryURL;
 
       if (type === 'viirs') {
         const fireDayStart = format(subDays(new Date(), this.state.fireDays), 'yyyy-MM-dd');
         queryURL = `${DATA_API_URL}/dataApi/analysisVIIRS/?geostore_origin=${origin}&geostoreID=${geostoreID}&fireDayStart=${fireDayStart}`;
-      }
-
-      if (type === 'prodes') {
-        const { startYear, endYear } = this.state.prodesDateRange;
-        queryURL = `${DATA_API_URL}/dataApi/analysisPRODES/?geostore_origin=${origin}&geostoreID=${geostoreID}&startYear=${startYear}&endYear=${endYear}`;
       }
 
       fetch(queryURL, {
@@ -1906,13 +1873,10 @@ class Map extends Component {
   getCurrentAnalysis = (type) => {
     let analysisType = 'tree cover';
     // const threshold = this.state.canopyDensity; //TODO: Add other layer-specific query params!
-    const { canopyDensity, fireDays, prodesDateRange } = this.state;
+    const { canopyDensity, fireDays } = this.state;
 
     let microservice;
-    if (this.state.visibleLayers.includes(prodesDeforestationID)) {
-      microservice = `https://production-api.globalforestwatch.org/v1/prodes-loss?period=${prodesDateRange.startYear}-01-01%2C${prodesDateRange.endYear}-12-31&thresh=${canopyDensity}`;
-      analysisType = 'prodes';
-    } else if (this.state.visibleLayers.includes(treeBiomassLossID)) {
+    if (this.state.visibleLayers.includes(treeBiomassLossID)) {
       analysisType = 'tree biomass';
     } else if (this.state.visibleLayers.includes(gladAlertsID)) {
       analysisType = 'glad';
@@ -2645,58 +2609,6 @@ class Map extends Component {
     });
   };
 
-  setProdesTimeline = (startYear, endYear) => {
-    const currentFilter = store.getState().prodesDeforestationFilter;
-    if (
-      !currentFilter ||
-      currentFilter.startYear !== startYear ||
-      currentFilter.endYear !== endYear
-    ) {
-      store.dispatch({
-        type: UPDATE_PRODES_DEFORESTATION_FILTER,
-        payload: { startYear, endYear },
-      });
-    }
-
-    this.updateProdesVectorTileLayerStyle(startYear, endYear);
-
-    const newState = { startYear, endYear };
-    this.setState({ prodesDateRange: newState }, () => {
-      this.updateActiveAnalysis();
-    });
-
-    gtag('event', 'timeslider update', {
-      event_category: 'Map Click',
-      event_label: 'user updated the prodes timeslider',
-    });
-  };
-
-  /**
-   * Updates the style of the PRODES deforestation Vector Tile layer
-   * @param {number} startYear - Start year of the timeslider
-   * @param {number} endYear - End year of the timeslider
-   */
-  updateProdesVectorTileLayerStyle(startYear, endYear) {
-    const prodesVectorTileLayer = this.view.map.findLayerById(prodesDeforestationID);
-
-    let prodesInitialVectorTileStyle;
-    if (!this.state.prodesInitialVectorTileStyle) {
-      // Set initial Vector Tile Style for PRODES deforestation layer
-      prodesInitialVectorTileStyle = prodesVectorTileLayer.currentStyleInfo.style;
-      this.setState({ prodesInitialVectorTileStyle: prodesInitialVectorTileStyle });
-    } else {
-      // Get stored initial Vector Tile Style for PRODES deforestation layer
-      prodesInitialVectorTileStyle = this.state.prodesInitialVectorTileStyle;
-    }
-
-    const prodesUpdatedVectorTileStyle = getProdesUpdatedVectorTileStyle(
-      prodesInitialVectorTileStyle,
-      startYear,
-      endYear
-    );
-    prodesVectorTileLayer.loadStyle(prodesUpdatedVectorTileStyle);
-  }
-
   changeBasemap = (id) => {
     mapPage.basemaps.forEach((basemap) => {
       const isCustom = basemap.customUrl || basemap.customVectorUrl;
@@ -2779,7 +2691,6 @@ class Map extends Component {
       treeCoverLossCanopyDensity,
       drawingActive,
       biomassRange,
-      prodesDateRange,
       analysisResults,
       selectedAnalysis,
       selectedLists,
@@ -2931,7 +2842,6 @@ class Map extends Component {
           visibleLayers={visibleLayers}
           analysisWarning={analysisWarning}
           biomassRange={biomassRange}
-          prodesDateRange={prodesDateRange}
           fireDays={fireDays}
           treeCoverLossDateRange={treeCoverLossDateRange}
           deforestationAlertsDateRanges={deforestationAlertsDateRanges}
@@ -2962,7 +2872,6 @@ class Map extends Component {
           biomassRange={biomassRange}
           biomassLossDateRange={this.state.biomassLossDateRange}
           treeCoverLossDateRange={this.state.treeCoverLossDateRange}
-          prodesDateRange={this.state.prodesDateRange}
           fireDays={fireDays}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
@@ -2970,7 +2879,6 @@ class Map extends Component {
           dispatch={store.dispatch}
           setBiomassTimeline={this.setBiomassTimeline}
           setLossTimeline={this.setLossTimeline}
-          setProdesTimeline={this.setProdesTimeline}
         />
 
         <div style={containerStyle} className="map-container">

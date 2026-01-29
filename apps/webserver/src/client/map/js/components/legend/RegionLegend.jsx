@@ -167,7 +167,7 @@ export default class RegionLegend extends Component {
               visible={visibleForestChange}
               layers={forestChangeLayers}
               sectionHeader="forest-change"
-              text="Forest Change"
+              text="Brazil Data"
               createLayerLegend={this.createLayerLegend}
             />
             <LegendSection

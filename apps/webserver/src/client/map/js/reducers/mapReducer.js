@@ -35,7 +35,6 @@ import {
   UPDATE_DRIVER_OF_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_VEGETATION_DISTURBANCE_ALERTS_FILTER,
   UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER,
-  UPDATE_PRODES_DEFORESTATION_FILTER,
   UPDATE_DEFORESTATION_ALERTS_DATE_RANGE,
 } from '../constants/actionTypes';
 import {
@@ -331,22 +330,6 @@ export function updateGlobalIntegratedDisturbanceAlertsFilter(
   return action.type !== UPDATE_GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_FILTER
     ? state
     : action.payload;
-}
-
-export function updateProdesDeforestationFilter(
-  state = initialLocationState.prodesDeforestationFilter,
-  action
-) {
-  if (action.type !== UPDATE_PRODES_DEFORESTATION_FILTER) {
-    return state;
-  }
-
-  const { startYear, endYear } = action.payload;
-  if (state.startYear === startYear && state.endYear === endYear) {
-    return state;
-  }
-
-  return action.payload;
 }
 
 export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(

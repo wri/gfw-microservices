@@ -253,53 +253,6 @@ export const mapLayers = [
     },
   },
   {
-    id: 'b10fa690-8379-475f-abe4-4d44e4d77b17',
-    type: 'layer',
-    attributes: {
-      name: proLayers.prodesDeforestationID,
-      slug: 'PRODES-Deforestation-Vizz_1',
-      dataset: 'ae3275ec-6334-46b8-8904-4000cec04f50',
-      application: ['gfw-pro'],
-      iso: [],
-      provider: 'featureservice',
-      userId: '5c533e5cc3b3242d2ed73bc7',
-      default: true,
-      protected: false,
-      published: true,
-      thumbnailUrl:
-        'https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b10fa690-8379-475f-abe4-4d44e4d77b17-1651767039947.png',
-      env: 'production',
-      layerConfig: {
-        type: 'Vector.Layer',
-        body: {
-          useCors: true,
-          metadata: 'gfw-metadata/prodes',
-          url: 'https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json',
-        },
-      },
-      legendConfig: {
-        type: 'basic',
-        items: [
-          {
-            name: 'PRODES deforestation',
-            source: '(annual, 30m, Brazilian Amazon, INPE)',
-            color: '#ff6699',
-          },
-        ],
-      },
-      interactionConfig: {
-        type: 'info',
-        config: {
-          url: 'https://data-api.globalforestwatch.org/dataset/inpe_amazonia_prodes/latest/features',
-        },
-      },
-      applicationConfig: {},
-      staticImageConfig: {},
-      createdAt: '2021-01-04T14:48:36.208Z',
-      updatedAt: '2022-05-05T16:10:39.865Z',
-    },
-  },
-  {
     id: '9a83a805-6b08-4275-86bb-5ae4b82303a5',
     type: 'layer',
     attributes: {

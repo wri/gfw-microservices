@@ -44,7 +44,6 @@ export default class Legend extends Component {
       biomassRange={this.props.biomassRange}
       biomassLossDateRange={this.props.biomassLossDateRange}
       treeCoverLossDateRange={this.props.treeCoverLossDateRange}
-      prodesDateRange={this.props.prodesDateRange}
       canopyDensity={this.props.canopyDensity}
       treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
       fireDays={this.props.fireDays}
@@ -60,7 +59,6 @@ export default class Legend extends Component {
       mapLayers={this.props.mapLayers}
       setBiomassTimeline={this.props.setBiomassTimeline}
       setLossTimeline={this.props.setLossTimeline}
-      setProdesTimeline={this.props.setProdesTimeline}
     />
   );
 
@@ -116,17 +114,6 @@ export default class Legend extends Component {
               iconLoading={this.props.iconLoading}
               toggleLayerVisibility={this.props.toggleLayerVisibility}
             />
-            <div
-              className={`legend-checkbox-global legend-show-panel ${
-                visibleGlobalData ? '' : 'hidden'
-              }`}
-              onClick={this.togglePanel}
-            >
-              global data
-              <svg className={showPanel ? '' : 'close'}>
-                <use xlinkHref="#icon-triangle" />
-              </svg>
-            </div>
             <div className={showPanel ? '' : 'hidden'}>
               <LegendSection
                 key="legend-section-1"

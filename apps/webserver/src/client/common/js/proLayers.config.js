@@ -18,7 +18,6 @@ export const proLayers = {
   clarkLabsAquacultureLandChange: 'Clark Labs Aquaculture Land Change',
   treeCoverLossID: 'Tree cover loss',
   treeCoverGainID: 'Tree cover gain',
-  prodesDeforestationID: 'PRODES Deforestation Vizz',
   treeBiomassLossID: 'Tree biomass loss',
   gladAlertsID: 'GLAD-L alerts',
   gladLGeographicCoverageID: 'GLAD-L Alerts Geographic Coverage',
@@ -108,8 +107,6 @@ export const layerWarnings = [
 export const downloadLinks = {
   [proLayers.treeCoverLossID]: 'https://earthenginepartners.appspot.com/science-2013-global-forest',
   [proLayers.treeCoverGainID]: 'https://earthenginepartners.appspot.com/science-2013-global-forest',
-  [proLayers.prodesDeforestationID]:
-    'http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes',
   [proLayers.treeBiomassLossID]:
     'https://data.globalforestwatch.org/datasets/d33587b6aee248faa2f388aaac96f92c_0',
   [proLayers.gladAlertsID]: 'http://glad-forest-alert.appspot.com/',

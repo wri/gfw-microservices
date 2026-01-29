@@ -33,7 +33,6 @@ const {
   treeBiomassLossID,
   treeCoverLossID,
   treeCoverGainID,
-  prodesDeforestationID,
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
@@ -48,7 +47,7 @@ import '../../../css/map.scss';
 import DeforestationAlertsLayerLegend from './DeforestationAlerts/DeforestationAlertsLayerLegend';
 import { DriverOfDisturbanceAlertsLayerLegend } from './custom/DriverOfDisturbanceAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
-import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
+import ClarkLabsLayerLegend from './ClarkLabsLayerLegend';
 import {
   deforestationAlertsIds,
   deforestationAlertsGeographicCoverageIds,
@@ -109,12 +108,6 @@ const LegendCheckbox = (props) => {
   const handleTreeCoverTimelineChange = (startYear, endYear) => {
     if (typeof props.setLossTimeline === 'function') {
       props.setLossTimeline(startYear, endYear);
-    }
-  };
-
-  const handleProdesTimelineChange = (startYear, endYear) => {
-    if (typeof props.setProdesTimeline === 'function') {
-      props.setProdesTimeline(startYear, endYear);
     }
   };
 
@@ -364,12 +357,6 @@ const LegendCheckbox = (props) => {
     'setLossTimeline',
     isGrayed
   );
-  const prodesConfig = setupYearRangeConfig(
-    mapPage.prodesLossYears,
-    props.prodesDateRange,
-    'setProdesTimeline',
-    isGrayed
-  );
 
   return (
     <div
@@ -448,7 +435,7 @@ const LegendCheckbox = (props) => {
       )}
 
       {store.getState().clarkLabsLayers && layer.id === clarkLabsAquacultureLandCover && (
-        <ClarkLabsLayerLeyend
+        <ClarkLabsLayerLegend
           disabled={layerHidden}
           landCoverLayer={layer}
           landChangeLayer={props.mapLayers.find(
@@ -471,28 +458,6 @@ const LegendCheckbox = (props) => {
 
       {layer.id === globalIntegratedDisturbanceAlertsId && (
         <GlobalIntegratedDisturbanceAlertsLayerLegend disabled={layerHidden} />
-      )}
-
-      {layer.id === prodesDeforestationID && prodesConfig && (
-        <Box sx={{ mr: 2.5, mt: 2 }}>
-          <YearRangeSlider
-            startYear={prodesConfig.selectedStartYear}
-            endYear={prodesConfig.selectedEndYear}
-            minYear={prodesConfig.minYear}
-            maxYear={prodesConfig.maxYear}
-            marks={prodesConfig.marks}
-            disabled={prodesConfig.sliderDisabled}
-            onYearChange={handleProdesTimelineChange}
-            sliderSx={{
-              '& .MuiSlider-markLabel:first-of-type': {
-                left: '3%',
-              },
-              '& .MuiSlider-markLabel:last-of-type': {
-                left: '70%',
-              },
-            }}
-          />
-        </Box>
       )}
 
       {symbolsLength === 1 &&

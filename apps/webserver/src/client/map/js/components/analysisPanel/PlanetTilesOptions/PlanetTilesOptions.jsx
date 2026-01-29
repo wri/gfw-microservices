@@ -25,7 +25,11 @@ export const PlanetTilesOptions = () => {
           if (yearAndMonth) {
             const [year, month] = yearAndMonth.split('-');
             const date = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
-            label = date.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+            label = date.toLocaleString('en-US', {
+              month: 'short',
+              year: 'numeric',
+              timeZone: 'UTC',
+            });
           } else {
             label = 'Invalid date';
           }
@@ -35,8 +39,8 @@ export const PlanetTilesOptions = () => {
           };
           return res;
         });
-        const reversedTiles = tilesInfo.reverse();
-        setPlanetTiles(reversedTiles);
+      const reversedTiles = tilesInfo.reverse();
+      setPlanetTiles(reversedTiles);
     });
 
     store.subscribe(() => {

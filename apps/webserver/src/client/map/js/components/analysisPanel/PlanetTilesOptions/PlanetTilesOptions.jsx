@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
 
 import store from '../../../store';
 import { updatePlanetTileLayer, updatePlanetTileColor } from '../../../actions/mapActions';
@@ -22,14 +21,22 @@ export const PlanetTilesOptions = () => {
           // sample tile name: global_monthly_2023-01_mosaic
           const match = tile.name.match(/\d{4}_\d{2}/);
           const yearAndMonth = match && match[0]?.replace(/_/g, '-');
+          let label;
+          if (yearAndMonth) {
+            const [year, month] = yearAndMonth.split('-');
+            const date = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
+            label = date.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+          } else {
+            label = 'Invalid date';
+          }
           const res = {
             tileName: tile.name,
-            // Parse as UTC to avoid timezone issues
-            label: format(new Date(`${yearAndMonth}-01T00:00:00Z`), 'MMM yyyy'),
+            label,
           };
           return res;
         });
-      setPlanetTiles(tilesInfo.reverse());
+        const reversedTiles = tilesInfo.reverse();
+        setPlanetTiles(reversedTiles);
     });
 
     store.subscribe(() => {

@@ -227,7 +227,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'prodes',
-          url: 'https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json',
+          url: 'https://tiles.globalforestwatch.org/inpe_prodes/v202507/default/root.json',
         },
       },
       legendConfig: {

@@ -5,7 +5,7 @@ export function calculateListProcessingLimit(
   accountUsage: OrganizationAnalysisUsage
 ) {
   const availableAnalyzableAreaRemaining =
-    accountLimits.MaxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;
+    (accountLimits.MaxAreaAnalyzeablePerYear ?? 0) - accountUsage.total_area_analyzed;
 
   return Math.min(availableAnalyzableAreaRemaining, accountLimits.MaxAreaPerList);
 }

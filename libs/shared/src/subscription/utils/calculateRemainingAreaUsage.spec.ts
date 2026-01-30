@@ -47,4 +47,24 @@ describe('calculateRemainingAreaUsage', () => {
 
     expect(remainingArea).toBe(700); // 1000 - 300
   });
+
+  test('returns negative when usage exceeds limit', () => {
+    const accountLimits: AnalysisLimit = {
+      MaxAreaAnalyzeablePerYear: 200,
+      MaxAreaPerList: 500,
+    };
+
+    const accountUsage: OrganizationAnalysisUsage = {
+      total_area_analyzed: 300,
+      max_area_analyzed: 500,
+      number_of_lists_analyzed: 2,
+      locations_analyzed: 100,
+      organization_id: 1,
+      organization_name: 'SampleOrg',
+    };
+
+    const remainingArea = calculateRemainingAreaUsage(accountLimits, accountUsage);
+
+    expect(remainingArea).toBe(-100); // 200 - 300
+  });
 });

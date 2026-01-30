@@ -24,7 +24,8 @@ export function calculateRolloverUsed(
     // rollover for area
     const areaRollover = Math.max(
       0,
-      yearlyData.totalAreaPerLocationsAnalyzedYearly - subscriptionLimits.MaxAreaAnalyzeablePerYear
+      yearlyData.totalAreaPerLocationsAnalyzedYearly -
+        (subscriptionLimits.MaxAreaAnalyzeablePerYear ?? 0)
     );
     rolloverAnalysisAreaUsed += areaRollover;
 

@@ -41,4 +41,25 @@ describe('calculateListProcessingLimit', () => {
 
     expect(result).toBe(500);
   });
+
+  it('should return negative when usage exceeds yearly limit', () => {
+    const accountLimits: AnalysisLimit = {
+      MaxAreaAnalyzeablePerYear: 500,
+      MaxAreaPerList: 900,
+    };
+
+    const accountUsage: OrganizationAnalysisUsage = {
+      total_area_analyzed: 600,
+      max_area_analyzed: 800,
+      number_of_lists_analyzed: 2,
+      locations_analyzed: 100,
+      organization_id: 1,
+      organization_name: 'TestOrg',
+    };
+
+    const result = calculateListProcessingLimit(accountLimits, accountUsage);
+
+    // Available area = 500 - 600 = -100, min(-100, 900) = -100
+    expect(result).toBe(-100);
+  });
 });

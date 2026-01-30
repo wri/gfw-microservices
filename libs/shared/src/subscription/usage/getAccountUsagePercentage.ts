@@ -8,7 +8,7 @@ export async function getAccountUsagePercentage({ organizationId, subscriptionSt
 
   const areaUsagePercentage = calculateAccountUsagePercentage(
     accountUsage.total_area_analyzed,
-    accountLimits.MaxAreaAnalyzeablePerYear
+    accountLimits.MaxAreaAnalyzeablePerYear ?? 0
   );
 
   const locationUsagePercentage = calculateAccountUsagePercentage(

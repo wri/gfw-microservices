@@ -38,4 +38,36 @@ describe('calculateRolloverUsed', () => {
     expect(result.rolloverAnalysisAreaUsed).toBe(1800000000);
     expect(result.rolloverLocationsUsed).toBe(24000);
   });
+
+  test('returns zero rollover when usage is within limits', () => {
+    const renewalMoment = new Date('2020-01-01');
+    const now = new Date();
+    const currentYear = Math.floor(differenceInCalendarDays(now, renewalMoment) / 365.25);
+    const yearlyUsageSinceActivation = [
+      {
+        years_since_activation: 1,
+        totalAreaPerLocationsAnalyzedYearly: 100000000,
+        totalLocationsYearly: 500,
+      },
+      {
+        years_since_activation: currentYear,
+        totalAreaPerLocationsAnalyzedYearly: 50000,
+        totalLocationsYearly: 25,
+      },
+    ];
+
+    const subscriptionLimits = {
+      MaxAreaAnalyzeablePerYear: 200000000,
+      max_locations_per_year: 1000,
+    };
+
+    const result: RolloverAnalysisAmounts = calculateRolloverUsed(
+      yearlyUsageSinceActivation,
+      subscriptionLimits,
+      renewalMoment
+    );
+
+    expect(result.rolloverAnalysisAreaUsed).toBe(0);
+    expect(result.rolloverLocationsUsed).toBe(0);
+  });
 });

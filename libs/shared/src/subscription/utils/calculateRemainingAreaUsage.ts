@@ -5,6 +5,6 @@ export function calculateRemainingAreaUsage(
   accountUsage: OrganizationAnalysisUsage
 ) {
   const availableAnalyzableArea =
-    accountLimits.MaxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;
+    (accountLimits.MaxAreaAnalyzeablePerYear ?? 0) - accountUsage.total_area_analyzed;
   return availableAnalyzableArea;
 }

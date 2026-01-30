@@ -28,9 +28,9 @@ export async function getAccountRolloverLimits(
   // RolloverRemaining = extendedLimits - RolloverUsed
   return {
     MaxAreaAnalyzeablePerYear:
-      extendedLimits.MaxAreaAnalyzeablePerYear - rolloverUsed.rolloverAnalysisAreaUsed,
+      (extendedLimits.MaxAreaAnalyzeablePerYear ?? 0) - rolloverUsed.rolloverAnalysisAreaUsed,
     MaxAreaPerList: extendedLimits.MaxAreaPerList,
     max_locations_per_year:
-      extendedLimits.max_locations_per_year - rolloverUsed.rolloverLocationsUsed,
+      (extendedLimits.max_locations_per_year ?? 0) - rolloverUsed.rolloverLocationsUsed,
   };
 }

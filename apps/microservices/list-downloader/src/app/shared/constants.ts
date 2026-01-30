@@ -1582,9 +1582,10 @@ export const GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_DAILY_CSV_HEADER = {
 export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Username',
   'List ID',
-  'Analysis Types',
+  'Analysis Type',
   'Hectares',
   'Locations',
+  'Token Cost',
   'Date/Timestamp',
   'UI/API',
 ];

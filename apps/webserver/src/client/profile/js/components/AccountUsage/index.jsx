@@ -110,13 +110,18 @@ export default function AccountUsageContainer() {
   }, []);
 
   const exportUsage = () => {
-    return fetch(`analytics/myorg/usage/users/download`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
+    const exportStartDate = encodeURIComponent(startDateAnalysis);
+    const exportEndDate = encodeURIComponent(endDateAnalysis);
+    return fetch(
+      `analytics/myorg/usage/users/download?startDate=${exportStartDate}&endDate=${exportEndDate}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
       .then(() => handleDownloadConfirmation('success'))
       .catch(() => {
         handleDownloadConfirmation('error');

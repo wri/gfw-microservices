@@ -204,7 +204,7 @@ export const getAllPolicyList = (req) => {
         userMessage,
         sysMessage
       );
-      reject(eo);
+      return reject(eo);
     }
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetAllPolicyList')

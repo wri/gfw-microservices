@@ -53,36 +53,31 @@ import { getOrganizationStatus } from './authenticationManager.utils';
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @returns returns an Array of objects, where each object is info on the accounts.
  */
-export const getAllAccountsList = (req) => {
-  return new Promise((resolve, reject) => {
-    // Check to make sure the user is a proper pro manager.
-    if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
-      const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotProManager,
-        userMessage,
-        sysMessage
-      );
-      reject(eo);
-    }
+export const getAllAccountsList = async (req) => {
+  // Check to make sure the user is a proper pro manager.
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('userIsNotAnAdmin');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
+
+  try {
     // Get List of pending accounts.
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetAllAccountsList')
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetAllAccountsList,
-          'Failed to get all accounts list',
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    const recordsets = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetAllAccountsList');
+    return recordsets;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetAllAccountsList,
+      'Failed to get all accounts list',
+      err
+    );
+  }
 };
 
 /**
@@ -91,35 +86,30 @@ export const getAllAccountsList = (req) => {
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @returns returns an Array of objects, where each object is info on the accounts.
  */
-export const getAllUsersList = (req) => {
-  return new Promise((resolve, reject) => {
-    // Check to make sure the user is a proper pro manager.
-    if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
-      const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotProManager,
-        userMessage,
-        sysMessage
-      );
-      reject(eo);
-    }
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetAllUsersList')
-      .then((recordsets) => {
-        resolve(recordsets);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToGetAllUsersList,
-          'Failed to get all users list',
-          err
-        );
-        reject(errorObject);
-      });
-  });
+export const getAllUsersList = async (req) => {
+  // Check to make sure the user is a proper pro manager.
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('userIsNotAnAdmin');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
+
+  try {
+    const recordsets = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetAllUsersList');
+    return recordsets;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToGetAllUsersList,
+      'Failed to get all users list',
+      err
+    );
+  }
 };
 
 /** @function {activatePendingAccount}
@@ -130,212 +120,205 @@ export const getAllUsersList = (req) => {
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-export const activatePendingAccount = (req, pendingAccountId, unit_test = false) => {
-  return new Promise((resolve, reject) => {
-    let userID = 0;
-    let userEmail = '';
-    let userExists = 0;
-    let orgID = 0;
-    let content = {};
+export const activatePendingAccount = async (req, pendingAccountId, unit_test = false) => {
+  let userID = 0;
+  let userEmail = '';
+  let userExists = 0;
+  let orgID = 0;
+  let content = {};
 
+  try {
     // Get data for emails
     const titles = UserManager.getTitles(req);
     const commodities = UserManager.getCommodities(req);
     const geographies = UserManager.getGeographies(req);
     const classifications = AccountManager.getClassifications(req);
 
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetAllAccountsList')
-      .then((recordsets) => {
-        const pendingOrganization = recordsets.find(
-          (org) =>
-            org.organization_id === pendingAccountId &&
-            org.organization_status_id === orgAccountStatus.Pending
-        );
-        const nonPendingOrganizations = recordsets.filter(
-          (org) =>
-            org.organization_status_id === orgAccountStatus.Active ||
-            org.organization_status_id === orgAccountStatus.Inactive
-        );
+    // Get all accounts list
+    const accountsList = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetAllAccountsList');
 
-        // check if pending org name matches any active org names
-        if (
-          nonPendingOrganizations.some(
-            (org) =>
-              org.organization_name.toLowerCase() ===
-              pendingOrganization.organization_name.toLowerCase()
-          )
-        ) {
-          throw new errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.failedToActivateAccount,
-            'Organization name already exists',
-            {}
-          );
-        }
+    const pendingOrganization = accountsList.find(
+      (org) =>
+        org.organization_id === pendingAccountId &&
+        org.organization_status_id === orgAccountStatus.Pending
+    );
+    const nonPendingOrganizations = accountsList.filter(
+      (org) =>
+        org.organization_status_id === orgAccountStatus.Active ||
+        org.organization_status_id === orgAccountStatus.Inactive
+    );
 
-        const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
-        return sqlUtils.executeSystemStoredProcedure(
+    // check if pending org name matches any active org names
+    if (
+      nonPendingOrganizations.some(
+        (org) =>
+          org.organization_name.toLowerCase() ===
+          pendingOrganization.organization_name.toLowerCase()
+      )
+    ) {
+      throw errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.failedToActivateAccount,
+        'Organization name already exists',
+        {}
+      );
+    }
+
+    // Get pending account information
+    const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
+    const accountInfo = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspGetPendingAccountInformation',
+      parameters
+    );
+
+    const [record] = accountInfo;
+    userID = record.id;
+    const titleObject =
+      record.title_id === 10
+        ? { title: record.other_title }
+        : titles.filter((title) => title.id === record.title_id)[0];
+    content = {
+      org_name: record.organization_name,
+      is_subsidiary: record.organization_is_subsidiary,
+      parent_org_name: record.organization_parent,
+      org_website: record.organization_website,
+      org_address: record.organization_address,
+      policyNames: [],
+      arr_org_classification_ids: [],
+      user_first_name: record.first_name,
+      user_last_name: record.last_name,
+      user_email: record.email,
+      user_phone: record.phone,
+      user_title_id: titleObject.title,
+      user_other_title: record.other_title,
+      arr_user_geography_ids: [],
+      arr_user_commodity_ids: [],
+    };
+
+    // Get user and organization details
+    const userParameters = [{ field: 'pending_user_id', type: sql.Int, value: userID }];
+    const orgParameters = [
+      { field: 'pending_organization_id', type: sql.Int, value: pendingAccountId },
+    ];
+    const [commodityRecords, geographyRecords, policyRecords, classificationRecords] =
+      await Promise.all([
+        sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingUserCommodities', userParameters),
+        sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingUserGeographies', userParameters),
+        sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingAccountPolicies', orgParameters),
+        sqlUtils.executeSystemStoredProcedure(
           req,
-          'uspGetPendingAccountInformation',
-          parameters
-        );
-      })
-      .then((recordsets) => {
-        const [record] = recordsets;
-        userID = record.id;
-        const titleObject =
-          record.title_id === 10
-            ? { title: record.other_title }
-            : titles.filter((title) => title.id === record.title_id)[0];
-        content = {
-          org_name: record.organization_name,
-          is_subsidiary: record.organization_is_subsidiary,
-          parent_org_name: record.organization_parent,
-          org_website: record.organization_website,
-          org_address: record.organization_address,
-          policyNames: [],
-          arr_org_classification_ids: [],
-          user_first_name: record.first_name,
-          user_last_name: record.last_name,
-          user_email: record.email,
-          user_phone: record.phone,
-          user_title_id: titleObject.title,
-          user_other_title: record.other_title,
-          arr_user_geography_ids: [],
-          arr_user_commodity_ids: [],
-        };
+          'uspGetPendingAccountClassification',
+          orgParameters
+        ),
+      ]);
 
-        const userParameters = [{ field: 'pending_user_id', type: sql.Int, value: userID }];
-        const orgParameters = [
-          { field: 'pending_organization_id', type: sql.Int, value: pendingAccountId },
-        ];
-        return Promise.all([
-          sqlUtils.executeSystemStoredProcedure(
-            req,
-            'uspGetPendingUserCommodities',
-            userParameters
-          ),
-          sqlUtils.executeSystemStoredProcedure(
-            req,
-            'uspGetPendingUserGeographies',
-            userParameters
-          ),
-          sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingAccountPolicies', orgParameters),
-          sqlUtils.executeSystemStoredProcedure(
-            req,
-            'uspGetPendingAccountClassification',
-            orgParameters
-          ),
-        ]);
-      })
-      .then((recordsets) => {
-        const [commodityRecords, geographyRecords, policyRecords, classificationRecords] =
-          recordsets;
+    const policyArray = policyRecords.map((policy) => policy.document_name);
+    const classificationArray = classificationRecords
+      .map((classification) => classification.classification_id)
+      .map((id) => classifications.find((classification) => classification.id === id));
+    const commodityArray = commodityRecords
+      .map((commodity) => commodity.commodity_id)
+      .map((id) => commodities.find((commodity) => commodity.id === id));
+    const geographyArray = geographyRecords
+      .map((geography) => geography.geography_id)
+      .map((id) => geographies.find((geography) => geography.id === id));
 
-        const policyArray = policyRecords.map((policy) => policy.document_name);
-        const classificationArray = classificationRecords
-          .map((classification) => classification.classification_id)
-          .map((id) => classifications.find((classification) => classification.id === id));
-        const commodityArray = commodityRecords
-          .map((commodity) => commodity.commodity_id)
-          .map((id) => commodities.find((commodity) => commodity.id === id));
-        const geographyArray = geographyRecords
-          .map((geography) => geography.geography_id)
-          .map((id) => geographies.find((geography) => geography.id === id));
+    content.policyNames = policyArray;
+    content.arr_org_classification_ids = classificationArray.every(Helper.isUndefined)
+      ? []
+      : classificationArray.map((classification) => classification.classification_name);
+    content.arr_user_commodity_ids = commodityArray.every(Helper.isUndefined)
+      ? []
+      : commodityArray.map((commodity) => commodity.commmodity_name);
+    content.arr_user_geography_ids = geographyArray.every(Helper.isUndefined)
+      ? []
+      : geographyArray.map((geography) => geography.geography_name);
 
-        content.policyNames = policyArray;
-        content.arr_org_classification_ids = classificationArray.every(Helper.isUndefined)
-          ? []
-          : classificationArray.map((classification) => classification.classification_name);
-        content.arr_user_commodity_ids = commodityArray.every(Helper.isUndefined)
-          ? []
-          : commodityArray.map((commodity) => commodity.commmodity_name);
-        content.arr_user_geography_ids = geographyArray.every(Helper.isUndefined)
-          ? []
-          : geographyArray.map((geography) => geography.geography_name);
+    // ensure user is a pro manager
+    if (!UserManager.isProManager(req)) {
+      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
+      const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
+      throw errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.userNotProManager,
+        userMessage,
+        sysMessage
+      );
+    }
 
-        // ensure user is a pro manager
-        if (!UserManager.isProManager(req)) {
-          const userMessage = langResources.getResourceString('userIsNotAnAdmin');
-          const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-          throw new errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.userNotProManager,
-            userMessage,
-            sysMessage
-          );
-        }
+    // Activate the account
+    const secret = speakEasy.createSecret(req);
+    const timestamp = new Date();
+    const params = [
+      { field: 'PendingAccountID', type: sql.Int, value: pendingAccountId },
+      { field: 'UserSecret', type: sql.VarChar(50), value: secret },
+      { field: 'ActivatedTime', type: sql.SmallDateTime, value: timestamp },
+    ];
+    const activationResult = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspActivatePendingAccount',
+      params
+    );
 
-        const secret = speakEasy.createSecret(req);
-        const timestamp = new Date();
-        const params = [
-          { field: 'PendingAccountID', type: sql.Int, value: pendingAccountId },
-          { field: 'UserSecret', type: sql.VarChar(50), value: secret },
-          { field: 'ActivatedTime', type: sql.SmallDateTime, value: timestamp },
-        ];
-        return sqlUtils
-          .executeSystemStoredProcedure(req, 'uspActivatePendingAccount', params)
-          .then(async (recordsets) => {
-            try {
-              const renewalParams = [
-                { field: 'PendingAccountID', type: sql.Int, value: pendingAccountId },
-                { field: 'RenewalTime', type: sql.DateTime, value: timestamp },
-              ];
-              await sqlUtils.executeSystemQuery(setOrganizationRenewalTime, renewalParams);
-            } catch (error) {
-              logger.error(`Failed setting Organizations.renewal_time`, error);
-              throw error;
-            }
-            return recordsets;
-          });
-      })
-      .then((recordsets) => {
-        const [record] = recordsets;
-        userEmail = record.ManagerEmail;
-        userExists = record.UserExists;
-        orgID = record.orgID;
-        return PolicyManager.movePolicy(req, pendingAccountId, orgID);
-      })
-      .then(() => {
-        return userExists === 0 ? awsCognito.createUser(req, userEmail, false, unit_test) : null;
-      })
-      .then(() => {
-        const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
-        return sqlUtils.executeSystemStoredProcedure(
-          req,
-          'uspRemovePendingOrganization',
-          parameters
-        );
-      })
-      .then(() => {
-        const subject = 'GFW Pro Account Activated';
-        const msg = awsSes.createBodyContent(
-          req,
-          config.platformVars.emailType.ORGANIZATION_APPROVED,
-          content,
-          'success'
-        );
-        return awsSes.sendEmail(req, config.AWSVars.ses.sender, [userEmail], subject, msg);
-      })
-      .then(() => {
-        resolve(true);
-      })
-      .catch((error) => {
-        if (orgID) {
-          rollbackUtils.dropDatabase(req, pendingAccountId);
-          rollbackUtils.deleteSystemTableRow(req, 'Organizations', orgID, 'id');
-          rollbackUtils.deleteSystemTableRow(req, 'UserRoutes', orgID, 'organization_id');
-        }
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToActivateAccount,
-          'Failed to Activate Account',
-          error
-        );
-        reject(errorObject);
-      });
-  });
+    try {
+      const renewalParams = [
+        { field: 'PendingAccountID', type: sql.Int, value: pendingAccountId },
+        { field: 'RenewalTime', type: sql.DateTime, value: timestamp },
+      ];
+      await sqlUtils.executeSystemQuery(setOrganizationRenewalTime, renewalParams);
+    } catch (error) {
+      logger.error(`Failed setting Organizations.renewal_time`, error);
+      throw error;
+    }
+
+    const [activationRecord] = activationResult;
+    userEmail = activationRecord.ManagerEmail;
+    userExists = activationRecord.UserExists;
+    orgID = activationRecord.orgID;
+
+    // Move policy
+    await PolicyManager.movePolicy(req, pendingAccountId, orgID);
+
+    // Create user if needed
+    if (userExists === 0) {
+      await awsCognito.createUser(req, userEmail, false, unit_test);
+    }
+
+    // Remove pending organization
+    const removeParameters = [
+      { field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId },
+    ];
+    await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspRemovePendingOrganization',
+      removeParameters
+    );
+
+    // Send email
+    const subject = 'GFW Pro Account Activated';
+    const msg = awsSes.createBodyContent(
+      req,
+      config.platformVars.emailType.ORGANIZATION_APPROVED,
+      content,
+      'success'
+    );
+    await awsSes.sendEmail(req, config.AWSVars.ses.sender, [userEmail], subject, msg);
+
+    return true;
+  } catch (error) {
+    if (orgID) {
+      rollbackUtils.dropDatabase(req, pendingAccountId);
+      rollbackUtils.deleteSystemTableRow(req, 'Organizations', orgID, 'id');
+      rollbackUtils.deleteSystemTableRow(req, 'UserRoutes', orgID, 'organization_id');
+    }
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToActivateAccount,
+      'Failed to Activate Account',
+      error
+    );
+  }
 };
 
 /**
@@ -354,7 +337,7 @@ export const activatePendingAccount = (req, pendingAccountId, unit_test = false)
  * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
  * @return {Promise<Boolean>} True if successful, false otherwise.
  */
-export const updatePendingAccountUser = (
+export const updatePendingAccountUser = async (
   req,
   user_id,
   user_first_name,
@@ -367,7 +350,7 @@ export const updatePendingAccountUser = (
   arr_user_geography_ids,
   arr_user_commodity_ids
 ) => {
-  return new Promise((resolve, reject) => {
+  try {
     // Insert the new user account
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
@@ -381,21 +364,16 @@ export const updatePendingAccountUser = (
       { field: 'geography_ids', type: sql.NVarChar(200), value: arr_user_geography_ids.toString() },
       { field: 'commodity_ids', type: sql.NVarChar(200), value: arr_user_commodity_ids.toString() },
     ];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspUpdatePendingAccountUser', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToUpdatePendingAccountUser,
-          'Failed to update pending account user',
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspUpdatePendingAccountUser', params);
+    return true;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToUpdatePendingAccountUser,
+      'Failed to update pending account user',
+      err
+    );
+  }
 };
 
 /**
@@ -467,35 +445,30 @@ export const deletePendingAccountRequest = async (req, pendingAccountId) => {
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-export const deleteOrganization = (req, orgName) => {
-  return new Promise((resolve, reject) => {
-    if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
-      const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotProManager,
-        userMessage,
-        sysMessage
-      );
-      reject(eo);
-    }
+export const deleteOrganization = async (req, orgName) => {
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('userIsNotAnAdmin');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
+
+  try {
     const params = [{ field: 'orgName', type: sql.NVarChar(200), value: orgName }];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspDeleteOrganization', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteOrganization,
-          'Failed to delete organization',
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspDeleteOrganization', params);
+    return true;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeleteOrganization,
+      'Failed to delete organization',
+      err
+    );
+  }
 };
 
 /**
@@ -506,36 +479,31 @@ export const deleteOrganization = (req, orgName) => {
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
  */
-export const deleteUser = (req, email) => {
-  return new Promise((resolve, reject) => {
-    // Check to make sure the user is a proper pro manager.
-    if (!UserManager.isProManager(req)) {
-      const userMessage = langResources.getResourceString('userIsNotAnAdmin');
-      const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotProManager,
-        userMessage,
-        sysMessage
-      );
-      reject(eo);
-    }
+export const deleteUser = async (req, email) => {
+  // Check to make sure the user is a proper pro manager.
+  if (!UserManager.isProManager(req)) {
+    const userMessage = langResources.getResourceString('userIsNotAnAdmin');
+    const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotProManager,
+      userMessage,
+      sysMessage
+    );
+  }
+
+  try {
     const params = [{ field: 'email', type: sql.NVarChar(200), value: email }];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspDeleteUser', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeleteUser,
-          'Failed to delete user',
-          err
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspDeleteUser', params);
+    return true;
+  } catch (err) {
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeleteUser,
+      'Failed to delete user',
+      err
+    );
+  }
 };
 
 /** @function {reactivateAccount}
@@ -543,22 +511,18 @@ export const deleteUser = (req, email) => {
  * @param {Object} req
  * @param {number} organization_id
  */
-export const reactivateAccount = (req, organization_id) => {
-  return new Promise((resolve, reject) => {
+export const reactivateAccount = async (req, organization_id) => {
+  try {
     const organization_status_id = orgAccountStatus.Active;
     const params = [
       { field: 'organization_id', type: sql.Int, value: organization_id },
       { field: 'organization_status_id', type: sql.Int, value: organization_status_id },
     ];
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', params);
+    return true;
+  } catch (err) {
+    throw err;
+  }
 };
 
 /** @function {deactivateAccount}
@@ -610,22 +574,23 @@ export const deactivateAccount = async (req, organization_id) => {
  * @param {Number} organizationId
  * @returns {Promise<number>}
  */
-export const getAccountSubscriptionStatus = (request, organizationId) => {
-  return new Promise((resolve, reject) => {
+export const getAccountSubscriptionStatus = async (request, organizationId) => {
+  try {
     const parameters = [{ field: 'organizationId', type: sql.Int, value: organizationId }];
-    sqlUtils
-      .executeSystemStoredProcedure(request, 'uspGetOrganizationStatus', parameters)
-      .then((result) => resolve(result))
-      .catch((error) => {
-        const errorObject = errorUtils.createErrorMessage(
-          request,
-          errorUtils.ERROR_CODES.failedToGetAccountSubscriptionStatus,
-          `Failed to retrieve account subscription status`,
-          error
-        );
-        reject(errorObject);
-      });
-  });
+    const result = await sqlUtils.executeSystemStoredProcedure(
+      request,
+      'uspGetOrganizationStatus',
+      parameters
+    );
+    return result;
+  } catch (error) {
+    throw errorUtils.createErrorMessage(
+      request,
+      errorUtils.ERROR_CODES.failedToGetAccountSubscriptionStatus,
+      `Failed to retrieve account subscription status`,
+      error
+    );
+  }
 };
 
 /**
@@ -640,24 +605,25 @@ export const updateAccountSubscriptionStatus = async (
   organizationId,
   newSubscriptionStatusId
 ) => {
-  return new Promise((resolve, reject) => {
+  try {
     const parameters = [
       { field: 'organizationId', type: sql.Int, value: organizationId },
       { field: 'subscriptionStatusId', type: sql.Int, value: newSubscriptionStatusId },
     ];
-    sqlUtils
-      .executeSystemStoredProcedure(request, 'uspSetOrganizationSubscriptionStatus', parameters)
-      .then(() => resolve(true))
-      .catch((error) => {
-        const errorObject = errorUtils.createErrorMessage(
-          request,
-          errorUtils.ERROR_CODES.failedToUpdateAccountSubscriptionStatus,
-          `Failed to update account subscription status`,
-          error
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeSystemStoredProcedure(
+      request,
+      'uspSetOrganizationSubscriptionStatus',
+      parameters
+    );
+    return true;
+  } catch (error) {
+    throw errorUtils.createErrorMessage(
+      request,
+      errorUtils.ERROR_CODES.failedToUpdateAccountSubscriptionStatus,
+      `Failed to update account subscription status`,
+      error
+    );
+  }
 };
 
 /**

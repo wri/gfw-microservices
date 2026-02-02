@@ -61,27 +61,28 @@ const isHiddenColumnInPost2020riskTable = (accessor) => {
   return genericHiddenDataColumns.includes(accessor);
 };
 
+const alertsHiddenDataColumns = [
+  'intdistAlertsAreaAllTotal',
+  'intdistAlertsAreaJrcTotal',
+  'intdistAlertsAreaSbtnNaturalEcosystemTotal',
+  'intdistAlertsAreaSbtnNaturalForestsTotal',
+  'integratedAlertsCoverage',
+  'integratedAlertsDailyAllHigh',
+  'integratedAlertsDailyAllHighest',
+  'integratedAlertsDailyAllNominal',
+  'integratedAlertsDailyJrcHigh',
+  'integratedAlertsDailyJrcHighest',
+  'integratedAlertsDailyJrcNominal',
+  'integratedAlertsDailySbtnHigh',
+  'integratedAlertsDailySbtnHighest',
+  'integratedAlertsDailySbtnNominal',
+  'totalHa',
+  'treeCoverExtentTotal',
+  'viirsAlertsDaily',
+].concat(genericHiddenDataColumns);
+
 const isHiddenColumnInAlertsTable = (accessor) => {
-  const alertsHiddenDataColumns = [
-    'intdistAlertsAreaAllTotal',
-    'intdistAlertsAreaJrcTotal',
-    'intdistAlertsAreaSbtnNaturalEcosystemTotal',
-    'intdistAlertsAreaSbtnNaturalForestsTotal',
-    'integratedAlertsCoverage',
-    'integratedAlertsDailyAllHigh',
-    'integratedAlertsDailyAllHighest',
-    'integratedAlertsDailyAllNominal',
-    'integratedAlertsDailyJrcHigh',
-    'integratedAlertsDailyJrcHighest',
-    'integratedAlertsDailyJrcNominal',
-    'integratedAlertsDailySbtnHigh',
-    'integratedAlertsDailySbtnHighest',
-    'integratedAlertsDailySbtnNominal',
-    'totalHa',
-    'treeCoverExtentTotal',
-    'viirsAlertsDaily',
-  ];
-  return alertsHiddenDataColumns.concat(genericHiddenDataColumns).includes(accessor);
+  return alertsHiddenDataColumns.includes(accessor);
 };
 
 const checkColumnListFC = (accessor) => {

@@ -22,43 +22,66 @@ const checkColumnListDraftList = (accessor) => {
     accessor === 'subState'
   );
 };
+const genericHiddenDataColumns = [
+  'Certification',
+  'End Date',
+  'Latitude',
+  'Longitude',
+  'Refinery Name',
+  'Start Date',
+  'Time Horizon',
+  'Volume',
+  'coverageHA',
+  'gadmId',
+  'jrcForestLossByYear',
+  'jrcLandAreaHA',
+  'jrcNaturalForestLossHA',
+  'jrcNaturalForestLossPercent',
+  'landmarkHA',
+  'landmarkPercent',
+  'listId',
+  'listName',
+  'list_id',
+  'locationError',
+  'locationId',
+  'locationName',
+  'location_id',
+  'naturalForestLossByYear',
+  'naturalForestLossHA',
+  'naturalForestLossPercent',
+  'negligibleRisk',
+  'protectedAreasHA',
+  'protectedAreasPercent',
+  'statusCode',
+  'totalAreaHa',
+  'totalRows',
+];
 
 const isHiddenColumnInPost2020riskTable = (accessor) => {
-  const post2020riskassessmentHiddenDataColumns = [
-    'Certification',
-    'End Date',
-    'Latitude',
-    'Longitude',
-    'Refinery Name',
-    'Start Date',
-    'Time Horizon',
-    'Volume',
-    'coverageHA',
-    'gadmId',
-    'jrcForestLossByYear',
-    'jrcLandAreaHA',
-    'jrcNaturalForestLossHA',
-    'jrcNaturalForestLossPercent',
-    'landmarkHA',
-    'landmarkPercent',
-    'listId',
-    'listName',
-    'list_id',
-    'locationError',
-    'locationId',
-    'locationName',
-    'location_id',
-    'naturalForestLossByYear',
-    'naturalForestLossHA',
-    'naturalForestLossPercent',
-    'negligibleRisk',
-    'protectedAreasHA',
-    'protectedAreasPercent',
-    'statusCode',
-    'totalAreaHa',
-    'totalRows',
+  return genericHiddenDataColumns.includes(accessor);
+};
+
+const isHiddenColumnInAlertsTable = (accessor) => {
+  const alertsHiddenDataColumns = [
+    'intdistAlertsAreaAllTotal',
+    'intdistAlertsAreaJrcTotal',
+    'intdistAlertsAreaSbtnNaturalEcosystemTotal',
+    'intdistAlertsAreaSbtnNaturalForestsTotal',
+    'integratedAlertsCoverage',
+    'integratedAlertsDailyAllHigh',
+    'integratedAlertsDailyAllHighest',
+    'integratedAlertsDailyAllNominal',
+    'integratedAlertsDailyJrcHigh',
+    'integratedAlertsDailyJrcHighest',
+    'integratedAlertsDailyJrcNominal',
+    'integratedAlertsDailySbtnHigh',
+    'integratedAlertsDailySbtnHighest',
+    'integratedAlertsDailySbtnNominal',
+    'totalHa',
+    'treeCoverExtentTotal',
+    'viirsAlertsDaily',
   ];
-  return post2020riskassessmentHiddenDataColumns.includes(accessor);
+  return alertsHiddenDataColumns.concat(genericHiddenDataColumns).includes(accessor);
 };
 
 const checkColumnListFC = (accessor) => {
@@ -348,6 +371,7 @@ const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
 module.exports = {
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,
+  isHiddenColumnInAlertsTable,
   checkColumnListFC,
   checkColumnListCR,
   checkColumnListPA,

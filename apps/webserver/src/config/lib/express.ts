@@ -11,7 +11,7 @@ const favicon = require('serve-favicon');
 import * as logger from '../privateutils/logger.utils';
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
-const helmet = require('helmet');
+import helmet from 'helmet';
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
 import config from '../config';
@@ -161,20 +161,60 @@ const configureHelmetHeaders = (app: Application) => {
    * dnsPrefetchControl - controls browser DNS prefetching
    * frameguard - to prevent clickjacking
    * hidePoweredBy - to remove the X-Powered-By header
-   * hsts - for HTTP Strict Transport Security
-   * ieNoOpen - sets X-Download-Options for IE8+
+   * hsts - for HTTP Strict Transport Security (prod/staging only)
    * noSniff - to keep clients from sniffing the MIME type
    * xssFilter - adds some small XSS protections
    */
+  const enableHSTS = !['development', 'test'].includes(process.env.NODE_ENV);
+
+  // Configure HSTS settings based on environment
+  const helmetConfig: any = {};
+  if (enableHSTS) {
+    helmetConfig.hsts = {
+      maxAge: 31536000, // 1 year expiration
+      includeSubDomains: true,
+      preload: true,
+    };
+  } else {
+    // Disable HSTS in development and unit test environments
+    helmetConfig.hsts = false;
+  }
+
+  app.use(helmet(helmetConfig));
   app.use(
-    helmet({
-      hsts: true, // off until https us working
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", 'https:', 'data:'],
+        // scriptSrc: Defines valid sources for JavaScript execution. Restricts where scripts can be loaded from
+        // to prevent XSS attacks. Includes third-party analytics/tools loaded via Google Tag Manager.
+        scriptSrc: [
+          "'self'",
+          'https://www.googletagmanager.com',
+          'https://cmp.osano.com',
+          'https://cdn.transifex.com',
+          'https://static.zdassets.com',
+          'https://static.hotjar.com', // Hotjar analytics
+          'https://plausible.io', // Plausible analytics
+          'https://snap.licdn.com', // LinkedIn Insights
+          'https://www.clarity.ms', // Microsoft Clarity
+          "'unsafe-inline'",
+          "'unsafe-eval'", // Required for webpack and dynamic script evaluation
+        ],
+        workerSrc: ["'self'", 'blob:'], // Required for Osano and other web workers
+        styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'https:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'self'"],
+      },
     })
   );
-  /**
-   * TODO: Add content security policy configuration via helmet.contentSecurityPolicy({ ... })
-   * @see https://github.com/helmetjs/helmet
-   */
+  // Set Permissions-Policy header manually (Helmet v8 does not provide this middleware)
+  app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=*, payment=()');
+    next();
+  });
 };
 
 /**

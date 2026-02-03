@@ -10,9 +10,11 @@ import {
   Paper,
   Grid,
   Box,
+  Tooltip,
 } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import InfoIcon from '@mui/icons-material/Info';
 
 import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
@@ -61,7 +63,7 @@ function AccountDetailUsageByAnalysisType({
       let aValue = a[orderBy];
       let bValue = b[orderBy];
       // For numeric columns, parse as float
-      if (['locations_analyzed', 'hectares_analyzed', 'lists_analyzed'].includes(orderBy)) {
+      if (['locations_analyzed', 'lists_analyzed', 'total_tokens'].includes(orderBy)) {
         aValue = parseFloat(aValue) || 0;
         bValue = parseFloat(bValue) || 0;
       } else {
@@ -81,6 +83,27 @@ function AccountDetailUsageByAnalysisType({
       return 0;
     });
   }, [analysisUsageByType, orderBy, order]);
+
+  // Calculate totals
+  const totals = React.useMemo(() => {
+    if (!analysisUsageByType || analysisUsageByType.length === 0) {
+      return { listsAnalyzed: 0, tokensUsed: 0 };
+    }
+
+    const listsAnalyzed = analysisUsageByType
+      .filter((item) => item.analysis_type !== 'ALERTS-BATCH') // Exclude Weekly Alerts from lists total
+      .reduce((sum, item) => sum + (parseInt(item.lists_analyzed) || 0), 0);
+
+    const tokensUsed = analysisUsageByType.reduce(
+      (sum, item) => sum + (parseFloat(item.total_tokens) || 0),
+      0
+    );
+
+    return {
+      listsAnalyzed: Math.floor(listsAnalyzed),
+      tokensUsed: Math.floor(tokensUsed),
+    };
+  }, [analysisUsageByType]);
 
   return (
     <section>
@@ -128,66 +151,13 @@ function AccountDetailUsageByAnalysisType({
                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                   <TableCell>{accountProfileStrings.accountUsageLabels.analysisType}</TableCell>
                   <TableCell
-                    onClick={() => handleSort('locations_analyzed')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
-                      <span
-                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                      >
-                        <KeyboardArrowUpIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'locations_analyzed' && order === 'asc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'locations_analyzed' && order === 'desc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    onClick={() => handleSort('hectares_analyzed')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {accountProfileStrings.accountUsageLabels.hectaresAnalyzed}
-                      <span
-                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                      >
-                        <KeyboardArrowUpIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'hectares_analyzed' && order === 'asc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'hectares_analyzed' && order === 'desc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell
                     onClick={() => handleSort('lists_analyzed')}
                     style={{ cursor: 'pointer', userSelect: 'none' }}
+                    align="right"
                   >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                    >
                       {accountProfileStrings.accountUsageLabels.listsAnalyzed}
                       <span
                         style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
@@ -209,24 +179,106 @@ function AccountDetailUsageByAnalysisType({
                       </span>
                     </div>
                   </TableCell>
+                  <TableCell
+                    onClick={() => handleSort('total_tokens')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                    align="right"
+                  >
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                    >
+                      Tokens Used
+                      <span
+                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
+                      >
+                        <KeyboardArrowUpIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'total_tokens' && order === 'asc' ? 'primary' : 'disabled'
+                          }
+                        />
+                        <KeyboardArrowDownIcon
+                          fontSize="small"
+                          color={
+                            orderBy === 'total_tokens' && order === 'desc' ? 'primary' : 'disabled'
+                          }
+                        />
+                      </span>
+                    </div>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedData.map((element) => (
-                  <TableRow key={element.analysis_type}>
-                    <TableCell>
-                      {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
-                        element.analysis_type ||
-                        ''}
-                    </TableCell>
-                    <TableCell>{formatDigit(element.locations_analyzed || 0)}</TableCell>
-                    <TableCell>{formatDigit(element.hectares_analyzed || 0)}</TableCell>
-                    <TableCell>{formatDigit(element.lists_analyzed || 0)}</TableCell>
+                {sortedData.map((element) => {
+                  const isWeeklyAlerts = element.analysis_type === 'ALERTS-BATCH';
+
+                  return (
+                    <TableRow key={element.analysis_type}>
+                      <TableCell>
+                        {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
+                          element.analysis_type ||
+                          ''}
+                      </TableCell>
+                      <TableCell align={isWeeklyAlerts ? 'center' : 'right'}>
+                        {isWeeklyAlerts ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              {formatDigit(element.lists_analyzed || 0)}
+                              <Tooltip
+                                title="Weeks of analysis is a sum of the number of lists with Weekly Alerts applied multiplied by the number of weeks each list has been automatically updated. This number is not reflected in the total listed below."
+                                arrow
+                                placement="top"
+                              >
+                                <InfoIcon
+                                  sx={{
+                                    fontSize: '16px',
+                                    color: 'rgba(0, 0, 0, 0.54)',
+                                    cursor: 'help',
+                                  }}
+                                />
+                              </Tooltip>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: '12px',
+                                color: 'rgba(0, 0, 0, 0.5)',
+                                marginTop: '4px',
+                              }}
+                            >
+                              Weeks of analysis
+                            </div>
+                          </div>
+                        ) : (
+                          formatDigit(element.lists_analyzed || 0)
+                        )}
+                      </TableCell>
+                      <TableCell align="right">{formatDigit(element.total_tokens || 0)}</TableCell>
+                    </TableRow>
+                  );
+                })}
+                {sortedData.length > 0 && (
+                  <TableRow
+                    key="total-row"
+                    sx={{
+                      backgroundColor: '#f5f5f5',
+                      fontWeight: 'bold',
+                      '& td': { fontWeight: 'bold' },
+                    }}
+                  >
+                    <TableCell>Total</TableCell>
+                    <TableCell align="right">{formatDigit(totals.listsAnalyzed)}</TableCell>
+                    <TableCell align="right">{formatDigit(totals.tokensUsed)}</TableCell>
                   </TableRow>
-                ))}
+                )}
                 {sortedData.length === 0 && (!startDateAnalysis || !endDateAnalysis) ? (
                   <TableRow key="no-data">
-                    <TableCell colSpan={4}>
+                    <TableCell colSpan={3}>
                       <div
                         style={{
                           display: 'flex',

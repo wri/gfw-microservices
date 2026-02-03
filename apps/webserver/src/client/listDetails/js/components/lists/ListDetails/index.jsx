@@ -45,6 +45,7 @@ import infoBubbleConfig from '../../../../../common/js/infoBubbleConfig.constant
 import {
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,
+  isHiddenColumnInAlertsTable,
   checkColumnListCR,
   checkColumnListFC,
   checkColumnListGFWCR,
@@ -1068,6 +1069,10 @@ export default class ListDetails extends Component {
 
         if (listView === COMMODITY_RISK_VIEW) {
           return !checkColumnListCR(column.accessor); // checks for excluded commodity risk columns
+        }
+
+        if (listView === ALERTS) {
+          return !isHiddenColumnInAlertsTable(column.accessor); // checks for excluded alerts columns
         }
 
         // For unsupported views, exclude the column

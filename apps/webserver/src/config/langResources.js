@@ -1,12 +1,11 @@
-//Default Language Index.
+// Default Language Index.
 const defaultLanguageID = 'en';
 
-//Language Strings.
+// Language Strings.
 const langResources = {
   en: {
     userIsNotAnAdmin: 'User is not an Administrator.',
     userExistsInOrg: 'User is already registered in this organization.',
-    loginFailed: 'Incorrect username or password. Please try again.',
     accountDisabled: 'User has been disabled. Please reset your password.',
     invalidSession: 'Invalid Session. Please login.',
     verificationFailed: 'Validation failed for the verification code.',
@@ -19,7 +18,9 @@ const langResources = {
     failedToAuthenticate: 'Failed to authenticate user.',
     failedToSendEmail: 'Failed to send email.',
     failedSQLConnection: 'Failure to connect to SQL server',
+    invalidUsernameOrPassword: 'Incorrect username or password. Please try again.',
     invalidEmail: 'User does not exist in the organization.',
+    failedToSetInitialPassword: 'Failed to set initial password.',
     failedToConvertToWKT: 'Unable to convert GeoJSON geometry to WKT',
     failedToConvertToGeoJSON: 'Unable to convert WKT geometry to GeoJSON geometry',
     failedToDownloadFile: 'Unable to download policy',

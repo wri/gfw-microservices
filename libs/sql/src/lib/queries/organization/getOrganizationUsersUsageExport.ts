@@ -10,13 +10,13 @@ SELECT
     lp.list_id as 'List ID',
     STRING_AGG(lp.analysis_type, ',') AS 'Analysis Types',
     ISNULL(lp.area_analyzed_list_ha, 0) AS 'Hectares',
-    ISNULL(lp.locations_analyzed, 0) AS 'Locations',        
+    ISNULL(lp.locations_analyzed, 0) AS 'Locations',
     FORMAT(lp.analysis_start_time, 'dd MMM yyyy HH:mm:ss') + ' GMT' AS 'Date/Timestamp',
     CASE WHEN COUNT(eu.id) > 0 THEN 'API' ELSE 'UI' END AS 'UI/API'
 FROM dbo.ListsProcessing lp
 JOIN dbo.Users u ON lp.user_id = u.id
 LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id
-LEFT JOIN dbo.ExternalUploads eu ON ll.s3_filename = eu.uploadKeyFile 
+LEFT JOIN dbo.ExternalUploads eu ON ll.s3_filename = eu.uploadKeyFile
 WHERE lp.user_id IS NOT NULL
 GROUP BY
   u.email,
@@ -34,4 +34,11 @@ export interface OrganizationUsersAnalysisUsageExport {
   Locations: number;
   'Date/Timestamp': string;
   'UI/API': string;
+  // Tokenization fields (GPV-5226)
+  'Location Rate': number | null;
+  'List Rate': number | null;
+  'Token Usage (Locations)': number | null;
+  'Token Usage (Lists)': number | null;
+  'Total Tokens': number | null;
+  'Effective Rate Date': string | null;
 }

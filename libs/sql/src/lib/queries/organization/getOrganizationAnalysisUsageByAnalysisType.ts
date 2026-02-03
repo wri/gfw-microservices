@@ -26,4 +26,11 @@ export interface OrganizationAnalysisUsageByAnalysisType {
   lists_analyzed: number;
   locations_analyzed: number;
   analysis_type: string;
+  // Tokenization fields (GPV-5226)
+  location_rate: number | null;
+  list_rate: number | null;
+  total_location_tokens: number | null;
+  total_list_tokens: number | null;
+  total_tokens: number | null;
+  effective_rate_date: Date | null;
 }

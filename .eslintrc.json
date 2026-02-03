@@ -47,7 +47,7 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "allow": [],
+            "allow": ["mssql", "sql"],
             "depConstraints": [
               {
                 "sourceTag": "*",

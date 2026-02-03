@@ -923,7 +923,7 @@ const completeNewPasswordChallenge = async (req, oldPassword, newPassword) => {
     throw errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.userNotAuthenticated,
-      langResources.getResourceString('loginFailed'),
+      langResources.getResourceString('invalidUsernameOrPassword'),
       err
     );
   }

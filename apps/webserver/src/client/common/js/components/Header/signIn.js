@@ -33,11 +33,6 @@ export const signIn = (username, password, rememberMe) => {
             'Your password has expired. Please click “Forgot Password?” to reset your password and log in.';
           break;
         case 'ResetRequired':
-          dialogOpen = true;
-          dialogTitle = 'Reset Password';
-          dialogMessage =
-            'Your password has expired. Please click “Forgot Password?” to reset your password and log in.';
-          break;
         case 'PasswordExpired':
           dialogOpen = true;
           dialogTitle = 'Reset Password';
@@ -48,7 +43,6 @@ export const signIn = (username, password, rememberMe) => {
           dialogOpen = true;
           dialogTitle = 'Password has expired';
           dialogMessage = 'Please check your email for a new temporary password.';
-
           break;
         default:
           dialogOpen = true;

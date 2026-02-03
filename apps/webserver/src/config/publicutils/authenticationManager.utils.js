@@ -41,13 +41,15 @@
 const path = require('path');
 const sql = require('mssql');
 import config from '../config';
+const langResources = require(path.resolve('./config/langResources'));
 
 // Alias some constants
 const { AWSVars: AWS_VARS, platformVars: PLATFORM_VARS } = config;
 const { authenticationStatus: AUTH_STATUS } = PLATFORM_VARS;
 const { userpoolId: USER_POOL_ID } = AWS_VARS.cognito;
 
-const langResources = require(path.resolve('./config/langResources'));
+// (Developer) error message for missing user
+const DEV_USER_NOT_FOUND_ERROR = 'User does not exist';
 
 const awsSes = require(path.resolve('./config/privateutils/ses.utils'));
 const awsCognito = require(path.resolve('./config/privateutils/cognito.utils'));
@@ -180,7 +182,7 @@ export const login = async (req, username, password, isProManagerLogin = false) 
       throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
-        langResources.getResourceString('loginFailed'),
+        langResources.getResourceString('invalidUsernameOrPassword'),
         `UserEmail: ${email}, Authentication Status: ${authenticationStatus}`
       );
     }
@@ -245,7 +247,7 @@ export const login = async (req, username, password, isProManagerLogin = false) 
       throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
-        langResources.getResourceString('loginFailed'),
+        langResources.getResourceString('invalidUsernameOrPassword'),
         `UserEmail: ${username} is a user, but not found for the requested site`
       );
     }
@@ -278,7 +280,7 @@ export const login = async (req, username, password, isProManagerLogin = false) 
       throw errorUtils.createErrorMessage(
         req,
         errorUtils.ERROR_CODES.userNotAdmin,
-        langResources.getResourceString('loginFailed'),
+        langResources.getResourceString('invalidUsernameOrPassword'),
         `UserEmail: ${username} is a user, but their organization is inactive`
       );
     }
@@ -567,7 +569,7 @@ export const setInitialPassword = async (req, oldPassword, newPassword) => {
     const errorObject = errorUtils.createErrorMessage(
       req,
       errorUtils.ERROR_CODES.failedToSetPassword,
-      'Failed to set initial password',
+      langResources.getResourceString('failedToSetInitialPassword'),
       errorMsg
     );
     throw errorObject; // Throw error to be caught by calling code
@@ -597,7 +599,7 @@ export const requestPasswordReset = async (req, userEmail) => {
     );
 
     if (!recordSets.length) {
-      const userMessage = langResources.getResourceString('invalidEmail');
+      const userMessage = langResources.getResourceString('invalidUsernameOrPassword');
       const sysMessage = `CRITICAL ERROR: User not found - ${normalizedUsername}`;
       errorUtils.createErrorMessage(
         req,
@@ -605,7 +607,7 @@ export const requestPasswordReset = async (req, userEmail) => {
         userMessage,
         sysMessage
       );
-      throw new Error('User does not exist');
+      throw new Error(DEV_USER_NOT_FOUND_ERROR);
     }
 
     // Cognito reset password request
@@ -643,7 +645,7 @@ export const adminResetUserPassword = async (req, user_email) => {
     );
 
     if (!recordSets.length) {
-      const userMessage = langResources.getResourceString('invalidEmail');
+      const userMessage = langResources.getResourceString('invalidUsernameOrPassword');
       const sysMessage = `CRITICAL ERROR: User not found - ${user_email}`;
       errorUtils.createErrorMessage(
         req,
@@ -651,7 +653,7 @@ export const adminResetUserPassword = async (req, user_email) => {
         userMessage,
         sysMessage
       );
-      throw new Error('User does not exist');
+      throw new Error(DEV_USER_NOT_FOUND_ERROR);
     }
 
     // Perform the Cognito password reset

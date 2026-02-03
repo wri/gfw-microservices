@@ -165,29 +165,42 @@ const configureHelmetHeaders = (app: Application) => {
    * noSniff - to keep clients from sniffing the MIME type
    * xssFilter - adds some small XSS protections
    */
-  const isProdOrStaging = ['production', 'staging'].includes(process.env.NODE_ENV);
-  app.use(helmet());
-  if (isProdOrStaging) {
-    app.use(
-      helmet.hsts({
-        maxAge: 31536000, // 1 year expiration
-        includeSubDomains: true,
-        preload: true,
-      })
-    );
+  const enableHSTS = !['development', 'test'].includes(process.env.NODE_ENV);
+
+  // Configure HSTS settings based on environment
+  const helmetConfig: any = {};
+  if (enableHSTS) {
+    helmetConfig.hsts = {
+      maxAge: 31536000, // 1 year expiration
+      includeSubDomains: true,
+      preload: true,
+    };
+  } else {
+    // Disable HSTS in development and unit test environments
+    helmetConfig.hsts = false;
   }
+
+  app.use(helmet(helmetConfig));
   app.use(
     helmet.contentSecurityPolicy({
       directives: {
         defaultSrc: ["'self'", 'https:', 'data:'],
+        // scriptSrc: Defines valid sources for JavaScript execution. Restricts where scripts can be loaded from
+        // to prevent XSS attacks. Includes third-party analytics/tools loaded via Google Tag Manager.
         scriptSrc: [
           "'self'",
           'https://www.googletagmanager.com',
           'https://cmp.osano.com',
           'https://cdn.transifex.com',
           'https://static.zdassets.com',
+          'https://static.hotjar.com', // Hotjar analytics
+          'https://plausible.io', // Plausible analytics
+          'https://snap.licdn.com', // LinkedIn Insights
+          'https://www.clarity.ms', // Microsoft Clarity
           "'unsafe-inline'",
+          "'unsafe-eval'", // Required for webpack and dynamic script evaluation
         ],
+        workerSrc: ["'self'", 'blob:'], // Required for Osano and other web workers
         styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'", 'https:'],
@@ -197,7 +210,7 @@ const configureHelmetHeaders = (app: Application) => {
       },
     })
   );
-  // Set Permissions-Policy header manually (Helmet v6+ does not provide this middleware)
+  // Set Permissions-Policy header manually (Helmet v8 does not provide this middleware)
   app.use((req, res, next) => {
     res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=*, payment=()');
     next();

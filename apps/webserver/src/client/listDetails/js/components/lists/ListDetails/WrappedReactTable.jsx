@@ -88,9 +88,23 @@ const WrappedReactTable = ({
     };
   };
   function extractRowError(row) {
-    return getErrorDetails(
-      row?.ErrorDetails || getAnalysisError(row?.location_error || row?.analysisError)
-    );
+    let errorDetails;
+    try {
+      errorDetails =
+        row?._original?.ErrorDetails ||
+        JSON.parse(row?._original?.location_error || '{}')?.[0] ||
+        row?.ErrorDetails ||
+        JSON.parse(row?.location_error || '{}')?.[0];
+    } catch {
+      // ignore JSON parse errors
+    }
+
+    if (errorDetails) {
+      return getErrorDetails(errorDetails);
+    }
+    const analysisError = row?._original?.analysisError || row?.analysisError;
+
+    return getErrorDetails(getAnalysisError(analysisError));
   }
 
   const toggleableColumns = listColumns.map((column) => column.accessor);
@@ -251,10 +265,6 @@ const WrappedReactTable = ({
             selectedList={selectedList}
             setIsLoading={setIsLoading}
             style={props.style}
-            error={getErrorDetails(
-              props.rowInfo?.ErrorDetails ||
-                getAnalysisError(props.rowInfo?.location_error || props.rowInfo?.analysisError)
-            )}
           >
             {props.children}
           </CustomRow>
@@ -280,4 +290,6 @@ const errorsMap = {
   'Unable to convert point to polygon: analysisRadius cannot be greater than 3000 km':
     'The defined analysis radius is too big. Valid analysis radius must be smaller than 3000 km.',
   AnalysisError: 'Your location failed analysis due to its size or geometry.',
+  NoIntersectionError:
+    'Your location either does not meet minimum size requirements or is shaped in a way that does not intersect with a centroid and cannot be analyzed.',
 };

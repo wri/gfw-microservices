@@ -88,15 +88,16 @@ const WrappedReactTable = ({
     };
   };
   function extractRowError(row) {
-    const errorDetails = row?._original?.ErrorDetails || row?.ErrorDetails;
+    const errorDetails =
+      row?._original?.ErrorDetails ||
+      JSON.parse(row?._original?.location_error || '{}')?.[0] ||
+      row?.ErrorDetails ||
+      JSON.parse(row?.location_error || '{}')?.[0];
+
     if (errorDetails) {
       return getErrorDetails(errorDetails);
     }
-    const analysisError =
-      row?._original?.location_error ||
-      row?._original?.analysisError ||
-      row?.location_error ||
-      row?.analysisError;
+    const analysisError = row?._original?.analysisError || row?.analysisError;
 
     return getErrorDetails(getAnalysisError(analysisError));
   }
@@ -284,5 +285,6 @@ const errorsMap = {
   'Unable to convert point to polygon: analysisRadius cannot be greater than 3000 km':
     'The defined analysis radius is too big. Valid analysis radius must be smaller than 3000 km.',
   AnalysisError: 'Your location failed analysis due to its size or geometry.',
-  NoIntersectionError: 'Your location does not intersect with any valid area.',
+  NoIntersectionError:
+    'Your location either does not meet minimum size requirements or is shaped in a way that does not intersect with a centroid and cannot be analyzed.',
 };

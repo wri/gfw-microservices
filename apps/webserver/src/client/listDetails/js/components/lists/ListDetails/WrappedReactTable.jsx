@@ -88,11 +88,16 @@ const WrappedReactTable = ({
     };
   };
   function extractRowError(row) {
-    const errorDetails =
-      row?._original?.ErrorDetails ||
-      JSON.parse(row?._original?.location_error || '{}')?.[0] ||
-      row?.ErrorDetails ||
-      JSON.parse(row?.location_error || '{}')?.[0];
+    let errorDetails;
+    try {
+      errorDetails =
+        row?._original?.ErrorDetails ||
+        JSON.parse(row?._original?.location_error || '{}')?.[0] ||
+        row?.ErrorDetails ||
+        JSON.parse(row?.location_error || '{}')?.[0];
+    } catch {
+      // ignore JSON parse errors
+    }
 
     if (errorDetails) {
       return getErrorDetails(errorDetails);

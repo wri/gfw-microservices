@@ -230,11 +230,8 @@ const WrappedReactTable = ({
     }
 
     try {
-      const parsed = JSON.parse(analysisErrorJson);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed[0];
-      }
-      return 'AnalysisError'; // Generic key for analysis errors - it will be mapped in errorsMap
+      const [firstError] = JSON.parse(analysisErrorJson);
+      return firstError ? 'AnalysisError' : '';
     } catch {
       return '';
     }

@@ -19,15 +19,16 @@ import InfoIcon from '@mui/icons-material/Info';
 import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
 import { accountProfileStrings } from '../../../../common/js/config.js';
+import { useSortableData } from '../../../../hooks';
 
 /**
- * Posbile duplicate contents from
+ * Possible duplicate contents from
  * {@link libs/constants/src/lib/analysisTypes.constants.ts}
  *
- * @summary libs/constants is not buildable and libs/sql complaints about
+ * @note libs/constants is not buildable and libs/sql complaints about
  * not finding the contents of the filepath above
  */
-const NORMALIZING_ANALYSIS_NAMES = {
+const NORMALIZED_ANALYSIS_NAMES = {
   AFI: 'Post-2020 Risk Assessment',
   ALERTS: 'Recent Disturbance Alerts',
   FCD: 'Post-2000 Forest Change',
@@ -43,46 +44,11 @@ function AccountDetailUsageByAnalysisType({
   endDateAnalysis,
   children,
 }) {
-  const [orderBy, setOrderBy] = React.useState('analysis_type');
-  const [order, setOrder] = React.useState('asc');
-
-  const handleSort = (column) => {
-    if (orderBy === column) {
-      setOrder(order === 'asc' ? 'desc' : 'asc');
-    } else {
-      setOrderBy(column);
-      setOrder('asc');
-    }
-  };
-
-  const sortedData = React.useMemo(() => {
-    if (!analysisUsageByType) {
-      return [];
-    }
-    return [...analysisUsageByType].sort((a, b) => {
-      let aValue = a[orderBy];
-      let bValue = b[orderBy];
-      // For numeric columns, parse as float
-      if (['locations_analyzed', 'lists_analyzed', 'total_tokens'].includes(orderBy)) {
-        aValue = parseFloat(aValue) || 0;
-        bValue = parseFloat(bValue) || 0;
-      } else {
-        if (typeof aValue === 'string') {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === 'string') {
-          bValue = bValue.toLowerCase();
-        }
-      }
-      if (aValue < bValue) {
-        return order === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return order === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [analysisUsageByType, orderBy, order]);
+  const { sortedData, orderBy, order, handleSort } = useSortableData(analysisUsageByType, {
+    defaultOrderBy: 'analysis_type',
+    defaultOrder: 'asc',
+    numericColumns: ['locations_analyzed', 'lists_analyzed', 'total_tokens'],
+  });
 
   // Calculate totals
   const totals = React.useMemo(() => {
@@ -215,7 +181,7 @@ function AccountDetailUsageByAnalysisType({
                   return (
                     <TableRow key={element.analysis_type}>
                       <TableCell>
-                        {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
+                        {NORMALIZED_ANALYSIS_NAMES[element.analysis_type] ||
                           element.analysis_type ||
                           ''}
                       </TableCell>

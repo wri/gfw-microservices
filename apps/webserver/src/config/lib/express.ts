@@ -68,6 +68,7 @@ function slowRequestLogger(thresholdMs) {
 }
 
 /**
+          'https://js.arcgis.com', // ArcGIS scripts
  * @function configureMiddleware
  * @summary Configure express middleware
  * @param { Express.Application } app
@@ -151,6 +152,26 @@ const configureSession = (app: Application) => {
 };
 
 /**
+ * Content Security Policy (CSP) Configuration
+ * Defines allowed sources for various content types to prevent XSS and other attacks.
+ * When adding new third-party services, update the relevant directive below.
+ */
+const CSP_SCRIPT_SOURCES = [
+  "'self'",
+  'https://www.googletagmanager.com', // Google Tag Manager
+  'https://cmp.osano.com', // Osano consent management
+  'https://cdn.transifex.com', // Transifex translations
+  'https://static.zdassets.com', // Zendesk support widget
+  'https://static.hotjar.com', // Hotjar analytics
+  'https://plausible.io', // Plausible analytics
+  'https://snap.licdn.com', // LinkedIn Insights
+  'https://www.clarity.ms', // Microsoft Clarity
+  'https://js.arcgis.com', // ArcGIS maps
+  "'unsafe-inline'", // Allow inline scripts (consider removing for better security)
+  "'unsafe-eval'", // Required for webpack and dynamic script evaluation
+];
+
+/**
  * @function setHelmetHeaders
  * @summary Configure hemlet to secure express headers
  * @param {Express.Application} app
@@ -185,21 +206,7 @@ const configureHelmetHeaders = (app: Application) => {
     helmet.contentSecurityPolicy({
       directives: {
         defaultSrc: ["'self'", 'https:', 'data:'],
-        // scriptSrc: Defines valid sources for JavaScript execution. Restricts where scripts can be loaded from
-        // to prevent XSS attacks. Includes third-party analytics/tools loaded via Google Tag Manager.
-        scriptSrc: [
-          "'self'",
-          'https://www.googletagmanager.com',
-          'https://cmp.osano.com',
-          'https://cdn.transifex.com',
-          'https://static.zdassets.com',
-          'https://static.hotjar.com', // Hotjar analytics
-          'https://plausible.io', // Plausible analytics
-          'https://snap.licdn.com', // LinkedIn Insights
-          'https://www.clarity.ms', // Microsoft Clarity
-          "'unsafe-inline'",
-          "'unsafe-eval'", // Required for webpack and dynamic script evaluation
-        ],
+        scriptSrc: CSP_SCRIPT_SOURCES,
         workerSrc: ["'self'", 'blob:'], // Required for Osano and other web workers
         styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],

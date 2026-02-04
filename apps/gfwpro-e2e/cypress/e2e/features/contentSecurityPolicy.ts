@@ -1,7 +1,8 @@
 import { When, Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import sinon from 'sinon';
 
 describe('Content Security Policy Validation', () => {
-  let consoleErrorStub: Cypress.Agent<sinon.SinonStub>;
+  let consoleErrorStub: sinon.SinonStub;
 
   When('I login in the landing page', () => {
     cy.loginUI();
@@ -23,19 +24,17 @@ describe('Content Security Policy Validation', () => {
     cy.get('[class*="control-panel__zoom"]', { timeout: 20000 }).should('exist');
 
     // Check that no CSP errors related to js.arcgis.com were logged
-    cy.wrap(consoleErrorStub).should((stub) => {
-      const cspErrors = stub
-        .getCalls()
-        .filter((call) =>
-          call.args.some(
-            (arg) =>
-              typeof arg === 'string' &&
-              arg.includes('js.arcgis.com') &&
-              arg.includes('Content Security Policy')
-          )
-        );
+    const cspErrors = consoleErrorStub
+      .getCalls()
+      .filter((call) =>
+        call.args.some(
+          (arg) =>
+            typeof arg === 'string' &&
+            arg.includes('js.arcgis.com') &&
+            arg.includes('Content Security Policy')
+        )
+      );
 
-      expect(cspErrors, 'No CSP errors for ArcGIS scripts should be present').to.have.length(0);
-    });
+    expect(cspErrors, 'No CSP errors for ArcGIS scripts should be present').to.have.length(0);
   });
 });

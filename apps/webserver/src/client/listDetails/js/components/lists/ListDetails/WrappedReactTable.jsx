@@ -218,7 +218,7 @@ const WrappedReactTable = ({
       errorDetails?.includes('LookUp: did not found lat/long for') ||
       errorDetails?.includes('invalid string format for ID')
     ) {
-      return "You have entered an invalid ID not found in the system's database, please ensure you have entered the ID value correctly.";
+      return 'You have entered an invalid ID not found in the system’s database, please ensure you have entered the ID value correctly.';
     }
 
     return errorsMap[errorDetails] || 'Server error';
@@ -259,15 +259,6 @@ const WrappedReactTable = ({
             selectedList={selectedList}
             setIsLoading={setIsLoading}
             style={props.style}
-            error={getErrorDetails(
-              props.rowInfo?.ErrorDetails ||
-                getAnalysisError(
-                  props.rowInfo?._original?.location_error ||
-                    props.rowInfo?._original?.analysisError ||
-                    props.rowInfo?.location_error ||
-                    props.rowInfo?.analysisError
-                )
-            )}
           >
             {props.children}
           </CustomRow>

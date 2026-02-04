@@ -68,7 +68,6 @@ function slowRequestLogger(thresholdMs) {
 }
 
 /**
-          'https://js.arcgis.com', // ArcGIS scripts
  * @function configureMiddleware
  * @summary Configure express middleware
  * @param { Express.Application } app

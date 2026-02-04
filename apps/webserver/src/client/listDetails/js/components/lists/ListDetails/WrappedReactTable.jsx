@@ -88,9 +88,17 @@ const WrappedReactTable = ({
     };
   };
   function extractRowError(row) {
-    return getErrorDetails(
-      row?.ErrorDetails || getAnalysisError(row?.location_error || row?.analysisError)
-    );
+    const errorDetails = row?._original?.ErrorDetails || row?.ErrorDetails;
+    if (errorDetails) {
+      return getErrorDetails(errorDetails);
+    }
+    const analysisError =
+      row?._original?.location_error ||
+      row?._original?.analysisError ||
+      row?.location_error ||
+      row?.analysisError;
+
+    return getErrorDetails(getAnalysisError(analysisError));
   }
 
   const toggleableColumns = listColumns.map((column) => column.accessor);
@@ -210,7 +218,7 @@ const WrappedReactTable = ({
       errorDetails?.includes('LookUp: did not found lat/long for') ||
       errorDetails?.includes('invalid string format for ID')
     ) {
-      return 'You have entered an invalid ID not found in the system’s database, please ensure you have entered the ID value correctly.';
+      return "You have entered an invalid ID not found in the system/'s database, please ensure you have entered the ID value correctly.";
     }
 
     return errorsMap[errorDetails] || 'Server error';
@@ -222,8 +230,11 @@ const WrappedReactTable = ({
     }
 
     try {
-      const [firstError] = JSON.parse(analysisErrorJson);
-      return firstError ? 'AnalysisError' : '';
+      const parsed = JSON.parse(analysisErrorJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed[0];
+      }
+      return 'AnalysisError'; // Generic key for analysis errors - it will be mapped in errorsMap
     } catch {
       return '';
     }
@@ -253,7 +264,12 @@ const WrappedReactTable = ({
             style={props.style}
             error={getErrorDetails(
               props.rowInfo?.ErrorDetails ||
-                getAnalysisError(props.rowInfo?.location_error || props.rowInfo?.analysisError)
+                getAnalysisError(
+                  props.rowInfo?._original?.location_error ||
+                    props.rowInfo?._original?.analysisError ||
+                    props.rowInfo?.location_error ||
+                    props.rowInfo?.analysisError
+                )
             )}
           >
             {props.children}
@@ -280,4 +296,5 @@ const errorsMap = {
   'Unable to convert point to polygon: analysisRadius cannot be greater than 3000 km':
     'The defined analysis radius is too big. Valid analysis radius must be smaller than 3000 km.',
   AnalysisError: 'Your location failed analysis due to its size or geometry.',
+  NoIntersectionError: 'Your location does not intersect with any valid area.',
 };

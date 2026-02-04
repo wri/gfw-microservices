@@ -218,7 +218,7 @@ const WrappedReactTable = ({
       errorDetails?.includes('LookUp: did not found lat/long for') ||
       errorDetails?.includes('invalid string format for ID')
     ) {
-      return "You have entered an invalid ID not found in the system/'s database, please ensure you have entered the ID value correctly.";
+      return "You have entered an invalid ID not found in the system's database, please ensure you have entered the ID value correctly.";
     }
 
     return errorsMap[errorDetails] || 'Server error';

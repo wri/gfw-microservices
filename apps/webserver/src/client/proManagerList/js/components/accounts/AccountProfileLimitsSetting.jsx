@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Grid, TextField, Typography, Divider } from '@mui/material';
+import featureFlags from '../../../../../utils/general.utils';
 
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
@@ -19,6 +20,11 @@ export default function AccountProfileLimitsSetting() {
   const { subscriptionLimits, extraLimits } = analysis_limits || {};
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
+  const { isTokenizationAvailable } = featureFlags;
+
+  const locationsLabel = isTokenizationAvailable
+    ? accountProfileStrings.accountLimitsSetting.tokensPerYear
+    : accountProfileStrings.accountLimitsSetting.locationsPerYear;
 
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
     max_locations_per_year: 0,
@@ -102,9 +108,7 @@ export default function AccountProfileLimitsSetting() {
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
-              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
-            </FieldLabel>
+            <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
             <TextField
               value={formatInputValue(subscriptionLimits?.max_locations_per_year)}
               disabled={true}
@@ -137,9 +141,7 @@ export default function AccountProfileLimitsSetting() {
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
-              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
-            </FieldLabel>
+            <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
             <TextField
               value={formatInputValue(extraLimits?.max_locations_per_year)}
               disabled={true}
@@ -178,9 +180,7 @@ export default function AccountProfileLimitsSetting() {
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
-              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
-            </FieldLabel>
+            <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
             <TextField
               name="max_locations_per_year"
               id="max_locations_per_year"
@@ -220,10 +220,12 @@ export default function AccountProfileLimitsSetting() {
           >
             Add Limits
           </PillButton>
-          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            Updating the limits will affect all organizations at time of account renewal. Limits are
-            visible to both internal and external users.
-          </Typography>
+          {isTokenizationAvailable && (
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              Updating the limits will affect all organizations at time of account renewal. Limits
+              are visible to both internal and external users.
+            </Typography>
+          )}
         </Grid>
       </Grid>
     </Fragment>

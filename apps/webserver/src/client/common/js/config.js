@@ -1086,7 +1086,8 @@ export const accountProfileStrings = {
     subscription_status_id: 'Subscription Status',
   },
   accountLimitsSetting: {
-    locationsPerYear: 'Tokens Per Year',
+    locationsPerYear: 'Locations Per Year',
+    tokensPerYear: 'Tokens Per Year',
     areaPerYear: 'Area Per Year',
     subHeadingSubscriptionLimits: ' Subscription',
     subHeadingCustomLimits: 'Extended Limits',
@@ -1102,7 +1103,8 @@ export const accountLimitsStrings = {
   pageHeading: 'Account Limits',
   stantardSubscriptionSection: 'Standard Subscription',
   premiumSubscriptionSection: 'Premium Subscription',
-  locationsPerYear: 'Tokens Per Year',
+  locationsPerYear: 'Locations Per Year',
+  tokensPerYear: 'Tokens Per Year',
   areaPerYear: 'Area Per Year',
 };
 

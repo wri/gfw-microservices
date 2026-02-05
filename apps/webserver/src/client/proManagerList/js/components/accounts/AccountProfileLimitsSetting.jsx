@@ -216,9 +216,14 @@ export default function AccountProfileLimitsSetting() {
             size="small"
             disabled={!isEditingDisabled}
             onClick={() => updateAccountProfileLimits(accountLimitsFormData)}
+            sx={{ marginBottom: 1 }}
           >
             Add Limits
           </PillButton>
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            Updating the limits will affect all organizations at time of account renewal. Limits are
+            visible to both internal and external users.
+          </Typography>
         </Grid>
       </Grid>
     </Fragment>

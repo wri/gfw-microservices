@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Typography, TextField, Grid } from '@mui/material';
 import errorLogger from '../../../../common/js/utils/errorLogger';
+import featureFlags from '../../../../../utils/general.utils';
 
 import { PillButton } from '../../../../components';
 import {
@@ -35,6 +36,7 @@ const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
 
 const globalLimitsFormDataObject = generateGlobalLimitsFormDataObject(subscriptionStatusOptions);
 const { STANDARD: STANDARD_SUBSCRIPTION, PREMIUM: PREMIUM_SUBSCRIPTION } = SUBSCRIPTION_STATUSES;
+const { isTokenizationAvailable } = featureFlags;
 
 /**
  * Manage global accounts limits based on subscriptions
@@ -45,6 +47,9 @@ function AccountLimitsGlobal({ setIsLoading }) {
   const dialog = useDialog();
   const [globalLimitsFormData, setGlobalLimitsFormData] = useState(globalLimitsFormDataObject);
   const [formHasChanges, setFormHasChanges] = useState(false);
+  const locationsLabel = isTokenizationAvailable
+    ? accountLimitsStrings.tokensPerYear
+    : accountLimitsStrings.locationsPerYear;
 
   const onChangeUpdateField = (orgType, fieldName, value) => {
     setGlobalLimitsFormData((prevData) => {
@@ -152,9 +157,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
           <Grid item sm={6} xs={12}>
             <Grid container direction="column">
-              <FieldLabel aria-label={accountLimitsStrings.locationsPerYear}>
-                {accountLimitsStrings.locationsPerYear}
-              </FieldLabel>
+              <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
               <TextField
                 name="max_locations_per_year"
                 id="STANDARD_SUBSCRIPTION-max_locations_per_year"
@@ -190,9 +193,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
           <Grid item sm={6} xs={12}>
             <Grid container direction="column">
-              <FieldLabel aria-label={accountLimitsStrings.locationsPerYear}>
-                {accountLimitsStrings.locationsPerYear}
-              </FieldLabel>
+              <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
               <TextField
                 name="max_locations_per_year"
                 id="PREMIUM_SUBSCRIPTION-max_locations_per_year"
@@ -230,9 +231,16 @@ function AccountLimitsGlobal({ setIsLoading }) {
               size="small"
               disabled={!formHasChanges}
               onClick={() => updateGlobalAnalysisLimits(globalLimitsFormData)}
+              sx={{ marginBottom: 1 }}
             >
               Update Limits
             </PillButton>
+            {isTokenizationAvailable && (
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Updating the limits will affect all organizations at time of account renewal. Limits
+                are visible to both internal and external users.
+              </Typography>
+            )}
           </Grid>
         </Grid>
       </SettingSection>

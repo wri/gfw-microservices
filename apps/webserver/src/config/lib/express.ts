@@ -166,6 +166,8 @@ const CSP_SCRIPT_SOURCES = [
   'https://snap.licdn.com', // LinkedIn Insights
   'https://www.clarity.ms', // Microsoft Clarity
   'https://js.arcgis.com', // ArcGIS maps
+  'https://code.jquery.com', // jQuery CDN
+  'https://dpptfqp76xood.cloudfront.net', // CloudFront assets (ionRange.js)
   "'unsafe-inline'", // Allow inline scripts (consider removing for better security)
   "'unsafe-eval'", // Required for webpack and dynamic script evaluation
 ];

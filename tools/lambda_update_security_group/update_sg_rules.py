@@ -48,7 +48,6 @@ def lambda_handler(event, context):
 
     ## Default current ports are:
     port_LP = 3333
-    port_B2B = 3334
     port_EAPI = 3335
     port_LD = 3336
     port_5 = 3337
@@ -67,7 +66,6 @@ def lambda_handler(event, context):
     if env_name == 'webserver-prod':
         IpPermissions.append(add_sg(port_LP, cidr_ip, desc))
         IpPermissions.append(add_sg(port_EAPI, cidr_ip, desc))
-        IpPermissions.append(add_sg(port_B2B, cidr_ip, desc))
         IpPermissions.append(add_sg(port_LD, cidr_ip, desc))
         sg_id = prod_sg_id
     if env_name == 'microservices-list-downloader-qa' or env_name == 'microservices-list-processing-qa' or env_name == 'microservices-externalapi-qa':

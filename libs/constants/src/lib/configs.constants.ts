@@ -2,7 +2,6 @@ import { Provider } from '@nestjs/common';
 
 export const ConstantsConfigIds = {
   ACCOUNT_STATUS: Symbol('ACCOUNT_STATUS'),
-  B2B_STATUS: Symbol('B2B_STATUS'),
   LIST_ACTIVITY_TYPE: Symbol('LIST_ACTIVITY_TYPE'),
   USER_ACTIVITY_TYPE: Symbol('USER_ACTIVITY_TYPE'),
 };
@@ -33,16 +32,6 @@ export const ConstantsConfig: { [key: symbol]: Provider } = {
       ListShared: 35,
       ListUnShared: 36,
       ListUnSharedWithAll: 37,
-    },
-  },
-  [ConstantsConfigIds.B2B_STATUS]: {
-    provide: ConstantsConfigIds.B2B_STATUS,
-    useValue: {
-      ConnectionRequested: 28,
-      ConnectionAccepted: 29,
-      ConnectionRejected: 30,
-      ConnectionResent: 31,
-      ConnectionCancelled: 32,
     },
   },
   [ConstantsConfigIds.USER_ACTIVITY_TYPE]: {

@@ -113,16 +113,8 @@ export default class LocationList extends Component {
   render() {
     const { isManageListFolderOpen, isDeleteDialogOpen, rerunDialogState, confirmDownloadDialog } =
       this.state;
-    const {
-      B2BsharedListEnabled,
-      folders,
-      locations,
-      list,
-      currentUser,
-      onFolderChange,
-      isAListSharedWithMe,
-      history,
-    } = this.props;
+    const { folders, locations, list, currentUser, onFolderChange, isAListSharedWithMe, history } =
+      this.props;
 
     const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
     const userIsViewer = currentUser.access_level_id === userAccessLevel.VIEWER;
@@ -190,7 +182,6 @@ export default class LocationList extends Component {
             shareList={(e, list) => this.shareList(e, list)}
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
             userIsAdmin={userIsAdmin}
-            B2BsharedListEnabled={B2BsharedListEnabled}
             isPalmRiskActive={isPalmRiskActive}
           />
         );

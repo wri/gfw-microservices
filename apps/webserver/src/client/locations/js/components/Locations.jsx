@@ -49,7 +49,6 @@ class Locations extends Component {
       userListInfoFromMap: false, // same as above!
       drawnGeom: false, // same as above!
       adminArea: false,
-      B2BsharedListEnabled: false,
       mapData: locationDataToAddFromMap?.mapData,
       gfwData: locationDataToAddFromMap?.gfwData,
       drawData: locationDataToAddFromMap?.drawData,
@@ -295,7 +294,6 @@ class Locations extends Component {
       language,
       drawnGeom,
       isLoading,
-      B2BsharedListEnabled,
       fromList,
     } = this.state;
 
@@ -341,7 +339,6 @@ class Locations extends Component {
               locationCount={locationCount}
               userSharedLists={userSharedLists}
               usersList={usersList} // Contains all users
-              B2BsharedListEnabled={B2BsharedListEnabled}
             />
           </Route>
         </Switch>

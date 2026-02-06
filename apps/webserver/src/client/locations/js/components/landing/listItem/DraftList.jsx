@@ -9,7 +9,6 @@ import {
   ListItemText,
 } from '@mui/material';
 import {
-  Public as PublicIcon,
   Groups as GroupsIcon,
   QueryStats as QueryStatsIcon,
   Place as PlaceIcon,
@@ -38,7 +37,6 @@ import { proLayers } from '../../../../../common/js/proLayers.config';
 function DraftList({
   list,
   locations,
-  showListSharedWithMeIcon,
   showNonOwnerDraft,
   showDelete,
   showRerunOpt,
@@ -121,7 +119,6 @@ function DraftList({
         onClick={clickLocationRow}
       >
         <div className="locations-list__title">
-          {showListSharedWithMeIcon && <PublicIcon />}
           {list_name}
           {is_shared && <IconUsers className="locations-list__shared-icon" />}
 

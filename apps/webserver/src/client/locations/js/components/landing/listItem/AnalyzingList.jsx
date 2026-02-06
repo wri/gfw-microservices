@@ -1,5 +1,4 @@
 import GroupsIcon from '@mui/icons-material/Groups';
-import PublicIcon from '@mui/icons-material/Public';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
@@ -8,7 +7,7 @@ import sharedColumnText from './sharedColumnText';
 import AnalysisListChips from './AnalysisListChips';
 
 // returns 'analyzing' (also called 'pending') list items
-function AnalyzingList({ list, isAListSharedWithMe, showSharedColumn }) {
+function AnalyzingList({ list, showSharedColumn }) {
   const { id, list_name, is_shared, listAnalysesStatus } = list;
 
   const goToListDetails = () => {
@@ -28,7 +27,6 @@ function AnalyzingList({ list, isAListSharedWithMe, showSharedColumn }) {
       onClick={goToListDetails}
     >
       <div className="locations-list__title">
-        {isAListSharedWithMe && <PublicIcon />}
         {list_name}
         {is_shared && <IconUsers className="locations-list__shared-icon" />}
       </div>

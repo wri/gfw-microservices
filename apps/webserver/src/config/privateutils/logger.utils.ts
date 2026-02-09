@@ -56,13 +56,6 @@ export const listActivityTypes: Record<string, Record<string, number>> = {
     ListPrepareUpload: 40,
     ListGenerate: 41,
   },
-  b2b: {
-    ConnectionRequested: 28,
-    ConnectionAccepted: 29,
-    ConnectionRejected: 30,
-    ConnectionResent: 31,
-    ConnectionCancelled: 32,
-  },
   // new entries should start with value 38
 };
 

@@ -44,13 +44,6 @@ import { getFolders } from './foldersApi';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import AddLocationsPrompt from './components/AddLocationsPrompt';
 import { normalizeShaledLists, nameContainsText } from '../../utils/shareList.utils';
-import MyListsTabs from './MyListsTabs';
-import { getMySharedLists, getListsSharedWithMe } from './getSharedLists';
-import {
-  MY_LISTS,
-  MY_SHARED_LISTS,
-  LISTS_SHARED_WITH_ME,
-} from './MyListsTabs/MyListsTabs.constants';
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
 import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
@@ -71,9 +64,6 @@ class Landing extends Component {
       userListFilterText: '',
       foldersLoaded: false,
       folderFeatureNew: false,
-      selectedTab: '',
-      mySharedLists: [],
-      listsSharedWithMe: [],
       isReachingAccountUsageLimit: false,
       isReachedAccountUsageLimit: false,
       isEudrBannerDismissed,
@@ -92,16 +82,6 @@ class Landing extends Component {
     }
 
     this.loadFolders();
-    if (this.props.B2BsharedListEnabled) {
-      // fetch endpoints to get "my shared lists" and "lists shared with me"
-      getMySharedLists().then((mySharedLists) => {
-        this.setState({ mySharedLists });
-      });
-
-      getListsSharedWithMe().then((listsSharedWithMe) => {
-        this.setState({ listsSharedWithMe });
-      });
-    }
 
     getAccountUsagePercentage().then((accountUsagePercentageResponse) => {
       const { accountUsagePercentage } = accountUsagePercentageResponse;
@@ -175,7 +155,6 @@ class Landing extends Component {
 
   createLocationsFromList = (list, i) => {
     const { history, userFolders, currentUser } = this.props;
-    const isAListSharedWithMe = this.state.selectedTab === LISTS_SHARED_WITH_ME;
 
     return (
       <LocationList
@@ -188,12 +167,10 @@ class Landing extends Component {
         showDialog={this.showDialog}
         showFailedDialog={this.showFailedDialog}
         currentUser={currentUser}
-        B2BsharedListEnabled={this.props.B2BsharedListEnabled}
         onFolderChange={(msg) => {
           this.setState({ bannerContent: msg });
           this.loadFolders();
         }}
-        isAListSharedWithMe={isAListSharedWithMe}
       />
     );
   };
@@ -242,44 +219,27 @@ class Landing extends Component {
       dialogContent,
       foldersLoaded,
       folderFeatureNew,
-      selectedTab,
-      mySharedLists,
-      listsSharedWithMe,
       isReachingAccountUsageLimit,
       isReachedAccountUsageLimit,
     } = this.state;
-    const {
-      userLists,
-      userSharedLists,
-      userFolders,
-      gfwLists,
-      view,
-      language,
-      B2BsharedListEnabled,
-    } = this.props;
+    const { userLists, userSharedLists, userFolders, gfwLists, view, language } = this.props;
 
     const isPopoverOpen = !!this.state.anchorEl;
 
     let userListsFiltered;
 
-    if (!selectedTab || selectedTab === MY_LISTS) {
-      // show My Lists if no tab is selected or if selected tab is My Lists
-      userListsFiltered = userLists
-        .concat(normalizeShaledLists(userSharedLists))
-        .filter((list) => nameContainsText(list.list_name, userListFilterText))
-        .sort((l1, l2) => l1.list_name.localeCompare(l2.list_name))
-        .map((list) => {
-          const parent = userFolders.find((folder) =>
-            folder.lists ? folder.lists.includes(list.id) : false
-          );
-          return Object.assign(list, { folder: parent });
-        })
-        .map(this.createLocationsFromList); // TODO: Show that some are pending!! -->
-    } else if (selectedTab === MY_SHARED_LISTS) {
-      userListsFiltered = mySharedLists.map(this.createLocationsFromList);
-    } else if (selectedTab === LISTS_SHARED_WITH_ME) {
-      userListsFiltered = listsSharedWithMe.map(this.createLocationsFromList);
-    }
+    // show all user lists
+    userListsFiltered = userLists
+      .concat(normalizeShaledLists(userSharedLists))
+      .filter((list) => nameContainsText(list.list_name, userListFilterText))
+      .sort((l1, l2) => l1.list_name.localeCompare(l2.list_name))
+      .map((list) => {
+        const parent = userFolders.find((folder) =>
+          folder.lists ? folder.lists.includes(list.id) : false
+        );
+        return Object.assign(list, { folder: parent });
+      })
+      .map(this.createLocationsFromList); // TODO: Show that some are pending!! -->
 
     const gfwListsMapped = gfwLists.map(this.createGfwLocationsFromList);
 
@@ -299,10 +259,6 @@ class Landing extends Component {
         });
       }
       this.setState({ userListFilterText: value });
-    };
-
-    const onListsTabSelected = (newSelectedTab) => {
-      this.setState({ selectedTab: newSelectedTab });
     };
 
     return (
@@ -491,14 +447,6 @@ class Landing extends Component {
               )}
 
               {/* LISTS */}
-              {B2BsharedListEnabled && (
-                <MyListsTabs
-                  selectedTab={selectedTab}
-                  onListsTabSelected={onListsTabSelected}
-                  showMySharedLists={!!mySharedLists.length || true}
-                  showListsSharedWithMe={!!listsSharedWithMe.length || true}
-                />
-              )}
               {foldersLoaded && !!folderFeatureNew && (
                 <Banner
                   className="folder-feature-banner"

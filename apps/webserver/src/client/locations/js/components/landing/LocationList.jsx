@@ -113,16 +113,7 @@ export default class LocationList extends Component {
   render() {
     const { isManageListFolderOpen, isDeleteDialogOpen, rerunDialogState, confirmDownloadDialog } =
       this.state;
-    const {
-      B2BsharedListEnabled,
-      folders,
-      locations,
-      list,
-      currentUser,
-      onFolderChange,
-      isAListSharedWithMe,
-      history,
-    } = this.props;
+    const { folders, locations, list, currentUser, onFolderChange, history } = this.props;
 
     const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
     const userIsViewer = currentUser.access_level_id === userAccessLevel.VIEWER;
@@ -151,18 +142,11 @@ export default class LocationList extends Component {
 
     const listStatusComponent = (list) => {
       if (isAnalyzingStatus(list.list_status_id)) {
-        return (
-          <AnalyzingList
-            list={list}
-            showListSharedWithMeIcon={isAListSharedWithMe}
-            showSharedColumn={showSharedColumn}
-          />
-        );
+        return <AnalyzingList list={list} showSharedColumn={showSharedColumn} />;
       } else if (isFailedList(list)) {
         return (
           <FailedList
             list={list}
-            showListSharedWithMeIcon={isAListSharedWithMe}
             showSharedColumn={showSharedColumn}
             showRerun={showRerun}
             handleRerunDialogState={this.handleRerunDialogState}
@@ -178,7 +162,6 @@ export default class LocationList extends Component {
           <DraftListWrapper
             list={list}
             locations={locations}
-            showListSharedWithMeIcon={isAListSharedWithMe}
             showSharedColumn={showSharedColumn}
             showNonOwnerDraft={showNonOwnerDraft}
             showDelete={showDelete}
@@ -190,7 +173,6 @@ export default class LocationList extends Component {
             shareList={(e, list) => this.shareList(e, list)}
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
             userIsAdmin={userIsAdmin}
-            B2BsharedListEnabled={B2BsharedListEnabled}
             isPalmRiskActive={isPalmRiskActive}
           />
         );
@@ -199,7 +181,6 @@ export default class LocationList extends Component {
           <ActiveList
             list={list}
             locations={locations}
-            showListSharedWithMeIcon={isAListSharedWithMe}
             showSharedColumn={showSharedColumn}
             showDelete={showDelete}
             showRerun={showRerun}

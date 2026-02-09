@@ -13,10 +13,9 @@ export class EmailService {
     receivers: Array<string>,
     subject: string,
     type: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filter: CustomFilter | unknown
   ) {
-    const content = createPage(createEmailContent<CustomFilter>(type, filter, { sender }));
+    const content = createPage(createEmailContent<CustomFilter>(type, filter));
     const options: SesEmailOptions = {
       from: sender,
       to: receivers.join(','),

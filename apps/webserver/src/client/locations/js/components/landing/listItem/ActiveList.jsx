@@ -9,7 +9,6 @@ import {
   ListItemText,
 } from '@mui/material';
 import {
-  Public as PublicIcon,
   Groups as GroupsIcon,
   QueryStats as QueryStatsIcon,
   Place as PlaceIcon,
@@ -39,7 +38,6 @@ import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/ut
 function ActiveList({
   list,
   locations,
-  showListSharedWithMeIcon,
   showSharedColumn,
   showDelete,
   showRerun,
@@ -134,7 +132,6 @@ function ActiveList({
           style={{ minWidth: '250px' }}
         >
           <div className="locations-list__title">
-            {showListSharedWithMeIcon && <PublicIcon />}
             {list_name}
             {is_shared && <IconUsers className="locations-list__shared-icon" />}
             <Chip

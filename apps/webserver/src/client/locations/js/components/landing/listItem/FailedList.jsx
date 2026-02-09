@@ -9,7 +9,6 @@ import {
   ListItemText,
 } from '@mui/material';
 import {
-  Public as PublicIcon,
   Groups as GroupsIcon,
   Folder as FolderIcon,
   Settings as SettingsIcon,
@@ -29,7 +28,6 @@ import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 
 function FailedList({
   list,
-  isAListSharedWithMe,
   showSharedColumn,
   showRerun,
   handleRerunDialogState,
@@ -70,7 +68,6 @@ function FailedList({
 
       <li className="locations-list locations-list--failed" onClick={goToListDetails}>
         <div className="locations-list__title">
-          {isAListSharedWithMe && <PublicIcon />}
           {list_name}
           {is_shared && <IconUsers className="locations-list__shared-icon" />}
         </div>

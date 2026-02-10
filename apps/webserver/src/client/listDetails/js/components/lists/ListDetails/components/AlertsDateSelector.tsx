@@ -54,6 +54,10 @@ export const AlertsDateSelector = ({ isOpen, onClose, onDownload }: AlertsDateSe
       </DialogTitle>
       <DialogContent>
         <Typography variant="body2">
+          Please note that Alerts are updated weekly on Saturday. Your most recent analysis will be
+          through Saturday of the previous week.
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 2 }}>
           Select a date range to generate your report. Your choice will only apply to this download.
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 2 }}>

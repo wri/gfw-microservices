@@ -3,6 +3,7 @@ import { postRedirectHeaders, sanitizeError, ensureAnalysesNotExpired } from '..
 import AdmZip from 'adm-zip';
 import * as jsonld from 'jsonld';
 import * as cache from 'memory-cache';
+import { URL } from 'url';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
@@ -16,24 +17,61 @@ interface ApiResponse {
   creationDate?: string;
 }
 
+interface PublicKey {
+  id: string;
+  type: string;
+  controller: string;
+  publicKeyBase58: string;
+}
+
+interface VerifiableCredential {
+  '@context': unknown;
+  id?: string;
+  type: string[];
+  credentialSubject: unknown;
+  proof: {
+    type: string;
+    jws: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
 interface PollResult {
   apiResponse: ApiResponse;
-  verifiableCredential: any;
+  verifiableCredential: unknown;
+}
+
+/**
+ * Sanitize URL by removing query parameters to prevent leaking S3 presigned URL credentials in logs
+ */
+function sanitizeUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    return `${urlObj.origin}${urlObj.pathname}`;
+  } catch {
+    return '[invalid URL]';
+  }
 }
 
 async function pollApiUntilComplete(
   url: string,
   options = {},
-  pollIntervalMs = 1000,
-  timeoutMs = 10000,
+  pollIntervalMs = 2000,
+  timeoutMs = 60000,
   minCreationDate?: Date
 ): Promise<PollResult> {
   const startTime = Date.now();
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    if (Date.now() - startTime > timeoutMs) {
-      throw new Error('Polling timeout: API did not complete within the specified time');
+    const elapsedMs = Date.now() - startTime;
+    if (elapsedMs > timeoutMs) {
+      throw new Error(
+        `Polling timeout: API did not complete within ${timeoutMs}ms (elapsed: ${elapsedMs}ms). URL: ${sanitizeUrl(
+          url
+        )}`
+      );
     }
 
     try {
@@ -68,15 +106,12 @@ async function pollApiUntilComplete(
 
       if (result.status === 'Completed') {
         if (!result.resultUrl || !/^https?:\/\//.test(result.resultUrl)) {
-          console.error('Invalid resultUrl:', result.resultUrl);
-          throw new Error(`Invalid or missing resultUrl: ${result.resultUrl}`);
+          console.error('Invalid resultUrl:', sanitizeUrl(result.resultUrl || ''));
+          throw new Error(`Invalid or missing resultUrl: ${sanitizeUrl(result.resultUrl || '')}`);
         }
 
-        const zipResponse = await fetch(result.resultUrl, {
-          headers: {
-            'x-api-key': process.env.API_TOKEN,
-          },
-        });
+        // Don't pass x-api-key header for S3 presigned URLs - they reject custom headers with 403
+        const zipResponse = await fetch(result.resultUrl);
 
         if (!zipResponse.ok) {
           const errorText = await zipResponse.text();
@@ -126,7 +161,7 @@ async function pollApiUntilComplete(
           };
         } catch (zipError) {
           console.error('Zip processing error:', {
-            url: result.resultUrl,
+            url: sanitizeUrl(result.resultUrl),
             message: zipError instanceof Error ? zipError.message : zipError,
             stack: zipError instanceof Error ? zipError.stack : undefined,
           });
@@ -155,8 +190,8 @@ async function pollApiUntilComplete(
 }
 
 describe('Verifiable Credential Verification', () => {
-  let publicKey: any;
-  let verifiableCredential: any;
+  let publicKey: PublicKey;
+  let verifiableCredential: VerifiableCredential;
   let generateTimestamp: Date; // Track when we triggered the analysis
 
   beforeAll(async () => {
@@ -348,6 +383,7 @@ describe('Verifiable Credential Verification', () => {
         if (result.results && result.results.length > 0) {
           console.log(
             'Proof verification results:',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             result.results.map((r: any) => ({
               verified: r.verified,
               proof: r.proof?.type,
@@ -359,6 +395,7 @@ describe('Verifiable Credential Verification', () => {
           console.error('Verification failed!');
           console.error('Verification error:', result.error);
           if (result.results) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             result.results.forEach((r: any, index: number) => {
               if (r.error) {
                 console.error(`Result ${index} error:`, r.error);

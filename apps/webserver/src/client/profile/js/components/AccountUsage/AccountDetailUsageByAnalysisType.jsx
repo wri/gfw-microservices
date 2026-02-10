@@ -1,5 +1,6 @@
-import React from 'react';
+import { useState, useMemo } from 'react';
 import {
+  Alert,
   Divider,
   Table,
   TableBody,
@@ -17,9 +18,10 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
 import { accountProfileStrings } from '../../../../common/js/config.js';
+import AccountUsageDropMenu from './AccountUsageDropMenu';
 
 /**
- * Posbile duplicate contents from
+ * Possible duplicate contents from
  * {@link libs/constants/src/lib/analysisTypes.constants.ts}
  *
  * @summary libs/constants is not buildable and libs/sql complaints about
@@ -41,8 +43,11 @@ function AccountDetailUsageByAnalysisType({
   endDateAnalysis,
   children,
 }) {
-  const [orderBy, setOrderBy] = React.useState('analysis_type');
-  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = useState('analysis_type');
+  const [order, setOrder] = useState('asc');
+
+  const [messageType, setMessageType] = useState('');
+  const [messageText, setMessageText] = useState('');
 
   const handleSort = (column) => {
     if (orderBy === column) {
@@ -53,7 +58,7 @@ function AccountDetailUsageByAnalysisType({
     }
   };
 
-  const sortedData = React.useMemo(() => {
+  const sortedData = useMemo(() => {
     if (!analysisUsageByType) {
       return [];
     }
@@ -81,6 +86,31 @@ function AccountDetailUsageByAnalysisType({
       return 0;
     });
   }, [analysisUsageByType, orderBy, order]);
+
+  const handleDownloadConfirmation = (type) => {
+    setMessageType(type);
+
+    if (type === 'error') {
+      return setMessageText('Something went wrong');
+    }
+
+    setMessageText('Success! Your file has been successfully exported.');
+  };
+
+  const exportUsage = async () => {
+    try {
+      await fetch(`analytics/myorg/usage/users/download`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      return handleDownloadConfirmation('success');
+    } catch {
+      handleDownloadConfirmation('error');
+    }
+  };
 
   return (
     <section>
@@ -120,7 +150,11 @@ function AccountDetailUsageByAnalysisType({
           marginBottom: '2em',
         }}
       >
-        <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
+          {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
+          <AccountUsageDropMenu export={exportUsage} />
+        </Box>
         <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">

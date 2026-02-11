@@ -206,6 +206,10 @@ class Map extends Component {
         startYear: treeCoverLossYearsFC[0],
         endYear: treeCoverLossYearsFC[treeCoverLossYearsFC.length - 1],
       },
+      treeCoverGainDateRange: {
+        startYear: mapPage.treeCoverGainYears[0],
+        endYear: mapPage.treeCoverGainYears[mapPage.treeCoverGainYears.length - 1],
+      },
       biomassLossDateRange: {
         startYear: biomassLossYears[0],
         endYear: biomassLossYears[biomassLossYears.length - 1],
@@ -2593,6 +2597,21 @@ class Map extends Component {
     });
   };
 
+  setGainTimeline = (startYear, endYear) => {
+    this.setState(
+      {
+        treeCoverGainDateRange: { startYear: startYear, endYear: endYear },
+      },
+      () => {
+        this.updateActiveAnalysis();
+      }
+    );
+    gtag('event', 'timeslider update', {
+      event_category: 'Map Click',
+      event_label: 'user updated the tree cover gain timeslider',
+    });
+  };
+
   setBiomassTimeline = (startYear, endYear) => {
     this.setState(
       {
@@ -2697,6 +2716,7 @@ class Map extends Component {
       analysisWarning,
       fireDays,
       treeCoverLossDateRange,
+      treeCoverGainDateRange,
       adminSelections,
       sketchTool,
       gfwListDef,
@@ -2872,6 +2892,7 @@ class Map extends Component {
           biomassRange={biomassRange}
           biomassLossDateRange={this.state.biomassLossDateRange}
           treeCoverLossDateRange={this.state.treeCoverLossDateRange}
+          treeCoverGainDateRange={this.state.treeCoverGainDateRange}
           fireDays={fireDays}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
@@ -2879,6 +2900,7 @@ class Map extends Component {
           dispatch={store.dispatch}
           setBiomassTimeline={this.setBiomassTimeline}
           setLossTimeline={this.setLossTimeline}
+          setGainTimeline={this.setGainTimeline}
         />
 
         <div style={containerStyle} className="map-container">

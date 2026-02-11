@@ -171,8 +171,8 @@ export const login = async (req, username, password, isProManagerLogin = false) 
     );
 
     const { authenticationStatus, email } = authenticationResponse;
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
     if (
       [AUTH_STATUS.Unauthenticated, AUTH_STATUS.Disabled, AUTH_STATUS.ConfirmPassword].includes(
@@ -216,17 +216,12 @@ export const login = async (req, username, password, isProManagerLogin = false) 
     // Check password expiration, but handle invalid dates gracefully
     const passwordUpdatedAt = authenticationResponse['custom:passwordUpdatedAt'];
     if (passwordUpdatedAt) {
+      let passwordDate;
       try {
-        const passwordDate = new Date(passwordUpdatedAt);
-        if (passwordDate <= sixMonthsAgo) {
-          logger.info(`Password expired for user ${email}, resetting`);
-          await awsCognito.adminResetUserPassword(req, normalizedUsername);
-          throw errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.failedToAuthenticate,
-            'PasswordExpired',
-            `Error during User Authentication: Password expired for ${email}`
-          );
+        passwordDate = new Date(passwordUpdatedAt);
+        // Check for invalid date
+        if (isNaN(passwordDate.getTime())) {
+          throw new Error('Invalid date');
         }
       } catch (dateError) {
         logger.warn(
@@ -234,6 +229,18 @@ export const login = async (req, username, password, isProManagerLogin = false) 
           dateError
         );
         // Continue with login if we can't parse the date
+        passwordDate = null;
+      }
+
+      if (passwordDate && passwordDate <= ninetyDaysAgo) {
+        logger.info(`Password expired for user ${email}, resetting`);
+        await awsCognito.adminResetUserPassword(req, normalizedUsername);
+        throw errorUtils.createErrorMessage(
+          req,
+          errorUtils.ERROR_CODES.failedToAuthenticate,
+          'PasswordExpired',
+          `Error during User Authentication: Password expired for ${email}`
+        );
       }
     }
 

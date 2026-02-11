@@ -105,9 +105,15 @@ const LegendCheckbox = (props) => {
     }
   };
 
-  const handleTreeCoverTimelineChange = (startYear, endYear) => {
+  const handleTreeCoverLossTimelineChange = (startYear, endYear) => {
     if (typeof props.setLossTimeline === 'function') {
       props.setLossTimeline(startYear, endYear);
+    }
+  };
+
+  const handleTreeCoverGainTimelineChange = (startYear, endYear) => {
+    if (typeof props.setGainTimeline === 'function') {
+      props.setGainTimeline(startYear, endYear);
     }
   };
 
@@ -351,10 +357,16 @@ const LegendCheckbox = (props) => {
     'setBiomassTimeline',
     isGrayed
   );
-  const treeCoverConfig = setupYearRangeConfig(
+  const treeCoverLossConfig = setupYearRangeConfig(
     mapPage.treeCoverLossYearsFC,
     props.treeCoverLossDateRange,
     'setLossTimeline',
+    isGrayed
+  );
+  const treeCoverGainConfig = setupYearRangeConfig(
+    mapPage.treeCoverGainYears,
+    props.treeCoverGainDateRange,
+    'setGainTimeline',
     isGrayed
   );
 
@@ -589,16 +601,37 @@ const LegendCheckbox = (props) => {
           </div>
         </>
       )}
-      {layer.id === treeCoverGainID && treeCoverConfig && (
+      {layer.id === treeCoverLossID && treeCoverLossConfig && (
         <Box sx={{ mr: 2.5, mt: 2 }}>
           <YearRangeSlider
-            startYear={treeCoverConfig.selectedStartYear}
-            endYear={treeCoverConfig.selectedEndYear}
-            minYear={treeCoverConfig.minYear}
-            maxYear={treeCoverConfig.maxYear}
-            marks={treeCoverConfig.marks}
-            disabled={treeCoverConfig.sliderDisabled}
-            onYearChange={handleTreeCoverTimelineChange}
+            startYear={treeCoverLossConfig.selectedStartYear}
+            endYear={treeCoverLossConfig.selectedEndYear}
+            minYear={treeCoverLossConfig.minYear}
+            maxYear={treeCoverLossConfig.maxYear}
+            marks={treeCoverLossConfig.marks}
+            disabled={treeCoverLossConfig.sliderDisabled}
+            onYearChange={handleTreeCoverLossTimelineChange}
+            sliderSx={{
+              '& .MuiSlider-markLabel:first-of-type': {
+                left: '3%',
+              },
+              '& .MuiSlider-markLabel:last-of-type': {
+                left: '70%',
+              },
+            }}
+          />
+        </Box>
+      )}
+      {layer.id === treeCoverGainID && treeCoverGainConfig && (
+        <Box sx={{ mr: 2.5, mt: 2 }}>
+          <YearRangeSlider
+            startYear={treeCoverGainConfig.selectedStartYear}
+            endYear={treeCoverGainConfig.selectedEndYear}
+            minYear={treeCoverGainConfig.minYear}
+            maxYear={treeCoverGainConfig.maxYear}
+            marks={treeCoverGainConfig.marks}
+            disabled={treeCoverGainConfig.sliderDisabled}
+            onYearChange={handleTreeCoverGainTimelineChange}
             sliderSx={{
               '& .MuiSlider-markLabel:first-of-type': {
                 left: '3%',

@@ -46,6 +46,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     biomassRange,
     biomassLossDateRange,
     treeCoverLossDateRange,
+    treeCoverGainDateRange,
     deforestationAlertsDateRanges,
   } = state;
 
@@ -75,7 +76,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     prevState.treeCoverLossDateRange?.startYear !== treeCoverLossDateRange?.startYear ||
     prevState.treeCoverLossDateRange?.endYear !== treeCoverLossDateRange?.endYear
   ) {
-    [argentineanNativeForestsLoss, treeCoverLossID, treeCoverGainID].forEach((layerId) => {
+    [argentineanNativeForestsLoss, treeCoverLossID].forEach((layerId) => {
       const mapLayer = map.findLayerById(layerId);
       if (mapLayer) {
         mapLayer.minYear = treeCoverLossDateRange.startYear;
@@ -83,6 +84,18 @@ export const updateInteractiveLayers = (map, prevState, state) => {
         redrawLayer(map, mapLayer);
       }
     });
+  }
+
+  if (
+    prevState.treeCoverGainDateRange?.startYear !== treeCoverGainDateRange?.startYear ||
+    prevState.treeCoverGainDateRange?.endYear !== treeCoverGainDateRange?.endYear
+  ) {
+    const mapLayer = map.findLayerById(treeCoverGainID);
+    if (mapLayer) {
+      mapLayer.minYear = treeCoverGainDateRange.startYear;
+      mapLayer.maxYear = treeCoverGainDateRange.endYear;
+      redrawLayer(map, mapLayer);
+    }
   }
 
   if (prevState.canopyDensity !== canopyDensity) {

@@ -2598,14 +2598,9 @@ class Map extends Component {
   };
 
   setGainTimeline = (startYear, endYear) => {
-    this.setState(
-      {
-        treeCoverGainDateRange: { startYear: startYear, endYear: endYear },
-      },
-      () => {
-        this.updateActiveAnalysis();
-      }
-    );
+    this.setState({
+      treeCoverGainDateRange: { startYear: startYear, endYear: endYear },
+    });
     gtag('event', 'timeslider update', {
       event_category: 'Map Click',
       event_label: 'user updated the tree cover gain timeslider',
@@ -2710,6 +2705,7 @@ class Map extends Component {
       treeCoverLossCanopyDensity,
       drawingActive,
       biomassRange,
+      biomassLossDateRange,
       analysisResults,
       selectedAnalysis,
       selectedLists,
@@ -2890,9 +2886,9 @@ class Map extends Component {
           gfwListDef={gfwListDef}
           visibleLayers={visibleLayers}
           biomassRange={biomassRange}
-          biomassLossDateRange={this.state.biomassLossDateRange}
-          treeCoverLossDateRange={this.state.treeCoverLossDateRange}
-          treeCoverGainDateRange={this.state.treeCoverGainDateRange}
+          biomassLossDateRange={biomassLossDateRange}
+          treeCoverLossDateRange={treeCoverLossDateRange}
+          treeCoverGainDateRange={treeCoverGainDateRange}
           fireDays={fireDays}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}

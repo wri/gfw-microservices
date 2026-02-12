@@ -63,7 +63,7 @@ class LocationsPage {
     listByName: (name) => cy.contains(name),
     typeAnalisyscheckBox: (number: number) => cy.get('input[type="checkbox"]').eq(number),
     submitAnalisys: () => cy.contains('Submit for analysis'),
-    saveAsDraft: () => cy.contains('Save As Draft'),
+    saveAsDraft: () => cy.contains('Save as draft'),
     confirmAnalisysBtn: () => cy.get('.MuiDialogActions-root > .MuiButton-contained'),
     pointBtn: () => cy.get('[data-cy="nuw_add_point"]'),
     polygonBtn: () => cy.get('[data-cy="nuw_add_polygon"]'),
@@ -113,9 +113,10 @@ class LocationsPage {
       if (exist) {
         cy.get('[class*="locations-list__title"]').contains(listName).should('be.visible');
       } else {
-        // verify the list does not exist
-        cy.get('body').then(($body) => {
-          if ($body.find(`[class*="locations-list__title"]:contains("${listName}")`).length > 0) {
+        // verify the list does not exist - use Cypress's retry logic
+        cy.get('[class*="locations-list__title"]').should(($titles) => {
+          const found = $titles.text().includes(listName);
+          if (found) {
             throw new Error(`List "${listName}" should not exist but was found`);
           }
         });

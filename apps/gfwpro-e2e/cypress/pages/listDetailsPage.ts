@@ -369,6 +369,25 @@ class ListDetailsPage {
       });
     });
   }
+
+  // Helper methods for CAR and UML testing
+  verifyColumnExists(columnName: string) {
+    cy.contains(columnName).should('be.visible');
+  }
+
+  verifyColumnsExist(columnNames: string[]) {
+    columnNames.forEach((columnName) => {
+      this.verifyColumnExists(columnName);
+    });
+  }
+
+  verifyIDTypeColumnData(expectedValue: string) {
+    cy.get('.rt-tbody').contains(expectedValue).should('exist');
+  }
+
+  verifyPalmMillIDColumnData(expectedValue: string) {
+    cy.get('.rt-tbody').contains(expectedValue).should('exist');
+  }
 }
 
 export default ListDetailsPage;

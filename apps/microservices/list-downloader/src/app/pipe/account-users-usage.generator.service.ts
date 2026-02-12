@@ -116,18 +116,13 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
       });
 
       return accountUsersUsageData.map((dataRow: OrganizationUsersAnalysisUsageExport) => {
-        const analysisTypes = new Set(
-          dataRow['Analysis Types']
-            .split(',')
-            .map((analysisTypeId) => this.getAnalysisTypeShortLabel(analysisTypeId.trim()))
-        );
-
         return [
           dataRow['Username'],
           dataRow['List ID'] as string,
-          `${[...analysisTypes].join(', ')}`, // analysis types shortLabels is a comma separated value
+          this.getAnalysisTypeLabel(dataRow['Analysis Type']),
           dataRow['Hectares'].toString(),
           dataRow['Locations'].toString(),
+          (dataRow['Token Cost'] ?? 0).toString(),
           dataRow['Date/Timestamp'],
           dataRow['UI/API'],
         ];
@@ -198,10 +193,16 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
     }
   }
 
-  private getAnalysisTypeShortLabel(analysisTypeId: string) {
+  private getAnalysisTypeLabel(analysisTypeId: string) {
+    if (analysisTypeId === 'ALERTS-BATCH') {
+      return 'Weekly Alerts';
+    }
+    if (analysisTypeId === 'GHG') {
+      return 'GHG Emissions';
+    }
     const analysisType = analysisTypesOptionsNewNames.find(
       (analysisOpt) => analysisOpt.id === analysisTypeId
     );
-    return analysisType ? analysisType.shortLabel : '';
+    return analysisType ? analysisType.label : analysisTypeId;
   }
 }

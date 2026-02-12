@@ -206,6 +206,10 @@ class Map extends Component {
         startYear: treeCoverLossYearsFC[0],
         endYear: treeCoverLossYearsFC[treeCoverLossYearsFC.length - 1],
       },
+      treeCoverGainDateRange: {
+        startYear: mapPage.treeCoverGainYears[0],
+        endYear: mapPage.treeCoverGainYears[mapPage.treeCoverGainYears.length - 1],
+      },
       biomassLossDateRange: {
         startYear: biomassLossYears[0],
         endYear: biomassLossYears[biomassLossYears.length - 1],
@@ -2593,6 +2597,16 @@ class Map extends Component {
     });
   };
 
+  setGainTimeline = (startYear, endYear) => {
+    this.setState({
+      treeCoverGainDateRange: { startYear: startYear, endYear: endYear },
+    });
+    gtag('event', 'timeslider update', {
+      event_category: 'Map Click',
+      event_label: 'user updated the tree cover gain timeslider',
+    });
+  };
+
   setBiomassTimeline = (startYear, endYear) => {
     this.setState(
       {
@@ -2691,12 +2705,14 @@ class Map extends Component {
       treeCoverLossCanopyDensity,
       drawingActive,
       biomassRange,
+      biomassLossDateRange,
       analysisResults,
       selectedAnalysis,
       selectedLists,
       analysisWarning,
       fireDays,
       treeCoverLossDateRange,
+      treeCoverGainDateRange,
       adminSelections,
       sketchTool,
       gfwListDef,
@@ -2870,8 +2886,9 @@ class Map extends Component {
           gfwListDef={gfwListDef}
           visibleLayers={visibleLayers}
           biomassRange={biomassRange}
-          biomassLossDateRange={this.state.biomassLossDateRange}
-          treeCoverLossDateRange={this.state.treeCoverLossDateRange}
+          biomassLossDateRange={biomassLossDateRange}
+          treeCoverLossDateRange={treeCoverLossDateRange}
+          treeCoverGainDateRange={treeCoverGainDateRange}
           fireDays={fireDays}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}
@@ -2879,6 +2896,7 @@ class Map extends Component {
           dispatch={store.dispatch}
           setBiomassTimeline={this.setBiomassTimeline}
           setLossTimeline={this.setLossTimeline}
+          setGainTimeline={this.setGainTimeline}
         />
 
         <div style={containerStyle} className="map-container">

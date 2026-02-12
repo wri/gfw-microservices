@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  Alert,
   Table,
   TableBody,
   TableCell,
@@ -15,7 +14,6 @@ import {
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import AccountUsage from './AccountUsage';
 import { useProfileContext } from '../../ProfileStateContext';
-import AccountUsageDropMenu from './AccountUsageDropMenu';
 import { formatNumber } from '../../../../common/js/utils/format';
 import { calculateAccountSubscriptionDates } from '../../../../common/js/utils/accountSubscriptionDates';
 import AccountDetailUsageByAnalysisType from './AccountDetailUsageByAnalysisType';
@@ -40,9 +38,8 @@ export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
   const [usageData, setUsageData] = useState(null);
   const [usageLimitsData, setUsageLimitsData] = useState(null);
-  const [usageDataperUser, setUsageDataperUser] = useState([]);
-  const [messageType, setMessageType] = useState('');
-  const [messageText, setMessageText] = useState('');
+  const [usageDataPerUser, setUsageDataPerUser] = useState([]);
+
   const oneMonthAgoDate = format(subMonths(new Date(), 1), 'yyyy-MM-dd');
   const endDayIncludingToday = format(new Date(), 'yyyy-MM-dd');
   const [startDateAnalysis, setStartDateAnalysis] = useState(oneMonthAgoDate);
@@ -84,7 +81,7 @@ export default function AccountUsageContainer() {
       .then((res) => res.json())
       .then((data) => {
         const { organizationUsersAnalysisUsage = [] } = data;
-        setUsageDataperUser(organizationUsersAnalysisUsage);
+        setUsageDataPerUser(organizationUsersAnalysisUsage);
       })
       .catch((error) => {
         console.log(error);
@@ -109,25 +106,6 @@ export default function AccountUsageContainer() {
       });
   }, []);
 
-  const exportUsage = () => {
-    const exportStartDate = encodeURIComponent(startDateAnalysis);
-    const exportEndDate = encodeURIComponent(endDateAnalysis);
-    return fetch(
-      `analytics/myorg/usage/users/download?startDate=${exportStartDate}&endDate=${exportEndDate}`,
-      {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      }
-    )
-      .then(() => handleDownloadConfirmation('success'))
-      .catch(() => {
-        handleDownloadConfirmation('error');
-      });
-  };
-
   useEffect(() => {
     fetch(
       `/analytics/myorg/usage/usage-by-analysis?startDate=${startDateAnalysis}&endDate=${endDateAnalysis}`,
@@ -149,18 +127,8 @@ export default function AccountUsageContainer() {
       });
   }, [startDateAnalysis, endDateAnalysis]);
 
-  const handleDownloadConfirmation = (type) => {
-    setMessageType(type);
-
-    if (type == 'error') {
-      return setMessageText('Something Went Wrong');
-    }
-
-    setMessageText('Success! Your file has been successfully exported.');
-  };
-
   const getAreasPercentage = (area) => {
-    const totalAreaAnalyzed = usageDataperUser.reduce(
+    const totalAreaAnalyzed = usageDataPerUser.reduce(
       (acc, user) => acc + user.total_area_analyzed,
       0
     );
@@ -169,7 +137,7 @@ export default function AccountUsageContainer() {
 
   const getAnalysesPercentage = (locations) => {
     // the percentage denominator should be the sum of users analyses, not the max allowed
-    const totalLocationsAnalyzed = usageDataperUser.reduce(
+    const totalLocationsAnalyzed = usageDataPerUser.reduce(
       (acc, user) => acc + user.total_locations_analyzed,
       0
     );
@@ -182,9 +150,6 @@ export default function AccountUsageContainer() {
     <InlineLoader />
   ) : (
     <>
-      {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
-
-      <AccountUsageDropMenu export={exportUsage} />
       <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
 
       <Box
@@ -220,7 +185,7 @@ export default function AccountUsageContainer() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {usageDataperUser.map((row) => (
+              {usageDataPerUser.map((row) => (
                 <TableRow
                   key={row.user_id}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

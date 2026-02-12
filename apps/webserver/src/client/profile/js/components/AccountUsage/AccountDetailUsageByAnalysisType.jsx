@@ -31,7 +31,7 @@ const NORMALIZING_ANALYSIS_NAMES = {
   AFI: 'Post-2020 Risk Assessment',
   ALERTS: 'Recent Disturbance Alerts',
   FCD: 'Post-2000 Forest Change',
-  'ALERTS-BATCH': 'Alerts - BATCH',
+  'ALERTS-BATCH': 'Weekly Alerts',
   GHG: 'GHG Emissions',
 };
 

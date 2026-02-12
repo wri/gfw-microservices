@@ -284,14 +284,28 @@ export const downladOrganizationUsersUsageExport = async (req, res) => {
     organization_id: orgId,
   } = req.session;
 
-  const orgActivatedTime = await getAccountRenewalTime(orgId);
-  const todayAsEndDay = addDays(new Date(), 1);
-  const accountActivationDate = new Date(orgActivatedTime);
-  const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
-  const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
+  let { startDate, endDate } = req.query;
+  if (startDate && endDate) {
+    const { error } = validateQueryParams({ startDate, endDate });
+    if (error) {
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      });
+    }
+  } else {
+    const orgActivatedTime = await getAccountRenewalTime(orgId);
+    const todayAsEndDay = addDays(new Date(), 1);
+    const accountActivationDate = new Date(orgActivatedTime);
+    const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
+    const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
 
-  const startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
-  const endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
+    startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
+    endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
+  }
 
   const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
   const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;

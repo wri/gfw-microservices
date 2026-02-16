@@ -86,7 +86,12 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
   }
 
   getFeatureGeometry(featurePayload: Feature): string {
-    return stringify(featurePayload.geometry as GeoJSONGeometry);
+    try {
+      return stringify(featurePayload.geometry as GeoJSONGeometry);
+    } catch (error) {
+      this.logger.error('Error converting geometry', error);
+      return '';
+    }
   }
 
   async processFeature(

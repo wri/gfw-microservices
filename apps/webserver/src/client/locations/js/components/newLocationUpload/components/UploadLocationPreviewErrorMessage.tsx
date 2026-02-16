@@ -120,6 +120,13 @@ const errorMessageBuilder = ({
     message: ErrorMessage;
   }> = [
     {
+      match: (msg) => msg.startsWith('Your file is too large'),
+      message: {
+        title: 'File too large',
+        body: 'Your file exceeds the maximum allowed size of 128MB. Please reduce the number of locations or split your data into multiple files before re-uploading.',
+      },
+    },
+    {
       match: (msg) => msg.startsWith('Missing mandatory fields:'),
       message: {
         title: 'Missing required fields',

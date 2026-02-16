@@ -566,11 +566,17 @@ export class ListAnalysisService {
       // axios returns useful info in error.response.data
       this.logger.error('UploadNew error', error?.response?.data || error);
 
-      if (
-        this.isAnalysisLimitError(error) ||
-        (error as { response?: { status?: number } })?.response?.status ===
-          HttpStatus.UNPROCESSABLE_ENTITY
-      ) {
+      const responseStatus = (error as { response?: { status?: number } })?.response?.status;
+
+      // Handle file too large error (413 Payload Too Large)
+      if (responseStatus === HttpStatus.PAYLOAD_TOO_LARGE) {
+        const errorMessage =
+          error?.response?.data?.message ||
+          'Your file is too large. The maximum file size is 128MB.';
+        throwCustomErrorResponse(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
+      }
+
+      if (this.isAnalysisLimitError(error) || responseStatus === HttpStatus.UNPROCESSABLE_ENTITY) {
         throwCustomErrorResponse('Analysis limit reached', HttpStatus.PAYMENT_REQUIRED);
       }
 

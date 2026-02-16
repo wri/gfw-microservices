@@ -92,6 +92,12 @@ export abstract class AbstractHandler<T> implements Handler<T> {
           Logger.error(
             `Client error (${statusCode}) in ${nextJob.constructor.name}: ${stack || message}`
           );
+          // Save the error details to the database before re-throwing
+          await AbstractHandler.updateListsUploadStatus(
+            result as ChainType,
+            `Error (${statusCode}) in ${nextJob.constructor.name}`,
+            message
+          );
           throw error;
         }
         Logger.error(`Error in ${nextJob.constructor.name}: ${stack || message}`);

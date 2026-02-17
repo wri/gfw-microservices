@@ -17,6 +17,7 @@ import {
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiInternalServerErrorResponse,
+  ApiPayloadTooLargeResponse,
 } from '@nestjs/swagger';
 import { ListAnalysisService } from './list-analysis.service';
 import { PrepareUploadResponse } from './dtos';
@@ -28,6 +29,7 @@ import {
   ForbiddenResponse,
   InternalServerErrorResponse,
   NotFoundResponse,
+  PayloadTooLargeResponse,
   UnauthorizedResponse,
 } from './dtos/apiResponse';
 
@@ -41,6 +43,7 @@ export class ListUploadController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiPayloadTooLargeResponse({ type: PayloadTooLargeResponse })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post('/list/upload_new')
   @UsePipes(new ZodValidationPipe(listUploadNewRequestSchema))

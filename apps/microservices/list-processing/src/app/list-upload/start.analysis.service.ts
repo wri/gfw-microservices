@@ -30,6 +30,7 @@ import { CommodityService } from '../list/commodity.service';
 import { checkListSizeLimit } from '../common/check.listSizelimit';
 import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
 import { ListSizeLimitException } from '../common/listSizeLimit.exception';
+import { FileTooLargeException } from '../common/fileTooLarge.exception';
 import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
 import { traceContext } from '@wri-monorepos/shared';
@@ -208,6 +209,24 @@ async function worker(input: WorkerType, cb: done) {
               'List size limit exceeded',
               error.message
             ),
+            updateAnalysisStatusForSizeLimitError(
+              organizationDatabase,
+              listId,
+              input.request.analysisIds || [],
+              error.message
+            ),
+          ]);
+
+          cb(null);
+        } else if (error instanceof FileTooLargeException) {
+          workerLogger.warn(
+            `List ${listId} in database ${organizationDatabase} has file too large. ${error.message}`
+          );
+
+          // Update both upload status and analysis status in parallel
+          // Using Promise.allSettled to ensure both operations complete even if one fails
+          await Promise.allSettled([
+            AbstractHandler.updateListsUploadStatus(chainType, 'File too large', error.message),
             updateAnalysisStatusForSizeLimitError(
               organizationDatabase,
               listId,

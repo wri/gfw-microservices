@@ -5,6 +5,9 @@ const FORBIDDEN_ENUM = ['Forbidden'];
 const NOT_FOUND_ENUM = ['Not Found'];
 const BAD_REQUEST_ENUM = ['Bad Request'];
 const INTERNAL_SERVER_ERROR_ENUM = ['Internal Server Error'];
+const PAYLOAD_TOO_LARGE_ENUM = [
+  'Your file is too large. The maximum file size is 128MB. Please reduce the number of locations or split your data into multiple files.',
+];
 const DELETE_LIST_ENUM = ["User 'email@email' has deleted list (listName)"];
 export class MessageResponse {
   @ApiProperty()
@@ -29,6 +32,11 @@ export class NotFoundResponse extends NotFoundResponseString {
 export class BadRequestResponse {
   @ApiProperty({ enum: BAD_REQUEST_ENUM })
   message: string;
+}
+
+export class PayloadTooLargeResponse {
+  @ApiProperty({ enum: PAYLOAD_TOO_LARGE_ENUM })
+  errorDetails: string;
 }
 
 export class ErrorResponseWithErrorMessage extends NotFoundResponse {

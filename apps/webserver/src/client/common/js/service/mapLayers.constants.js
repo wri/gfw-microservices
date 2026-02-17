@@ -1,52 +1,5 @@
 import { proLayers } from '../proLayers.config';
 
-// Dataset Version Constants
-// Update these versions when new datasets are released
-const DATASET_VERSIONS = {
-  ARG_NATIVE_FOREST: 'v202212',
-  CLARK_LABS_AQUACULTURE_2018: 'v202203',
-  CLARK_LABS_AQUACULTURE_CHANGE: 'v202203',
-  GFW_INDIGENOUS_LANDS: 'v202408',
-  GFW_UNIVERSAL_MILL_LIST: 'v202508',
-  GFW_WEST_AFRICA_COCOA: 'v202312',
-  IDN_FOREST_AREA: 'v201709',
-  IDN_LAND_COVER_2017: 'v201807',
-  INPE_PRODES: 'v202507',
-  NASA_VIIRS_FIRE_ALERTS: 'v202010',
-  UMD_GLAD_DIST_ALERTS: 'v202412',
-  WDPA_PROTECTED_AREAS: 'v202602',
-};
-
-// Pre-built Dataset URLs
-const DATASET_URLS = {
-  // Argentina Native Forest
-  ARG_FOREST_TILES: `https://tiles.globalforestwatch.org/arg_native_forest_land_plan/${DATASET_VERSIONS.ARG_NATIVE_FOREST}/default/{z}/{x}/{y}.png`,
-  // Clark Labs Aquaculture
-  AQUACULTURE_2018_TILES: `https://tiles.globalforestwatch.org/clark_labs_tropical_pond_aquaculture_2018/${DATASET_VERSIONS.CLARK_LABS_AQUACULTURE_2018}/default/{z}/{x}/{y}.png`,
-  AQUACULTURE_CHANGE_TILES: `https://tiles.globalforestwatch.org/clark_labs_tropical_pond_aquaculture_change_1999_2018/${DATASET_VERSIONS.CLARK_LABS_AQUACULTURE_CHANGE}/default/{z}/{x}/{y}.png`,
-  // Indonesia Forest Area
-  IDN_FOREST_API: `https://data-api.globalforestwatch.org/dataset/idn_forest_area/${DATASET_VERSIONS.IDN_FOREST_AREA}/features`,
-  IDN_FOREST_TILES: `https://tiles.globalforestwatch.org/idn_forest_area/${DATASET_VERSIONS.IDN_FOREST_AREA}/default/root.json`,
-  // Indonesia Land Cover
-  IDN_LAND_COVER_TILES: `https://tiles.globalforestwatch.org/idn_land_cover_2017/${DATASET_VERSIONS.IDN_LAND_COVER_2017}/default/{z}/{x}/{y}.png`,
-  // Indigenous & Community Lands
-  INDIGENOUS_LANDS_API: `https://data-api.globalforestwatch.org/dataset/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/features`,
-  INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/default/root.json`,
-  // INPE PRODES
-  INPE_PRODES_TILES: `https://tiles.globalforestwatch.org/inpe_prodes/${DATASET_VERSIONS.INPE_PRODES}/default/root.json`,
-  // NASA VIIRS Fire Alerts
-  NASA_VIIRS_API: `https://data-api.globalforestwatch.org/dataset/nasa_viirs_fire_alerts/${DATASET_VERSIONS.NASA_VIIRS_FIRE_ALERTS}/features`,
-  // UMD GLAD Dist Alerts
-  UMD_GLAD_TILES: `https://tiles.globalforestwatch.org/umd_glad_dist_alerts_coverage/${DATASET_VERSIONS.UMD_GLAD_DIST_ALERTS}/default/root.json`,
-  // Universal Mill List
-  UNIVERSAL_MILL_LIST_TILES: `https://tiles.globalforestwatch.org/gfw_universal_mill_list/${DATASET_VERSIONS.GFW_UNIVERSAL_MILL_LIST}/default/root.json`,
-  // West Africa Cocoa
-  WEST_AFRICA_COCOA_TILES: `https://tiles.globalforestwatch.org/gfw_west_africa_cocoa_deforestation_risk/${DATASET_VERSIONS.GFW_WEST_AFRICA_COCOA}/default/{z}/{x}/{y}.png`,
-  // WDPA Protected Areas
-  WDPA_API: `https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/${DATASET_VERSIONS.WDPA_PROTECTED_AREAS}/features`,
-  WDPA_TILES: `https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/${DATASET_VERSIONS.WDPA_PROTECTED_AREAS}/default/root.json`,
-};
-
 export const mapLayers = [
   {
     id: '10750e07-583b-41bb-a46e-ee2f256db7ff',
@@ -70,7 +23,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'idn_forest_area',
-          url: DATASET_URLS.IDN_FOREST_TILES,
+          url: 'https://tiles.globalforestwatch.org/idn_forest_area/v201709/default/root.json',
         },
       },
       legendConfig: {
@@ -115,7 +68,7 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: DATASET_URLS.IDN_FOREST_API,
+          url: 'https://data-api.globalforestwatch.org/dataset/idn_forest_area/v201709/features',
         },
       },
       applicationConfig: {},
@@ -206,7 +159,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'landmark_icls_2020',
-          url: DATASET_URLS.INDIGENOUS_LANDS_TILES,
+          url: 'https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/v202408/default/root.json',
         },
       },
       legendConfig: {
@@ -243,7 +196,7 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: DATASET_URLS.INDIGENOUS_LANDS_API,
+          url: 'https://data-api.globalforestwatch.org/dataset/gfw_indigenous_community_and_indicative_lands/v202408/features',
         },
       },
       applicationConfig: {},
@@ -274,7 +227,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'prodes',
-          url: DATASET_URLS.INPE_PRODES_TILES,
+          url: 'https://tiles.globalforestwatch.org/inpe_prodes/v202507/default/root.json',
         },
       },
       legendConfig: {
@@ -575,7 +528,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'wdpa_licensed_protected_areas',
-          url: DATASET_URLS.WDPA_TILES,
+          url: 'https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202511/default/root.json',
         },
       },
       legendConfig: {
@@ -632,7 +585,7 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: DATASET_URLS.WDPA_API,
+          url: 'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202511/features',
         },
       },
       applicationConfig: {},
@@ -913,7 +866,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          url: DATASET_URLS.AQUACULTURE_CHANGE_TILES,
+          url: 'https://tiles.globalforestwatch.org/clark_labs_tropical_pond_aquaculture_change_1999_2018/v202203/default/{z}/{x}/{y}.png',
           metadata:
             'https://api.resourcewatch.org/v1/gfw-metadata/clark_labs_tropical_pond_aquaculture',
         },
@@ -1100,7 +1053,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'uml',
-          url: DATASET_URLS.UNIVERSAL_MILL_LIST_TILES,
+          url: 'https://tiles.globalforestwatch.org/gfw_universal_mill_list/v202508/default/root.json',
         },
       },
       legendConfig: {
@@ -2091,7 +2044,7 @@ export const mapLayers = [
       interactionConfig: {
         type: 'info',
         config: {
-          url: DATASET_URLS.NASA_VIIRS_API,
+          url: 'https://data-api.globalforestwatch.org/dataset/nasa_viirs_fire_alerts/v202010/features',
         },
       },
       applicationConfig: {},
@@ -2123,7 +2076,7 @@ export const mapLayers = [
         body: {
           useCors: true,
           metadata: 'idn_land_cover_metadata',
-          url: DATASET_URLS.IDN_LAND_COVER_TILES,
+          url: 'https://tiles.globalforestwatch.org/idn_land_cover_2017/v201807/default/{z}/{x}/{y}.png',
         },
       },
       legendConfig: {
@@ -2247,7 +2200,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          url: DATASET_URLS.ARG_FOREST_TILES,
+          url: 'https://tiles.globalforestwatch.org/arg_native_forest_land_plan/v202212/default/{z}/{x}/{y}.png',
           metadata: 'arg_native_forest_land_plan',
         },
       },
@@ -2300,7 +2253,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          url: DATASET_URLS.AQUACULTURE_2018_TILES,
+          url: 'https://tiles.globalforestwatch.org/clark_labs_tropical_pond_aquaculture_2018/v202203/default/{z}/{x}/{y}.png',
           metadata:
             'https://api.resourcewatch.org/v1/gfw-metadata/clark_labs_tropical_pond_aquaculture',
         },
@@ -2478,7 +2431,7 @@ export const mapLayers = [
           },
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
-          url: DATASET_URLS.WEST_AFRICA_COCOA_TILES,
+          url: 'https://tiles.globalforestwatch.org/gfw_west_africa_cocoa_deforestation_risk/v202312/default/{z}/{x}/{y}.png',
           useCors: true,
           metadata:
             'https://api.resourcewatch.org/v1/gfw-metadata/gfw_west_africa_cocoa_deforestation_risk',
@@ -2805,7 +2758,7 @@ export const mapLayers = [
           },
           'css-url':
             'https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss',
-          url: DATASET_URLS.UMD_GLAD_TILES,
+          url: 'https://tiles.globalforestwatch.org/umd_glad_dist_alerts_coverage/v202412/default/root.json',
           useCors: true,
           metadata: 'umd_landsat_alerts',
         },

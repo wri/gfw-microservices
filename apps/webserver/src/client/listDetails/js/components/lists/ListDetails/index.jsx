@@ -79,7 +79,6 @@ import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
-import featureFlags from '../../../../../../utils/general.utils';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -135,8 +134,6 @@ const DIAGNOSTICS_URLS = {
   [ALERTS]:
     '/locations/csv/[list-id]?listID=[list-id]&format=csv&type=alerts&selectedAlert=Integrated&selectedTimeframe=DAY&isGFWList=false&startDate=[start-date]&endDate=[end-date]',
 };
-
-const { isDcfAvailable } = featureFlags;
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -1952,7 +1949,7 @@ export default class ListDetails extends Component {
       listViewOptions.push(POST_2020_RISK_ASSESSMENT_VIEW);
     }
 
-    if (isDcfActive && isDcfAvailable) {
+    if (isDcfActive) {
       listViewOptions.push(ALERTS);
     }
 

@@ -18,6 +18,32 @@ describe('UploadLocationPreviewErrorMessage', () => {
   const mockRetryPreviewData = jest.fn();
   const mockRetryUpload = jest.fn();
 
+  it('should render file too large error message', () => {
+    const error = {
+      errors: [
+        'Your file is too large (150.00MB). The maximum file size is 128MB. Please reduce the number of locations or split your data into multiple files.',
+      ],
+    };
+
+    render(
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
+    );
+
+    expect(screen.getByText(/file too large/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /your file exceeds the maximum allowed size of 128MB. Please reduce the number of locations or split your data into multiple files before re-uploading./i
+      )
+    ).toBeInTheDocument();
+  });
+
   it('should render missing mandatory fields error message', () => {
     const error = {
       message: 'Validation errors found in the data',

@@ -3,12 +3,10 @@ import { mapLayers } from './mapLayers.constants';
 import featureFlags from '../../../../utils/general.utils';
 
 export async function fetchGfwProLayers() {
-  const { isDegradedPastureLayerAvailable, isDcfAvailable } = featureFlags;
+  const { isDegradedPastureLayerAvailable } = featureFlags;
 
   const hideRules = {
     [proLayers.degradedPastureID]: !isDegradedPastureLayerAvailable,
-    [proLayers.globalVegetationDisturbanceAlertsId]: !isDcfAvailable,
-    [proLayers.globalIntegratedDisturbanceAlertsId]: !isDcfAvailable,
   };
 
   const shouldHideLayer = (layerName) => hideRules[layerName] ?? false;

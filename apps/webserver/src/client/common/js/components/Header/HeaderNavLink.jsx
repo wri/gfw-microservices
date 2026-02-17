@@ -2,9 +2,6 @@ import * as PropTypes from 'prop-types';
 import { Box, Typography, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { Warning } from '@mui/icons-material';
 
-import featureFlags from '../../../../../utils/general.utils';
-const { isDcfAvailable } = featureFlags;
-
 const CustomTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -18,7 +15,7 @@ const CustomTooltip = styled(({ className, ...props }) => (
 }));
 
 function HeaderNavLink({ active, link, label, className = '' }) {
-  if (isDcfAvailable && label === 'Alerts') {
+  if (label === 'Alerts') {
     return (
       <CustomTooltip
         placement="bottom-end"

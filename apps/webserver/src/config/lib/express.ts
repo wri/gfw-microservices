@@ -11,7 +11,7 @@ const favicon = require('serve-favicon');
 import * as logger from '../privateutils/logger.utils';
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
-const helmet = require('helmet');
+import helmet from 'helmet';
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
 import config from '../config';
@@ -151,6 +151,28 @@ const configureSession = (app: Application) => {
 };
 
 /**
+ * Content Security Policy (CSP) Configuration
+ * Defines allowed sources for various content types to prevent XSS and other attacks.
+ * When adding new third-party services, update the relevant directive below.
+ */
+const CSP_SCRIPT_SOURCES = [
+  "'self'",
+  'https://www.googletagmanager.com', // Google Tag Manager
+  'https://cmp.osano.com', // Osano consent management
+  'https://cdn.transifex.com', // Transifex translations
+  'https://static.zdassets.com', // Zendesk support widget
+  'https://static.hotjar.com', // Hotjar analytics
+  'https://plausible.io', // Plausible analytics
+  'https://snap.licdn.com', // LinkedIn Insights
+  'https://www.clarity.ms', // Microsoft Clarity
+  'https://js.arcgis.com', // ArcGIS maps
+  'https://code.jquery.com', // jQuery CDN
+  'https://dpptfqp76xood.cloudfront.net', // CloudFront assets (ionRange.js)
+  "'unsafe-inline'", // Allow inline scripts (consider removing for better security)
+  "'unsafe-eval'", // Required for webpack and dynamic script evaluation
+];
+
+/**
  * @function setHelmetHeaders
  * @summary Configure hemlet to secure express headers
  * @param {Express.Application} app
@@ -161,20 +183,46 @@ const configureHelmetHeaders = (app: Application) => {
    * dnsPrefetchControl - controls browser DNS prefetching
    * frameguard - to prevent clickjacking
    * hidePoweredBy - to remove the X-Powered-By header
-   * hsts - for HTTP Strict Transport Security
-   * ieNoOpen - sets X-Download-Options for IE8+
+   * hsts - for HTTP Strict Transport Security (prod/staging only)
    * noSniff - to keep clients from sniffing the MIME type
    * xssFilter - adds some small XSS protections
    */
+  const enableHSTS = !['development', 'test'].includes(process.env.NODE_ENV);
+
+  // Configure HSTS settings based on environment
+  const helmetConfig: any = {};
+  if (enableHSTS) {
+    helmetConfig.hsts = {
+      maxAge: 31536000, // 1 year expiration
+      includeSubDomains: true,
+      preload: true,
+    };
+  } else {
+    // Disable HSTS in development and unit test environments
+    helmetConfig.hsts = false;
+  }
+
+  app.use(helmet(helmetConfig));
   app.use(
-    helmet({
-      hsts: true, // off until https us working
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", 'https:', 'data:'],
+        scriptSrc: CSP_SCRIPT_SOURCES,
+        workerSrc: ["'self'", 'blob:'], // Required for Osano and other web workers
+        styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'https:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'self'"],
+      },
     })
   );
-  /**
-   * TODO: Add content security policy configuration via helmet.contentSecurityPolicy({ ... })
-   * @see https://github.com/helmetjs/helmet
-   */
+  // Set Permissions-Policy header manually (Helmet v8 does not provide this middleware)
+  app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=*, payment=()');
+    next();
+  });
 };
 
 /**

@@ -15,11 +15,9 @@ interface DefaultEmailContentFilter {
 }
 export function createEmailContent<CustomFilter>(
   type: string,
-  filter: DefaultEmailContentFilter | CustomFilter,
-  context: { sender: string }
+  filter: DefaultEmailContentFilter | CustomFilter
 ): Content {
   const { listName, location } = filter as DefaultEmailContentFilter;
-  const { sender } = context;
 
   const emailMessage = {
     start: {
@@ -46,11 +44,6 @@ export function createEmailContent<CustomFilter>(
       icon: 'https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png',
       title: 'We had a problem generating your file',
       body: ['The system had problems generating your file. Please try again.'],
-    },
-    connectInvite: {
-      icon: 'https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png',
-      title: 'B2B connection invitation',
-      body: [`${sender} has invited you to create an new connection.`],
     },
     accountUsersUsageExportSuccess: {
       icon: 'https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png',

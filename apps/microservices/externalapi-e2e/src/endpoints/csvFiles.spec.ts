@@ -2,6 +2,7 @@ import { postRedirectHeaders, sanitizeError, ensureAnalysesNotExpired } from '..
 import AdmZip from 'adm-zip';
 import Papa from 'papaparse';
 import axios from 'axios';
+import { URL } from 'url';
 
 const BASE_URL = process.env.HOST;
 const API_TOKEN = process.env.API_TOKEN;
@@ -461,18 +462,35 @@ interface PollResult {
   zip: AdmZip;
 }
 
+/**
+ * Sanitize URL by removing query parameters to prevent leaking S3 presigned URL credentials in logs
+ */
+function sanitizeUrl(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    return `${urlObj.origin}${urlObj.pathname}`;
+  } catch {
+    return '[invalid URL]';
+  }
+}
+
 async function pollApiUntilComplete(
   url: string,
   options = {},
-  pollIntervalMs = 1000,
-  timeoutMs = 10000
+  pollIntervalMs = 2000,
+  timeoutMs = 60000
 ): Promise<PollResult> {
   const startTime = Date.now();
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    if (Date.now() - startTime > timeoutMs) {
-      throw new Error('Polling timeout: API did not complete within the specified time');
+    const elapsedMs = Date.now() - startTime;
+    if (elapsedMs > timeoutMs) {
+      throw new Error(
+        `Polling timeout: API did not complete within ${timeoutMs}ms (elapsed: ${elapsedMs}ms). URL: ${sanitizeUrl(
+          url
+        )}`
+      );
     }
 
     const response = await axios.get(url, {
@@ -481,26 +499,33 @@ async function pollApiUntilComplete(
     });
 
     if (response.status >= 400) {
-      throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+      throw new Error(
+        `API request failed with status ${response.status}: ${
+          response.statusText
+        }. URL: ${sanitizeUrl(url)}`
+      );
     }
 
     const result: ApiResponse = response.data;
 
     if (result.status === 'Completed') {
       if (!result.resultUrl || !/^https?:\/\//.test(result.resultUrl)) {
-        throw new Error(`Invalid or missing resultUrl: ${result.resultUrl}`);
+        throw new Error(`Invalid or missing resultUrl: ${sanitizeUrl(result.resultUrl || '')}`);
       }
 
+      // Don't pass x-api-key header for S3 presigned URLs - they reject custom headers with 403
       const zipResponse = await axios.get(result.resultUrl, {
-        headers: {
-          'x-api-key': process.env.API_TOKEN,
-        },
         responseType: 'arraybuffer',
         validateStatus: (status) => status < 500,
+        maxRedirects: 5,
       });
 
       if (zipResponse.status >= 400) {
-        throw new Error(`Failed to download zip file: ${zipResponse.status}`);
+        throw new Error(
+          `Failed to download zip file: ${zipResponse.status} ${
+            zipResponse.statusText
+          }. URL: ${sanitizeUrl(result.resultUrl)}`
+        );
       }
 
       const arrayBuffer = zipResponse.data;

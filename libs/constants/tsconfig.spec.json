@@ -12,7 +12,6 @@
     "**/*.d.ts",
     "src/types/user-activity-type.ts",
     "src/types/list-activity-type.ts",
-    "src/types/b2b-status.ts",
     "src/types/account-status.ts"
   ]
 }

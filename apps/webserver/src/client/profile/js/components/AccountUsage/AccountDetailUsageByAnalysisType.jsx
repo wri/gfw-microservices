@@ -1,5 +1,6 @@
-import React from 'react';
+import { useState, useMemo } from 'react';
 import {
+  Alert,
   Divider,
   Table,
   TableBody,
@@ -20,6 +21,7 @@ import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
 import { accountProfileStrings } from '../../../../common/js/config.js';
 import { useSortableData } from '../../../../hooks';
+import AccountUsageDropMenu from './AccountUsageDropMenu';
 
 /**
  * Possible duplicate contents from
@@ -32,7 +34,7 @@ const NORMALIZED_ANALYSIS_NAMES = {
   AFI: 'Post-2020 Risk Assessment',
   ALERTS: 'Recent Disturbance Alerts',
   FCD: 'Post-2000 Forest Change',
-  'ALERTS-BATCH': 'Alerts - BATCH',
+  'ALERTS-BATCH': 'Weekly Alerts',
   GHG: 'GHG Emissions',
 };
 
@@ -50,8 +52,11 @@ function AccountDetailUsageByAnalysisType({
     numericColumns: ['locations_analyzed', 'lists_analyzed', 'total_tokens'],
   });
 
+  const [messageType, setMessageType] = useState('');
+  const [messageText, setMessageText] = useState('');
+
   // Calculate totals
-  const totals = React.useMemo(() => {
+  const totals = useMemo(() => {
     if (!analysisUsageByType || analysisUsageByType.length === 0) {
       return { listsAnalyzed: 0, tokensUsed: 0 };
     }
@@ -60,16 +65,48 @@ function AccountDetailUsageByAnalysisType({
       .filter((item) => item.analysis_type !== 'ALERTS-BATCH') // Exclude Weekly Alerts from lists total
       .reduce((sum, item) => sum + (parseInt(item.lists_analyzed) || 0), 0);
 
-    const tokensUsed = analysisUsageByType.reduce(
-      (sum, item) => sum + (parseFloat(item.total_tokens) || 0),
-      0
-    );
+    const tokensUsed = analysisUsageByType.reduce((sum, item) => {
+      const value = item.total_tokens;
+      if (value === null || value === undefined) {
+        return sum;
+      }
+      const numeric = parseFloat(value);
+      if (Number.isNaN(numeric)) {
+        return sum;
+      }
+      return sum + numeric;
+    }, 0);
 
     return {
-      listsAnalyzed: Math.floor(listsAnalyzed),
-      tokensUsed: Math.floor(tokensUsed),
+      listsAnalyzed,
+      tokensUsed,
     };
   }, [analysisUsageByType]);
+
+  const handleDownloadConfirmation = (type) => {
+    setMessageType(type);
+
+    if (type === 'error') {
+      return setMessageText('Something went wrong');
+    }
+
+    setMessageText('Success! Your file has been successfully exported.');
+  };
+
+  const exportUsage = async () => {
+    try {
+      await fetch(`analytics/myorg/usage/users/download`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      return handleDownloadConfirmation('success');
+    } catch {
+      handleDownloadConfirmation('error');
+    }
+  };
 
   return (
     <section>
@@ -109,7 +146,11 @@ function AccountDetailUsageByAnalysisType({
           marginBottom: '2em',
         }}
       >
-        <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
+          {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
+          <AccountUsageDropMenu export={exportUsage} />
+        </Box>
         <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -153,7 +194,7 @@ function AccountDetailUsageByAnalysisType({
                     <div
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
                     >
-                      Tokens Used
+                      {accountProfileStrings.accountUsageLabels.tokensUsed}
                       <span
                         style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
                       >
@@ -224,7 +265,9 @@ function AccountDetailUsageByAnalysisType({
                           formatDigit(element.lists_analyzed || 0)
                         )}
                       </TableCell>
-                      <TableCell align="right">{formatDigit(element.total_tokens || 0)}</TableCell>
+                      <TableCell align="right">
+                        {formatDigit(element.total_tokens || 'N/A')}
+                      </TableCell>
                     </TableRow>
                   );
                 })}
@@ -232,12 +275,14 @@ function AccountDetailUsageByAnalysisType({
                   <TableRow
                     key="total-row"
                     sx={{
-                      backgroundColor: '#f5f5f5',
+                      backgroundColor: '#d09696ff',
                       fontWeight: 'bold',
                       '& td': { fontWeight: 'bold' },
                     }}
                   >
-                    <TableCell>Total</TableCell>
+                    <TableCell>
+                      {accountProfileStrings.accountUsageLabels.totalLabel || 'Total'}
+                    </TableCell>
                     <TableCell align="right">{formatDigit(totals.listsAnalyzed)}</TableCell>
                     <TableCell align="right">{formatDigit(totals.tokensUsed)}</TableCell>
                   </TableRow>

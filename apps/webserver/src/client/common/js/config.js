@@ -941,6 +941,7 @@ export const mapPage = {
   ],
   // treeCoverLossYears: [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
   treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearForTclDataInMap),
+  treeCoverGainYears: fillYears(2001, latestTreeCoverLossYearForTclDataInMap),
   granChacoLossYears: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
   prodesLossYears: _range(2001, 2020 + 1),
   share: {
@@ -1074,6 +1075,8 @@ export const accountProfileStrings = {
     hectaresAnalyzed: 'Hectares analyzed (HA)',
     listsAnalyzed: 'Lists analyzed',
     analysisType: 'Analysis type',
+    tokensUsed: 'Tokens Used',
+    totalLabel: 'Total',
   },
   accountFormLabels: {
     org_name: 'Organization Name',
@@ -1087,6 +1090,7 @@ export const accountProfileStrings = {
   },
   accountLimitsSetting: {
     locationsPerYear: 'Locations Per Year',
+    tokensPerYear: 'Tokens Per Year',
     areaPerYear: 'Area Per Year',
     subHeadingSubscriptionLimits: ' Subscription',
     subHeadingCustomLimits: 'Extended Limits',
@@ -1103,6 +1107,7 @@ export const accountLimitsStrings = {
   stantardSubscriptionSection: 'Standard Subscription',
   premiumSubscriptionSection: 'Premium Subscription',
   locationsPerYear: 'Locations Per Year',
+  tokensPerYear: 'Tokens Per Year',
   areaPerYear: 'Area Per Year',
 };
 

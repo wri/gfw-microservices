@@ -44,6 +44,7 @@ export default class Legend extends Component {
       biomassRange={this.props.biomassRange}
       biomassLossDateRange={this.props.biomassLossDateRange}
       treeCoverLossDateRange={this.props.treeCoverLossDateRange}
+      treeCoverGainDateRange={this.props.treeCoverGainDateRange}
       canopyDensity={this.props.canopyDensity}
       treeCoverLossCanopyDensity={this.props.treeCoverLossCanopyDensity}
       fireDays={this.props.fireDays}
@@ -59,6 +60,7 @@ export default class Legend extends Component {
       mapLayers={this.props.mapLayers}
       setBiomassTimeline={this.props.setBiomassTimeline}
       setLossTimeline={this.props.setLossTimeline}
+      setGainTimeline={this.props.setGainTimeline}
     />
   );
 

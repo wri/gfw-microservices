@@ -253,7 +253,6 @@ nx lint microservices-list-downloader
 │   ├── gfwpro-e2e/    # Cypress e2e tests for gfwpro (requires webserver and microservices to run)
 │   ├── webserver/     # gfwpro project contains our front-end and back-end
 │   └── microservices/
-│       ├── b2b/             # b2b microservice (currently unused and partly bit-rotted)
 │       ├── externalapi/     # External API (EAPI) microservice
 │       ├── externalapi-e2e/ # EAPI e2e tests (requires EAPI, LP, and LD microservices)
 │       ├── list-downloader/ # list downloader (LD) microservice

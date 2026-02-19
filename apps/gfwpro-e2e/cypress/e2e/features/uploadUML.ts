@@ -25,7 +25,8 @@ describe('Upload UML File', () => {
   });
 
   When('I select the CAR ID file upload option', () => {
-    // For UML, we also use the "By ID" upload option
+    // UML files are uploaded using the same generic "By ID" (CAR ID) upload option.
+    // There is no separate UML-specific button; this step intentionally reuses the CAR ID upload control for UML.
     locationsPage.clickOnCarIdFileUploadBtn();
   });
 

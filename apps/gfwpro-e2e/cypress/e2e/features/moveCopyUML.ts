@@ -110,10 +110,10 @@ describe('Move/Copy UML Lists', () => {
     // The non-UML locations should have empty Palm Mill ID column,
     // while the copied UML location should have a non-empty Palm Mill ID.
     // First, find the index of the "Palm Mill ID" column.
-    cy.get('.rt-thead.-header .rt-th').then(($headers) => {
-      const headerArray = Cypress.$($headers).toArray();
-      const palmMillIndex = headerArray.findIndex(
-        (h) => Cypress.$(h).text().trim() === 'Palm Mill ID'
+    cy.get('.rt-thead .rt-th').then(($headers) => {
+      const palmMillIndex = Cypress._.findIndex(
+        $headers,
+        (h) => h.innerText.trim() === 'Palm Mill ID'
       );
 
       // Ensure the Palm Mill ID column exists.

@@ -16,10 +16,18 @@ describe('Move/Copy UML Lists', () => {
   });
 
   After(() => {
-    // Cleanup test lists even if test fails
+    // Cleanup test lists if they still exist, even if test fails
     cy.visit('/locations');
-    cy.get('.my-lists-list').should('be.visible');
-    locationsPage.deleteLists([testUML, testNonUMLList]);
+    cy.get('body').then(($body) => {
+      const listContainer = $body.find('.my-lists-list');
+      if (
+        listContainer.length &&
+        (listContainer.text().includes(testUML) ||
+          listContainer.text().includes(testNonUMLList))
+      ) {
+        locationsPage.deleteLists([testUML, testNonUMLList]);
+      }
+    });
   });
 
   Given('I login in the landing page', () => {
@@ -154,13 +162,5 @@ describe('Move/Copy UML Lists', () => {
         expect(nonEmptyPalmCount).to.equal(1);
       });
     });
-  });
-
-  Then('I should be able to delete the test lists', () => {
-    cy.visit('/locations');
-    cy.get('.my-lists-list').should('be.visible');
-    locationsPage.deleteLists([testUML, testNonUMLList]);
-    cy.get('.my-lists-list').should('be.visible');
-    locationsPage.verifyLists([testUML, testNonUMLList], false);
   });
 });

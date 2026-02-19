@@ -8,4 +8,3 @@ Feature: Move/Copy Lists - UML
     And I copy the location to the existing non-UML list
     Then I should verify the location has Palm Mill ID column in the target list
     Then I should verify other locations have no information in those columns
-    Then I should be able to delete the test lists

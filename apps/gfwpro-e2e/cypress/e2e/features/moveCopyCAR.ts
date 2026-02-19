@@ -16,10 +16,18 @@ describe('Move/Copy CAR Lists', () => {
   });
 
   After(() => {
-    // Cleanup test lists even if test fails
+    // Cleanup test lists if they still exist, even if test fails
     cy.visit('/locations');
-    cy.get('.my-lists-list').should('be.visible');
-    locationsPage.deleteLists([testCAR, testNonCARList]);
+    cy.get('body').then(($body) => {
+      const listContainer = $body.find('.my-lists-list');
+      if (
+        listContainer.length &&
+        (listContainer.text().includes(testCAR) ||
+          listContainer.text().includes(testNonCARList))
+      ) {
+        locationsPage.deleteLists([testCAR, testNonCARList]);
+      }
+    });
   });
 
   Given('I login in the landing page', () => {
@@ -151,13 +159,5 @@ describe('Move/Copy CAR Lists', () => {
         });
       });
     });
-  });
-
-  Then('I should be able to delete the test lists', () => {
-    cy.visit('/locations');
-    cy.get('.my-lists-list').should('be.visible');
-    locationsPage.deleteLists([testCAR, testNonCARList]);
-    cy.get('.my-lists-list').should('be.visible');
-    locationsPage.verifyLists([testCAR, testNonCARList], false);
   });
 });

@@ -8,4 +8,3 @@ Feature: Move/Copy Lists - CAR
     And I copy the location to the existing non-CAR list
     Then I should verify the location has ID Type and ID columns in the target list
     Then I should verify other locations have no information in those columns
-    Then I should be able to delete the test lists

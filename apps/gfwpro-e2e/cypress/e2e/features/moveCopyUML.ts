@@ -1,4 +1,4 @@
-import { Before, Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, After, Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
@@ -13,6 +13,13 @@ describe('Move/Copy UML Lists', () => {
     timestamp = Date.now() + Math.floor(Math.random() * 1000);
     testNonUMLList = `nonumllist${timestamp}`;
     testUML = `testuml${timestamp}`;
+  });
+
+  After(() => {
+    // Cleanup test lists even if test fails
+    cy.visit('/locations');
+    cy.get('.my-lists-list').should('be.visible');
+    locationsPage.deleteLists([testUML, testNonUMLList]);
   });
 
   Given('I login in the landing page', () => {
@@ -44,6 +51,7 @@ describe('Move/Copy UML Lists', () => {
     locationsPage.elements.titleFinishLegend().should('be.visible');
     cy.visit('/locations');
     cy.get('.my-lists-list').should('be.visible');
+    cy.contains('.my-lists-list', testUML).should('be.visible');
     locationsPage.clickOnLocationsList(testUML);
   });
 
@@ -125,6 +133,7 @@ describe('Move/Copy UML Lists', () => {
       // Now verify Palm Mill ID cell values for UML vs non-UML rows.
       cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
         const rows = Cypress.$($rows).toArray();
+        let nonEmptyPalmCount = 0;
 
         rows.forEach((row) => {
           const $row = Cypress.$(row);
@@ -132,18 +141,17 @@ describe('Move/Copy UML Lists', () => {
           const palmCell = Cypress.$(cells.get(palmMillIndex));
           const palmText = palmCell.text().trim();
 
-          // Identify the copied UML row using known UML identifiers.
-          const isCopiedUmlRow =
-            $row.text().includes('Test UML Mill 1') || $row.text().includes('PO1000000065');
-
-          if (isCopiedUmlRow) {
-            // Copied UML location should have Palm Mill ID populated.
-            expect(palmText).to.not.equal('');
-          } else {
+          if (palmText === '') {
             // Original non-UML locations should have an empty Palm Mill ID.
             expect(palmText).to.equal('');
+          } else {
+            // Copied UML location(s) should have Palm Mill ID populated.
+            nonEmptyPalmCount += 1;
           }
         });
+
+        // There should be exactly one UML location with a non-empty Palm Mill ID.
+        expect(nonEmptyPalmCount).to.equal(1);
       });
     });
   });

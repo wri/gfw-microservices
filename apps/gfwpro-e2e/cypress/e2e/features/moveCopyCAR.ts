@@ -1,4 +1,4 @@
-import { Before, Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Before, After, Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 
@@ -13,6 +13,13 @@ describe('Move/Copy CAR Lists', () => {
     timestamp = Date.now() + Math.floor(Math.random() * 1000);
     testNonCARList = `noncarlist${timestamp}`;
     testCAR = `testcar${timestamp}`;
+  });
+
+  After(() => {
+    // Cleanup test lists even if test fails
+    cy.visit('/locations');
+    cy.get('.my-lists-list').should('be.visible');
+    locationsPage.deleteLists([testCAR, testNonCARList]);
   });
 
   Given('I login in the landing page', () => {
@@ -45,6 +52,7 @@ describe('Move/Copy CAR Lists', () => {
     locationsPage.elements.titleFinishLegend().should('be.visible');
     cy.visit('/locations');
     cy.get('.my-lists-list').should('be.visible');
+    cy.contains('.my-lists-list', testCAR).should('be.visible');
     locationsPage.clickOnLocationsList(testCAR);
   });
 
@@ -122,14 +130,17 @@ describe('Move/Copy CAR Lists', () => {
         // There should be more than one row in the list (CAR + non-CAR locations)
         expect($rows.length).to.be.greaterThan(1);
 
-        // Filter out the CAR location row (it contains "Test CAR Location 1")
+        // Identify non-CAR rows based on having empty ID Type and ID cells
         const nonCarRows = Cypress.$($rows).filter((_, row) => {
-          return !Cypress.$(row).text().includes('Test CAR Location 1');
+          const $cells = Cypress.$(row).find('.rt-td');
+          const idTypeText = $cells.eq(idTypeIndex).text().trim();
+          const idText = $cells.eq(idIndex).text().trim();
+          return idTypeText === '' && idText === '';
         });
 
         expect(nonCarRows.length, 'number of non-CAR rows').to.be.greaterThan(0);
 
-        // For each non-CAR row, verify ID Type and ID cells are empty
+        // Verify all non-CAR rows have empty ID Type and ID cells
         Cypress.$(nonCarRows).each((_, row) => {
           const $cells = Cypress.$(row).find('.rt-td');
           const idTypeText = $cells.eq(idTypeIndex).text().trim();

@@ -47,6 +47,25 @@ describe('Upload CAR File', () => {
     cy.contains('Test CAR Location 1').should('be.visible');
     cy.contains('CAR').should('be.visible');
 
+    // Verify that the actual ID value from the CSV is displayed in the preview
+    cy.readFile(filePath).then((csvContent: string) => {
+      const lines = csvContent.trim().split('\n');
+      if (lines.length < 2) {
+        throw new Error('uploadCAR.csv does not contain any data rows');
+      }
+
+      const headers = lines[0].split(',');
+      const idIndex = headers.indexOf('ID');
+      if (idIndex === -1) {
+        throw new Error('uploadCAR.csv does not contain an "ID" column');
+      }
+
+      const firstDataRow = lines[1].split(',');
+      const idValue = firstDataRow[idIndex].replace(/^\s*"|"\s*$/g, '');
+
+      cy.contains(idValue).should('be.visible');
+    });
+
     locationsPage.clickOnNextBtn();
   });
 

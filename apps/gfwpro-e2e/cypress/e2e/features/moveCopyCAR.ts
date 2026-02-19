@@ -89,6 +89,9 @@ describe('Move/Copy CAR Lists', () => {
   });
 
   Then('I should verify the location has ID Type and ID columns in the target list', () => {
+    // Wait for copy operation to complete before navigating
+    cy.wait(2000);
+
     cy.visit('/locations');
     cy.get('.my-lists-list').should('be.visible');
     locationsPage.clickOnLocationsList(testNonCARList);

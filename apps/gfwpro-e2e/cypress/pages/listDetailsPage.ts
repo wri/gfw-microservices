@@ -372,7 +372,7 @@ class ListDetailsPage {
 
   // Helper methods for CAR and UML testing
   verifyColumnExists(columnName: string) {
-    cy.contains(columnName).should('be.visible');
+    this.getColumnHeader(columnName).should('be.visible');
   }
 
   verifyColumnsExist(columnNames: string[]) {
@@ -381,12 +381,16 @@ class ListDetailsPage {
     });
   }
 
-  verifyIDTypeColumnData(expectedValue: string) {
+  private verifyTableContains(expectedValue: string) {
     cy.get('.rt-tbody').contains(expectedValue).should('exist');
   }
 
+  verifyIDTypeColumnData(expectedValue: string) {
+    this.verifyTableContains(expectedValue);
+  }
+
   verifyPalmMillIDColumnData(expectedValue: string) {
-    cy.get('.rt-tbody').contains(expectedValue).should('exist');
+    this.verifyTableContains(expectedValue);
   }
 }
 

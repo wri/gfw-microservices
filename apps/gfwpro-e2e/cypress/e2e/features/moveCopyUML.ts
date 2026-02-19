@@ -87,27 +87,27 @@ describe('Move/Copy UML Lists', () => {
     listDetailsPage.clickOnConfirmActionBtn();
   });
 
-  Then(
-    'I should verify the location has ID Type and Palm Mill ID columns in the target list',
-    () => {
-      cy.visit('/locations');
-      cy.get('.my-lists-list').should('be.visible');
-      locationsPage.clickOnLocationsList(testNonUMLList);
-      cy.get('.rt-tbody').should('be.visible');
+  Then('I should verify the location has Palm Mill ID column in the target list', () => {
+    // Wait for copy operation to complete before navigating
+    cy.wait(2000);
 
-      // Open column selector to show all columns
-      listDetailsPage.clickMoreOptionsTableColumnBtn();
-      cy.get('[data-cy="select-deselect-all-columns"]').should('be.visible');
-      listDetailsPage.selectAllOptions();
+    cy.visit('/locations');
+    cy.get('.my-lists-list').should('be.visible');
+    locationsPage.clickOnLocationsList(testNonUMLList);
+    cy.get('.rt-tbody').should('be.visible');
 
-      // Verify Palm Mill ID column is visible (UML lists use Palm Mill ID, not ID Type)
-      cy.contains('Palm Mill ID', { timeout: 10000 }).should('be.visible');
+    // Open column selector to show all columns
+    listDetailsPage.clickMoreOptionsTableColumnBtn();
+    cy.get('[data-cy="select-deselect-all-columns"]').should('be.visible');
+    listDetailsPage.selectAllOptions();
 
-      // Verify the UML location has data in these columns
-      cy.contains('Test UML Mill 1').should('be.visible');
-      cy.get('.rt-tbody').contains('PO1000000065').should('exist');
-    }
-  );
+    // Verify Palm Mill ID column is visible (UML lists use Palm Mill ID, not ID Type)
+    cy.contains('Palm Mill ID', { timeout: 10000 }).should('be.visible');
+
+    // Verify the UML location has data in these columns
+    cy.contains('Test UML Mill 1').should('be.visible');
+    cy.get('.rt-tbody').contains('PO1000000065').should('exist');
+  });
 
   Then('I should verify other locations have no information in those columns', () => {
     // The non-UML locations should have empty ID Type and Palm Mill ID columns

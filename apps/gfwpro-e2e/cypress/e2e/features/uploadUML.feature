@@ -6,6 +6,6 @@ Feature: User can upload locations using UML (Universal Mill List) IDs
     When I click on the Add Locations button
     And I select the CAR ID file upload option
     When I click on the Drop file button and drag a UML CSV file
-    Then I should see the UML list preview with ID Type and Palm Mill ID columns
+    Then I should see the UML list preview with Palm Mill ID and Analysis Radius columns
     Then I complete the UML form and confirm the upload
     Then I should see the confirmation message

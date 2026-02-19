@@ -34,7 +34,7 @@ describe('Upload UML File', () => {
     locationsPage.clickOnNextBtn();
   });
 
-  Then('I should see the UML list preview with ID Type and Palm Mill ID columns', () => {
+  Then('I should see the UML list preview with Palm Mill ID and Analysis Radius columns', () => {
     // Wait for the preview screen to load
     locationsPage.elements.titleListPreview().should('be.visible');
 

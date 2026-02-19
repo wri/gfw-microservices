@@ -114,11 +114,12 @@ class LocationsPage {
         cy.get('[class*="locations-list__title"]').contains(listName).should('be.visible');
       } else {
         // verify the list does not exist - use Cypress's retry logic
-        cy.get('[class*="locations-list__title"]').should(($titles) => {
-          const found = $titles.text().includes(listName);
-          if (found) {
-            throw new Error(`List "${listName}" should not exist but was found`);
-          }
+        cy.get('body').should(($body) => {
+          const titles = $body.find('[class*="locations-list__title"]');
+          const found = Array.from(titles).some((el) =>
+            el.textContent?.includes(listName)
+          );
+          expect(found, `List "${listName}" should not exist but was found`).to.be.false;
         });
       }
     });

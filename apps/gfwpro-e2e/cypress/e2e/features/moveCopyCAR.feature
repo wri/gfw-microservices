@@ -1,6 +1,6 @@
 Feature: Move/Copy Lists - CAR
 
-  Scenario: A non-CAR list becomes one, once locations from a CAR list are moved or copied
+  Scenario: A non-CAR list becomes one, once locations from a CAR list are copied
     Given I login in the landing page
     When I navigate to a CAR list details page
     Then I should be able to create a non-CAR list for testing

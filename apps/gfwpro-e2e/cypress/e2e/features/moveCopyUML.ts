@@ -22,8 +22,7 @@ describe('Move/Copy UML Lists', () => {
       const listContainer = $body.find('.my-lists-list');
       if (
         listContainer.length &&
-        (listContainer.text().includes(testUML) ||
-          listContainer.text().includes(testNonUMLList))
+        (listContainer.text().includes(testUML) || listContainer.text().includes(testNonUMLList))
       ) {
         locationsPage.deleteLists([testUML, testNonUMLList]);
       }

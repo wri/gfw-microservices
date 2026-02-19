@@ -22,8 +22,7 @@ describe('Move/Copy CAR Lists', () => {
       const listContainer = $body.find('.my-lists-list');
       if (
         listContainer.length &&
-        (listContainer.text().includes(testCAR) ||
-          listContainer.text().includes(testNonCARList))
+        (listContainer.text().includes(testCAR) || listContainer.text().includes(testNonCARList))
       ) {
         locationsPage.deleteLists([testCAR, testNonCARList]);
       }

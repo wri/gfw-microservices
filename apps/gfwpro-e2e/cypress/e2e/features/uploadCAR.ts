@@ -54,6 +54,8 @@ describe('Upload CAR File', () => {
         throw new Error('uploadCAR.csv does not contain any data rows');
       }
 
+      // Simple CSV parsing - assumes no commas within quoted fields in test data
+      // For production use, consider a CSV parsing library
       const headers = lines[0].split(',');
       const idIndex = headers.indexOf('ID');
       if (idIndex === -1) {

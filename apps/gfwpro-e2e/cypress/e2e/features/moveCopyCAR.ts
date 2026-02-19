@@ -110,8 +110,36 @@ describe('Move/Copy CAR Lists', () => {
 
   Then('I should verify other locations have no information in those columns', () => {
     // The non-CAR locations should have empty ID Type and ID columns
-    // This is verified by checking that not all rows have CAR data
-    cy.get('.rt-tbody .rt-tr-group').should('have.length.greaterThan', 1);
+    // Find the column indexes for "ID Type" and "ID" from the header
+    cy.get('.rt-thead .rt-th').then(($headers) => {
+      const idTypeIndex = Cypress._.findIndex($headers, (h) => h.innerText.trim() === 'ID Type');
+      const idIndex = Cypress._.findIndex($headers, (h) => h.innerText.trim() === 'ID');
+
+      expect(idTypeIndex, 'ID Type column index').to.be.greaterThan(-1);
+      expect(idIndex, 'ID column index').to.be.greaterThan(-1);
+
+      cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
+        // There should be more than one row in the list (CAR + non-CAR locations)
+        expect($rows.length).to.be.greaterThan(1);
+
+        // Filter out the CAR location row (it contains "Test CAR Location 1")
+        const nonCarRows = Cypress.$($rows).filter((_, row) => {
+          return !Cypress.$(row).text().includes('Test CAR Location 1');
+        });
+
+        expect(nonCarRows.length, 'number of non-CAR rows').to.be.greaterThan(0);
+
+        // For each non-CAR row, verify ID Type and ID cells are empty
+        Cypress.$(nonCarRows).each((_, row) => {
+          const $cells = Cypress.$(row).find('.rt-td');
+          const idTypeText = $cells.eq(idTypeIndex).text().trim();
+          const idText = $cells.eq(idIndex).text().trim();
+
+          expect(idTypeText, 'ID Type for non-CAR row').to.eq('');
+          expect(idText, 'ID for non-CAR row').to.eq('');
+        });
+      });
+    });
   });
 
   Then('I should be able to delete the test lists', () => {

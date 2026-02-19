@@ -107,9 +107,46 @@ describe('Move/Copy UML Lists', () => {
   });
 
   Then('I should verify other locations have no information in those columns', () => {
-    // The non-UML locations should have empty ID Type and Palm Mill ID columns
-    // This is verified by checking that not all rows have UML data
-    cy.get('.rt-tbody .rt-tr-group').should('have.length.greaterThan', 1);
+    // The non-UML locations should have empty Palm Mill ID column,
+    // while the copied UML location should have a non-empty Palm Mill ID.
+    // First, find the index of the "Palm Mill ID" column.
+    cy.get('.rt-thead.-header .rt-th').then(($headers) => {
+      const headerArray = Cypress.$($headers).toArray();
+      const palmMillIndex = headerArray.findIndex((h) =>
+        Cypress.$(h).text().trim() === 'Palm Mill ID'
+      );
+
+      // Ensure the Palm Mill ID column exists.
+      expect(palmMillIndex).to.be.greaterThan(-1);
+
+      // Ensure there is more than one row (UML + non-UML locations).
+      cy.get('.rt-tbody .rt-tr-group').should('have.length.greaterThan', 1);
+
+      // Now verify Palm Mill ID cell values for UML vs non-UML rows.
+      cy.get('.rt-tbody .rt-tr-group').then(($rows) => {
+        const rows = Cypress.$($rows).toArray();
+
+        rows.forEach((row) => {
+          const $row = Cypress.$(row);
+          const cells = $row.find('.rt-td');
+          const palmCell = Cypress.$(cells.get(palmMillIndex));
+          const palmText = palmCell.text().trim();
+
+          // Identify the copied UML row using known UML identifiers.
+          const isCopiedUmlRow =
+            $row.text().includes('Test UML Mill 1') ||
+            $row.text().includes('PO1000000065');
+
+          if (isCopiedUmlRow) {
+            // Copied UML location should have Palm Mill ID populated.
+            expect(palmText).to.not.equal('');
+          } else {
+            // Original non-UML locations should have an empty Palm Mill ID.
+            expect(palmText).to.equal('');
+          }
+        });
+      });
+    });
   });
 
   Then('I should be able to delete the test lists', () => {

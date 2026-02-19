@@ -88,9 +88,6 @@ describe('Move/Copy UML Lists', () => {
   });
 
   Then('I should verify the location has Palm Mill ID column in the target list', () => {
-    // Wait for copy operation to complete before navigating
-    cy.wait(2000);
-
     cy.visit('/locations');
     cy.get('.my-lists-list').should('be.visible');
     locationsPage.clickOnLocationsList(testNonUMLList);
@@ -104,9 +101,9 @@ describe('Move/Copy UML Lists', () => {
     // Verify Palm Mill ID column is visible (UML lists use Palm Mill ID, not ID Type)
     cy.contains('Palm Mill ID', { timeout: 10000 }).should('be.visible');
 
-    // Verify the UML location has data in these columns
-    cy.contains('Test UML Mill 1').should('be.visible');
-    cy.get('.rt-tbody').contains('PO1000000065').should('exist');
+    // Verify the UML location has data in these columns (with longer timeout for async copy)
+    cy.contains('Test UML Mill 1', { timeout: 15000 }).should('be.visible');
+    cy.get('.rt-tbody', { timeout: 15000 }).contains('PO1000000065').should('exist');
   });
 
   Then('I should verify other locations have no information in those columns', () => {

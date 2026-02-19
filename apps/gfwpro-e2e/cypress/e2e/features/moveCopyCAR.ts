@@ -89,9 +89,6 @@ describe('Move/Copy CAR Lists', () => {
   });
 
   Then('I should verify the location has ID Type and ID columns in the target list', () => {
-    // Wait for copy operation to complete before navigating
-    cy.wait(2000);
-
     cy.visit('/locations');
     cy.get('.my-lists-list').should('be.visible');
     locationsPage.clickOnLocationsList(testNonCARList);
@@ -106,9 +103,9 @@ describe('Move/Copy CAR Lists', () => {
     cy.contains('ID Type').should('be.visible');
     cy.contains('ID').should('be.visible');
 
-    // Verify the CAR location has data in these columns
-    cy.contains('Test CAR Location 1').should('be.visible');
-    cy.get('.rt-tbody').contains('CAR').should('exist');
+    // Verify the CAR location has data in these columns (with longer timeout for async copy)
+    cy.contains('Test CAR Location 1', { timeout: 15000 }).should('be.visible');
+    cy.get('.rt-tbody', { timeout: 15000 }).contains('CAR').should('exist');
   });
 
   Then('I should verify other locations have no information in those columns', () => {

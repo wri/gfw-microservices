@@ -112,8 +112,8 @@ describe('Move/Copy UML Lists', () => {
     // First, find the index of the "Palm Mill ID" column.
     cy.get('.rt-thead.-header .rt-th').then(($headers) => {
       const headerArray = Cypress.$($headers).toArray();
-      const palmMillIndex = headerArray.findIndex((h) =>
-        Cypress.$(h).text().trim() === 'Palm Mill ID'
+      const palmMillIndex = headerArray.findIndex(
+        (h) => Cypress.$(h).text().trim() === 'Palm Mill ID'
       );
 
       // Ensure the Palm Mill ID column exists.
@@ -134,8 +134,7 @@ describe('Move/Copy UML Lists', () => {
 
           // Identify the copied UML row using known UML identifiers.
           const isCopiedUmlRow =
-            $row.text().includes('Test UML Mill 1') ||
-            $row.text().includes('PO1000000065');
+            $row.text().includes('Test UML Mill 1') || $row.text().includes('PO1000000065');
 
           if (isCopiedUmlRow) {
             // Copied UML location should have Palm Mill ID populated.

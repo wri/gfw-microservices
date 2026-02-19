@@ -1,4 +1,5 @@
 import './GDPRFooter.scss';
+import { privacyPolicy, termsOfServices, licenseAgreement } from '../../config';
 
 /**
  * GDPRFooter Component
@@ -24,22 +25,18 @@ export default function GDPRFooter({ variant = 'default' }) {
       window.Osano.cm.showDrawer('purposes');
     } else {
       // Fallback if Osano is not loaded - redirect to privacy policy
-      window.open('https://www.globalforestwatch.org/privacy-policy/', '_blank', 'noreferrer');
+      window.open(privacyPolicy, '_blank', 'noreferrer');
     }
   };
 
   return (
     <div className={variantClasses[variant] || variantClasses.default}>
       <p>
-        <a
-          href="https://www.globalforestwatch.org/privacy-policy/"
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a href={privacyPolicy} target="_blank" rel="noreferrer">
           Privacy Policy
-        </a>{' '}
+        </a>
         <a
-          href="https://www.globalforestwatch.org/privacy-policy/"
+          href={privacyPolicy}
           onClick={handleCookiePreferenceClick}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -53,6 +50,12 @@ export default function GDPRFooter({ variant = 'default' }) {
           style={{ cursor: 'pointer' }}
         >
           Cookies Preference
+        </a>
+        <a href={termsOfServices} target="_blank" rel="noreferrer">
+          Terms of Use
+        </a>
+        <a href={licenseAgreement} target="_blank" rel="noreferrer">
+          License Agreement
         </a>
       </p>
     </div>

@@ -21,6 +21,7 @@ import {
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
+import * as UserManager from '../../../config/publicutils/userManager.utils';
 
 /**
  * @function analytics
@@ -277,14 +278,27 @@ export const getMyOrganizationAnalysisOptions = (req, res) => {
   res.status(200).send(Object.values(analysisTypes));
 };
 
-export const downladOrganizationUsersUsageExport = async (req, res) => {
+export const downloadOrganizationUsersUsageExport = async (req, res) => {
   const {
     organization_database: organizationDatabase,
     user_email: userEmail,
-    organization_id: orgId,
+    organization_id: sessionOrgId,
   } = req.session;
 
-  let { startDate, endDate } = req.query;
+  let { startDate, endDate, orgId: queryOrgIdStr } = req.query;
+
+  const queryOrgId = parseInt(queryOrgIdStr, 10);
+
+  if (queryOrgId && queryOrgId !== sessionOrgId && !UserManager.isProManager(req)) {
+    return res.status(403).send({
+      status: 403,
+      message: {
+        error: "Unauthorized: Only Pro Managers can access other organizations' data.",
+        success: false,
+      },
+    });
+  }
+
   if (startDate && endDate) {
     const { error } = validateQueryParams({ startDate, endDate });
     if (error) {
@@ -297,7 +311,7 @@ export const downladOrganizationUsersUsageExport = async (req, res) => {
       });
     }
   } else {
-    const orgActivatedTime = await getAccountRenewalTime(orgId);
+    const orgActivatedTime = await getAccountRenewalTime(queryOrgId || sessionOrgId);
     const todayAsEndDay = addDays(new Date(), 1);
     const accountActivationDate = new Date(orgActivatedTime);
     const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);

@@ -55,7 +55,10 @@ module.exports = (app, limiter) => {
     '/usage/usage-by-analysis',
     controller.getMyAccountAnalysisUsageByAnalysisType
   );
-  myOrgAnalyticsRouter.get('/usage/users/download', controller.downladOrganizationUsersUsageExport);
+  myOrgAnalyticsRouter.get(
+    '/usage/users/download',
+    controller.downloadOrganizationUsersUsageExport
+  );
   myOrgAnalyticsRouter.get('/usagePercentage', controller.getMyOrganizationAnalysisUsagePercentage);
   myOrgAnalyticsRouter.get('/options', controller.getMyOrganizationAnalysisOptions);
   myOrgAnalyticsRouter.get('/limits', controller.getMyOrganizationAnalysisLimit);

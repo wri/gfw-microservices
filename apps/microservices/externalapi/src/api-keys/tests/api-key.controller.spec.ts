@@ -64,28 +64,7 @@ describe('api-key', () => {
       },
     });
 
-    sandbox.stub(dummyGateway.constructor.prototype, 'createUsagePlanKey').returns({
-      promise: () => {
-        return {
-          /**
-           * The Id of a usage plan key.
-           */
-          id: 'string',
-          /**
-           * The type of a usage plan key. Currently, the valid key type is API_KEY.
-           */
-          type: 'API_KEY',
-          /**
-           * The value of a usage plan key.
-           */
-          value: 'string',
-          /**
-           * The name of a usage plan key.
-           */
-          name: 'string',
-        };
-      },
-    });
+    // Note: createUsagePlanKey stub removed - not supported in API Gateway V2
 
     const stub = sandbox.stub(dummyGateway.constructor.prototype, 'deleteApiKey');
 

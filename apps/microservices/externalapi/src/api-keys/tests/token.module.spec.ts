@@ -67,20 +67,12 @@ describe('Test Token Module', () => {
           /* Mock response for createApiKey */
         }),
       }),
-      createUsagePlanKey: sandbox.stub().returns({
-        promise: sandbox.stub().resolves({
-          /* Mock response for createUsagePlanKey */
-        }),
-      }),
+      // Note: createUsagePlanKey removed - not supported in API Gateway V2
       // You can add other methods and their responses as needed
     };
     // Redefine AWS.APIGateway.prototype to return the instance with the stubbed methods
     Object.defineProperty(APIGateway.constructor.prototype, 'createApiKey', {
       value: apiGatewayInstance.createApiKey,
-    });
-
-    Object.defineProperty(APIGateway.constructor.prototype, 'createUsagePlanKey', {
-      value: apiGatewayInstance.createUsagePlanKey,
     });
 
     //sandbox.stub(AWS, 'APIGateway').returns(new AWS.APIGateway());
@@ -100,28 +92,7 @@ describe('Test Token Module', () => {
       },
     });
 
-    sandbox.stub(dummyGateway.constructor.prototype, 'createUsagePlanKey').returns({
-      promise: () => {
-        return {
-          /**
-           * The Id of a usage plan key.
-           */
-          id: 'string',
-          /**
-           * The type of a usage plan key. Currently, the valid key type is API_KEY.
-           */
-          type: 'API_KEY',
-          /**
-           * The value of a usage plan key.
-           */
-          value: 'string',
-          /**
-           * The name of a usage plan key.
-           */
-          name: 'string',
-        };
-      },
-    });
+    // Note: createUsagePlanKey stub removed - not supported in API Gateway V2
 
     const stub = sandbox.stub(dummyGateway.constructor.prototype, 'deleteApiKey');
 

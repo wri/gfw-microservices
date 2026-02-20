@@ -49,10 +49,9 @@ export default function ApiKeys() {
     return <LoadingModal isLoading={true} />;
   }
 
-  return (
-    <>
-      {keys.length ? <ApiKeysTable keys={keys} deleteKey={deleteKey} /> : null}
-      <CreateApiKeyScreen fetchApiKeys={fetchApiKeys} setIsLoading={setIsLoading} />
-    </>
+  return keys.length ? (
+    <ApiKeysTable keys={keys} deleteKey={deleteKey} />
+  ) : (
+    <CreateApiKeyScreen fetchApiKeys={fetchApiKeys} setIsLoading={setIsLoading} />
   );
 }

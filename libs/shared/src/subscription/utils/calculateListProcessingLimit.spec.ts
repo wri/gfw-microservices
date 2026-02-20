@@ -1,5 +1,9 @@
 import { calculateListProcessingLimit } from './calculateListProcessingLimit';
-import { AnalysisLimit, OrganizationAnalysisUsage, getHALimitForCurrentYear } from '@wri-monorepos/sql';
+import {
+  AnalysisLimit,
+  OrganizationAnalysisUsage,
+  getHALimitForCurrentYear,
+} from '@wri-monorepos/sql';
 import { featureFlagsService } from '../../lib/utils/feature.flag.service';
 
 jest.mock('@wri-monorepos/sql', () => ({
@@ -78,9 +82,9 @@ describe('calculateListProcessingLimit', () => {
   describe('when tokenization is enabled', () => {
     beforeEach(() => {
       mockFeatureFlagsService.mockResolvedValue({
-        getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue([
-          { flagId: 'Tokenization', flagState: true },
-        ]),
+        getFeatureFlagsForCurrentOrg: jest
+          .fn()
+          .mockResolvedValue([{ flagId: 'Tokenization', flagState: true }]),
       });
     });
 

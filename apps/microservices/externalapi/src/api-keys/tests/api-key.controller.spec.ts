@@ -90,10 +90,11 @@ describe('api-key', () => {
       expect(statusCode).toBe(200);
     });
 
-    test('should return 404 when orgId is not found', async () => {
-      const { statusCode } = await request(app.getHttpServer()).get('/api-keys/50');
+    test('should return 200 with empty array when orgId has no tokens', async () => {
+      const { statusCode, body } = await request(app.getHttpServer()).get('/api-keys/50');
 
-      expect(statusCode).toBe(404);
+      expect(statusCode).toBe(200);
+      expect(body).toEqual([]);
     });
   });
 

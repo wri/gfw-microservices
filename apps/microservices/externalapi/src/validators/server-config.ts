@@ -17,8 +17,8 @@ export const serverConfigSchema = z.object({
   LARGE_PROCESSING_LIST_BUCKET: z.string(),
   AWS_ANALYSIS_QUEUE: z.string().url(),
   LD_MICROSERVICE_URL: z.string().url(),
-  AWS_API_USAGE_PLAN_ID: z.string(),
-
+  // AWS_API_USAGE_PLAN_ID removed - not supported in API Gateway V2 (HTTP APIs),
+  // Deprecated by https://github.com/wri/gfwpro-apigateway-terraform/pull/57
   LLP_BASE_URL: z.string().url(),
 
   LATEST_COMMIT: z.string().optional(),

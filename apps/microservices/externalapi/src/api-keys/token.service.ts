@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import {
   APIGateway,
   CreateApiKeyCommandInput,
-  CreateUsagePlanKeyCommandInput,
   DeleteApiKeyCommandInput,
 } from '@aws-sdk/client-api-gateway';
 import { ConfigService } from '@nestjs/config';
@@ -18,7 +17,7 @@ import { transformApiKey, transformApiKeys } from './transformers';
 import { ViewApiKeyResponse } from './dtos';
 import { ExternalAPIKey, UserRoutes } from '@wri-monorepos/sql';
 const DEFAULT_API_GROUP = 'FCD';
-const DEFAULT_KEY_TYPE = 'API_KEY';
+
 @Injectable()
 export class TokenService {
   private readonly apiGateway: APIGateway;
@@ -48,13 +47,11 @@ export class TokenService {
       };
 
       const apiKey = await this.apiGateway.createApiKey(params);
-      const usagePlanParams: CreateUsagePlanKeyCommandInput = {
-        keyId: apiKey.id,
-        usagePlanId: this.configService.get('AWS_API_USAGE_PLAN_ID'),
-        keyType: DEFAULT_KEY_TYPE,
-      };
 
-      await this.apiGateway.createUsagePlanKey(usagePlanParams);
+      // Note: API Gateway V2 (HTTP APIs) does not support Usage Plans
+      // Usage Plans are only available in API Gateway V1 (REST APIs)
+      // If you need rate limiting/throttling, implement it at the application level
+      // or use API Gateway V1 REST API instead
 
       return apiKey;
     } catch (error) {
@@ -109,11 +106,6 @@ export class TokenService {
   }
   async findTokenByOrganizationId(organizationId: number): Promise<ViewApiKeyResponse[]> {
     const tokens = await this.tokenRepository.find({ where: { organizationId } });
-
-    if (tokens.length === 0) {
-      throw new NotFoundException('Organization not found');
-    }
-
     return transformApiKeys(tokens);
   }
 

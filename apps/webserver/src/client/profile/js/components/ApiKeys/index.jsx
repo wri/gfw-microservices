@@ -9,7 +9,7 @@ export default function ApiKeys() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchApiKeys = () => {
-    fetch('api/profile/api-keys', {
+    fetch('/api/profile/api-keys', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ export default function ApiKeys() {
 
   const deleteKey = (id) => {
     setIsLoading(true);
-    fetch(`api/profile/api-keys/${id}`, {
+    fetch(`/api/profile/api-keys/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

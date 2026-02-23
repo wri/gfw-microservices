@@ -5,7 +5,7 @@ import { PillButton } from '../../../../components';
 export default function CreateApiKeyScreen({ fetchApiKeys, setIsLoading }) {
   const createApiKey = () => {
     setIsLoading(true);
-    fetch('api/profile/api-keys', {
+    fetch('/api/profile/api-keys', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

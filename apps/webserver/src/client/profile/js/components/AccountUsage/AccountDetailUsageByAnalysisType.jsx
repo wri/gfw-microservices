@@ -42,6 +42,7 @@ function AccountDetailUsageByAnalysisType({
   startDateAnalysis,
   endDateAnalysis,
   children,
+  organizationId,
 }) {
   const [orderBy, setOrderBy] = useState('analysis_type');
   const [order, setOrder] = useState('asc');
@@ -99,7 +100,10 @@ function AccountDetailUsageByAnalysisType({
 
   const exportUsage = async () => {
     try {
-      await fetch(`analytics/myorg/usage/users/download`, {
+      const url = organizationId
+        ? `/analytics/usage/users/download?orgId=${organizationId}`
+        : `analytics/myorg/usage/users/download`;
+      await fetch(url, {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
@@ -138,6 +142,7 @@ function AccountDetailUsageByAnalysisType({
           >
             Time Zone: UTC
           </span>
+          <AccountUsageDropMenu export={exportUsage} />
         </Box>
       </Box>
       <Box
@@ -153,7 +158,6 @@ function AccountDetailUsageByAnalysisType({
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Detailed Usage</h3>
           {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
-          <AccountUsageDropMenu export={exportUsage} />
         </Box>
         <Grid container justifyContent="center" sx={{ marginTop: '1em' }}>
           <TableContainer component={Paper}>

@@ -3,7 +3,7 @@ import {
   getOneDayBeforeEndDate,
   todaysDateISOString,
 } from './AccountUsage.utils';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { accountProfileStrings } from '../../../../../common/js/config';
 
 function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {

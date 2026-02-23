@@ -280,7 +280,7 @@ export const getMyOrganizationAnalysisOptions = (req, res) => {
 
 export const downloadOrganizationUsersUsageExport = async (req, res) => {
   const {
-    organization_database: organizationDatabase,
+    organization_database: sessionOrgDatabase,
     user_email: userEmail,
     organization_id: sessionOrgId,
   } = req.session;
@@ -288,8 +288,10 @@ export const downloadOrganizationUsersUsageExport = async (req, res) => {
   let { startDate, endDate, orgId: queryOrgIdStr } = req.query;
 
   const queryOrgId = parseInt(queryOrgIdStr, 10);
+  const isProManager = UserManager.isProManager(req);
+  const targetOrgId = queryOrgId || sessionOrgId;
 
-  if (queryOrgId && queryOrgId !== sessionOrgId && !UserManager.isProManager(req)) {
+  if (queryOrgId && queryOrgId !== sessionOrgId && !isProManager) {
     return res.status(403).send({
       status: 403,
       message: {
@@ -297,6 +299,28 @@ export const downloadOrganizationUsersUsageExport = async (req, res) => {
         success: false,
       },
     });
+  }
+
+  // Pro Managers must provide orgId
+  if (isProManager && !queryOrgId) {
+    return res.status(400).send({
+      status: 400,
+      message: {
+        error: 'orgId parameter is required for Pro Managers.',
+        success: false,
+      },
+    });
+  }
+
+  // Get the organization database for the target organization
+  let organizationDatabase = sessionOrgDatabase;
+  if (!organizationDatabase || (queryOrgId && queryOrgId !== sessionOrgId)) {
+    const { organizationDb } = await SQLUtils.queryDBFirstRow(
+      config.SQLConnection.database,
+      'getOrganizationDb',
+      [{ field: 'organizationId', type: sql.Int, value: targetOrgId }]
+    );
+    organizationDatabase = organizationDb;
   }
 
   if (startDate && endDate) {
@@ -311,7 +335,7 @@ export const downloadOrganizationUsersUsageExport = async (req, res) => {
       });
     }
   } else {
-    const orgActivatedTime = await getAccountRenewalTime(queryOrgId || sessionOrgId);
+    const orgActivatedTime = await getAccountRenewalTime(targetOrgId);
     const todayAsEndDay = addDays(new Date(), 1);
     const accountActivationDate = new Date(orgActivatedTime);
     const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);

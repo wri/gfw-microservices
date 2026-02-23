@@ -48,16 +48,18 @@ module.exports = (app, limiter) => {
     '/usage/usage-by-analysis',
     controller.getMyAccountAnalysisUsageByAnalysisType
   );
+  // Pro Managers need this route since they don't have org session variables
+  analyticsRouter.get('/usage/users/download', controller.downloadOrganizationUsersUsageExport);
 
   myOrgAnalyticsRouter.get('/usage', controller.getMyOrganizationAnalysisUsage);
+  myOrgAnalyticsRouter.get(
+    '/usage/users/download',
+    controller.downloadOrganizationUsersUsageExport
+  );
   myOrgAnalyticsRouter.get('/usage/users', controller.getMyOrganizationUsersAnalysisUsage);
   myOrgAnalyticsRouter.get(
     '/usage/usage-by-analysis',
     controller.getMyAccountAnalysisUsageByAnalysisType
-  );
-  myOrgAnalyticsRouter.get(
-    '/usage/users/download',
-    controller.downloadOrganizationUsersUsageExport
   );
   myOrgAnalyticsRouter.get('/usagePercentage', controller.getMyOrganizationAnalysisUsagePercentage);
   myOrgAnalyticsRouter.get('/options', controller.getMyOrganizationAnalysisOptions);

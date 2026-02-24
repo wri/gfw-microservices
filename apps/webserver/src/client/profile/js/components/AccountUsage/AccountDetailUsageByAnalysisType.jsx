@@ -102,14 +102,17 @@ function AccountDetailUsageByAnalysisType({
     try {
       const url = organizationId
         ? `/analytics/usage/users/download?orgId=${organizationId}`
-        : `analytics/myorg/usage/users/download`;
-      await fetch(url, {
+        : `/analytics/myorg/usage/users/download`;
+      const response = await fetch(url, {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
           'Content-type': 'application/json',
         },
       });
+      if (!response.ok) {
+        return handleDownloadConfirmation('error');
+      }
       return handleDownloadConfirmation('success');
     } catch {
       handleDownloadConfirmation('error');

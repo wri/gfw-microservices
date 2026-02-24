@@ -279,90 +279,116 @@ export const getMyOrganizationAnalysisOptions = (req, res) => {
 };
 
 export const downloadOrganizationUsersUsageExport = async (req, res) => {
-  const {
-    organization_database: sessionOrgDatabase,
-    user_email: userEmail,
-    organization_id: sessionOrgId,
-  } = req.session;
+  try {
+    const {
+      organization_database: sessionOrgDatabase,
+      user_email: userEmail,
+      organization_id: sessionOrgId,
+    } = req.session;
 
-  let { startDate, endDate, orgId: queryOrgIdStr } = req.query;
+    let { startDate, endDate, orgId: queryOrgIdStr } = req.query;
 
-  const queryOrgId = parseInt(queryOrgIdStr, 10);
-  const isProManager = UserManager.isProManager(req);
-  const targetOrgId = queryOrgId || sessionOrgId;
+    const isProManager = UserManager.isProManager(req);
 
-  if (queryOrgId && queryOrgId !== sessionOrgId && !isProManager) {
-    return res.status(403).send({
-      status: 403,
-      message: {
-        error: "Unauthorized: Only Pro Managers can access other organizations' data.",
-        success: false,
-      },
-    });
-  }
+    // Validate orgId if provided
+    let queryOrgId = null;
+    if (queryOrgIdStr) {
+      queryOrgId = parseInt(queryOrgIdStr, 10);
+      if (!Number.isInteger(queryOrgId) || queryOrgId <= 0) {
+        return res.status(400).send({
+          status: 400,
+          message: {
+            error: 'orgId must be a valid positive integer.',
+            success: false,
+          },
+        });
+      }
+    }
 
-  // Pro Managers must provide orgId
-  if (isProManager && !queryOrgId) {
-    return res.status(400).send({
-      status: 400,
-      message: {
-        error: 'orgId parameter is required for Pro Managers.',
-        success: false,
-      },
-    });
-  }
+    const targetOrgId = queryOrgId || sessionOrgId;
 
-  // Get the organization database for the target organization
-  let organizationDatabase = sessionOrgDatabase;
-  if (!organizationDatabase || (queryOrgId && queryOrgId !== sessionOrgId)) {
-    const { organizationDb } = await SQLUtils.queryDBFirstRow(
-      config.SQLConnection.database,
-      'getOrganizationDb',
-      [{ field: 'organizationId', type: sql.Int, value: targetOrgId }]
-    );
-    organizationDatabase = organizationDb;
-  }
-
-  if (startDate && endDate) {
-    const { error } = validateQueryParams({ startDate, endDate });
-    if (error) {
-      return res.status(400).send({
-        status: 400,
+    if (queryOrgId && queryOrgId !== sessionOrgId && !isProManager) {
+      return res.status(403).send({
+        status: 403,
         message: {
-          error,
+          error: "Unauthorized: Only Pro Managers can access other organizations' data.",
           success: false,
         },
       });
     }
-  } else {
-    const orgActivatedTime = await getAccountRenewalTime(targetOrgId);
-    const todayAsEndDay = addDays(new Date(), 1);
-    const accountActivationDate = new Date(orgActivatedTime);
-    const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
-    const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
 
-    startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
-    endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
+    // Pro Managers must provide orgId
+    if (isProManager && !queryOrgId) {
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error: 'orgId parameter is required for Pro Managers.',
+          success: false,
+        },
+      });
+    }
+
+    // Get the organization database for the target organization
+    let organizationDatabase = sessionOrgDatabase;
+    if (!organizationDatabase || (queryOrgId && queryOrgId !== sessionOrgId)) {
+      const { organizationDb } = await SQLUtils.queryDBFirstRow(
+        config.SQLConnection.database,
+        'getOrganizationDb',
+        [{ field: 'organizationId', type: sql.Int, value: targetOrgId }]
+      );
+      organizationDatabase = organizationDb;
+    }
+
+    if (startDate && endDate) {
+      const { error } = validateQueryParams({ startDate, endDate });
+      if (error) {
+        return res.status(400).send({
+          status: 400,
+          message: {
+            error,
+            success: false,
+          },
+        });
+      }
+    } else {
+      const orgActivatedTime = await getAccountRenewalTime(targetOrgId);
+      const todayAsEndDay = addDays(new Date(), 1);
+      const accountActivationDate = new Date(orgActivatedTime);
+      const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
+      const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
+
+      startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
+      endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
+    }
+
+    const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
+    const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
+
+    const filters = sendMessageToQueue(
+      {
+        userEmail,
+        organizationDatabase,
+        startDate,
+        endDate,
+        fileName,
+      },
+      'accountUsersUsage'
+    );
+
+    return res.status(201).send({
+      success: true,
+      message: filters,
+    });
+  } catch (error) {
+    logger.error('Error in downloadOrganizationUsersUsageExport', error.stack || error);
+    return res.status(500).send({
+      status: 500,
+      message: {
+        error: 'Internal server error.',
+        success: false,
+      },
+    });
   }
-
-  const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
-  const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
-
-  const filters = sendMessageToQueue(
-    {
-      userEmail,
-      organizationDatabase,
-      startDate,
-      endDate,
-      fileName,
-    },
-    'accountUsersUsage'
-  );
-
-  return res.status(201).send({
-    success: true,
-    message: filters,
-  });
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

@@ -123,6 +123,123 @@ export function createErrorMessage(req, error_code, user_msg, system_msg) {
   return objError;
 }
 
+/**
+ * @function sanitizeErrorForClient
+ * @summary Sanitizes error objects by removing sensitive internal information before sending to client.
+ * @description Strips out systemMessage, stack traces, database details, and other internal
+ *              information that could be exploited by attackers. Only returns errorCode and userMessage.
+ * @param {Object|Error} error - The error object to sanitize
+ * @return {Object} A sanitized error object containing only errorCode and userMessage
+ */
+export function sanitizeErrorForClient(error) {
+  // Default safe error response
+  const safeError = {
+    errorCode: 'internalServerError',
+    userMessage: 'An unexpected error occurred. Please try again later.',
+  };
+
+  // If error is null/undefined, return default
+  if (!error) {
+    return safeError;
+  }
+
+  // If error has errorCode and userMessage (our standard error format), return only those
+  if (error.errorCode && error.userMessage) {
+    return {
+      errorCode: error.errorCode,
+      userMessage: error.userMessage,
+    };
+  }
+
+  // If error has code and userMessage (alternate format), use those
+  if (error.code && error.userMessage) {
+    return {
+      errorCode: error.code,
+      userMessage: error.userMessage,
+    };
+  }
+
+  // For any other error type, return the default safe error
+  return safeError;
+}
+
+/**
+ * @function errorSanitizationMiddleware
+ * @summary Express middleware that automatically sanitizes error responses
+ * @description Intercepts res.send() and res.json() to automatically sanitize any error objects
+ *              containing sensitive information (like systemMessage) before sending to clients.
+ *
+ *              Detection criteria (any of these trigger sanitization):
+ *              1. Has 'systemMessage' property (our main vulnerability - contains DB details, stack traces)
+ *              2. Has both 'errorCode' and 'userMessage' (our standard error format)
+ *
+ *              Note: Intentionally does NOT check for native Error objects (message + stack)
+ *              to avoid false positives with legitimate responses that may have these properties.
+ *
+ *              This provides defense-in-depth: even if developers forget to sanitize
+ *              errors manually, this middleware catches them automatically.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+export function errorSanitizationMiddleware(req, res, next) {
+  const originalSend = res.send;
+  const originalJson = res.json;
+
+  /**
+   * Check if data looks like an error object and sanitize if needed
+   * @param {*} data - The data being sent in the response
+   * @returns {*} Original data or sanitized error object
+   */
+  const sanitizeIfError = function (data) {
+    // Skip if not an object (strings, numbers, null, undefined, etc.)
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    // Skip if it's an array (unlikely to be an error object)
+    if (Array.isArray(data)) {
+      return data;
+    }
+
+    // Conservative detection: Only check for specific error patterns
+    // to avoid false positives with legitimate responses that happen
+    // to have 'message' or 'stack' properties
+
+    // Primary vulnerability: Has systemMessage (contains DB details, stack traces, etc.)
+    const hasSystemMessage = 'systemMessage' in data;
+
+    // Our standard error format: errorCode + userMessage
+    const hasErrorCode = 'errorCode' in data;
+    const hasUserMessage = 'userMessage' in data;
+    const isOurErrorFormat = hasErrorCode && hasUserMessage;
+
+    // Only sanitize if it's definitely one of our error formats
+    if (hasSystemMessage || isOurErrorFormat) {
+      return sanitizeErrorForClient(data);
+    }
+
+    // Not an error (or not our error format), return as-is
+    // Note: We intentionally don't check for native Error objects (message + stack)
+    // to avoid false positives with legitimate responses
+    return data;
+  };
+
+  // Intercept res.send()
+  res.send = function (data) {
+    const sanitizedData = sanitizeIfError(data);
+    return originalSend.call(this, sanitizedData);
+  };
+
+  // Intercept res.json()
+  res.json = function (data) {
+    const sanitizedData = sanitizeIfError(data);
+    return originalJson.call(this, sanitizedData);
+  };
+
+  next();
+}
+
 export function errorHandler(error) {
   if (error.response) {
     // The request was made and the server responded with a status code

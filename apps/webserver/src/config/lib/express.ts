@@ -9,6 +9,7 @@ import { randomUUID } from 'crypto';
 
 const favicon = require('serve-favicon');
 import * as logger from '../privateutils/logger.utils';
+import { errorSanitizationMiddleware } from '../privateutils/error.utils';
 import * as express from 'express';
 import { Application, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
@@ -322,6 +323,8 @@ export const initialize = (app: Application) => {
       // configurePassport(app); //TODO: Bake in security via AWS Cognito, nothing to do with Mongo or mongoose
       // Configure Helmet security headers
       configureHelmetHeaders(app);
+      // Configure error sanitization middleware to automatically strip sensitive data from error responses
+      app.use(errorSanitizationMiddleware);
       // Set path for static assets
       configureStaticAssetPath(app);
       // Configure the server routes

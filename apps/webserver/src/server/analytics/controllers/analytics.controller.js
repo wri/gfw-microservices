@@ -291,6 +291,15 @@ export const getMyOrganizationAnalysisOptions = (req, res) => {
   res.status(200).send(Object.values(analysisTypes));
 };
 
+/**
+ * Downloads organization users usage data as CSV export.
+ * This function is used for both organization admins and pro-managers:
+ * - Organization admins: Use their session organization (no orgId query param needed)
+ * - Pro-managers: Must specify the target organization via orgId query parameter
+ *
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ */
 export const downloadOrganizationUsersUsageExport = async (req, res) => {
   try {
     const {
@@ -306,7 +315,7 @@ export const downloadOrganizationUsersUsageExport = async (req, res) => {
     // Validate orgId if provided
     let queryOrgId = null;
     if (queryOrgIdStr) {
-      queryOrgId = parseInt(queryOrgIdStr, 10);
+      queryOrgId = parseInt(String(queryOrgIdStr), 10);
       if (!Number.isInteger(queryOrgId) || queryOrgId <= 0) {
         return res.status(400).send({
           status: 400,

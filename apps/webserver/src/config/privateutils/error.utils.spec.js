@@ -6,14 +6,14 @@ describe('Error Sanitization', () => {
       const error = {
         errorCode: 'TEST_ERROR',
         userMessage: 'User friendly message',
-        systemMessage: 'Sensitive database info: Server=sql-server-123'
+        systemMessage: 'Sensitive database info: Server=sql-server-123',
       };
 
       const result = sanitizeErrorForClient(error);
 
       expect(result).toEqual({
         errorCode: 'TEST_ERROR',
-        userMessage: 'User friendly message'
+        userMessage: 'User friendly message',
       });
       expect(result.systemMessage).toBeUndefined();
     });
@@ -21,7 +21,7 @@ describe('Error Sanitization', () => {
     it('should handle errors without systemMessage', () => {
       const error = {
         errorCode: 'TEST_ERROR',
-        userMessage: 'User friendly message'
+        userMessage: 'User friendly message',
       };
 
       const result = sanitizeErrorForClient(error);
@@ -35,7 +35,7 @@ describe('Error Sanitization', () => {
       // The function returns a generic error for non-error objects
       expect(result).toEqual({
         errorCode: 'internalServerError',
-        userMessage: 'An unexpected error occurred. Please try again later.'
+        userMessage: 'An unexpected error occurred. Please try again later.',
       });
     });
   });
@@ -49,7 +49,7 @@ describe('Error Sanitization', () => {
       originalJson = jest.fn();
       res = {
         send: originalSend,
-        json: originalJson
+        json: originalJson,
       };
       next = jest.fn();
     });
@@ -60,7 +60,7 @@ describe('Error Sanitization', () => {
       const error = {
         errorCode: 'TEST_ERROR',
         userMessage: 'User friendly message',
-        systemMessage: 'Sensitive: SQL error at line 42'
+        systemMessage: 'Sensitive: SQL error at line 42',
       };
 
       res.send(error);
@@ -78,7 +78,7 @@ describe('Error Sanitization', () => {
       const error = {
         errorCode: 'TEST_ERROR',
         userMessage: 'User friendly message',
-        systemMessage: 'Sensitive database details'
+        systemMessage: 'Sensitive database details',
       };
 
       res.json(error);
@@ -94,7 +94,7 @@ describe('Error Sanitization', () => {
       const validResponse = {
         status: 'success',
         data: { id: 1, name: 'Test' },
-        message: 'Operation successful'
+        message: 'Operation successful',
       };
 
       res.json(validResponse);

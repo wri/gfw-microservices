@@ -29,6 +29,32 @@ jest.mock('../../../config/privateutils/logger.utils', () => ({
   error: jest.fn(),
 }));
 
+// Mock config
+jest.mock('../../../config/config', () => ({
+  __esModule: true,
+  default: {
+    SQLConnection: { database: 'test_db' },
+    compiledAssets: { js: {}, css: {} },
+  },
+}));
+
+// Mock mssql
+jest.mock('mssql', () => ({
+  Int: 'mockInt',
+}));
+
+// Mock date-fns
+jest.mock('date-fns', () => ({
+  addDays: jest.fn((date, days) => new Date(date.getTime() + days * 24 * 60 * 60 * 1000)),
+  differenceInDays: jest.fn(() => 365),
+  format: jest.fn(() => '2024-01-01'),
+}));
+
+// Mock vectorTile utils
+jest.mock('../../vectorTiles/utils/vectorTile.utils', () => ({
+  getCurrentDateTimeFormatted: jest.fn(() => '20240101_120000'),
+}));
+
 // Mock SQL utilities
 jest.mock('@wri-monorepos/sql', () => ({
   SQLUtils: {
@@ -77,6 +103,7 @@ jest.mock('../../../config/lib/limiter-util', () => ({
 const UserManager = require('../../../config/publicutils/userManager.utils');
 const { sendMessageToQueue } = require('../../downloader');
 const { SQLUtils } = require('@wri-monorepos/sql');
+const logger = require('../../../config/privateutils/logger.utils');
 
 const registerRoutes = require('../routes/analytics.routes');
 
@@ -154,12 +181,14 @@ describe('analytics.routes - downloadOrganizationUsersUsageExport', () => {
     it('should allow Pro Manager to export for another org with valid orgId', async () => {
       UserManager.isProManager.mockReturnValue(true);
 
-      const res = await request(app).get('/analytics/usage/users/download?orgId=200');
+      const res = await request(app).get(
+        '/analytics/usage/users/download?orgId=200&startDate=2024-01-01&endDate=2024-12-31'
+      );
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
       expect(SQLUtils.queryDBFirstRow).toHaveBeenCalledWith(
-        expect.anything(),
+        'test_db',
         'getOrganizationDb',
         expect.arrayContaining([
           expect.objectContaining({

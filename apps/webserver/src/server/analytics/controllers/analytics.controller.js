@@ -23,6 +23,14 @@ import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
 import * as UserManager from '../../../config/publicutils/userManager.utils';
 
+class OrganizationNotFoundError extends Error {
+  constructor(message = 'Organization not found.') {
+    super(message);
+    this.name = 'OrganizationNotFoundError';
+    this.status = 404;
+  }
+}
+
 /**
  * @function analytics
  * @static
@@ -183,11 +191,15 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
     const { startDate, endDate, organizationId } = req.query;
     let orgDbName = organization_database;
     if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
-      const { organizationDb } = await SQLUtils.queryDBFirstRow(
+      const orgDbResult = await SQLUtils.queryDBFirstRow(
         config.SQLConnection.database,
         'getOrganizationDb',
         [{ field: 'organizationId', type: sql.Int, value: organizationId }]
       );
+      const organizationDb = orgDbResult && orgDbResult.organizationDb;
+      if (!organizationDb) {
+        throw new OrganizationNotFoundError();
+      }
       orgDbName = organizationDb;
     }
 
@@ -218,7 +230,8 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
     });
   } catch (error) {
     logger.error('Error in getMyAccountAnalysisUsageByAnalysisType', error.stack || error);
-    res.status(500).send({
+    const statusCode = error.status || 500;
+    res.status(statusCode).send({
       error: error.message,
       success: false,
     });
@@ -331,11 +344,15 @@ export const downloadOrganizationUsersUsageExport = async (req, res) => {
     // Get the organization database for the target organization
     let organizationDatabase = sessionOrgDatabase;
     if (!organizationDatabase || (queryOrgId && queryOrgId !== sessionOrgId)) {
-      const { organizationDb } = await SQLUtils.queryDBFirstRow(
+      const orgDbResult = await SQLUtils.queryDBFirstRow(
         config.SQLConnection.database,
         'getOrganizationDb',
         [{ field: 'organizationId', type: sql.Int, value: targetOrgId }]
       );
+      const organizationDb = orgDbResult && orgDbResult.organizationDb;
+      if (!organizationDb) {
+        throw new OrganizationNotFoundError();
+      }
       organizationDatabase = organizationDb;
     }
 
@@ -381,10 +398,12 @@ export const downloadOrganizationUsersUsageExport = async (req, res) => {
     });
   } catch (error) {
     logger.error('Error in downloadOrganizationUsersUsageExport', error.stack || error);
-    return res.status(500).send({
-      status: 500,
+    const statusCode = error.status || 500;
+    const errorMessage = statusCode === 500 ? 'Internal server error.' : error.message;
+    return res.status(statusCode).send({
+      status: statusCode,
       message: {
-        error: 'Internal server error.',
+        error: errorMessage,
         success: false,
       },
     });

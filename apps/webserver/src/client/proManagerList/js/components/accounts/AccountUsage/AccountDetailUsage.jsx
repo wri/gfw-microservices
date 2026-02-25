@@ -123,6 +123,7 @@ function AccountDetailUsage() {
         setEndDateAnalysis={setEndDate}
         startDateAnalysis={startDate}
         endDateAnalysis={endDate}
+        organizationId={organizationId}
       >
         {!isLoading && (
           <Grid container justifyContent="center" sx={{ marginTop: '2em' }}>

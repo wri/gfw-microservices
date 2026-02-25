@@ -21,6 +21,15 @@ import {
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
+import * as UserManager from '../../../config/publicutils/userManager.utils';
+
+class OrganizationNotFoundError extends Error {
+  constructor(message = 'Organization not found.') {
+    super(message);
+    this.name = 'OrganizationNotFoundError';
+    this.status = 404;
+  }
+}
 
 /**
  * @function analytics
@@ -182,11 +191,15 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
     const { startDate, endDate, organizationId } = req.query;
     let orgDbName = organization_database;
     if (orgDbName === null || orgDbName === '' || typeof orgDbName === 'undefined') {
-      const { organizationDb } = await SQLUtils.queryDBFirstRow(
+      const orgDbResult = await SQLUtils.queryDBFirstRow(
         config.SQLConnection.database,
         'getOrganizationDb',
         [{ field: 'organizationId', type: sql.Int, value: organizationId }]
       );
+      const organizationDb = orgDbResult && orgDbResult.organizationDb;
+      if (!organizationDb) {
+        throw new OrganizationNotFoundError();
+      }
       orgDbName = organizationDb;
     }
 
@@ -217,7 +230,8 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
     });
   } catch (error) {
     logger.error('Error in getMyAccountAnalysisUsageByAnalysisType', error.stack || error);
-    res.status(500).send({
+    const statusCode = error.status || 500;
+    res.status(statusCode).send({
       error: error.message,
       success: false,
     });
@@ -277,54 +291,132 @@ export const getMyOrganizationAnalysisOptions = (req, res) => {
   res.status(200).send(Object.values(analysisTypes));
 };
 
-export const downladOrganizationUsersUsageExport = async (req, res) => {
-  const {
-    organization_database: organizationDatabase,
-    user_email: userEmail,
-    organization_id: orgId,
-  } = req.session;
+/**
+ * Downloads organization users usage data as CSV export.
+ * This function is used for both organization admins and pro-managers:
+ * - Organization admins: Use their session organization (no orgId query param needed)
+ * - Pro-managers: Must specify the target organization via orgId query parameter
+ *
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ */
+export const downloadOrganizationUsersUsageExport = async (req, res) => {
+  try {
+    const {
+      organization_database: sessionOrgDatabase,
+      user_email: userEmail,
+      organization_id: sessionOrgId,
+    } = req.session;
 
-  let { startDate, endDate } = req.query;
-  if (startDate && endDate) {
-    const { error } = validateQueryParams({ startDate, endDate });
-    if (error) {
-      return res.status(400).send({
-        status: 400,
+    let { startDate, endDate, orgId: queryOrgIdStr } = req.query;
+
+    const isProManager = UserManager.isProManager(req);
+
+    // Validate orgId if provided
+    let queryOrgId = null;
+    if (queryOrgIdStr) {
+      queryOrgId = parseInt(String(queryOrgIdStr), 10);
+      if (!Number.isInteger(queryOrgId) || queryOrgId <= 0) {
+        return res.status(400).send({
+          status: 400,
+          message: {
+            error: 'orgId must be a valid positive integer.',
+            success: false,
+          },
+        });
+      }
+    }
+
+    const targetOrgId = queryOrgId || sessionOrgId;
+
+    if (queryOrgId && queryOrgId !== sessionOrgId && !isProManager) {
+      return res.status(403).send({
+        status: 403,
         message: {
-          error,
+          error: "Unauthorized: Only Pro Managers can access other organizations' data.",
           success: false,
         },
       });
     }
-  } else {
-    const orgActivatedTime = await getAccountRenewalTime(orgId);
-    const todayAsEndDay = addDays(new Date(), 1);
-    const accountActivationDate = new Date(orgActivatedTime);
-    const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
-    const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
 
-    startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
-    endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
+    // Pro Managers must provide orgId
+    if (isProManager && !queryOrgId) {
+      return res.status(400).send({
+        status: 400,
+        message: {
+          error: 'orgId parameter is required for Pro Managers.',
+          success: false,
+        },
+      });
+    }
+
+    // Get the organization database for the target organization
+    let organizationDatabase = sessionOrgDatabase;
+    if (!organizationDatabase || (queryOrgId && queryOrgId !== sessionOrgId)) {
+      const orgDbResult = await SQLUtils.queryDBFirstRow(
+        config.SQLConnection.database,
+        'getOrganizationDb',
+        [{ field: 'organizationId', type: sql.Int, value: targetOrgId }]
+      );
+      const organizationDb = orgDbResult && orgDbResult.organizationDb;
+      if (!organizationDb) {
+        throw new OrganizationNotFoundError();
+      }
+      organizationDatabase = organizationDb;
+    }
+
+    if (startDate && endDate) {
+      const { error } = validateQueryParams({ startDate, endDate });
+      if (error) {
+        return res.status(400).send({
+          status: 400,
+          message: {
+            error,
+            success: false,
+          },
+        });
+      }
+    } else {
+      const orgActivatedTime = await getAccountRenewalTime(targetOrgId);
+      const todayAsEndDay = addDays(new Date(), 1);
+      const accountActivationDate = new Date(orgActivatedTime);
+      const daysSinceActivation = differenceInDays(new Date(), accountActivationDate);
+      const accountLatestYearStartDate = addDays(todayAsEndDay, -(daysSinceActivation % 365));
+
+      startDate = formatDate(accountLatestYearStartDate, 'yyyy-MM-dd');
+      endDate = formatDate(todayAsEndDay, 'yyyy-MM-dd');
+    }
+
+    const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
+    const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
+
+    const filters = sendMessageToQueue(
+      {
+        userEmail,
+        organizationDatabase,
+        startDate,
+        endDate,
+        fileName,
+      },
+      'accountUsersUsage'
+    );
+
+    return res.status(201).send({
+      success: true,
+      message: filters,
+    });
+  } catch (error) {
+    logger.error('Error in downloadOrganizationUsersUsageExport', error.stack || error);
+    const statusCode = error.status || 500;
+    const errorMessage = statusCode === 500 ? 'Internal server error.' : error.message;
+    return res.status(statusCode).send({
+      status: statusCode,
+      message: {
+        error: errorMessage,
+        success: false,
+      },
+    });
   }
-
-  const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
-  const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
-
-  const filters = sendMessageToQueue(
-    {
-      userEmail,
-      organizationDatabase,
-      startDate,
-      endDate,
-      fileName,
-    },
-    'accountUsersUsage'
-  );
-
-  return res.status(201).send({
-    success: true,
-    message: filters,
-  });
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

@@ -103,7 +103,6 @@ jest.mock('../../../config/lib/limiter-util', () => ({
 const UserManager = require('../../../config/publicutils/userManager.utils');
 const { sendMessageToQueue } = require('../../downloader');
 const { SQLUtils } = require('@wri-monorepos/sql');
-const logger = require('../../../config/privateutils/logger.utils');
 
 const registerRoutes = require('../routes/analytics.routes');
 

@@ -225,7 +225,7 @@ export default class Change extends Component {
             <PillButton variant="contained" color="primary" onClick={this.submit} size="small">
               Submit
             </PillButton>
-            <PillButton variant="contained" color="secondary" onClick={this.back} size="small">
+            <PillButton variant="contained" color="info" onClick={this.back} size="small">
               Back
             </PillButton>
           </Box>

@@ -1,9 +1,8 @@
 import Page from '../../../common/js/components/Page';
 import { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { PillButton } from '../../../components';
 import SubHeader from '../../../common/js/components/SubHeader';
-import Button from '../../../common/js/components/Button';
-import LinkButton from '../../../common/js/components/LinkButton';
 import '../../../change/css/change.scss';
 
 import { isPasswordValid } from '../../../common/js/utils/passwordValidations';
@@ -152,20 +151,24 @@ export default class Change extends Component {
       action = this.redirectToProfile;
     }
 
-    const defaultAction = this.state.updatingAccount
-      ? []
-      : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
-
     return (
       <Page links={pageOptions.links} active="change">
-        <Dialog
-          paperClassName="dialog-paper"
-          open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={action}
-        >
-          {dialogMessage}
+        <Dialog classes={{ paper: 'dialog-paper' }} open={dialogOpen} onClose={action}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>{dialogMessage}</DialogContent>
+          {!this.state.updatingAccount && (
+            <DialogActions>
+              <PillButton
+                variant="contained"
+                color="primary"
+                onClick={action}
+                size="small"
+                autoFocus
+              >
+                OK
+              </PillButton>
+            </DialogActions>
+          )}
         </Dialog>
         <SubHeader header="Password Reset" />
         <section className="profile-body">
@@ -215,14 +218,17 @@ export default class Change extends Component {
               onChange={this.confirmNew}
             />
           </div>
-          <div className="buttons-container">
-            <Button
-              onClick={this.toggleShow}
-              label={this.state.type === 'input' ? 'Hide' : 'Show'}
-            />
-            <Button variant="primary" onClick={this.submit} label="Submit" />
-            <LinkButton className="back-button" label="Back" onClick={this.back} />
-          </div>
+          <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+            <PillButton variant="contained" onClick={this.toggleShow} size="small">
+              {this.state.type === 'input' ? 'Hide' : 'Show'}
+            </PillButton>
+            <PillButton variant="contained" color="primary" onClick={this.submit} size="small">
+              Submit
+            </PillButton>
+            <PillButton variant="contained" color="info" onClick={this.back} size="small">
+              Back
+            </PillButton>
+          </Box>
         </section>
       </Page>
     );

@@ -1,7 +1,7 @@
 import Page from '../../../common/js/components/Page';
-import Dialog from 'material-ui/Dialog';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { PillButton } from '../../../components';
 import { Component } from 'react';
-import Button from '../../../common/js/components/Button';
 import '../../css/admin.scss';
 import httpRequest from '../../../common/js/utils/httpRequest';
 
@@ -65,26 +65,28 @@ export default class Admin extends Component {
 
   render() {
     const { dialogOpen, dialogTitle, dialogMessage } = this.state;
-    const defaultAction = [
-      <Button
-        variant="primary"
-        label="OK"
-        keyboardFocused={true}
-        onClick={this.shouldCloseDialog}
-      />,
-    ];
     return (
       <Page links={pageOptions.links} active="admin">
         <div className="profile-body">
           <h3>Pro Manager Login</h3>
           <Dialog
-            paperClassName="dialog-paper"
+            classes={{ paper: 'dialog-paper' }}
             open={dialogOpen}
-            title={dialogTitle}
-            actions={defaultAction}
-            onRequestClose={this.shouldCloseDialog}
+            onClose={this.shouldCloseDialog}
           >
-            {dialogMessage}
+            <DialogTitle>{dialogTitle}</DialogTitle>
+            <DialogContent>{dialogMessage}</DialogContent>
+            <DialogActions>
+              <PillButton
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={this.shouldCloseDialog}
+                autoFocus
+              >
+                OK
+              </PillButton>
+            </DialogActions>
           </Dialog>
           <div>
             <form
@@ -119,7 +121,9 @@ export default class Admin extends Component {
                 />
               </div>
               <div>
-                <Button variant="primary" type="submit" label="Launch GFW Pro" />
+                <PillButton variant="contained" color="primary" type="submit" size="small">
+                  Launch GFW Pro
+                </PillButton>
               </div>
               {this.state.loginError ? (
                 <div className="login__error">There was a login error!</div>

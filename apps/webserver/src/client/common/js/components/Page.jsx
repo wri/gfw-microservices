@@ -1,24 +1,24 @@
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Header from './Header';
 
-// - Set the user agent so server rendering works
-lightBaseTheme.userAgent = 'all';
-lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Fira Sans, sans-serif',
+  },
+});
 
 const noHeaderPages = ['verify', 'forgot', 'reset', 'admin', 'select'];
 
 function Page(props) {
   const { active, children } = props;
   return (
-    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <ThemeProvider theme={theme}>
       <div className="app">
         {!noHeaderPages.includes(active) && <Header {...props} />}
         <div className="app__body">{children}</div>
         <div id="footerGfw" className={`${active === 'login' ? '' : 'hidden'}`} />
       </div>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 }
 

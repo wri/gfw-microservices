@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
-import Button from 'common/js/components/Button';
+import { PillButton } from '../../../../../components';
 import GDPRFooter from 'common/js/components/GDPRFooter/index';
 import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -610,12 +610,14 @@ export default class ListDetails extends Component {
     this.setState({
       dialogActions: (
         <>
-          <Button
+          <PillButton
             className="dialog__primary-action"
-            variant="primary"
-            label={locationsPage.lists.ok}
+            variant="contained"
+            color="primary"
             onClick={this.deleteSelectedLocations}
-          />
+          >
+            {locationsPage.lists.ok}
+          </PillButton>
           <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
         </>
       ),
@@ -847,10 +849,10 @@ export default class ListDetails extends Component {
           : locationsPage.lists.copyLocationsDialogHeader,
       dialogActions: (
         <>
-          <Button
+          <PillButton
             className="dialog__primary-action"
-            variant="primary"
-            label={getButtonLabel(selectedMoveOrCopy)}
+            variant="contained"
+            color="primary"
             onClick={() => {
               const trackCopyMove = (action, mode = MODES.DRAFT) => {
                 const capitalized = {
@@ -880,7 +882,9 @@ export default class ListDetails extends Component {
               selectedNewOrExisting === LIST_TYPES.NEW &&
               (!newListName || isNewListNameDuplicate || isNewListNameValid)
             }
-          />
+          >
+            {getButtonLabel(selectedMoveOrCopy)}
+          </PillButton>
 
           <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
         </>
@@ -962,10 +966,10 @@ export default class ListDetails extends Component {
       this.setState({
         dialogActions: (
           <>
-            <Button
+            <PillButton
               className="dialog__primary-action"
-              variant="primary"
-              label={getButtonLabel(selectedMoveOrCopy)}
+              variant="contained"
+              color="primary"
               onClick={() => {
                 trackCopyMove(selectedMoveOrCopy, MODES.DRAFT);
                 this.setState({ isSaveAsDraft: true }, () => {
@@ -977,7 +981,9 @@ export default class ListDetails extends Component {
                 selectedNewOrExisting === LIST_TYPES.NEW &&
                 (!newListName || isNewListNameDuplicate || isNewListNameValid)
               }
-            />
+            >
+              {getButtonLabel(selectedMoveOrCopy)}
+            </PillButton>
 
             <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
           </>
@@ -1954,12 +1960,14 @@ export default class ListDetails extends Component {
     }
 
     const allDialogActions = dialogActions || (
-      <Button
+      <PillButton
         className="dialog__primary-action"
-        variant="primary"
-        label={locationsPage.lists.ok}
+        variant="contained"
+        color="primary"
         onClick={() => this.handleDialogClose(refreshPage)}
-      />
+      >
+        {locationsPage.lists.ok}
+      </PillButton>
     );
 
     const isSharedList =

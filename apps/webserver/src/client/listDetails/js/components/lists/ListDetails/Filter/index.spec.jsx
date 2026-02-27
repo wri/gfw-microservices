@@ -1,13 +1,7 @@
-import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Filter from './index';
 import store from '../../../../../../locations/js/store';
 import { ALERTS, POST_2020_RISK_ASSESSMENT_VIEW, forestDataSet } from '../listViews.constants';
-
-// Custom render function that wraps with Material-UI theme provider
-const render = (ui, options = {}) => {
-  return rtlRender(<MuiThemeProvider>{ui}</MuiThemeProvider>, options);
-};
 
 // Mock the store
 jest.mock('../../../../../../locations/js/store', () => ({

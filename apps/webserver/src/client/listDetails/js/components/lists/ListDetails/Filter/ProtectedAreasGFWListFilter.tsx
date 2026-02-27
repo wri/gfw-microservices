@@ -9,12 +9,13 @@ import {
   Grid,
   SelectChangeEvent,
 } from '@mui/material';
+
 import {
   toggleCanopyModal,
   updateFilters,
   setFilterCount,
 } from '../../../../../../locations/js/actions/locationActions';
-import Button from '../../../../../../common/js/components/Button';
+import { PillButton } from '../../../../../../components';
 import CountryStateSubStateFilter from './CountryStateSubStateFilter';
 import { DefaultFilterValues } from '../../DefaultFilterValuesType';
 import store from '../../../../../../locations/js/store';
@@ -213,15 +214,13 @@ const GFWProtectedForestChangeFilter: FC<GFWProtectedForestChangeFilterProps> = 
 
           <Grid item xs={12} sx={{ justifyContent: 'flex-end', display: 'flex' }}>
             {isCountrySetInFilter && (
-              <Button variant="secondary" onClick={onCloseHandler} label="Cancel" />
+              <PillButton variant="contained" onClick={onCloseHandler}>
+                Cancel
+              </PillButton>
             )}
-            <Button
-              variant="primary"
-              onClick={updateValues}
-              disabled={!isCountrySetInState}
-              label="Apply"
-              style={{ marginLeft: '10px' }}
-            />
+            <PillButton variant="contained" onClick={updateValues} disabled={!isCountrySetInState}>
+              Apply
+            </PillButton>
           </Grid>
         </Grid>
       </Box>

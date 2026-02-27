@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import GfwSelect from '../../../common/js/components/GfwSelect';
-import Button from '../../../common/js/components/Button';
+import { PillButton } from '../../../components';
 import IconReport from '../../../common/js/components/icon/IconReport';
 import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
@@ -89,19 +89,21 @@ function DiagnosticsMenuBar({
           )}
         </div>
         <div className="diagnostics-menu-bar__actions-group">
-          <Button
-            variant="secondary"
-            label="Report"
+          <PillButton
+            variant="outlined"
             onClick={() => printDiagnosticsReport(selectedDiagnostics)}
-            icon={<IconReport height="18" />}
-          />
-          <Button
-            variant="secondary"
-            label="Download"
+            startIcon={<IconReport height="18" />}
+          >
+            Report
+          </PillButton>
+          <PillButton
+            variant="outlined"
             onClick={downloadDiagnostics}
             data-cy="download-diagnostics"
-            icon={<IconDownload height="18" />}
-          />
+            startIcon={<IconDownload height="18" />}
+          >
+            Download
+          </PillButton>
         </div>
       </div>
     </div>

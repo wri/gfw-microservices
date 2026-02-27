@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Grid } from '@mui/material';
 import { profilePage } from '../../../../common/js/config';
+import featureFlags from '../../../../../utils/general.utils';
 import AccountUsageContainer from './AccountUsageContent';
 
 /**
@@ -14,7 +15,40 @@ export default function AccountUsage({
   maxLocations,
   maxArea,
 }) {
+  const { isTokenizationAvailable } = featureFlags;
+
+  const locationsLabel = isTokenizationAvailable
+    ? profilePage.accountUsage.tokens
+    : profilePage.accountUsage.locationsAnalyzed;
+
   const InfoBubbleLocationsAnalyzed = () => {
+    if (isTokenizationAvailable) {
+      return (
+        <>
+          <h3 class="bubble-title">Tokens</h3>
+          <p>
+            Enterprises receive a free annual allotment of Usage Tokens and may purchase additional
+            quantities. Free quantities are consumed before paid quantities. Any remaining free
+            quantities expire as new quantities are granted at account renewal.
+          </p>
+          <h4>How consumption of Tokens is calculated</h4>
+          <p>
+            When a list is analyzed or updated, GFW Pro multiplies the number of locations within
+            that list by the Token Fee for each distinct analysis type applied to that list and sums
+            these values to calculate tokens required. There is an additional flat Token Fee charged
+            per analysis type when a list is analyzed or updated.
+          </p>
+          <p>
+            Read more about account usage{' '}
+            <a target="_blank" href="/about?section=Fees">
+              here
+            </a>
+            .
+          </p>
+        </>
+      );
+    }
+
     return (
       <>
         <h3 class="bubble-title">Locations Analyzed</h3>
@@ -57,7 +91,7 @@ export default function AccountUsage({
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6}>
           <AccountUsageContainer
-            label={profilePage.accountUsage.locationsAnalyzed}
+            label={locationsLabel}
             usedValue={locations_analyzed}
             maxValue={maxLocations}
             InfoBubbleContent={InfoBubbleLocationsAnalyzed}

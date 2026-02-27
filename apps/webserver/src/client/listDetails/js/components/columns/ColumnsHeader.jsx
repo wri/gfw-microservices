@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
+import { getManualTranslation } from '../../config/columns/columnHeaders.constants';
 
 const sanitizeLabel = (label) => label.replace(/\s+/g, '-');
 
@@ -7,8 +8,20 @@ const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
   const [translatedLabel, setTranslatedLabel] = useState(label);
 
   const updateTranslation = () => {
-    const translated = window.Transifex.live.translateText(label);
-    setTranslatedLabel(translated);
+    if (!window.Transifex?.live) {
+      return;
+    }
+
+    const transifexTranslation = window.Transifex.live.translateText(label);
+    const languageCode = window.Transifex.live.getSelectedLanguageCode?.() || 'en';
+
+    // If Transifex returns the same string, try manual translation
+    if (transifexTranslation === label) {
+      const manualTranslation = getManualTranslation(label, languageCode);
+      setTranslatedLabel(manualTranslation);
+    } else {
+      setTranslatedLabel(transifexTranslation);
+    }
   };
 
   useEffect(() => {

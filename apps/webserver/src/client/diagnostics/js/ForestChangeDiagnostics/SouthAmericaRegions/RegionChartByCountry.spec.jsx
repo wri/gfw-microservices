@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { RegionChartByCountry } from './RegionChartByCountry';
 import { regionIds } from './regions-constants';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { BrowserRouter } from 'react-router-dom';
 import { MOCK_COUNTRY_DATA } from './mockCountryData';
 
@@ -49,9 +48,7 @@ describe('RegionChartByCountry - Argentina', () => {
 
     render(
       <BrowserRouter>
-        <MuiThemeProvider>
-          <RegionChartByCountry {...defaultProps} />
-        </MuiThemeProvider>
+        <RegionChartByCountry {...defaultProps} />
       </BrowserRouter>
     );
 
@@ -85,9 +82,7 @@ describe('RegionChartByCountry - Argentina', () => {
 
     render(
       <BrowserRouter>
-        <MuiThemeProvider>
-          <RegionChartByCountry {...defaultProps} />
-        </MuiThemeProvider>
+        <RegionChartByCountry {...defaultProps} />
       </BrowserRouter>
     );
 
@@ -118,9 +113,7 @@ describe('RegionChartByCountry - Colombia', () => {
 
     render(
       <BrowserRouter>
-        <MuiThemeProvider>
-          <RegionChartByCountry {...defaultProps} />
-        </MuiThemeProvider>
+        <RegionChartByCountry {...defaultProps} />
       </BrowserRouter>
     );
 
@@ -156,9 +149,7 @@ describe('RegionChartByCountry - Colombia', () => {
 
     render(
       <BrowserRouter>
-        <MuiThemeProvider>
-          <RegionChartByCountry {...defaultProps} />
-        </MuiThemeProvider>
+        <RegionChartByCountry {...defaultProps} />
       </BrowserRouter>
     );
 

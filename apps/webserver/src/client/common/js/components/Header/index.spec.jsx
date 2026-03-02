@@ -1,18 +1,10 @@
 import { render, waitFor } from '@testing-library/react';
 
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
 import Header from '.';
 
 describe('Header', () => {
   it('Should render a simple header wrapped around an app bar', () => {
-    const { container, getByText } = render(
-      <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-        <Header />
-      </MuiThemeProvider>
-    );
+    const { container, getByText } = render(<Header />);
 
     expect(container.querySelector('div')).toBeInTheDocument();
     expect(container.querySelector('a')).toBeInTheDocument();
@@ -22,11 +14,7 @@ describe('Header', () => {
 
   it('Should render a simple header with a link in it', async () => {
     const props = { links: { logout: true } };
-    const { container, getByText } = render(
-      <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-        <Header {...props} />
-      </MuiThemeProvider>
-    );
+    const { container, getByText } = render(<Header {...props} />);
     expect(container.querySelector('a')).toBeInTheDocument();
     expect(getByText('Locations')).toBeInTheDocument();
     expect(getByText('Map')).toBeInTheDocument();

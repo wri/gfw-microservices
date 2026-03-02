@@ -1,13 +1,7 @@
-import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { render, screen, fireEvent } from '@testing-library/react';
 import Filter from './index';
 import store from '../../../../../../locations/js/store';
 import { ALERTS, POST_2020_RISK_ASSESSMENT_VIEW, forestDataSet } from '../listViews.constants';
-
-// Custom render function that wraps with Material-UI theme provider
-const render = (ui, options = {}) => {
-  return rtlRender(<MuiThemeProvider>{ui}</MuiThemeProvider>, options);
-};
 
 // Mock the store
 jest.mock('../../../../../../locations/js/store', () => ({
@@ -182,10 +176,10 @@ describe('Filter Component', () => {
       expect(screen.getByTestId('country-state-substate-filter')).toBeInTheDocument();
     });
 
-    it('renders APPLY and CLEAR buttons in inline filter mode', () => {
+    it('renders Apply and Clear buttons in inline filter mode', () => {
       render(<Filter {...defaultProps} isFilterModalVisible={true} isGfwList={false} />);
-      expect(screen.getByText('APPLY')).toBeInTheDocument();
-      expect(screen.getByText('CLEAR')).toBeInTheDocument();
+      expect(screen.getByText('Apply')).toBeInTheDocument();
+      expect(screen.getByText('Clear')).toBeInTheDocument();
     });
 
     it('renders Close button when inline filter is visible', () => {
@@ -195,10 +189,10 @@ describe('Filter Component', () => {
       expect(buttons.length).toBeGreaterThan(0); // At least one button should be present
     });
 
-    it('dispatches toggleCanopyModal when CLEAR is clicked', () => {
+    it('dispatches toggleCanopyModal when Clear is clicked', () => {
       render(<Filter {...defaultProps} isFilterModalVisible={true} isGfwList={false} />);
 
-      const clearButton = screen.getByText('CLEAR');
+      const clearButton = screen.getByText('Clear');
       fireEvent.click(clearButton);
 
       expect(store.dispatch).toHaveBeenCalled();

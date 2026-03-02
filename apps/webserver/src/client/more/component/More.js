@@ -1,13 +1,9 @@
-import PageWithoutThemeProvider from '../../common/js/components/PageWithoutThemeProvider';
+import Page from '../../common/js/components/Page';
 import './More.scss';
 
 function More({ languageCode, userGuideLink }) {
   return (
-    <PageWithoutThemeProvider
-      active="select"
-      languageCode={languageCode}
-      userGuideLink={userGuideLink}
-    >
+    <Page active="select" languageCode={languageCode} userGuideLink={userGuideLink}>
       <div id="More" className="More page">
         <header>
           <div className="page-header">
@@ -56,7 +52,7 @@ function More({ languageCode, userGuideLink }) {
           </div>
         </div>
       </div>
-    </PageWithoutThemeProvider>
+    </Page>
   );
 }
 

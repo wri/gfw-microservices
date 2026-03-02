@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
 
 const mockData = [
@@ -22,11 +21,7 @@ const mockData = [
 
 describe('AfiDiagnosticsTable', () => {
   it('renders table with correct headers', () => {
-    render(
-      <MuiThemeProvider>
-        <AfiDiagnosticsTable data={mockData} />
-      </MuiThemeProvider>
-    );
+    render(<AfiDiagnosticsTable data={mockData} />);
 
     const countryHeader = screen.getByText('Country');
     const subStateHeader = screen.getByText('Sub-state');
@@ -42,11 +37,7 @@ describe('AfiDiagnosticsTable', () => {
   });
 
   it('hides Negligible Risk if JRC dataset is selected', () => {
-    render(
-      <MuiThemeProvider>
-        <AfiDiagnosticsTable data={mockData} forestLossDataset={forestLossDatasetIds.JRC} />
-      </MuiThemeProvider>
-    );
+    render(<AfiDiagnosticsTable data={mockData} forestLossDataset={forestLossDatasetIds.JRC} />);
 
     const countryHeader = screen.getByText('Country');
     const subStateHeader = screen.getByText('Sub-state');
@@ -64,11 +55,7 @@ describe('AfiDiagnosticsTable', () => {
   });
 
   it('renders table rows with data', () => {
-    render(
-      <MuiThemeProvider>
-        <AfiDiagnosticsTable data={mockData} />
-      </MuiThemeProvider>
-    );
+    render(<AfiDiagnosticsTable data={mockData} />);
 
     const countryCell1 = screen.getByText('Country1');
     const subStateCell1 = screen.getByText('SubState1');

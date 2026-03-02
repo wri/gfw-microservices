@@ -4,7 +4,7 @@ import { render } from 'react-dom';
 import { CircularProgress } from '@mui/material';
 
 import UserProfile from './js/components/UserProfile';
-import PageWithoutThemeProvider from '../common/js/components/PageWithoutThemeProvider';
+import Page from '../common/js/components/Page';
 import { ThemeProvider } from '../styles';
 
 const pageOptions = {
@@ -72,7 +72,7 @@ function App() {
           <CircularProgress color="success" />
         </div>
       ) : (
-        <PageWithoutThemeProvider links={pageOptions.links} active="profile">
+        <Page links={pageOptions.links} active="profile">
           <UserProfile
             users={users}
             userInfo={userInfo}
@@ -83,7 +83,7 @@ function App() {
             titlesData={titles}
             currentUser={userToEdit}
           />
-        </PageWithoutThemeProvider>
+        </Page>
       )}
     </ThemeProvider>
   );

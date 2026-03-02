@@ -11,7 +11,7 @@ import {
   DialogActions,
 } from '@mui/material';
 
-import PageWithoutThemeProvider from '../../../common/js/components/PageWithoutThemeProvider';
+import Page from '../../../common/js/components/Page';
 import SubHeader from '../../../common/js/components/SubHeader';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import countries from '../../../common/js/utils/countries.utils';
@@ -401,7 +401,7 @@ export default class Account extends Component {
     });
 
     return (
-      <PageWithoutThemeProvider>
+      <Page>
         <SubHeader
           header={requestAccountStrings.requestAccount.title}
           subHeader={requestAccountStrings.requestAccount.subHeader}
@@ -722,7 +722,7 @@ export default class Account extends Component {
             </Dialog>
           </Grid>
         </div>
-      </PageWithoutThemeProvider>
+      </Page>
     );
   }
 }

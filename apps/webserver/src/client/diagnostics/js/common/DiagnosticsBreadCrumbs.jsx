@@ -27,22 +27,31 @@ function DiagnosticsBreadCrumbs({ selectedList, isSharedList = false, isGfwList,
   )?.shortLabel;
 
   const diagnosticPath = `${diagnosticLabel} diagnostic`;
+  const isFcd = analysisId === 'FCD';
 
   return (
     <Breadcrumbs>
-      <Link
-        onClick={() => {
-          window.location = '/locations';
-        }}
-      >
+      <Link href="/locations" sx={isFcd ? { color: 'white' } : undefined}>
         {locationsPage.lists.locations}
       </Link>
       {selectedList.folder && (
-        <Link onClick={() => changeFolderView(selectedList.folder)}>
+        <Link
+          component="button"
+          type="button"
+          onClick={() => changeFolderView(selectedList.folder)}
+          sx={isFcd ? { color: 'white' } : undefined}
+        >
           {selectedList.folder.name}
         </Link>
       )}
-      <Link onClick={backToLists}>{list_name}</Link>
+      <Link
+        component="button"
+        type="button"
+        onClick={backToLists}
+        sx={isFcd ? { color: 'white' } : undefined}
+      >
+        {list_name}
+      </Link>
       <span>{diagnosticPath}</span>
     </Breadcrumbs>
   );

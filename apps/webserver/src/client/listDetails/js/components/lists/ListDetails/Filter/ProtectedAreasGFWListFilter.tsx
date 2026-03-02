@@ -212,7 +212,7 @@ const GFWProtectedForestChangeFilter: FC<GFWProtectedForestChangeFilterProps> = 
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sx={{ justifyContent: 'flex-end', display: 'flex' }}>
+          <Grid item xs={12} sx={{ justifyContent: 'flex-end', display: 'flex', gap: 1 }}>
             {isCountrySetInFilter && (
               <PillButton variant="contained" onClick={onCloseHandler}>
                 Cancel

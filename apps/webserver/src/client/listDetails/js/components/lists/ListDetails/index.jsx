@@ -615,11 +615,12 @@ export default class ListDetails extends Component {
             variant="contained"
             color="primary"
             size="small"
+            className="dialog__primary-action"
           >
             {locationsPage.lists.ok}
           </PillButton>
           <PillButton onClick={this.cancelDialog} variant="text" color="info" size="small">
-            Cancel
+            {locationsPage.lists.cancel}
           </PillButton>
         </>
       ),
@@ -888,7 +889,9 @@ export default class ListDetails extends Component {
             {getButtonLabel(selectedMoveOrCopy)}
           </PillButton>
 
-          <Link onClick={this.cancelDialogResetName}>{locationsPage.lists.cancel}</Link>
+          <Link component="button" type="button" onClick={this.cancelDialogResetName}>
+            {locationsPage.lists.cancel}
+          </Link>
         </>
       ),
     });
@@ -987,7 +990,9 @@ export default class ListDetails extends Component {
               {getButtonLabel(selectedMoveOrCopy)}
             </PillButton>
 
-            <Link onClick={this.cancelDialogResetName}>{locationsPage.lists.cancel}</Link>
+            <Link component="button" type="button" onClick={this.cancelDialogResetName}>
+              {locationsPage.lists.cancel}
+            </Link>
           </>
         ),
         dialogOpen: true,

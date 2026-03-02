@@ -90,17 +90,22 @@ function DiagnosticsMenuBar({
         </div>
         <div className="diagnostics-menu-bar__actions-group">
           <PillButton
-            variant="outlined"
+            variant="contained"
+            color="info"
+            size="small"
             onClick={() => printDiagnosticsReport(selectedDiagnostics)}
-            startIcon={<IconReport height="18" />}
+            startIcon={<IconReport height="14" />}
           >
             Report
           </PillButton>
           <PillButton
-            variant="outlined"
+            variant="contained"
+            color="info"
+            size="small"
             onClick={downloadDiagnostics}
             data-cy="download-diagnostics"
-            startIcon={<IconDownload height="18" />}
+            startIcon={<IconDownload height="14" />}
+            sx={{ ml: 1 }}
           >
             Download
           </PillButton>

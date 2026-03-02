@@ -105,7 +105,9 @@ export default class FolderDetail extends Component {
         <ModalLoader open={this.state.isLoading} />
 
         <Breadcrumbs>
-          <Link onClick={this.changeToLocationView}>{strings.breadcrumbLocation}</Link>
+          <Link component="button" type="button" onClick={this.changeToLocationView}>
+            {strings.breadcrumbLocation}
+          </Link>
           <span>{selectedFolder.name}</span>
         </Breadcrumbs>
         <section>
@@ -154,6 +156,8 @@ export default class FolderDetail extends Component {
                 <Link
                   className="no-search-results__clear"
                   onClick={() => this.setState({ userListFilterText: '' })}
+                  component="button"
+                  type="button"
                 >
                   {locationsPage.landing.clearSearch}
                 </Link>

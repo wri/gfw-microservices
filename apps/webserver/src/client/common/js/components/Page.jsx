@@ -1,18 +1,12 @@
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Header from './Header';
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Fira Sans, sans-serif',
-  },
-});
+import { ThemeProvider } from '../../../styles/ThemeProvider';
 
 const noHeaderPages = ['verify', 'forgot', 'reset', 'admin', 'select'];
 
 function Page(props) {
   const { active, children } = props;
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <div className="app">
         {!noHeaderPages.includes(active) && <Header {...props} />}
         <div className="app__body">{children}</div>

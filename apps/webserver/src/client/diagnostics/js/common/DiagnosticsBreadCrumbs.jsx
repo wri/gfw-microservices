@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router';
 import Breadcrumbs from '../../../common/js/components/Breadcrumbs';
-import LinkButton from '../../../common/js/components/LinkButton';
+import { Link } from '../../../components';
 import { changeView, selectFolder } from '../../../locations/js/actions/locationActions';
 import store from '../../../locations/js/store';
 import { locationsPage } from '../../../common/js/config';
@@ -30,19 +30,19 @@ function DiagnosticsBreadCrumbs({ selectedList, isSharedList = false, isGfwList,
 
   return (
     <Breadcrumbs>
-      <LinkButton
-        label={locationsPage.lists.locations}
+      <Link
         onClick={() => {
           window.location = '/locations';
         }}
-      />
+      >
+        {locationsPage.lists.locations}
+      </Link>
       {selectedList.folder && (
-        <LinkButton
-          label={selectedList.folder.name}
-          onClick={() => changeFolderView(selectedList.folder)}
-        />
+        <Link onClick={() => changeFolderView(selectedList.folder)}>
+          {selectedList.folder.name}
+        </Link>
       )}
-      <LinkButton label={list_name} onClick={backToLists} />
+      <Link onClick={backToLists}>{list_name}</Link>
       <span>{diagnosticPath}</span>
     </Breadcrumbs>
   );

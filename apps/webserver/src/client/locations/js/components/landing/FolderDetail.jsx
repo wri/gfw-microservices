@@ -3,7 +3,7 @@ import { Component } from 'react';
 import store from '../../store';
 import LocationList from './LocationList';
 import IconFolder from '../../../../common/js/components/icon/IconFolder';
-import LinkButton from '../../../../common/js/components/LinkButton';
+import { Link } from '../../../../components';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import ListsFilter from '../lists/ListsFilter';
 import { locationsPage, folderDetailPage } from '../../../../common/js/config';
@@ -105,7 +105,7 @@ export default class FolderDetail extends Component {
         <ModalLoader open={this.state.isLoading} />
 
         <Breadcrumbs>
-          <LinkButton label={strings.breadcrumbLocation} onClick={this.changeToLocationView} />
+          <Link onClick={this.changeToLocationView}>{strings.breadcrumbLocation}</Link>
           <span>{selectedFolder.name}</span>
         </Breadcrumbs>
         <section>
@@ -151,11 +151,12 @@ export default class FolderDetail extends Component {
                 <p className="no-search-results__message">
                   {locationsPage.landing.noSearchResults}
                 </p>
-                <LinkButton
+                <Link
                   className="no-search-results__clear"
-                  label={locationsPage.landing.clearSearch}
                   onClick={() => this.setState({ userListFilterText: '' })}
-                />
+                >
+                  {locationsPage.landing.clearSearch}
+                </Link>
               </div>
             )}
             {/* NO RESULTS, NO SEARCH */}

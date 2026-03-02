@@ -176,10 +176,10 @@ describe('Filter Component', () => {
       expect(screen.getByTestId('country-state-substate-filter')).toBeInTheDocument();
     });
 
-    it('renders APPLY and CLEAR buttons in inline filter mode', () => {
+    it('renders Apply and Clear buttons in inline filter mode', () => {
       render(<Filter {...defaultProps} isFilterModalVisible={true} isGfwList={false} />);
-      expect(screen.getByText('APPLY')).toBeInTheDocument();
-      expect(screen.getByText('CLEAR')).toBeInTheDocument();
+      expect(screen.getByText('Apply')).toBeInTheDocument();
+      expect(screen.getByText('Clear')).toBeInTheDocument();
     });
 
     it('renders Close button when inline filter is visible', () => {
@@ -189,10 +189,10 @@ describe('Filter Component', () => {
       expect(buttons.length).toBeGreaterThan(0); // At least one button should be present
     });
 
-    it('dispatches toggleCanopyModal when CLEAR is clicked', () => {
+    it('dispatches toggleCanopyModal when Clear is clicked', () => {
       render(<Filter {...defaultProps} isFilterModalVisible={true} isGfwList={false} />);
 
-      const clearButton = screen.getByText('CLEAR');
+      const clearButton = screen.getByText('Clear');
       fireEvent.click(clearButton);
 
       expect(store.dispatch).toHaveBeenCalled();

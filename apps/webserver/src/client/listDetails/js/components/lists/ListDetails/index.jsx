@@ -16,7 +16,7 @@ import GDPRFooter from 'common/js/components/GDPRFooter/index';
 import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
-import LinkButton from 'common/js/components/LinkButton';
+import { Link } from '../../../../../components';
 import ModalLoader from 'common/js/components/Loaders/ModalLoader';
 import AnalysesTabs from './AnalysesTabs';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
@@ -611,14 +611,16 @@ export default class ListDetails extends Component {
       dialogActions: (
         <>
           <PillButton
-            className="dialog__primary-action"
+            onClick={this.deleteSelectedLocations}
             variant="contained"
             color="primary"
-            onClick={this.deleteSelectedLocations}
+            size="small"
           >
             {locationsPage.lists.ok}
           </PillButton>
-          <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
+          <PillButton onClick={this.cancelDialog} variant="text" color="info" size="small">
+            Cancel
+          </PillButton>
         </>
       ),
       dialogOpen: true,
@@ -886,7 +888,7 @@ export default class ListDetails extends Component {
             {getButtonLabel(selectedMoveOrCopy)}
           </PillButton>
 
-          <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
+          <Link onClick={this.cancelDialogResetName}>{locationsPage.lists.cancel}</Link>
         </>
       ),
     });
@@ -985,7 +987,7 @@ export default class ListDetails extends Component {
               {getButtonLabel(selectedMoveOrCopy)}
             </PillButton>
 
-            <LinkButton onClick={this.cancelDialogResetName} label={locationsPage.lists.cancel} />
+            <Link onClick={this.cancelDialogResetName}>{locationsPage.lists.cancel}</Link>
           </>
         ),
         dialogOpen: true,

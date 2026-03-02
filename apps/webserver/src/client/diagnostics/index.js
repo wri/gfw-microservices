@@ -1,18 +1,12 @@
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { render } from 'react-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Page from '../common/js/components/Page';
 import Diagnostics from './js/Diagnostics';
 import store from '../locations/js/store';
 import './css/diagnostics.scss';
 import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Fira Sans, sans-serif',
-  },
-});
+import { ThemeProvider } from '../styles/ThemeProvider';
 
 const pageOptions = {
   links: {
@@ -22,7 +16,7 @@ const pageOptions = {
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider>
       <AppErrorFallback>
         <Provider store={store}>
           <BrowserRouter basename="/diagnostics">

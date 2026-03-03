@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import store from '../../../../locations/js/store';
 import { setLanguage } from '../../../../locations/js/actions/locationActions';
 import { getLanguageNameAbbreviation } from './getLanguageNameAbbreviation';

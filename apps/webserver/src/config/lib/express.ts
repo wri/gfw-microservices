@@ -323,7 +323,7 @@ export const initialize = (app: Application) => {
       // configurePassport(app); //TODO: Bake in security via AWS Cognito, nothing to do with Mongo or mongoose
       // Configure Helmet security headers
       configureHelmetHeaders(app);
-      // Configure error sanitization middleware to automatically strip sensitive data from error responses
+      // Apply error sanitization middleware to strip sensitive systemMessage from responses
       app.use(errorSanitizationMiddleware);
       // Set path for static assets
       configureStaticAssetPath(app);

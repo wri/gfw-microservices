@@ -183,58 +183,50 @@ export function sanitizeErrorForClient(error) {
  * @param {Function} next - Express next middleware function
  */
 export function errorSanitizationMiddleware(req, res, next) {
+  // Store original send and json methods
   const originalSend = res.send;
   const originalJson = res.json;
 
-  /**
-   * Check if data looks like an error object and sanitize if needed
-   * @param {*} data - The data being sent in the response
-   * @returns {*} Original data or sanitized error object
-   */
-  const sanitizeIfError = function (data) {
-    // Skip if not an object (strings, numbers, null, undefined, etc.)
-    if (!data || typeof data !== 'object') {
-      return data;
-    }
-
-    // Skip if it's an array (unlikely to be an error object)
-    if (Array.isArray(data)) {
-      return data;
-    }
-
-    // Conservative detection: Only check for specific error patterns
-    // to avoid false positives with legitimate responses that happen
-    // to have 'message' or 'stack' properties
-
-    // Primary vulnerability: Has systemMessage (contains DB details, stack traces, etc.)
-    const hasSystemMessage = 'systemMessage' in data;
-
-    // Our standard error format: errorCode + userMessage
-    const hasErrorCode = 'errorCode' in data;
-    const hasUserMessage = 'userMessage' in data;
-    const isOurErrorFormat = hasErrorCode && hasUserMessage;
-
-    // Only sanitize if it's definitely one of our error formats
-    if (hasSystemMessage || isOurErrorFormat) {
-      return sanitizeErrorForClient(data);
-    }
-
-    // Not an error (or not our error format), return as-is
-    // Note: We intentionally don't check for native Error objects (message + stack)
-    // to avoid false positives with legitimate responses
-    return data;
-  };
-
-  // Intercept res.send()
+  // Wrap res.send to intercept and sanitize errors
   res.send = function (data) {
-    const sanitizedData = sanitizeIfError(data);
-    return originalSend.call(this, sanitizedData);
+    // Check if data looks like an error with systemMessage
+    if (data && typeof data === 'object' && !Buffer.isBuffer(data)) {
+      // Check for our standard error format
+      if ('systemMessage' in data) {
+        const { systemMessage, ...sanitizedData } = data;
+        return originalSend.call(this, sanitizedData);
+      }
+
+      // Also check for errorCode + userMessage pattern (even without systemMessage)
+      if ('errorCode' in data && 'userMessage' in data) {
+        const { systemMessage, ...sanitizedData } = data;
+        return originalSend.call(this, sanitizedData);
+      }
+    }
+
+    // For everything else, pass through unchanged
+    return originalSend.call(this, data);
   };
 
-  // Intercept res.json()
+  // Wrap res.json to intercept and sanitize errors
   res.json = function (data) {
-    const sanitizedData = sanitizeIfError(data);
-    return originalJson.call(this, sanitizedData);
+    // Check if data looks like an error with systemMessage
+    if (data && typeof data === 'object') {
+      // Check for our standard error format
+      if ('systemMessage' in data) {
+        const { systemMessage, ...sanitizedData } = data;
+        return originalJson.call(this, sanitizedData);
+      }
+
+      // Also check for errorCode + userMessage pattern (even without systemMessage)
+      if ('errorCode' in data && 'userMessage' in data) {
+        const { systemMessage, ...sanitizedData } = data;
+        return originalJson.call(this, sanitizedData);
+      }
+    }
+
+    // For everything else, pass through unchanged
+    return originalJson.call(this, data);
   };
 
   next();

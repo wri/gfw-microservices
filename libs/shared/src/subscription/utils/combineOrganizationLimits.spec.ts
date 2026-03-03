@@ -11,6 +11,7 @@ describe('combineOrganizationLimits', () => {
       organization_name: 'Org1',
       status_name: 'Active',
       max_locations_per_year: 10,
+      tokens_per_year: 5000,
     };
 
     const extraLimits: AnalysisLimit = {
@@ -21,11 +22,13 @@ describe('combineOrganizationLimits', () => {
       organization_name: 'Org1',
       status_name: 'Active',
       max_locations_per_year: 5,
+      tokens_per_year: 1000,
     };
 
     const result = combineOrganizationLimits(subscriptionLimits, extraLimits);
 
     expect(result.MaxAreaAnalyzeablePerYear).toBe(150); // 100 + 50
     expect(result.max_locations_per_year).toBe(15); // 10 + 5
+    expect(result.tokens_per_year).toBe(6000); // 5000 + 1000
   });
 });

@@ -3,6 +3,7 @@ import * as sql from 'mssql';
 import {
   GetOrganizationDatabaseType,
   OrganizationYearlyUsageSinceOrgActivation as OrganizationAllTimeAnalysisUsageResponse,
+  getOrganizationYearlyUsageWithTokens,
 } from '../queries';
 import { SQL_CONFIG } from '../config/config';
 
@@ -25,7 +26,7 @@ export async function getAccountYearlyUsageSinceActivation(
 
     return await SQLUtils.queryDB<OrganizationAllTimeAnalysisUsageResponse[]>(
       organizationDb,
-      'uspGetOrganizationYearlyUsageSinceOrgActivatedTime',
+      getOrganizationYearlyUsageWithTokens(databaseName),
       parameters
     );
   } catch (error) {

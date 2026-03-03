@@ -115,7 +115,7 @@ function DraftList({
 
       <li
         className="locations-list"
-        title={locationsPage.landing.draftMessage}
+        aria-label={locationsPage.landing.draftMessage}
         onClick={clickLocationRow}
       >
         <div className="locations-list__title">

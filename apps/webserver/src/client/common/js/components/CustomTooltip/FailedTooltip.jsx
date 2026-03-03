@@ -1,6 +1,6 @@
-import { withStyles } from '@material-ui/core/styles';
+import Tooltip from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 import ReportIcon from '@mui/icons-material/Report';
-import Tooltip from '@material-ui/core/Tooltip';
 import IconBan from '../icon/IconBan';
 import IconLimit from '../icon/IconLimit';
 import '../../../css/failed-list-tooltip.scss';
@@ -8,14 +8,16 @@ import '../../../css/failed-list-tooltip.scss';
 const BORDER = '1px solid #ccc';
 const BACKGROUND_COLOR = '#fcfcfc';
 
-const LightTooltip = withStyles(() => ({
-  arrow: {
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+  [`& .MuiTooltip-arrow`]: {
     '&::before': {
       border: BORDER,
       backgroundColor: BACKGROUND_COLOR,
     },
   },
-  tooltip: {
+  [`& .MuiTooltip-tooltip`]: {
     padding: '0.75rem',
     color: '#404041',
     border: BORDER,
@@ -23,7 +25,7 @@ const LightTooltip = withStyles(() => ({
     fontWeight: 400,
     backgroundColor: BACKGROUND_COLOR,
   },
-}))(Tooltip);
+}));
 
 const reasonMap = {
   default: {

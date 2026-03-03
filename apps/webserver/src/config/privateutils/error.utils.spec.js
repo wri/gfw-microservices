@@ -88,6 +88,22 @@ describe('Error Sanitization', () => {
       expect(sentData.systemMessage).toBeUndefined();
     });
 
+    it('should sanitize error objects that only contain systemMessage', () => {
+      errorSanitizationMiddleware(req, res, next);
+
+      const error = {
+        systemMessage: 'Sensitive internal details that should not be exposed',
+      };
+
+      res.json(error);
+
+      expect(originalJson).toHaveBeenCalled();
+      const sentData = originalJson.mock.calls[0][0];
+      const expected = sanitizeErrorForClient(error);
+
+      expect(sentData.systemMessage).toBeUndefined();
+      expect(sentData).toEqual(expected);
+    });
     it('should not modify valid responses without error patterns', () => {
       errorSanitizationMiddleware(req, res, next);
 

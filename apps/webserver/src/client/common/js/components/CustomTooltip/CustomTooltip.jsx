@@ -1,18 +1,20 @@
-import { withStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 import IconDraftNote from '../icon/IconDraftNote';
 
 const BORDER = '1px solid #ccc';
 const BACKGROUND_COLOR = '#fcfcfc';
 
-const LightTooltip = withStyles(() => ({
-  arrow: {
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+  [`& .MuiTooltip-arrow`]: {
     '&::before': {
       border: BORDER,
       backgroundColor: BACKGROUND_COLOR,
     },
   },
-  tooltip: {
+  [`& .MuiTooltip-tooltip`]: {
     padding: '0.75rem',
     color: '#404041',
     border: BORDER,
@@ -20,7 +22,7 @@ const LightTooltip = withStyles(() => ({
     fontWeight: 400,
     backgroundColor: BACKGROUND_COLOR,
   },
-}))(Tooltip);
+}));
 
 export default function CustomTooltip({
   label,

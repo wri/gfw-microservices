@@ -113,7 +113,11 @@ function DraftList({
         isPalmRiskActive={isPalmRiskActive}
       />
 
-      <li className="locations-list" onClick={clickLocationRow}>
+      <li
+        className="locations-list"
+        aria-label={locationsPage.landing.draftMessage}
+        onClick={clickLocationRow}
+      >
         <div className="locations-list__title">
           {list_name}
           {is_shared && <IconUsers className="locations-list__shared-icon" />}

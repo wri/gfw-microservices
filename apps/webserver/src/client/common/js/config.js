@@ -902,6 +902,7 @@ export const profilePage = {
     title:
       'Analytics usage for subscription year ({subscriptionYearStart} to {subscriptionYearEnd})',
     locationsAnalyzed: 'Locations Analyzed',
+    tokens: 'Tokens',
     areaAnalyzed: 'Hectares Analyzed',
   },
 };
@@ -1072,6 +1073,7 @@ export const accountProfileStrings = {
     maxAreaPerList: 'Max area per list',
     totalAreaAnalyzed: 'Total area analyzed',
     locationsAnalyzed: 'Locations analyzed',
+    tokens: 'Tokens',
     hectaresAnalyzed: 'Hectares analyzed (HA)',
     listsAnalyzed: 'Lists analyzed',
     analysisType: 'Analysis type',

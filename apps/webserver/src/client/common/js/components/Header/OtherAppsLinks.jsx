@@ -1,4 +1,5 @@
-import Icon from '@material-ui/core/Icon';
+import { Icon } from '@mui/material';
+
 import { nav } from '../../config';
 import logoGfw from './images/logo_gfw.svg';
 import logoGfwForestWatcher from './images/logo_gfw_forest_watcher.png';

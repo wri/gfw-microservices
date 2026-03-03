@@ -1,4 +1,4 @@
-import Icon from '@material-ui/core/Icon';
+import { Icon } from '@mui/material';
 
 const IconLimit = () => <Icon>speed</Icon>;
 

@@ -226,13 +226,13 @@ function AccountDetailUsageByAnalysisType({
                           element.analysis_type ||
                           ''}
                       </TableCell>
-                      <TableCell align={isWeeklyAlerts ? 'center' : 'right'}>
+                      <TableCell align="right">
                         {isWeeklyAlerts ? (
                           <div
                             style={{
                               display: 'flex',
                               flexDirection: 'column',
-                              alignItems: 'center',
+                              alignItems: 'flex-end',
                             }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -275,7 +275,7 @@ function AccountDetailUsageByAnalysisType({
                   <TableRow
                     key="total-row"
                     sx={{
-                      backgroundColor: '#d09696ff',
+                      backgroundColor: '#f5f5f5',
                       fontWeight: 'bold',
                       '& td': { fontWeight: 'bold' },
                     }}

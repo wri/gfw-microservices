@@ -13,9 +13,11 @@ import {
   Box,
   Tooltip,
 } from '@mui/material';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import InfoIcon from '@mui/icons-material/Info';
+import {
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
 
 import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';

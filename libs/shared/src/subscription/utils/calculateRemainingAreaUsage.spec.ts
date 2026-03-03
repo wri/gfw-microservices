@@ -18,6 +18,7 @@ describe('calculateRemainingAreaUsage', () => {
       max_area_analyzed: 500,
       number_of_lists_analyzed: 2,
       locations_analyzed: 100,
+      total_tokens: 0,
       organization_id: 1,
       organization_name: 'SampleOrg',
       list_id: 3,
@@ -39,6 +40,7 @@ describe('calculateRemainingAreaUsage', () => {
       max_area_analyzed: 500,
       number_of_lists_analyzed: 2,
       locations_analyzed: null,
+      total_tokens: 0,
       organization_id: 1,
       organization_name: 'SampleOrg',
     };

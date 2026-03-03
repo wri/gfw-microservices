@@ -13,6 +13,7 @@ describe('calculateListProcessingLimit', () => {
       max_area_analyzed: 800,
       number_of_lists_analyzed: 2,
       locations_analyzed: 100,
+      total_tokens: 0,
       organization_id: 1,
       organization_name: 'TestOrg',
     };
@@ -33,6 +34,7 @@ describe('calculateListProcessingLimit', () => {
       max_area_analyzed: 800,
       number_of_lists_analyzed: 2,
       locations_analyzed: 100,
+      total_tokens: 0,
       organization_id: 1,
       organization_name: 'TestOrg',
     };

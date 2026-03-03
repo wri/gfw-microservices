@@ -28,5 +28,7 @@ function transformData(analysisLimit: AnalysisLimit) {
   return {
     ...analysisLimit,
     max_locations_per_year: Number(analysisLimit.max_locations_per_year),
+    tokens_per_year:
+      analysisLimit.tokens_per_year != null ? Number(analysisLimit.tokens_per_year) : undefined,
   };
 }

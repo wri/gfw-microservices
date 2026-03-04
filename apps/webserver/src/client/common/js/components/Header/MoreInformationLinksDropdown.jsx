@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import { IconButton } from '@mui/material';
-import Icon from '@material-ui/core/Icon';
+import { ClickAwayListener, Icon, IconButton } from '@mui/material';
 import MoreInformationLinks from './MoreInformationLinks';
 import OtherAppsLinks from './OtherAppsLinks';
 import { nav } from '../../config';

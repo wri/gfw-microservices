@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { PortableText } from '@portabletext/react';
-import Popper from '@material-ui/core/Popper';
-import Icon from '@material-ui/core/Icon';
+import { Icon, Popper } from '@mui/material';
 import { urlForImage } from './sanityClient';
 import './Notification.scss';
 

@@ -85,7 +85,7 @@ export interface AnalysisLimit {
   OrgID?: number;
   OrgType?: number;
   organization_name?: string;
-  status_name?: string;
+  subscription_name?: string;
   max_locations_per_year?: number;
   tokens_per_year?: number;
   update_time?: string;

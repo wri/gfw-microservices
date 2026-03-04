@@ -17,8 +17,10 @@ import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 import { LoadingModal } from '../../../../../components';
+import featureFlags from '../../../../../../utils/general.utils';
 
 function AccountsListUsage({ setIsLoading }) {
+  const { isTokenizationAvailable } = featureFlags;
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [usageData, setUsageData] = useState({});
@@ -85,7 +87,9 @@ function AccountsListUsage({ setIsLoading }) {
                     {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
                   </TableCell>
                   <TableCell align="right">
-                    {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
+                    {isTokenizationAvailable
+                      ? accountProfileStrings.accountUsageLabels.tokens
+                      : accountProfileStrings.accountUsageLabels.locationsAnalyzed}
                   </TableCell>
                 </TableRow>
               </TableHead>

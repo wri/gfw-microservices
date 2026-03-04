@@ -1,4 +1,5 @@
-import Icon from '@material-ui/core/Icon';
+import { Icon } from '@mui/material';
+
 import { nav } from '../../config';
 import './IconLink.scss';
 

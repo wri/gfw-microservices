@@ -217,7 +217,7 @@ jest.mock('../../../config/config', () => ({
 jest.mock(
   '@wri-monorepos/shared',
   () => ({
-    aggregateLimits: jest.fn((limits) => limits[0] || {}),
+    getLatestLimits: jest.fn((limits) => limits[0] || {}),
     getAccountSubscriptionLimits: jest.fn(),
     getAccountExtraLimits: jest.fn(),
     getAccountRolloverLimits: jest.fn(),

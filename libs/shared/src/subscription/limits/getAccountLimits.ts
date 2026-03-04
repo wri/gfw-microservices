@@ -29,7 +29,7 @@ export async function getAccountLimits(organizationId: number, organizationType:
   );
 
   // Use the latest year's limits as the current subscription limits
-  const currentSubscriptionLimits = aggregateLimits(organizationSubscriptionLimits);
+  const currentSubscriptionLimits = getLatestLimits(organizationSubscriptionLimits);
 
   const organizationRolloverLimits = await getAccountRolloverLimits(
     organizationId,
@@ -41,7 +41,7 @@ export async function getAccountLimits(organizationId: number, organizationType:
   return combineOrganizationLimits(currentSubscriptionLimits, organizationRolloverLimits);
 }
 
-export function aggregateLimits(limits: AnalysisLimit[]): AnalysisLimit {
+export function getLatestLimits(limits: AnalysisLimit[]): AnalysisLimit {
   if (limits.length === 0) {
     return {
       MaxAreaAnalyzeablePerYear: 0,
@@ -65,5 +65,7 @@ function transformData(analysisLimit: AnalysisLimit) {
   return {
     ...analysisLimit,
     max_locations_per_year: Number(analysisLimit.max_locations_per_year),
+    tokens_per_year:
+      analysisLimit.tokens_per_year != null ? Number(analysisLimit.tokens_per_year) : undefined,
   };
 }

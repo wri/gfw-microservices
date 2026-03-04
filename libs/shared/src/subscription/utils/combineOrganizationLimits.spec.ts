@@ -9,7 +9,7 @@ describe('combineOrganizationLimits', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'Org1',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 10,
       tokens_per_year: 5000,
     };
@@ -20,7 +20,7 @@ describe('combineOrganizationLimits', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'Org1',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 5,
       tokens_per_year: 1000,
     };

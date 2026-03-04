@@ -17,6 +17,7 @@ DECLARE @SQL NVARCHAR(MAX)
                     ,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
                     ,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
                     ,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year
+                    ,ISNULL(SUM(a.tokens_per_year), 0) AS tokens_per_year
                 FROM AnalysisLimits a
                 LEFT JOIN Organizations o ON a.OrgID = o.id
                 LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType';
@@ -30,6 +31,7 @@ DECLARE @SQL NVARCHAR(MAX)
                         ,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
                         ,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
                         ,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year
+                        ,ISNULL(SUM(a.tokens_per_year), 0) AS tokens_per_year
                     FROM Organizations o
                     LEFT JOIN AnalysisLimits a ON a.OrgID = o.id
                     LEFT JOIN SubscriptionStatuses ss ON ss.id = o.subscription_status_id';
@@ -62,6 +64,7 @@ export interface AnalysisLimit {
   OrgID?: number;
   OrgType?: number;
   organization_name?: string;
-  status_name?: string;
+  subscription_name?: string;
   max_locations_per_year?: number;
+  tokens_per_year?: number;
 }

@@ -260,7 +260,7 @@ describe('Login Component', () => {
   });
 
   describe('Component Structure', () => {
-    it('wraps content in PageWithoutThemeProvider', () => {
+    it('wraps content in Page', () => {
       const { container } = render(<Login />);
 
       // Verify main sections exist

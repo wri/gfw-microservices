@@ -1,7 +1,7 @@
 import { render } from 'react-dom';
 
 import { ThemeProvider } from '../styles';
-import PageWithoutThemeProvider from '../common/js/components/PageWithoutThemeProvider';
+import Page from '../common/js/components/Page';
 import ActivityLog from './js/components/ActivityLog';
 
 const pageOptions = {
@@ -13,9 +13,9 @@ const pageOptions = {
 function App() {
   return (
     <ThemeProvider>
-      <PageWithoutThemeProvider links={pageOptions.links} active="profile">
+      <Page links={pageOptions.links} active="profile">
         <ActivityLog />
-      </PageWithoutThemeProvider>
+      </Page>
     </ThemeProvider>
   );
 }

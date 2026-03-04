@@ -14,6 +14,10 @@ export async function getListProcessingLimits({
     subscriptionStatusId: organizationType,
   });
 
-  // Calculate Processing limit either left for the year or max limit per list
-  return calculateListProcessingLimit(accountLimits, accountUsage);
+  // calculateListProcessingLimit handles tokenization internally
+  return calculateListProcessingLimit({
+    accountLimits,
+    accountUsage,
+    organizationId,
+  });
 }

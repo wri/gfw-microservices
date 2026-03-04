@@ -45,3 +45,4 @@ export * from './activatePendingAccount';
 export * from './getAllUsersList';
 export * from './getAllPolicyList';
 export * from './getHALimitPerYear';
+export * from './getHALimitForCurrentYear';

@@ -6,7 +6,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 // Internal components
-import PageWithoutThemeProvider from '../../../common/js/components/PageWithoutThemeProvider';
+import Page from '../../../common/js/components/Page';
 import GDPRFooter from '../../../common/js/components/GDPRFooter';
 
 // Utils and data
@@ -106,7 +106,7 @@ export default function Login(): JSX.Element {
   const videoSource = isEnglishLanguage ? gfwInAction : gfwInActionEs;
 
   return (
-    <PageWithoutThemeProvider active="login">
+    <Page active="login">
       <div className={`hero videoHidden-${videoHidden}`}>
         <div className="hero__content container">
           <div className="hero__title">
@@ -282,6 +282,6 @@ export default function Login(): JSX.Element {
         </div>
       </section>
       <GDPRFooter variant="login" />
-    </PageWithoutThemeProvider>
+    </Page>
   );
 }

@@ -9,7 +9,7 @@ describe('combineOrganizationLimits', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'Org1',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 10,
     };
 
@@ -19,7 +19,7 @@ describe('combineOrganizationLimits', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'Org1',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 5,
     };
 
@@ -37,7 +37,7 @@ describe('combineOrganizationLimits', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'Org1',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 0,
     };
 
@@ -47,7 +47,7 @@ describe('combineOrganizationLimits', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'Org1',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 5,
     };
 

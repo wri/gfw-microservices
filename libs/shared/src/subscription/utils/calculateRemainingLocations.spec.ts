@@ -9,7 +9,7 @@ describe('calculateRemainingLocations', () => {
       OrgID: 1,
       OrgType: 2,
       organization_name: 'SampleOrg',
-      status_name: 'Active',
+      subscription_name: 'Active',
       max_locations_per_year: 200,
     };
 

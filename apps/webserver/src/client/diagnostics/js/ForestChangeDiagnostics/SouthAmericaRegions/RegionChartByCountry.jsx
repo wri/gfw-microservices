@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { Card, CardContent } from '@mui/material';
-
-import InfoIcon from 'material-ui/svg-icons/action/info';
+import { Info as InfoIcon } from '@mui/icons-material';
 import DateRangeSlider from './DateRangeSlider';
 import BarChart from '../../common/BarChart';
 import PieChart from '../../common/PieChart';

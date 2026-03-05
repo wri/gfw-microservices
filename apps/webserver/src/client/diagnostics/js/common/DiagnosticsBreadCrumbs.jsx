@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router';
 import Breadcrumbs from '../../../common/js/components/Breadcrumbs';
-import LinkButton from '../../../common/js/components/LinkButton';
+import { Link } from '../../../components';
 import { changeView, selectFolder } from '../../../locations/js/actions/locationActions';
 import store from '../../../locations/js/store';
 import { locationsPage } from '../../../common/js/config';
@@ -27,22 +27,31 @@ function DiagnosticsBreadCrumbs({ selectedList, isSharedList = false, isGfwList,
   )?.shortLabel;
 
   const diagnosticPath = `${diagnosticLabel} diagnostic`;
+  const isFcd = analysisId === 'FCD';
 
   return (
     <Breadcrumbs>
-      <LinkButton
-        label={locationsPage.lists.locations}
-        onClick={() => {
-          window.location = '/locations';
-        }}
-      />
+      <Link href="/locations" sx={isFcd ? { color: 'white' } : undefined}>
+        {locationsPage.lists.locations}
+      </Link>
       {selectedList.folder && (
-        <LinkButton
-          label={selectedList.folder.name}
+        <Link
+          component="button"
+          type="button"
           onClick={() => changeFolderView(selectedList.folder)}
-        />
+          sx={isFcd ? { color: 'white' } : undefined}
+        >
+          {selectedList.folder.name}
+        </Link>
       )}
-      <LinkButton label={list_name} onClick={backToLists} />
+      <Link
+        component="button"
+        type="button"
+        onClick={backToLists}
+        sx={isFcd ? { color: 'white' } : undefined}
+      >
+        {list_name}
+      </Link>
       <span>{diagnosticPath}</span>
     </Breadcrumbs>
   );

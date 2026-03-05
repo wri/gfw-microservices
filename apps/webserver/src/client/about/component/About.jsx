@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import aboutStrings from './aboutStrings';
-import PageWithoutThemeProvider from '../../common/js/components/PageWithoutThemeProvider';
+import Page from '../../common/js/components/Page';
 import { useQuery } from '../../common/js/hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 import './About.scss';
@@ -27,7 +27,7 @@ export default function About() {
   };
 
   return (
-    <PageWithoutThemeProvider>
+    <Page>
       <div id="About" className="About page">
         <main>
           <div className="hero__gradient" />
@@ -90,6 +90,6 @@ export default function About() {
           </div>
         </div>
       </div>
-    </PageWithoutThemeProvider>
+    </Page>
   );
 }

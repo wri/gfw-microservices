@@ -38,8 +38,8 @@ import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import InfoBubble from '../../../../../../common/js/components/InfoBubble';
-import { default as GFWProButton } from '../../../../../../common/js/components/Button';
 import infoBubbleConfig from '../../../../../../common/js/infoBubbleConfig.constants';
+import { PillButton } from '../../../../../../components';
 import {
   COMMODITY_RISK_VIEW,
   FOREST_CHANGE_VIEW,
@@ -267,18 +267,21 @@ export default function Filter({
                 />
               </Grid>
               <Grid item xs={3} sx={{ alignSelf: 'center' }}>
-                <GFWProButton
-                  variant="primary"
+                <PillButton
+                  variant="contained"
+                  color="primary"
                   data-cy="filter-apply-button"
                   onClick={() => updateValues(state)}
-                  label="APPLY"
-                />
-                <GFWProButton
+                >
+                  Apply
+                </PillButton>
+                <PillButton
                   style={{ marginLeft: '10px' }}
-                  variant="secondary"
+                  variant="outlined"
                   onClick={resetFilters}
-                  label="CLEAR"
-                />
+                >
+                  Clear
+                </PillButton>
               </Grid>
             </>
           ) : (

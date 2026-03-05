@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import PieChart from './index';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 describe('PieChart', () => {
   it('renders the component correctly with non-zero total area', () => {
@@ -18,14 +17,12 @@ describe('PieChart', () => {
     const informationBubbleId = 'info-bubble-1';
 
     render(
-      <MuiThemeProvider>
-        <PieChart
-          data={data}
-          chartLabels={chartLabels}
-          title={title}
-          informationBubbleId={informationBubbleId}
-        />
-      </MuiThemeProvider>
+      <PieChart
+        data={data}
+        chartLabels={chartLabels}
+        title={title}
+        informationBubbleId={informationBubbleId}
+      />
     );
 
     const chartHeader = screen.getAllByText(title);

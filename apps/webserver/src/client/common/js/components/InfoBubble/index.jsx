@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import { IconButton } from '@mui/material';
+import { IconButton, Popover } from '@mui/material';
 import { Info } from '@mui/icons-material';
 import InfoBubbleBase from './InfoBubbleBase';
 import InfoBubbleContent from './InfoBubbleContent';
-import Popover from 'material-ui/Popover';
 import './infoBubble.scss';
 
 export default function InfoBubble({ children, infoBubbleId }) {
@@ -30,8 +29,8 @@ export default function InfoBubble({ children, infoBubbleId }) {
         open={showBubble}
         anchorEl={anchorEl}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-        onRequestClose={handleClose}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+        onClose={handleClose}
       >
         {infoBubbleId ? (
           <InfoBubbleBase closeBubble={handleClose}>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { IconButton, Popover } from '@mui/material';
-import Icon from '@material-ui/core/Icon';
+import { Icon, IconButton, Popover } from '@mui/material';
 import { client } from './sanityClient';
 import Notification from './Notification';
 import './NewFeatureNotifications.scss';

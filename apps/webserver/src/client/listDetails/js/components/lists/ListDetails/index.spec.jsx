@@ -1,15 +1,9 @@
 // Mock common UI components to avoid deep dependencies
-jest.mock('common/js/components/Button', () => () => <div data-testid="button" />, {
-  virtual: true,
-});
 jest.mock(
   'common/js/components/CustomDialog/CustomDialog',
   () => () => <div data-testid="custom-dialog" />,
   { virtual: true }
 );
-jest.mock('common/js/components/LinkButton', () => () => <div data-testid="link-button" />, {
-  virtual: true,
-});
 jest.mock(
   'common/js/components/Loaders/ModalLoader',
   () => () => <div data-testid="modal-loader" />,

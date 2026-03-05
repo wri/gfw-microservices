@@ -193,14 +193,12 @@ export function errorSanitizationMiddleware(req, res, next) {
     if (data && typeof data === 'object' && !Buffer.isBuffer(data)) {
       // Check for our standard error format
       if ('systemMessage' in data) {
-        const { systemMessage, ...sanitizedData } = data;
-        return originalSend.call(this, sanitizedData);
+        return originalSend.call(this, sanitizeErrorForClient(data));
       }
 
       // Also check for errorCode + userMessage pattern (even without systemMessage)
       if ('errorCode' in data && 'userMessage' in data) {
-        const { systemMessage, ...sanitizedData } = data;
-        return originalSend.call(this, sanitizedData);
+        return originalSend.call(this, sanitizeErrorForClient(data));
       }
     }
 
@@ -214,14 +212,12 @@ export function errorSanitizationMiddleware(req, res, next) {
     if (data && typeof data === 'object') {
       // Check for our standard error format
       if ('systemMessage' in data) {
-        const { systemMessage, ...sanitizedData } = data;
-        return originalJson.call(this, sanitizedData);
+        return originalJson.call(this, sanitizeErrorForClient(data));
       }
 
       // Also check for errorCode + userMessage pattern (even without systemMessage)
       if ('errorCode' in data && 'userMessage' in data) {
-        const { systemMessage, ...sanitizedData } = data;
-        return originalJson.call(this, sanitizedData);
+        return originalJson.call(this, sanitizeErrorForClient(data));
       }
     }
 

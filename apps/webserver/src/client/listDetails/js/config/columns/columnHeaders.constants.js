@@ -66,6 +66,10 @@ export const columnHeaderTranslations = {
     es: 'Alertas en zonas no forestales',
     pt: 'Alertas em Áreas Não Florestais',
   },
+  'Alerts in JRC Forest': {
+    es: 'Alertas en el Bosque JRC',
+    pt: 'Alertas na Floresta JRC',
+  },
   'All Alerts': {
     es: 'Todas las alertas',
     pt: 'Todos os Alertas',

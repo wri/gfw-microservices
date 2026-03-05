@@ -1077,6 +1077,8 @@ export const accountProfileStrings = {
     hectaresAnalyzed: 'Hectares analyzed (HA)',
     listsAnalyzed: 'Lists analyzed',
     analysisType: 'Analysis type',
+    tokensUsed: 'Tokens Used',
+    totalLabel: 'Total',
   },
   accountFormLabels: {
     org_name: 'Organization Name',

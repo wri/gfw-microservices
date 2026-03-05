@@ -51,7 +51,7 @@ function AccountDetailUsageByAnalysisType({
   organizationId,
 }) {
   const { isTokenizationAvailable } = featureFlags;
-  
+
   const { sortedData, orderBy, order, handleSort } = useSortableData(analysisUsageByType, {
     defaultOrderBy: 'analysis_type',
     defaultOrder: 'asc',
@@ -64,11 +64,11 @@ function AccountDetailUsageByAnalysisType({
   // Calculate totals
   const totals = useMemo(() => {
     if (!analysisUsageByType || analysisUsageByType.length === 0) {
-      return { 
-        locationsAnalyzed: 0, 
-        hectaresAnalyzed: 0, 
-        listsAnalyzed: 0, 
-        tokensUsed: 0 
+      return {
+        locationsAnalyzed: 0,
+        hectaresAnalyzed: 0,
+        listsAnalyzed: 0,
+        tokensUsed: 0,
       };
     }
 
@@ -191,7 +191,11 @@ function AccountDetailUsageByAnalysisType({
                       align="right"
                     >
                       <div
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                        }}
                       >
                         {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
                         <span
@@ -200,7 +204,9 @@ function AccountDetailUsageByAnalysisType({
                           <KeyboardArrowUpIcon
                             fontSize="small"
                             color={
-                              orderBy === 'locations_analyzed' && order === 'asc' ? 'primary' : 'disabled'
+                              orderBy === 'locations_analyzed' && order === 'asc'
+                                ? 'primary'
+                                : 'disabled'
                             }
                           />
                           <KeyboardArrowDownIcon
@@ -222,7 +228,11 @@ function AccountDetailUsageByAnalysisType({
                       align="right"
                     >
                       <div
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                        }}
                       >
                         {accountProfileStrings.accountUsageLabels.hectaresAnalyzed}
                         <span
@@ -231,7 +241,9 @@ function AccountDetailUsageByAnalysisType({
                           <KeyboardArrowUpIcon
                             fontSize="small"
                             color={
-                              orderBy === 'hectares_analyzed' && order === 'asc' ? 'primary' : 'disabled'
+                              orderBy === 'hectares_analyzed' && order === 'asc'
+                                ? 'primary'
+                                : 'disabled'
                             }
                           />
                           <KeyboardArrowDownIcon
@@ -282,7 +294,11 @@ function AccountDetailUsageByAnalysisType({
                       align="right"
                     >
                       <div
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'flex-end',
+                        }}
                       >
                         {accountProfileStrings.accountUsageLabels.tokensUsed}
                         <span
@@ -297,7 +313,9 @@ function AccountDetailUsageByAnalysisType({
                           <KeyboardArrowDownIcon
                             fontSize="small"
                             color={
-                              orderBy === 'total_tokens' && order === 'desc' ? 'primary' : 'disabled'
+                              orderBy === 'total_tokens' && order === 'desc'
+                                ? 'primary'
+                                : 'disabled'
                             }
                           />
                         </span>

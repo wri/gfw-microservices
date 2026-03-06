@@ -5,6 +5,7 @@ import config from '../../../config/config';
 const { compiledAssets } = config;
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import {
+  getLatestLimits,
   getAccountExtraLimits,
   getAccountSubscriptionLimits,
   combineOrganizationLimits,
@@ -259,15 +260,27 @@ export const getMyOrganizationAnalysisLimit = async (req, res) => {
   const { organization_id, subscription_status_id } = req.session;
 
   try {
-    const subscribed = await getAccountSubscriptionLimits(subscription_status_id);
-    const extended = await getAccountExtraLimits(organization_id);
-    const rollover = await getAccountRolloverLimits(organization_id, subscribed, extended);
+    const orgRenewalTime = await getAccountRenewalTime(organization_id);
+    const renewalDate = new Date(orgRenewalTime);
 
-    const limits = combineOrganizationLimits(subscribed, rollover);
+    const subscribedPerYear = await getAccountSubscriptionLimits(
+      subscription_status_id,
+      renewalDate
+    );
+    const currentSubscriptionLimits = getLatestLimits(subscribedPerYear);
+    const extended = await getAccountExtraLimits(organization_id);
+    const rollover = await getAccountRolloverLimits(
+      organization_id,
+      currentSubscriptionLimits,
+      extended,
+      renewalDate
+    );
+
+    const limits = combineOrganizationLimits(currentSubscriptionLimits, rollover);
 
     res.status(200).send({
       limits,
-      subscribed,
+      subscribed: currentSubscriptionLimits,
       purchased: rollover,
     });
   } catch (error) {

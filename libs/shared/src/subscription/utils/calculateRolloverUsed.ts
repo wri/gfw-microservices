@@ -4,6 +4,7 @@ import { differenceInCalendarDays } from 'date-fns';
 export interface RolloverAnalysisAmounts {
   rolloverAnalysisAreaUsed: number;
   rolloverLocationsUsed: number;
+  rolloverTokensUsed: number;
 }
 export function calculateRolloverUsed(
   yearlyUsageSinceActivation: OrganizationYearlyUsageSinceOrgActivation[],
@@ -12,6 +13,7 @@ export function calculateRolloverUsed(
 ): RolloverAnalysisAmounts {
   let rolloverAnalysisAreaUsed = 0;
   let rolloverLocationsUsed = 0;
+  let rolloverTokensUsed = 0;
 
   // Calculate current year in same units as yearlyUsageSinceActivation
   const now = new Date();
@@ -34,10 +36,18 @@ export function calculateRolloverUsed(
       yearlyData.totalLocationsYearly - (subscriptionLimits.max_locations_per_year || 0)
     );
     rolloverLocationsUsed += locationsRollover;
+
+    // rollover for tokens
+    const tokensRollover = Math.max(
+      0,
+      (yearlyData.totalTokensYearly || 0) - (subscriptionLimits.tokens_per_year || 0)
+    );
+    rolloverTokensUsed += tokensRollover;
   });
 
   return {
     rolloverAnalysisAreaUsed,
     rolloverLocationsUsed,
+    rolloverTokensUsed,
   };
 }

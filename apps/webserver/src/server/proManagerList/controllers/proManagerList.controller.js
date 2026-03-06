@@ -13,6 +13,7 @@ const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
 
 import {
+  getLatestLimits,
   getAccountSubscriptionLimits,
   getAccountExtraLimits,
   combineOrganizationLimits,
@@ -107,21 +108,24 @@ export const proManagerListAccountDetailData = async (req, res) => {
       selectedAccount.renewal_time = await getAccountRenewalTime(selectedAccount.organization_id);
 
       if (selectedAccount.organization_status_id !== orgAccountStatus.Pending) {
-        const subscribed = await getAccountSubscriptionLimits(
-          selectedAccount.subscription_status_id
+        const subscribedPerYear = await getAccountSubscriptionLimits(
+          selectedAccount.subscription_status_id,
+          selectedAccount.renewal_time
         );
+        const currentSubscriptionLimits = getLatestLimits(subscribedPerYear);
         const extended = await getAccountExtraLimits(selectedAccount.organization_id);
         const rollover = await getAccountRolloverLimits(
           selectedAccount.organization_id,
-          subscribed,
-          extended
+          currentSubscriptionLimits,
+          extended,
+          selectedAccount.renewal_time
         );
 
-        const limits = combineOrganizationLimits(subscribed, rollover);
+        const limits = combineOrganizationLimits(currentSubscriptionLimits, rollover);
 
         selectedAccount.analysis_limits = {
           limits,
-          subscriptionLimits: subscribed,
+          subscriptionLimits: currentSubscriptionLimits,
           extraLimits: rollover,
         };
       } else {

@@ -1,0 +1,1115 @@
+{
+  "info": {
+    "_postman_id": "818487db-b814-4c0e-ba76-1251ca4e8843",
+    "name": "GFW-Pro-v2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40077819",
+    "_collection_link": "https://go.postman.co/collection/13247005-818487db-b814-4c0e-ba76-1251ca4e8843?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Datasets",
+      "item": [
+        {
+          "name": "List GFWPRO Datasets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset?app=gfw-pro",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset"],
+              "query": [
+                {
+                  "key": "app",
+                  "value": "gfw-pro"
+                }
+              ]
+            },
+            "description": "This call will expose all datasets in RW application"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Dataset",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "e663eb09-04de-4f39-b871-35c6c2ed10b5"
+                }
+              ]
+            },
+            "description": "This call will expose a dataset"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Dataset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Deforestation alerts (GLAD)\",\r\n\"slug\": \"GLAD-data-for-download-1490086842133\",\r\n\"type\": \"tabular\",\r\n\"subtitle\": \"GLAD weekly 30m forest loss alerts (UMD)\",\r\n\"application\": [\r\n\t\"gfw-pro\"\r\n],\r\n\"connectorType\": \"document\",\r\n\"provider\": \"csv\",\r\n\"userId\": \"57a0aa1071e394dd32ffe137\",\r\n\"connectorUrl\": \"http://gfw2-data.s3.amazonaws.com/alerts-tsv/glad/russia_2015.csv\",\r\n\"tableName\": \"index_e663eb0904de4f39b87135c6c2ed10b5\",\r\n\"status\": \"saved\",\r\n\"published\": true,\r\n\"overwrite\": true,\r\n\"env\": \"staging\",\r\n\"geoInfo\": true,\r\n\"protected\": true,\r\n\"legend\": {\r\n\t\"date\": [],\r\n\t\"region\": [\r\n\t\t\"region\"\r\n\t],\r\n\t\"country\": [],\r\n\t\"nested\": [],\r\n\t\"integer\": [],\r\n\t\"short\": [],\r\n\t\"byte\": [],\r\n\t\"double\": [],\r\n\t\"float\": [],\r\n\t\"half_float\": [],\r\n\t\"scaled_float\": [],\r\n\t\"boolean\": [],\r\n\t\"binary\": [],\r\n\t\"text\": [],\r\n\t\"keyword\": [],\r\n\t\"long\": \"long\",\r\n\t\"lat\": \"lat\"\r\n},\r\n\"errorMessage\": \"Request Timeout after 30000ms\",\r\n\"widgetRelevantProps\": [\r\n\t\"country_iso\",\r\n\t\"julian_day\",\r\n\t\"year\"\r\n],\r\n\"layerRelevantProps\": [\r\n\t\"country_iso\",\r\n\t\"lat\",\r\n\t\"long\",\r\n\t\"the_geom\",\r\n\t\"the_geom_point\",\r\n\t\"year\",\r\n\t\"julian_day\"\r\n]\r\n}"
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Metadata",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "type": "text",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n   \"application\": \"gfw-pro\",\r\n   \"language\": \"en\",\r\n   \"info\": {\r\n       \"link\": \"https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_pro_peat\"\r\n   }\r\n  }"
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id/metadata",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id", "metadata"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "2fe0f74a-9f91-43a3-98db-bed55a01077f"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Dataset",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "2fe0f74a-9f91-43a3-98db-bed55a01077f"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Dataset",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "73a25e69-3093-46b7-b0b7-e95befc26850"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Layers",
+      "item": [
+        {
+          "name": "List All Layers for GFWPRO",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{api_url}}/v1/layer?app=gfw-pro",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "layer"],
+              "query": [
+                {
+                  "key": "app",
+                  "value": "gfw-pro"
+                }
+              ]
+            },
+            "description": "This call will expose all datasets in rw aplication"
+          },
+          "response": []
+        },
+        {
+          "name": "List Layers in Dataset",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id/layer",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id", "layer"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "3cff5ac6-4f07-47e2-82ab-972cdfafc932"
+                }
+              ]
+            },
+            "description": "This call will expose all datasets in rw aplication"
+          },
+          "response": []
+        },
+        {
+          "name": "Check Layer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id/layer/:layer_id",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id", "layer", ":layer_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "185143a2-d2b9-4a28-a3c0-db6d3236c2bc"
+                },
+                {
+                  "key": "layer_id",
+                  "value": "cdbe3eed-67c7-45cd-ae9e-7bc8b761f64e"
+                }
+              ]
+            },
+            "description": "This call will expose all datasets in rw aplication"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Layer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+              {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"layer\": {\n        \"name\": \"glad-alerts_1\",\n            \"slug\": \"glad-alerts_1\",\n            \"dataset\": \"e663eb09-04de-4f39-b871-35c6c2ed10b5\",\n            \"description\": \"GLAD alerts\",\n            \"application\": [\n                \"gfw-pro\"\n            ],\n            \"iso\": [],\n            \"provider\": \"leaflet\",\n            \"userId\": \"596cde70824315350dd0f116\",\n            \"default\": true,\n            \"protected\": false,\n            \"published\": true,\n            \"env\": \"production\",\n            \"layerConfig\": {\n                \"type\": \"tileLayer\",\n                \"body\": {\n                    \"options\": {\n                        \"color\": [\n                            220,\n                            102,\n                            153\n                        ]\n                    },\n                    \"coverage-options\": {\n                        \"opacity\": 0.3,\n                        \"color\": \"#f69\"\n                    },\n                    \"css-url\": \"https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss\",\n                    \"url\": \"https://tiles.globalforestwatch.org/glad_prod/tiles/{z}/{x}/{y}.png\",\n                    \"useCors\": true,\n                    \"metadata\": \"https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts\"\n                }\n            },\n            \"legendConfig\": {\n                \"items\": [\n                    {\n                        \"categories\": [\n                            {\n                                \"name\": \"Recent alerts\",\n                                \"color\": \"#e4c600\"\n                            },\n                            {\n                                \"name\": \"Show only confirmed alerts\",\n                                \"color\": \"#d7668f\"\n                            },\n                            {\n                                \"name\": \"Geographic coverage\",\n                                \"color\": \"#f69\"\n                            }\n                        ],\n                        \"name\": \"GLAD alerts\",\n                        \"source\": \"(weekly, 30m, select countries, UMD/GLAD)\",\n                        \"color\": \"#dc6699\"\n                    }\n                ],\n                \"type\": \"basic\"\n            },\n            \"interactionConfig\": {},\n            \"applicationConfig\": {},\n            \"staticImageConfig\": {}\n    }\n}"
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id/layer/",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id", "layer", ""],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "e663eb09-04de-4f39-b871-35c6c2ed10b5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Layer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"layer\": {\r\n        \"name\": \"GLAD-S2 alerts\",\r\n        \"slug\": \"GLAD-S2-alerts_4\",\r\n        \"dataset\": \"e663eb09-04de-4f39-b871-35c6c2ed10b5\",\r\n        \"description\": \"GLAD-S2 alerts\",\r\n        \"application\": [\r\n            \"gfw-pro\"\r\n        ],\r\n        \"iso\": [],\r\n        \"provider\": \"leaflet\",\r\n        \"userId\": \"62601518cdc846001a7756b5\",\r\n        \"default\": true,\r\n        \"protected\": false,\r\n        \"published\": true,\r\n        \"thumbnailUrl\": \"https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/e045c55c-3455-4a19-8ee8-e0cbe9926085-1702313356394.png\",\r\n        \"env\": \"production\",\r\n        \"layerConfig\": {\r\n            \"type\": \"Vector.Layer\",\r\n            \"body\": {\r\n                \"options\": {\r\n                    \"color\": [\r\n                        220,\r\n                        102,\r\n                        153\r\n                    ]\r\n                },\r\n                \"coverage-options\": {\r\n                    \"opacity\": 0.3,\r\n                    \"color\": \"#f69\"\r\n                },\r\n                \"css-url\": \"https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss\",\r\n                \"url\": \"https://tiles.globalforestwatch.org/umd_glad_sentinel2_alerts/latest/default/{z}/{x}/{y}.png\",\r\n                \"useCors\": true,\r\n                \"metadata\": \"https://www.globalforestwatch.org/api/metadata/umd_glad_sentinel2_alerts\"\r\n            }\r\n        },\r\n        \"legendConfig\": {\r\n            \"items\": [\r\n                {\r\n                    \"categories\": [\r\n                        {\r\n                            \"name\": \"GLAD-S2 alerts\",\r\n                            \"color\": \"#f69\"\r\n                        }\r\n                    ],\r\n                    \"name\": \"GLAD-S2 alerts\",\r\n                    \"source\": \"(weekly, 30m, select countries, UMD/GLAD)\",\r\n                    \"color\": \"#dc6699\"\r\n                }\r\n            ],\r\n            \"type\": \"basic\"\r\n        },\r\n        \"interactionConfig\": {},\r\n        \"applicationConfig\": {},\r\n        \"staticImageConfig\": {},\r\n        \"createdAt\": \"2023-12-11T16:37:08.978Z\",\r\n        \"updatedAt\": \"2023-12-11T16:49:16.326Z\"\r\n    }\r\n}"
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id/layer/:layer_id",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id", "layer", ":layer_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "e663eb09-04de-4f39-b871-35c6c2ed10b5"
+                },
+                {
+                  "key": "layer_id",
+                  "value": "e045c55c-3455-4a19-8ee8-e0cbe9926085"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Update Layer",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{auth}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\t\"layer\": {\r\n\t\t\"name\": \"Alliance for Zero Extinction Sites\",\r\n            \"slug\": \"alliance-for-zero-extinction-sites\",\r\n            \"dataset\": \"6a276d13-a079-4ba4-9c1f-54936b458b33\",\r\n            \"description\": \"Alliance for Zero Extinction Sites\",\r\n            \"application\": [\r\n                \"gfw-pro\"\r\n            ],\r\n            \"iso\": [],\r\n            \"provider\": \"esrivectorservice\",\r\n            \"userId\": \"596cde70824315350dd0f116\",\r\n            \"default\": true,\r\n            \"protected\": false,\r\n            \"published\": true,\r\n            \"env\": \"production\",\r\n            \"layerConfig\": {\r\n                \"body\": {\r\n                    \"useCors\": true,\r\n                    \"options\": {\r\n                        \"line-width\": 1.5,\r\n                        \"line-opacity\": 1,\r\n                        \"opacity\": 0.9,\r\n                        \"line-color\": \"#b2d26e\",\r\n                        \"color\": \"#b2d26e\"\r\n                    },\r\n                    \"metadata\": \"https://gis-gfw.wri.org/metadata/alliance_for_zero_extinction_sites\",\r\n                    \"url\": \"https://tiles.globalforestwatch.org/birdlife_alliance_for_zero_extinction_sites/v20200725/default/root.json\"\r\n                },\r\n                \"type\": \"Vector.Layer\"\r\n            },\r\n            \"legendConfig\": {\r\n                \"type\": \"basic\",\r\n                \"items\": [\r\n                    {\r\n                        \"name\": \"Alliance for Zero Extinction Sites\",\r\n                        \"color\": \"#b2d26e\"\r\n                    }\r\n                ]\r\n            },\r\n            \"interactionConfig\": {},\r\n            \"applicationConfig\": {},\r\n            \"staticImageConfig\": {}\r\n\t}\r\n}"
+                },
+                "url": {
+                  "raw": "https://{{api_url}}/v1/dataset/:dataset_id/layer/:layer_id",
+                  "protocol": "https",
+                  "host": ["{{api_url}}"],
+                  "path": ["v1", "dataset", ":dataset_id", "layer", ":layer_id"],
+                  "variable": [
+                    {
+                      "key": "dataset_id",
+                      "value": "6a276d13-a079-4ba4-9c1f-54936b458b33"
+                    },
+                    {
+                      "key": "layer_id",
+                      "value": "8f05e385-7fd1-4e70-aad2-8db43758d8ab"
+                    }
+                  ]
+                }
+              },
+              "_postman_previewlanguage": null,
+              "header": null,
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "Delete Layer",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "https://{{api_url}}/v1/dataset/:dataset_id/layer/:layer_id",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "dataset", ":dataset_id", "layer", ":layer_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": "e663eb09-04de-4f39-b871-35c6c2ed10b5"
+                },
+                {
+                  "key": "layer_id",
+                  "value": "0b842855-99d5-4b71-a7b7-fecacf6eeb57"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List All Layers for GFWPRO - staging",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "https://{{api_url}}/v1/layer?app=gfw-pro&env=staging",
+              "protocol": "https",
+              "host": ["{{api_url}}"],
+              "path": ["v1", "layer"],
+              "query": [
+                {
+                  "key": "app",
+                  "value": "gfw-pro"
+                },
+                {
+                  "key": "env",
+                  "value": "staging"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Widgets",
+      "item": [
+        {
+          "name": "List Widgets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://api.resourcewatch.org/widget/",
+              "protocol": "http",
+              "host": ["api", "resourcewatch", "org"],
+              "path": ["widget", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Widget",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Widget default\",\n  \"queryUrl\": \"query/5be16fea-5b1a-4daf-a9e9-9dc1f6ea6d4e?sql=select * from crops\",\n  \"application\":[\"aqueduct\"],\n  \"description\":\"\",\n  \"source\":\"\",\n  \"sourceUrl\":\"\",\n  \"authors\":\"\",\n  \"status\":1,\n  \"default\": true,\n  \"published\":true,\n  \"widgetConfig\": {\n    \"data\": [\n        {\n          \"name\": \"hist\",\n          \"url\": \"http://wri-01.carto.com/api/v2/sql?q=with f as (SELECT crops.*, {{water_column}} FROM crops inner join aqueduct_projections_20150309 ri on ri.basinid=crops.basinid), t as (select sum(area) as area, {{water_column}} as risk, crop from f group by {{water_column}}, crop ), r as (SELECT sum(value) as value, commodity FROM combined01_prepared where year='{{year}}' and impactparameter='Food Demand' group by commodity), d as ( select (value*100/(sum(value) over())) as value, commodity from r ) select crop, risk,value, (area*100/sum(area) over(partition by crop)) area_perc from d inner join t on lower(commodity)=crop order by risk desc, crop asc\",\n          \"format\": {\"type\": \"json\",\"property\": \"rows\"}\n        },\n        {\n          \"name\": \"stats_risk\",\n          \"source\": \"hist\",\n          \"transform\": [\n            {\n              \"type\": \"stack\",\n              \"groupby\": [\"crop\"],\n              \"field\": \"area_perc\",\n              \"offset\": \"zero\",\n              \"output\": {\"start\": \"val_s\",\"end\": \"val_e\",\"mid\": \"val_m\"}\n            },\n            {\n              \"type\": \"stack\",\n              \"groupby\": [\"risk\"],\n              \"field\": \"value\",\n              \"offset\": \"zero\",\n              \"output\": {\"start\": \"t_s\",\"end\": \"t_e\",\"mid\": \"t_m\"}\n            }\n          ]\n        },\n        {\n          \"name\": \"legend_crop\",\n          \"source\": \"stats_risk\",\n          \"transform\": [\n            {\n              \"type\": \"aggregate\",\n              \"groupby\": [\"crop\"],\n              \"summarize\": [\n                {\n                  \"field\": \"t_m\",\n                  \"ops\": [\"min\"],\n                  \"as\": [\"counts_r\"]\n                },\n                {\n                  \"field\": \"t_e\",\n                  \"ops\": [\"min\"],\n                  \"as\": [\"counts_e\"]\n                }\n              ]\n            }\n          ]\n        },\n        {\n          \"name\": \"legend_risk\",\n          \"source\": \"hist\",\n          \"transform\": [\n            {\n              \"type\": \"aggregate\",\n              \"groupby\": [\"risk\"],\n              \"summarize\": [\n                {\n                  \"field\": \"risk\",\n                  \"ops\": [\"count\"],\n                  \"as\": [\"counts_c\"]\n                }\n              ]\n            }\n          ]\n        }\n      ],\n      \"scales\": [\n        {\n          \"name\": \"x\",\n          \"type\": \"linear\",\n          \"domain\": {\"fields\": [{\"data\": \"stats_risk\",\"field\": \"t_e\"}]},\n          \"range\": \"width\"\n        },\n        {\n          \"name\": \"xl\",\n          \"type\": \"linear\",\n          \"domain\": {\"fields\": [{\"data\": \"legend_crop\",\"field\": \"counts_e\"}]},\n          \"range\": \"width\"\n        },\n        {\n          \"name\": \"x_label\",\n          \"type\": \"ordinal\",\n          \"points\":false,\n          \"domain\": {\"fields\": [{\"data\": \"legend_crop\",\"field\": \"counts_r\"}]},\n          \"range\": {\"fields\": [{\"data\": \"legend_crop\",\"field\": \"crop\"}]}\n        },\n        {\n          \"name\": \"y\",\n          \"type\": \"linear\",\n          \"range\": \"height\",\n          \"domain\": {\"fields\": [{\"data\": \"stats_risk\",\"field\": \"val_e\"}]}\n        },\n        \n        {\n          \"name\": \"color\",\n          \"type\": \"ordinal\",\n          \"range\": \"riskColor\",\n          \"domain\": {\"data\": \"legend_risk\",\"field\": \"risk\"}\n        },\n        {\n          \"name\": \"legend-series-x\",\n          \"type\": \"ordinal\",\n          \"domain\": {\"data\": \"legend_risk\", \"field\": \"risk\"},\n          \"range\": \"positionx\"\n        },\n        {\n          \"name\": \"legend-series-y\",\n          \"type\": \"ordinal\",\n          \"domain\": {\"data\": \"legend_risk\", \"field\": \"risk\"},\n          \"range\": \"positiony\"\n        }\n  ],\n      \"axes\": [\n    {\n      \"type\": \"x\",\n      \"scale\": \"x\",\n      \"orient\": \"top\"\n      \n    },\n    {\n      \"type\": \"x\",\n      \"scale\": \"xl\",\n      \"ticks\": 4,\n      \"layer\": \"front\",\n      \"grid\": false,\n      \"values\":[6,32,51,75],\n      \"formatType\":\"string\",\n      \"properties\": {\n        \"ticks\": {\n          \"stroke\": {\"value\": \"#EEEEEE\"},\n          \"strokeOpacity\": {\"value\": 1}\n        },\n        \"labels\": {\n          \"font\": {\"value\": \"\\\"Roboto\\\"\"},\n          \"align\": {\"value\": \"center\"},\n          \"text\": {\"scale\": \"x_label\"}\n        }\n      }\n    },\n    {\n      \"type\": \"y\",\n      \"scale\": \"y\",\n      \"properties\":{\"labels\":{\"baseline\": {\"value\": \"bottom\"},\n          \"align\": {\"value\": \"left\"}}}\n    }\n  ],\n      \"marks\": [\n    {\n      \"name\": \"columns\",\n      \"from\": {\"data\": \"stats_risk\"},\n      \"type\": \"rect\",\n      \"properties\": {\n        \"enter\": {\n          \"x\": {\"field\": \"t_s\",\"scale\": \"x\"},\n          \"x2\": {\"field\": \"t_e\",\"scale\": \"x\"},\n          \"y\": {\"field\": \"val_s\",\"scale\": \"y\"},\n          \"y2\": {\"field\": \"val_e\",\"scale\": \"y\"},\n          \"fill\": {\"scale\": \"color\",\"field\": \"risk\"},\n          \"strokeWidth\": {\"value\": 1},\n          \"stroke\": {\"value\": \"#eee\"}\n        }\n      }\n    }\n  ],\n      \"legends\": [\n    {\n      \"fill\": \"color\",\n      \"properties\": {\n       \"legend\": {\n          \"x\": {\"field\": {\"group\": \"width\"},\"mult\": 0.05, \"offset\": 5},\n          \"y\": {\"field\": {\"group\": \"height\"},\"mult\": 1.1, \"offset\": 0}\n        },\n        \"labels\": {\n          \"text\": {\n           \"template\": \"{{datum.data|truncate:8}}\"\n          },\n          \"x\": {\"scale\": \"legend-series-x\", \"offset\":10},\n          \"y\": {\"scale\": \"legend-series-y\"}\n        },\n        \"symbols\": {\n         \"x\": {\"scale\": \"legend-series-x\"},\n          \"y\": {\"scale\": \"legend-series-y\"}\n        }\n      }\n    }\n  ]\n  }\n}"
+            },
+            "url": {
+              "raw": "http://api.resourcewatch.org/dataset/:id/widget",
+              "protocol": "http",
+              "host": ["api", "resourcewatch", "org"],
+              "path": ["dataset", ":id", "widget"],
+              "variable": [
+                {
+                  "key": "id"
+                }
+              ]
+            },
+            "description": "Create widget "
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Widget",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "http://api.resourcewatch.org/dataset/:dataset_id/widget/:widget_id",
+              "protocol": "http",
+              "host": ["api", "resourcewatch", "org"],
+              "path": ["dataset", ":dataset_id", "widget", ":widget_id"],
+              "variable": [
+                {
+                  "key": "dataset_id",
+                  "value": ""
+                },
+                {
+                  "key": "widget_id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Widget",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{auth}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"widgetConfig\":{\n\t\t  \"axes\": [\n\t\t    {\n\t\t      \"type\": \"x\",\n\t\t      \"scale\": \"x\",\n\t\t      \"tickSize\": 0,\n\t\t      \"properties\": {\n\t\t        \"axis\": {\"stroke\": {\"value\": \"#9BA2AA\"}},\n\t\t        \"labels\": {\"text\": {\"template\": \"\"}}\n\t\t      }\n\t\t    },\n\t\t    {\n\t\t      \"type\": \"y\",\n\t\t      \"scale\": \"y\",\n\t\t      \"tickSize\": 0,\n\t\t      \"properties\": {\n\t\t        \"axis\": {\"stroke\": {\"value\": \"transparent\"}},\n\t\t        \"labels\": {\"text\": {\"template\": \"\"}}\n\t\t      }\n\t\t    }\n\t\t  ],\n\t\t  \"data\": [\n\t\t    {\n\t\t      \"name\": \"table\",\n\t\t      \"url\": \"https://api.resourcewatch.org/v1/query/e663eb09-04de-4f39-b871-35c6c2ed10b5?sql=select+%2A+from+index_e663eb0904de4f39b87135c6c2ed10b5+where+year+%3E2016+and+julian_day+%3E135+order+by+year+desc%2C+julian_day+desc limit 30000\",\n\t\t      \"format\": {\"type\": \"json\",\"property\": \"data\"},\n\t\t      \"transform\": [\n\t\t        {\"type\": \"sort\",\"by\": \"julian_day\"},\n\t\t        {\n\t\t          \"type\": \"aggregate\",\n\t\t          \"groupby\": \"julian_day\",\n\t\t          \"summarize\": [\n\t\t            {\n\t\t              \"field\": \"julian_day\",\n\t\t              \"ops\": [\"count\"],\n\t\t              \"as\": [\"count_\"]\n\t\t            }\n\t\t          ]\n\t\t        },\n\t\t        {\"type\": \"formula\", \"field\": \"y\", \"expr\": \"datum.count_\"},\n\t\t        {\"type\": \"formula\", \"field\": \"x\", \"expr\": \"datetime(time(datetime(2017, 1, 1)) + (datum.julian_day*24*60*60*1000))\"},\n\t\t        {\"type\": \"formula\", \"field\": \"group\", \"expr\": \"1\"}\n\t\t      ]\n\t\t    }\n\t\t  ],\n\t\t  \"name\": \"Line visualization\",\n\t\t  \"marks\": [\n\t\t    {\n\t\t      \"from\": {\n\t\t        \"data\": \"table\",\n\t\t        \"transform\": [{\"type\": \"facet\",\"groupby\": [\"group\"]}]\n\t\t      },\n\t\t      \"type\": \"group\",\n\t\t      \"marks\": [\n\t\t        {\n\t\t          \"type\": \"line\",\n\t\t          \"properties\": {\n\t\t            \"enter\": {\n\t\t              \"x\": {\"field\": \"x\",\"scale\": \"x\"},\n\t\t              \"y\": {\"field\": \"y\",\"scale\": \"y\"},\n\t\t              \"stroke\": {\"field\": \"group\",\"scale\": \"group\"},\n\t\t              \"strokeWidth\": {\"value\": 2}\n\t\t            }\n\t\t          }\n\t\t        }\n\t\t      ]\n\t\t    }\n\t\t  ],\n\t\t  \"width\": 150,\n\t\t  \"height\": 150,\n\t\t  \"scales\": [\n\t\t    {\n\t\t      \"name\": \"x\",\n\t\t      \"type\": \"time\",\n\t\t      \"zero\": false,\n\t\t      \"range\": \"width\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"x\"}\n\t\t    },\n\t\t    {\n\t\t      \"name\": \"y\",\n\t\t      \"type\": \"linear\",\n\t\t      \"zero\": false,\n\t\t      \"range\": \"height\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"y\"}\n\t\t    },\n\t\t    {\n\t\t      \"name\": \"group\",\n\t\t      \"type\": \"ordinal\",\n\t\t      \"range\": \"colorRange1\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"group\"}\n\t\t    }\n\t\t  ],\n\t\t  \"padding\": {\"top\": 5,\"left\": 5,\"right\": 5,\"bottom\": 5}\n\t\t}\n\t}"
+            },
+            "url": {
+              "raw": "http://api.resourcewatch.org/v1/dataset/:iataset_id/widget/:widget_id",
+              "protocol": "http",
+              "host": ["api", "resourcewatch", "org"],
+              "path": ["v1", "dataset", ":iataset_id", "widget", ":widget_id"],
+              "variable": [
+                {
+                  "key": "iataset_id",
+                  "value": ""
+                },
+                {
+                  "key": "widget_id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Widget",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://api.resourcewatch.org/widget/:widget_id",
+              "protocol": "http",
+              "host": ["api", "resourcewatch", "org"],
+              "path": ["widget", ":widget_id"],
+              "variable": [
+                {
+                  "key": "widget_id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{gfwDataApiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sql\": \"SELECT name_1 FROM data WHERE gid_0='BRA' AND adm_level='1'\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+          "query": [
+            {
+              "key": "sql",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sql\": \"SELECT name_1 FROM data WHERE gid_0='BRA' AND adm_level='1'\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+              "protocol": "https",
+              "host": ["data-api", "globalforestwatch", "org"],
+              "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+              "query": [
+                {
+                  "key": "sql",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "275"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 27 Mar 2025 17:17:20 GMT"
+            },
+            {
+              "key": "x-amzn-Remapped-Date",
+              "value": "Thu, 27 Mar 2025 17:17:19 GMT"
+            },
+            {
+              "key": "x-amzn-RequestId",
+              "value": "ac70400b-ef95-4cff-a35a-28657e16d43b"
+            },
+            {
+              "key": "content-encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "x-amzn-Remapped-Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "x-amz-apigw-id",
+              "value": "IGI1CGe1IAMEnWQ="
+            },
+            {
+              "key": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "key": "x-amzn-Remapped-server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "X-Cache",
+              "value": "Miss from cloudfront"
+            },
+            {
+              "key": "Via",
+              "value": "1.1 c210173a21582f5aa05dca26f80665a4.cloudfront.net (CloudFront)"
+            },
+            {
+              "key": "X-Amz-Cf-Pop",
+              "value": "MRS53-P2"
+            },
+            {
+              "key": "X-Amz-Cf-Id",
+              "value": "mlEBthogAzqEKj3i4HKuWRztq0MQMRB4RAgGgdPGHEG0mTxWTZ6CuQ=="
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"data\": [\n        {\n            \"name_1\": \"Distrito Federal\"\n        },\n        {\n            \"name_1\": \"Rio Grande do Sul\"\n        },\n        {\n            \"name_1\": \"Alagoas\"\n        },\n        {\n            \"name_1\": \"Goiás\"\n        },\n        {\n            \"name_1\": \"Piauí\"\n        },\n        {\n            \"name_1\": \"Rondônia\"\n        },\n        {\n            \"name_1\": \"Paraná\"\n        },\n        {\n            \"name_1\": \"Tocantins\"\n        },\n        {\n            \"name_1\": \"Roraima\"\n        },\n        {\n            \"name_1\": \"Pernambuco\"\n        },\n        {\n            \"name_1\": \"Sergipe\"\n        },\n        {\n            \"name_1\": \"Minas Gerais\"\n        },\n        {\n            \"name_1\": \"Amapá\"\n        },\n        {\n            \"name_1\": \"Mato Grosso\"\n        },\n        {\n            \"name_1\": \"São Paulo\"\n        },\n        {\n            \"name_1\": \"Ceará\"\n        },\n        {\n            \"name_1\": \"Rio Grande do Norte\"\n        },\n        {\n            \"name_1\": \"Acre\"\n        },\n        {\n            \"name_1\": \"Santa Catarina\"\n        },\n        {\n            \"name_1\": \"Mato Grosso do Sul\"\n        },\n        {\n            \"name_1\": \"Paraíba\"\n        },\n        {\n            \"name_1\": \"Bahia\"\n        },\n        {\n            \"name_1\": \"Rio de Janeiro\"\n        },\n        {\n            \"name_1\": \"Maranhão\"\n        },\n        {\n            \"name_1\": \"Pará\"\n        },\n        {\n            \"name_1\": \"Amazonas\"\n        },\n        {\n            \"name_1\": \"Espírito Santo\"\n        }\n    ],\n    \"status\": \"success\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json Copy",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyNjAxNTE4Y2RjODQ2MDAxYTc3NTZiNSIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNhcmxvcy5wZXNpbmEuNUB3cmljb25zdWx0YW50Lm9yZyIsImV4dHJhVXNlckRhdGEiOnsiYXBwcyI6WyJnZnctcHJvIl19LCJjcmVhdGVkQXQiOjE2NTExNzA1Njk5MjYsIm5hbWUiOiJqb3NlIGNhcmxvcyBwZXNpbmEgc2lsbGVyIiwiaWF0IjoxNjUxMTcwNTY5fQ.rIQOky80jjiUqMV-9bAAJP9sDoQEC8Sgk2G1ztuQWkU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sql\": \"SELECT * FROM data WHERE name ILIKE '%Tree%'\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202502/query/json",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "wdpa_licensed_protected_areas", "v202502", "query", "json"],
+          "query": [
+            {
+              "key": "sql",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sql\": \"SELECT name_1 FROM data WHERE gid_0='BRA' AND adm_level='1'\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+              "protocol": "https",
+              "host": ["data-api", "globalforestwatch", "org"],
+              "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+              "query": [
+                {
+                  "key": "sql",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "275"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 27 Mar 2025 17:17:20 GMT"
+            },
+            {
+              "key": "x-amzn-Remapped-Date",
+              "value": "Thu, 27 Mar 2025 17:17:19 GMT"
+            },
+            {
+              "key": "x-amzn-RequestId",
+              "value": "ac70400b-ef95-4cff-a35a-28657e16d43b"
+            },
+            {
+              "key": "content-encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "x-amzn-Remapped-Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "x-amz-apigw-id",
+              "value": "IGI1CGe1IAMEnWQ="
+            },
+            {
+              "key": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "key": "x-amzn-Remapped-server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "X-Cache",
+              "value": "Miss from cloudfront"
+            },
+            {
+              "key": "Via",
+              "value": "1.1 c210173a21582f5aa05dca26f80665a4.cloudfront.net (CloudFront)"
+            },
+            {
+              "key": "X-Amz-Cf-Pop",
+              "value": "MRS53-P2"
+            },
+            {
+              "key": "X-Amz-Cf-Id",
+              "value": "mlEBthogAzqEKj3i4HKuWRztq0MQMRB4RAgGgdPGHEG0mTxWTZ6CuQ=="
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"data\": [\n        {\n            \"name_1\": \"Distrito Federal\"\n        },\n        {\n            \"name_1\": \"Rio Grande do Sul\"\n        },\n        {\n            \"name_1\": \"Alagoas\"\n        },\n        {\n            \"name_1\": \"Goiás\"\n        },\n        {\n            \"name_1\": \"Piauí\"\n        },\n        {\n            \"name_1\": \"Rondônia\"\n        },\n        {\n            \"name_1\": \"Paraná\"\n        },\n        {\n            \"name_1\": \"Tocantins\"\n        },\n        {\n            \"name_1\": \"Roraima\"\n        },\n        {\n            \"name_1\": \"Pernambuco\"\n        },\n        {\n            \"name_1\": \"Sergipe\"\n        },\n        {\n            \"name_1\": \"Minas Gerais\"\n        },\n        {\n            \"name_1\": \"Amapá\"\n        },\n        {\n            \"name_1\": \"Mato Grosso\"\n        },\n        {\n            \"name_1\": \"São Paulo\"\n        },\n        {\n            \"name_1\": \"Ceará\"\n        },\n        {\n            \"name_1\": \"Rio Grande do Norte\"\n        },\n        {\n            \"name_1\": \"Acre\"\n        },\n        {\n            \"name_1\": \"Santa Catarina\"\n        },\n        {\n            \"name_1\": \"Mato Grosso do Sul\"\n        },\n        {\n            \"name_1\": \"Paraíba\"\n        },\n        {\n            \"name_1\": \"Bahia\"\n        },\n        {\n            \"name_1\": \"Rio de Janeiro\"\n        },\n        {\n            \"name_1\": \"Maranhão\"\n        },\n        {\n            \"name_1\": \"Pará\"\n        },\n        {\n            \"name_1\": \"Amazonas\"\n        },\n        {\n            \"name_1\": \"Espírito Santo\"\n        }\n    ],\n    \"status\": \"success\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json Copy 2",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"sql\": \"SELECT * FROM data WHERE mill_name ILIKE 'CPA' LIMIT 4\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query/json",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "gfw_universal_mill_list", "latest", "query", "json"],
+          "query": [
+            {
+              "key": "sql",
+              "value": "",
+              "type": "text",
+              "disabled": true
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sql\": \"SELECT name_1 FROM data WHERE gid_0='BRA' AND adm_level='1'\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+              "protocol": "https",
+              "host": ["data-api", "globalforestwatch", "org"],
+              "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+              "query": [
+                {
+                  "key": "sql",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "Content-Length",
+              "value": "275"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Date",
+              "value": "Thu, 27 Mar 2025 17:17:20 GMT"
+            },
+            {
+              "key": "x-amzn-Remapped-Date",
+              "value": "Thu, 27 Mar 2025 17:17:19 GMT"
+            },
+            {
+              "key": "x-amzn-RequestId",
+              "value": "ac70400b-ef95-4cff-a35a-28657e16d43b"
+            },
+            {
+              "key": "content-encoding",
+              "value": "gzip"
+            },
+            {
+              "key": "x-amzn-Remapped-Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "x-amz-apigw-id",
+              "value": "IGI1CGe1IAMEnWQ="
+            },
+            {
+              "key": "vary",
+              "value": "Accept-Encoding"
+            },
+            {
+              "key": "x-amzn-Remapped-server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "X-Cache",
+              "value": "Miss from cloudfront"
+            },
+            {
+              "key": "Via",
+              "value": "1.1 c210173a21582f5aa05dca26f80665a4.cloudfront.net (CloudFront)"
+            },
+            {
+              "key": "X-Amz-Cf-Pop",
+              "value": "MRS53-P2"
+            },
+            {
+              "key": "X-Amz-Cf-Id",
+              "value": "mlEBthogAzqEKj3i4HKuWRztq0MQMRB4RAgGgdPGHEG0mTxWTZ6CuQ=="
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"data\": [\n        {\n            \"name_1\": \"Distrito Federal\"\n        },\n        {\n            \"name_1\": \"Rio Grande do Sul\"\n        },\n        {\n            \"name_1\": \"Alagoas\"\n        },\n        {\n            \"name_1\": \"Goiás\"\n        },\n        {\n            \"name_1\": \"Piauí\"\n        },\n        {\n            \"name_1\": \"Rondônia\"\n        },\n        {\n            \"name_1\": \"Paraná\"\n        },\n        {\n            \"name_1\": \"Tocantins\"\n        },\n        {\n            \"name_1\": \"Roraima\"\n        },\n        {\n            \"name_1\": \"Pernambuco\"\n        },\n        {\n            \"name_1\": \"Sergipe\"\n        },\n        {\n            \"name_1\": \"Minas Gerais\"\n        },\n        {\n            \"name_1\": \"Amapá\"\n        },\n        {\n            \"name_1\": \"Mato Grosso\"\n        },\n        {\n            \"name_1\": \"São Paulo\"\n        },\n        {\n            \"name_1\": \"Ceará\"\n        },\n        {\n            \"name_1\": \"Rio Grande do Norte\"\n        },\n        {\n            \"name_1\": \"Acre\"\n        },\n        {\n            \"name_1\": \"Santa Catarina\"\n        },\n        {\n            \"name_1\": \"Mato Grosso do Sul\"\n        },\n        {\n            \"name_1\": \"Paraíba\"\n        },\n        {\n            \"name_1\": \"Bahia\"\n        },\n        {\n            \"name_1\": \"Rio de Janeiro\"\n        },\n        {\n            \"name_1\": \"Maranhão\"\n        },\n        {\n            \"name_1\": \"Pará\"\n        },\n        {\n            \"name_1\": \"Amazonas\"\n        },\n        {\n            \"name_1\": \"Espírito Santo\"\n        }\n    ],\n    \"status\": \"success\"\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ]
+}

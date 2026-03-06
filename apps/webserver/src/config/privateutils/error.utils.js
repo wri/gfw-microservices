@@ -123,6 +123,111 @@ export function createErrorMessage(req, error_code, user_msg, system_msg) {
   return objError;
 }
 
+/**
+ * @function sanitizeErrorForClient
+ * @summary Sanitizes error objects by removing sensitive internal information before sending to client.
+ * @description Strips out systemMessage, stack traces, database details, and other internal
+ *              information that could be exploited by attackers. Only returns errorCode and userMessage.
+ * @param {Object|Error} error - The error object to sanitize
+ * @return {Object} A sanitized error object containing only errorCode and userMessage
+ */
+export function sanitizeErrorForClient(error) {
+  // Default safe error response
+  const safeError = {
+    errorCode: 'internalServerError',
+    userMessage: 'An unexpected error occurred. Please try again later.',
+  };
+
+  // If error is null/undefined, return default
+  if (!error) {
+    return safeError;
+  }
+
+  // If error has errorCode and userMessage (our standard error format), return only those
+  if (error.errorCode && error.userMessage) {
+    return {
+      errorCode: error.errorCode,
+      userMessage: error.userMessage,
+    };
+  }
+
+  // If error has code and userMessage (alternate format), use those
+  if (error.code && error.userMessage) {
+    return {
+      errorCode: error.code,
+      userMessage: error.userMessage,
+    };
+  }
+
+  // For any other error type, return the default safe error
+  return safeError;
+}
+
+/**
+ * @function errorSanitizationMiddleware
+ * @summary Express middleware that automatically sanitizes error responses
+ * @description Intercepts res.send() and res.json() to automatically sanitize any error objects
+ *              containing sensitive information (like systemMessage) before sending to clients.
+ *
+ *              Detection criteria (any of these trigger sanitization):
+ *              1. Has 'systemMessage' property (our main vulnerability - contains DB details, stack traces)
+ *              2. Has both 'errorCode' and 'userMessage' (our standard error format)
+ *
+ *              Note: Intentionally does NOT check for native Error objects (message + stack)
+ *              to avoid false positives with legitimate responses that may have these properties.
+ *
+ *              This provides defense-in-depth: even if developers forget to sanitize
+ *              errors manually, this middleware catches them automatically.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+export function errorSanitizationMiddleware(req, res, next) {
+  // Store original send and json methods
+  const originalSend = res.send;
+  const originalJson = res.json;
+
+  // Wrap res.send to intercept and sanitize errors
+  res.send = function (data) {
+    // Check if data looks like an error with systemMessage
+    if (data && typeof data === 'object' && !Buffer.isBuffer(data)) {
+      // Check for our standard error format
+      if ('systemMessage' in data) {
+        return originalSend.call(this, sanitizeErrorForClient(data));
+      }
+
+      // Also check for errorCode + userMessage pattern (even without systemMessage)
+      if ('errorCode' in data && 'userMessage' in data) {
+        return originalSend.call(this, sanitizeErrorForClient(data));
+      }
+    }
+
+    // For everything else, pass through unchanged
+    return originalSend.call(this, data);
+  };
+
+  // Wrap res.json to intercept and sanitize errors
+  res.json = function (data) {
+    // Check if data looks like an error with systemMessage
+    if (data && typeof data === 'object') {
+      // Check for our standard error format
+      if ('systemMessage' in data) {
+        return originalJson.call(this, sanitizeErrorForClient(data));
+      }
+
+      // Also check for errorCode + userMessage pattern (even without systemMessage)
+      if ('errorCode' in data && 'userMessage' in data) {
+        return originalJson.call(this, sanitizeErrorForClient(data));
+      }
+    }
+
+    // For everything else, pass through unchanged
+    return originalJson.call(this, data);
+  };
+
+  next();
+}
+
 export function errorHandler(error) {
   if (error.response) {
     // The request was made and the server responded with a status code

@@ -62,15 +62,22 @@ async function pollApiUntilComplete(
   minCreationDate?: Date
 ): Promise<PollResult> {
   const startTime = Date.now();
+  const MAX_NO_JSON_RETRIES = 10;
+  let noJsonRetries = 0;
+  let lastEntryNames: string[] = [];
+  let lastResultUrl = '';
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const elapsedMs = Date.now() - startTime;
     if (elapsedMs > timeoutMs) {
+      const details = lastEntryNames.length
+        ? ` Last ZIP entries: [${lastEntryNames.join(', ')}], resultUrl: ${lastResultUrl}`
+        : '';
       throw new Error(
         `Polling timeout: API did not complete within ${timeoutMs}ms (elapsed: ${elapsedMs}ms). URL: ${sanitizeUrl(
           url
-        )}`
+        )}.${details}`
       );
     }
 
@@ -144,15 +151,29 @@ async function pollApiUntilComplete(
         try {
           const zip = new AdmZip(Buffer.from(arrayBuffer));
           const zipEntries = zip.getEntries();
+          const entryNames = zipEntries.map((e) => e.entryName);
 
           // Find the JSON file containing the verifiable credential
           const jsonEntry = zipEntries.find((entry) => entry.entryName.endsWith('.json'));
 
           if (!jsonEntry) {
             // ZIP contains CSV files instead of JSON — likely a stale standard analysis result.
-            // Continue polling until the VC generation completes with a JSON result.
+            // Retry a limited number of times waiting for the VC generation to complete.
+            noJsonRetries++;
+            lastEntryNames = entryNames;
+            lastResultUrl = sanitizeUrl(result.resultUrl);
+
+            if (noJsonRetries >= MAX_NO_JSON_RETRIES) {
+              throw new Error(
+                `No JSON file found in ZIP after ${MAX_NO_JSON_RETRIES} retries. ` +
+                  `ZIP entries: [${entryNames.join(', ')}], ` +
+                  `resultUrl: ${sanitizeUrl(result.resultUrl)}`
+              );
+            }
+
             console.log(
-              'ZIP contains no JSON file (likely CSV from standard analysis), continuing to poll...'
+              `ZIP contains no JSON file (retry ${noJsonRetries}/${MAX_NO_JSON_RETRIES}), ` +
+                `entries: [${entryNames.join(', ')}], continuing to poll...`
             );
             await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
             continue;

@@ -1,0 +1,48 @@
+{
+  "info": {
+    "_postman_id": "e66d2175-7e89-4156-9fb5-27b5b4bb81df",
+    "name": "WDPA Crosswalk Json",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40077819",
+    "_collection_link": "https://go.postman.co/collection/35173256-e66d2175-7e89-4156-9fb5-27b5b4bb81df?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202505/query/json?sql=select+wdpa_pid,gfw_geostore_id+from+data",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YzVmZmYzODMwMDhhY2IxMmIyM2Q4NSIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImtpbnNodWtvY3RAZ21haWwuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbImdmdyIsImdmdy1wcm8iXX0sImNyZWF0ZWRBdCI6MTc1MDg3NzI5ODcyNiwiaWF0IjoxNzUwODc3Mjk4fQ._5XlXkHSf7eoqovguUXlE7HHF_gDu7zLeb14Fy-fZyU",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "38c265b9-8546-423c-aeb0-29849c1e0ad3",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202505/query/json?sql=select+wdpa_pid,gfw_geostore_id+from+data",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "wdpa_licensed_protected_areas", "v202505", "query", "json"],
+          "query": [
+            {
+              "key": "sql",
+              "value": "select+wdpa_pid,gfw_geostore_id+from+data"
+            }
+          ]
+        },
+        "description": "Gets the crosswalk json containing wdpa_id and gfw_geostore json file"
+      },
+      "response": []
+    }
+  ]
+}

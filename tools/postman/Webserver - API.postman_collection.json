@@ -1,0 +1,98 @@
+{
+  "info": {
+    "_postman_id": "03dfe6d8-dc5c-40c0-b4af-e63d7b9cf71f",
+    "name": "Webserver - API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40077819",
+    "_collection_link": "https://go.postman.co/collection/27970250-03dfe6d8-dc5c-40c0-b4af-e63d7b9cf71f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "fcd",
+      "item": [
+        {
+          "name": "{{webserver-url}}/api/fcd?listId=5692&country=Argentina&category=WDPA",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{webserver-url}}/api/fcd?listId=1228&country=Argentina&category=WDPA",
+              "host": ["{{webserver-url}}"],
+              "path": ["api", "fcd"],
+              "query": [
+                {
+                  "key": "listId",
+                  "value": "1228"
+                },
+                {
+                  "key": "country",
+                  "value": "Argentina"
+                },
+                {
+                  "key": "category",
+                  "value": "WDPA"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "{{webserver-url}}/api/fcd?listId=1109&country=Argentina&category=landmark",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{webserver-url}}/api/fcd?listId=1109&country=Argentina&category=landmark",
+              "host": ["{{webserver-url}}"],
+              "path": ["api", "fcd"],
+              "query": [
+                {
+                  "key": "listId",
+                  "value": "1109"
+                },
+                {
+                  "key": "country",
+                  "value": "Argentina"
+                },
+                {
+                  "key": "category",
+                  "value": "landmark"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "{{webserver-url}}/api/fcd?listId=1078&country=Argentina&category=WDPA,landmark",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{webserver-url}}/api/fcd?listId=1078&country=Argentina&category=WDPA,landmark",
+              "host": ["{{webserver-url}}"],
+              "path": ["api", "fcd"],
+              "query": [
+                {
+                  "key": "listId",
+                  "value": "1078"
+                },
+                {
+                  "key": "country",
+                  "value": "Argentina"
+                },
+                {
+                  "key": "category",
+                  "value": "WDPA,landmark"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "- API endpoint to get WDPA overlaps with country as parameter for aggregate data for dissolved list\n    \n- API endpoint to get Landmark (Indigenous territory_ overlaps with country as parameter for aggregate data for dissolved list"
+    }
+  ]
+}

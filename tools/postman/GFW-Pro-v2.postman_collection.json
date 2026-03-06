@@ -624,7 +624,7 @@
         "header": [
           {
             "key": "x-api-key",
-            "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+            "value": "{{gfwDataApiKey}}",
             "type": "text"
           },
           {

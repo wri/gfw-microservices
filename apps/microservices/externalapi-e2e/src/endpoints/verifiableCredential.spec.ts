@@ -203,7 +203,7 @@ describe('Verifiable Credential Verification', () => {
   beforeAll(async () => {
     // Ensure DefReport analysis is not expired before running tests
     await ensureAnalysesNotExpired(Number(list), ['DefReport']);
-  }, 15 * 60 * 1000);
+  });
 
   it(
     'should retrieve the public key',
@@ -287,7 +287,7 @@ describe('Verifiable Credential Verification', () => {
             },
           },
           2000, // Poll every 2 seconds
-          300000, // Timeout after 5 minutes
+          180000, // Timeout after 3 minutes
           minCreationDate // Only accept results created after we triggered the analysis (with 10s buffer)
         );
 
@@ -314,7 +314,7 @@ describe('Verifiable Credential Verification', () => {
         throw sanitizeError(error);
       }
     },
-    360 * 1000
+    60 * 1000
   );
 
   xit(

@@ -32,7 +32,7 @@
                 }
               ]
             },
-            "description": "This call will expose all datasets in rw aplication"
+            "description": "This call will expose all datasets in RW application"
           },
           "response": []
         },

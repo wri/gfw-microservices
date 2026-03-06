@@ -217,6 +217,7 @@ jest.mock('../../../config/config', () => ({
 jest.mock(
   '@wri-monorepos/shared',
   () => ({
+    getLatestLimits: jest.fn((limits) => limits[0] || {}),
     getAccountSubscriptionLimits: jest.fn(),
     getAccountExtraLimits: jest.fn(),
     getAccountRolloverLimits: jest.fn(),
@@ -321,7 +322,7 @@ describe('proManagerList.controller', () => {
     (PolicyManager.getAllPolicyList as jest.Mock).mockResolvedValue([]);
     (PolicyManager.uploadPendingPolicies as jest.Mock).mockResolvedValue(undefined);
 
-    (getAccountSubscriptionLimits as jest.Mock).mockResolvedValue({ sub: true });
+    (getAccountSubscriptionLimits as jest.Mock).mockResolvedValue([{ sub: true }]);
     (getAccountExtraLimits as jest.Mock).mockResolvedValue({ extra: true });
     (getAccountRolloverLimits as jest.Mock).mockResolvedValue({ roll: true });
     (combineOrganizationLimits as jest.Mock).mockReturnValue({ combined: true });
@@ -388,7 +389,7 @@ describe('proManagerList.controller', () => {
       await proManagerListAccountDetailData({ params: { organizationId: '7' } } as any, res);
 
       expect(getAccountRenewalTime).toHaveBeenCalledWith(7);
-      expect(getAccountSubscriptionLimits).toHaveBeenCalledWith(3);
+      expect(getAccountSubscriptionLimits).toHaveBeenCalledWith(3, '2025-01-01');
       expect(getAccountExtraLimits).toHaveBeenCalledWith(7);
       expect(combineOrganizationLimits).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);

@@ -3,6 +3,9 @@
  * The command requires the following parameters:
  * @orgID INT,
  * @orgType INT,
+ *
+ * IMPORTANT: orgType should always be NULL if orgID is specified, and vice versa.
+ * orgType is a general config; orgID is for orgs that bought extra credits.
  */
 
 export const getAnalysisLimits = `BEGIN
@@ -58,6 +61,24 @@ EXEC sp_executesql @SQL,
 END
 `;
 
+/**
+ * Returns raw limit rows for an orgType with full update_time dates.
+ * The carry-forward logic (mapping limits to contract year periods)
+ * is done in the TypeScript layer using the org's renewal date.
+ */
+export const getAnalysisLimitsByOrgType = `
+SELECT
+    OrgType,
+    ISNULL(MaxAreaAnalyzeablePerYear, 0) AS MaxAreaAnalyzeablePerYear,
+    ISNULL(MaxAreaPerList, 0) AS MaxAreaPerList,
+    ISNULL(max_locations_per_year, 0) AS max_locations_per_year,
+    ISNULL(tokens_per_year, 0) AS tokens_per_year,
+    update_time
+FROM AnalysisLimits
+WHERE OrgType = @orgType
+ORDER BY update_time ASC
+`;
+
 export interface AnalysisLimit {
   MaxAreaAnalyzeablePerYear: number;
   MaxAreaPerList?: number;
@@ -67,4 +88,6 @@ export interface AnalysisLimit {
   subscription_name?: string;
   max_locations_per_year?: number;
   tokens_per_year?: number;
+  update_time?: string;
+  year?: number;
 }

@@ -1,28 +1,23 @@
-import {
-  AnalysisLimit,
-  getAccountRenewalTime,
-  getAccountYearlyUsageSinceActivation,
-} from '@wri-monorepos/sql';
+import { AnalysisLimit, getAccountYearlyUsageSinceActivation } from '@wri-monorepos/sql';
 import { calculateRolloverUsed } from '../utils';
 import { format as formatDate } from 'date-fns';
 
 export async function getAccountRolloverLimits(
   organizationId: number,
   subscriptionLimits: AnalysisLimit,
-  extendedLimits: AnalysisLimit
+  extendedLimits: AnalysisLimit,
+  renewalDate: Date
 ) {
-  const orgRenewalTime = await getAccountRenewalTime(organizationId);
-  const accountRenewalMoment = new Date(orgRenewalTime);
   const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(
     organizationId,
-    formatDate(accountRenewalMoment, 'yyyy-MM-dd')
+    formatDate(renewalDate, 'yyyy-MM-dd')
   );
 
-  // RolloverUsed = for[y]yearlyUsageSinceActivation =- subscriptionLimits
+  // RolloverUsed = for[y]yearlyUsageSinceActivation -= subscriptionLimits
   const rolloverUsed = calculateRolloverUsed(
     yearlyUsageSinceActivation,
     subscriptionLimits,
-    accountRenewalMoment
+    renewalDate
   );
 
   // RolloverRemaining = extendedLimits - RolloverUsed
@@ -31,6 +26,7 @@ export async function getAccountRolloverLimits(
       extendedLimits.MaxAreaAnalyzeablePerYear - rolloverUsed.rolloverAnalysisAreaUsed,
     MaxAreaPerList: extendedLimits.MaxAreaPerList,
     max_locations_per_year:
-      extendedLimits.max_locations_per_year - rolloverUsed.rolloverLocationsUsed,
+      (extendedLimits.max_locations_per_year || 0) - rolloverUsed.rolloverLocationsUsed,
+    tokens_per_year: (extendedLimits.tokens_per_year || 0) - rolloverUsed.rolloverTokensUsed,
   };
 }

@@ -62,8 +62,6 @@ async function pollApiUntilComplete(
   minCreationDate?: Date
 ): Promise<PollResult> {
   const startTime = Date.now();
-  const MAX_NO_JSON_RETRIES = 10;
-  let noJsonRetries = 0;
   let lastEntryNames: string[] = [];
   let lastResultUrl = '';
 
@@ -158,22 +156,13 @@ async function pollApiUntilComplete(
 
           if (!jsonEntry) {
             // ZIP contains CSV files instead of JSON — likely a stale standard analysis result.
-            // Retry a limited number of times waiting for the VC generation to complete.
-            noJsonRetries++;
+            // Continue polling until the VC generation completes or the overall timeout is reached.
             lastEntryNames = entryNames;
             lastResultUrl = sanitizeUrl(result.resultUrl);
 
-            if (noJsonRetries >= MAX_NO_JSON_RETRIES) {
-              throw new Error(
-                `No JSON file found in ZIP after ${MAX_NO_JSON_RETRIES} retries. ` +
-                  `ZIP entries: [${entryNames.join(', ')}], ` +
-                  `resultUrl: ${sanitizeUrl(result.resultUrl)}`
-              );
-            }
-
             console.log(
-              `ZIP contains no JSON file (retry ${noJsonRetries}/${MAX_NO_JSON_RETRIES}), ` +
-                `entries: [${entryNames.join(', ')}], continuing to poll...`
+              `ZIP contains no JSON file, entries: [${entryNames.join(', ')}], ` +
+                `elapsed: ${Date.now() - startTime}ms/${timeoutMs}ms, continuing to poll...`
             );
             await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
             continue;

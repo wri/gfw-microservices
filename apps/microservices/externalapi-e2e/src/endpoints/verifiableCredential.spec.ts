@@ -287,7 +287,7 @@ describe('Verifiable Credential Verification', () => {
             },
           },
           2000, // Poll every 2 seconds
-          180000, // Timeout after 3 minutes
+          180000, // Timeout after 3 minutes (increased from 60 seconds)
           minCreationDate // Only accept results created after we triggered the analysis (with 10s buffer)
         );
 

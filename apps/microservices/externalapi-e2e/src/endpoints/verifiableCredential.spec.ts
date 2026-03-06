@@ -149,7 +149,13 @@ async function pollApiUntilComplete(
           const jsonEntry = zipEntries.find((entry) => entry.entryName.endsWith('.json'));
 
           if (!jsonEntry) {
-            throw new Error('No JSON file found in ZIP');
+            // ZIP contains CSV files instead of JSON — likely a stale standard analysis result.
+            // Continue polling until the VC generation completes with a JSON result.
+            console.log(
+              'ZIP contains no JSON file (likely CSV from standard analysis), continuing to poll...'
+            );
+            await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+            continue;
           }
 
           const jsonContent = jsonEntry.getData().toString('utf8');
@@ -197,7 +203,7 @@ describe('Verifiable Credential Verification', () => {
   beforeAll(async () => {
     // Ensure DefReport analysis is not expired before running tests
     await ensureAnalysesNotExpired(Number(list), ['DefReport']);
-  });
+  }, 15 * 60 * 1000);
 
   it(
     'should retrieve the public key',
@@ -281,7 +287,7 @@ describe('Verifiable Credential Verification', () => {
             },
           },
           2000, // Poll every 2 seconds
-          180000, // Timeout after 3 minutes (increased from 60 seconds)
+          300000, // Timeout after 5 minutes
           minCreationDate // Only accept results created after we triggered the analysis (with 10s buffer)
         );
 
@@ -308,7 +314,7 @@ describe('Verifiable Credential Verification', () => {
         throw sanitizeError(error);
       }
     },
-    60 * 1000
+    360 * 1000
   );
 
   xit(

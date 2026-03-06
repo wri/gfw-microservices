@@ -1,0 +1,160 @@
+{
+  "info": {
+    "_postman_id": "8d03a7eb-82de-4149-b399-2646c6537e04",
+    "name": "GFWLists",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40077819",
+    "_collection_link": "https://go.postman.co/collection/13247005-8d03a7eb-82de-4149-b399-2646c6537e04?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "gfw_universal_mill_list",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query?sql=select * from data limit 5&=",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "gfw_universal_mill_list", "latest", "query"],
+          "query": [
+            {
+              "key": "sql",
+              "value": "select * from data limit 5"
+            },
+            {
+              "key": "x-api-key",
+              "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+              "disabled": true
+            },
+            {
+              "key": null,
+              "value": "",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "gfw_car_id_look_up",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var template = `",
+              "<style type=\"text/css\">",
+              "    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+              "    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+              "    .tftable tr {background-color:#ffffff;}",
+              "    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+              "    .tftable tr:hover {background-color:#e0ffff;}",
+              "</style>",
+              "",
+              "<table class=\"tftable\" border=\"1\">",
+              "    <tr>",
+              "        <th>Location Name</th>",
+              "        <th>ID</th>",
+              "    </tr>",
+              "    ",
+              "    {{#each response.data}}",
+              "        <tr>",
+              "            <td>{{@key}}</td>",
+              "            <td>{{ID}}</td>",
+              "        </tr>",
+              "    {{/each}}",
+              "</table>",
+              "`;",
+              "",
+              "function constructVisualizerPayload() {",
+              "    return {response: pm.response.json()}",
+              "}",
+              "",
+              "pm.visualizer.set(template, constructVisualizerPayload());"
+            ],
+            "type": "text/javascript",
+            "packages": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/sfb_bra_sicar/v202401/query/json?sql=select%20*%20from%20mytable%20limit%2010",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "sfb_bra_sicar", "v202401", "query", "json"],
+          "query": [
+            {
+              "key": "sql",
+              "value": "select%20*%20from%20mytable%20limit%2010"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "single-gfw_car_id_look_up",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/sfb_bra_sicar/v202401/query/json?x-api-key=3dc1a39a-60b2-4352-bb92-1413257dafd9&sql=SELECT cd_imovel,ST_AsText(geom) from mytable WHERE cd_imovel IN ('RO-1100080-C57277FAD08842D09FCDAE736D655DCE')",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "sfb_bra_sicar", "v202401", "query", "json"],
+          "query": [
+            {
+              "key": "x-api-key",
+              "value": "3dc1a39a-60b2-4352-bb92-1413257dafd9"
+            },
+            {
+              "key": "sql",
+              "value": "SELECT cd_imovel,ST_AsText(geom) from mytable WHERE cd_imovel IN ('RO-1100080-C57277FAD08842D09FCDAE736D655DCE')"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "sfb_bra_sicar/v202508/metadata",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://data-api.globalforestwatch.org/dataset/sfb_bra_sicar/v202508/metadata",
+          "protocol": "https",
+          "host": ["data-api", "globalforestwatch", "org"],
+          "path": ["dataset", "sfb_bra_sicar", "v202508", "metadata"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

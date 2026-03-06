@@ -1,0 +1,784 @@
+{
+  "info": {
+    "_postman_id": "e7df77fb-0f47-477f-8ed9-226071ed2bc2",
+    "name": "GFW Pro EAPI Collection",
+    "description": "Complete API collection for GFW Pro endpoints organized into workflows",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40077819",
+    "_collection_link": "https://go.postman.co/collection/40077819-e7df77fb-0f47-477f-8ed9-226071ed2bc2?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Upload and List Flow",
+      "item": [
+        {
+          "name": "Prepare Upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 302) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.uploadUrl) {",
+                  "        pm.environment.set(\"uploadUrl\", jsonData.uploadUrl);",
+                  "    }",
+                  "    if (jsonData.uploadId) {",
+                  "        pm.environment.set(\"uploadId\", jsonData.uploadId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userEmail\": \"{{userEmail}}\",\n    \"fileType\": \"csv\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/prepare_upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["prepare_upload"]
+            },
+            "description": "Step 1: Prepare upload to get signed URL and uploadId"
+          },
+          "response": []
+        },
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/csv",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": "{{csvFilePath}}"
+              }
+            },
+            "url": {
+              "raw": "{{uploadUrl}}",
+              "host": ["{{uploadUrl}}"]
+            },
+            "description": "Step 2: Upload CSV file to the signed URL from prepare_upload"
+          },
+          "response": []
+        },
+        {
+          "name": "Create List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 302) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.listId) {",
+                  "        pm.environment.set(\"listId\", jsonData.listId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"uploadId\": \"{{uploadId}}\",\n    \"listName\": \"client_demo_{{$timestamp}}\",\n    \"commodity\": \"{{commodity}}\",\n    \"analysisIDs\": \"{{analysisType}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list/upload_new",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "upload_new"]
+            },
+            "description": "Step 3: Create a new list from the uploaded file"
+          },
+          "response": []
+        },
+        {
+          "name": "Poll Analysis Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/analysis/{{analysisType}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "analysis", "{{analysisType}}", "status"]
+            },
+            "description": "Step 4: Check the status of the analysis"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Results",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// First get the status to extract resultUrl",
+                  "pm.sendRequest({\n    url: pm.environment.get('baseUrl') + '/list/' + pm.environment.get('listId') + '/analysis/' + pm.environment.get('analysisType') + '/status',\n    method: 'GET',\n    header: {\n        'x-api-key': pm.environment.get('apiToken')\n    }\n}, function (err, res) {",
+                  "    if (!err && res.json().resultUrl) {",
+                  "        pm.environment.set('resultUrl', res.json().resultUrl);",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resultUrl}}",
+              "host": ["{{resultUrl}}"]
+            },
+            "description": "Step 5: Download the analysis results ZIP file"
+          },
+          "response": []
+        }
+      ],
+      "description": "Complete workflow: prepare upload, upload file, create list, poll analysis, and download results"
+    },
+    {
+      "name": "2. Alerts Analysis Flow",
+      "item": [
+        {
+          "name": "Prepare Upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 302) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.uploadUrl) {",
+                  "        pm.environment.set(\"uploadUrl\", jsonData.uploadUrl);",
+                  "    }",
+                  "    if (jsonData.uploadId) {",
+                  "        pm.environment.set(\"uploadId\", jsonData.uploadId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userEmail\": \"{{userEmail}}\",\n    \"fileType\": \"csv\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/prepare_upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["prepare_upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/csv",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": "{{csvFilePath}}"
+              }
+            },
+            "url": {
+              "raw": "{{uploadUrl}}",
+              "host": ["{{uploadUrl}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 302) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.listId) {",
+                  "        pm.environment.set(\"listId\", jsonData.listId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"uploadId\": \"{{uploadId}}\",\n    \"listName\": \"alerts_demo_{{$timestamp}}\",\n    \"commodity\": \"Cocoa Generic\",\n    \"analysisIDs\": \"Alerts\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list/upload_new",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "upload_new"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trigger Alerts Generation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"startDate\": \"{{alertStartDate}}\",\n    \"endDate\": \"{{alertEndDate}}\",\n    \"userEmail\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/analysis/Alerts/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "analysis", "Alerts", "generate"]
+            },
+            "description": "Trigger alerts analysis for the specified date range"
+          },
+          "response": []
+        },
+        {
+          "name": "Poll Alerts Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/analysis/Alerts/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "analysis", "Alerts", "status"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Workflow for alerts analysis: prepare upload, upload file, create list, trigger alerts, and poll status"
+    },
+    {
+      "name": "3. GHG Analysis Flow",
+      "item": [
+        {
+          "name": "Prepare Upload",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 302) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.uploadUrl) {",
+                  "        pm.environment.set(\"uploadUrl\", jsonData.uploadUrl);",
+                  "    }",
+                  "    if (jsonData.uploadId) {",
+                  "        pm.environment.set(\"uploadId\", jsonData.uploadId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userEmail\": \"{{userEmail}}\",\n    \"fileType\": \"csv\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/prepare_upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["prepare_upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload File",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/csv",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": "{{csvFilePath}}"
+              }
+            },
+            "url": {
+              "raw": "{{uploadUrl}}",
+              "host": ["{{uploadUrl}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 302) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.listId) {",
+                  "        pm.environment.set(\"listId\", jsonData.listId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"uploadId\": \"{{uploadId}}\",\n    \"listName\": \"ghg_demo_{{$timestamp}}\",\n    \"commodity\": \"{{commodity}}\",\n    \"analysisIDs\": \"GHG\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list/upload_new",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "upload_new"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Trigger GHG Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"yield\": {{ghgYield}},\n    \"baselineYear\": 2020,\n    \"userEmail\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/analysis/GHG/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "analysis", "GHG", "analyze"]
+            },
+            "description": "Trigger GHG analysis with yield and baseline year"
+          },
+          "response": []
+        },
+        {
+          "name": "Poll GHG Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/analysis/GHG/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "analysis", "GHG", "status"]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Workflow for GHG analysis: prepare upload, upload file, create list, and poll status"
+    },
+    {
+      "name": "4. List Management",
+      "item": [
+        {
+          "name": "List All Lists",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list?pageSize={{pageSize}}&pageNum={{pageNum}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["list"],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "{{pageSize}}",
+                  "description": "Number of items per page"
+                },
+                {
+                  "key": "pageNum",
+                  "value": "{{pageNum}}",
+                  "description": "Page number (0-indexed)"
+                }
+              ]
+            },
+            "description": "Get paginated list of all lists"
+          },
+          "response": []
+        },
+        {
+          "name": "Get List Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}"]
+            },
+            "description": "Get detailed information about a specific list"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete List",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userEmail\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "delete"]
+            },
+            "description": "Delete a list by ID"
+          },
+          "response": []
+        }
+      ],
+      "description": "Operations for managing lists: list all, get details, delete"
+    },
+    {
+      "name": "5. Poll Analysis",
+      "item": [
+        {
+          "name": "Poll Analysis Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.resultUrl) {",
+                  "        pm.environment.set(\"resultUrl\", jsonData.resultUrl);",
+                  "    }",
+                  "    pm.environment.set(\"analysisStatus\", jsonData.status);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/list/{{listId}}/analysis/{{analysisType}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["list", "{{listId}}", "analysis", "{{analysisType}}", "status"]
+            },
+            "description": "Check the status of an analysis (FCD, Alerts, GHG, etc.)"
+          },
+          "response": []
+        },
+        {
+          "name": "Download Results",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{resultUrl}}",
+              "host": ["{{resultUrl}}"]
+            },
+            "description": "Download the analysis results ZIP file"
+          },
+          "response": []
+        }
+      ],
+      "description": "Poll analysis status and download results"
+    }
+  ],
+  "variable": [
+    {
+      "key": "csvFilePath",
+      "value": "",
+      "type": "string",
+      "description": "Path to CSV file (for file uploads)"
+    },
+    {
+      "key": "commodity",
+      "value": "Cocoa Generic",
+      "type": "string"
+    },
+    {
+      "key": "analysisType",
+      "value": "FCD",
+      "type": "string",
+      "description": "Analysis type: FCD, Alerts, GHG"
+    },
+    {
+      "key": "alertStartDate",
+      "value": "01-01-2024",
+      "type": "string"
+    },
+    {
+      "key": "alertEndDate",
+      "value": "12-31-2024",
+      "type": "string"
+    },
+    {
+      "key": "ghgYield",
+      "value": "0.5",
+      "type": "string"
+    },
+    {
+      "key": "pageSize",
+      "value": "50",
+      "type": "string"
+    },
+    {
+      "key": "pageNum",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "uploadId",
+      "value": "",
+      "type": "string",
+      "description": "Set automatically after prepare_upload"
+    },
+    {
+      "key": "uploadUrl",
+      "value": "",
+      "type": "string",
+      "description": "Set automatically after prepare_upload"
+    },
+    {
+      "key": "listId",
+      "value": "",
+      "type": "string",
+      "description": "Set automatically after create_list"
+    },
+    {
+      "key": "resultUrl",
+      "value": "",
+      "type": "string",
+      "description": "Set automatically when analysis completes"
+    },
+    {
+      "key": "analysisStatus",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

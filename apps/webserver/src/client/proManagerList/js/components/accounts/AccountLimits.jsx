@@ -36,7 +36,6 @@ const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
 
 const globalLimitsFormDataObject = generateGlobalLimitsFormDataObject(subscriptionStatusOptions);
 const { STANDARD: STANDARD_SUBSCRIPTION, PREMIUM: PREMIUM_SUBSCRIPTION } = SUBSCRIPTION_STATUSES;
-const { isTokenizationAvailable } = featureFlags;
 
 /**
  * Manage global accounts limits based on subscriptions
@@ -47,6 +46,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
   const dialog = useDialog();
   const [globalLimitsFormData, setGlobalLimitsFormData] = useState(globalLimitsFormDataObject);
   const [formHasChanges, setFormHasChanges] = useState(false);
+  const { isTokenizationAvailable } = featureFlags;
   const locationsLabel = isTokenizationAvailable
     ? accountLimitsStrings.tokensPerYear
     : accountLimitsStrings.locationsPerYear;

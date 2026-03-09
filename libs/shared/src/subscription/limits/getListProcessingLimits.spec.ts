@@ -16,6 +16,7 @@ describe('getListProcessingLimits', () => {
     max_area_analyzed: 500,
     number_of_lists_analyzed: 1,
     locations_analyzed: 50,
+    total_tokens: 0,
     organization_id: 1,
     organization_name: 'TestOrg',
   };

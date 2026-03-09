@@ -5,6 +5,7 @@ jest.mock('../util/sql.utils', () => ({
         {
           total_area_analyzed: '1',
           max_area_analyzed: '2',
+          total_tokens: '3',
         },
       ];
     },
@@ -25,6 +26,7 @@ describe('getAccountAnalysisUsage', () => {
       {
         total_area_analyzed: 1,
         max_area_analyzed: 2,
+        total_tokens: 3,
       },
     ]);
   });

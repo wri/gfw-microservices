@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service';
 import { AlertsFileService } from './alerts.file.service';
 import { AlertsHistoryService } from './alerts.history.service';
-import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
 import { AlertsGlobalIntegratedDisturbanceDailyService } from './alerts.global.integrated.disturbance.daily.service';
 import { AlertsLocationsLevelService } from './alerts.locations.level.service';
 import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
@@ -44,7 +43,6 @@ import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
     AlertsAdminAreasLevelService,
     AlertsFileService,
     AlertsHistoryService,
-    AlertsIntegratedNaturalForestService,
     AlertsGlobalIntegratedDisturbanceDailyService,
     AlertsLocationsLevelService,
     AlertsPrioritiesAdminAreasLevelService,
@@ -83,7 +81,6 @@ import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
     AlertsAdminAreasLevelService,
     AlertsFileService,
     AlertsHistoryService,
-    AlertsIntegratedNaturalForestService,
     AlertsGlobalIntegratedDisturbanceDailyService,
     AlertsLocationsLevelService,
     AlertsPrioritiesAdminAreasLevelService,

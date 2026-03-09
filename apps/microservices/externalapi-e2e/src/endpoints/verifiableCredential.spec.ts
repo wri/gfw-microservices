@@ -62,15 +62,20 @@ async function pollApiUntilComplete(
   minCreationDate?: Date
 ): Promise<PollResult> {
   const startTime = Date.now();
+  let lastEntryNames: string[] = [];
+  let lastResultUrl = '';
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const elapsedMs = Date.now() - startTime;
     if (elapsedMs > timeoutMs) {
+      const details = lastEntryNames.length
+        ? ` Last ZIP entries: [${lastEntryNames.join(', ')}], resultUrl: ${lastResultUrl}`
+        : '';
       throw new Error(
         `Polling timeout: API did not complete within ${timeoutMs}ms (elapsed: ${elapsedMs}ms). URL: ${sanitizeUrl(
           url
-        )}`
+        )}.${details}`
       );
     }
 
@@ -144,12 +149,23 @@ async function pollApiUntilComplete(
         try {
           const zip = new AdmZip(Buffer.from(arrayBuffer));
           const zipEntries = zip.getEntries();
+          const entryNames = zipEntries.map((e) => e.entryName);
 
           // Find the JSON file containing the verifiable credential
           const jsonEntry = zipEntries.find((entry) => entry.entryName.endsWith('.json'));
 
           if (!jsonEntry) {
-            throw new Error('No JSON file found in ZIP');
+            // ZIP contains CSV files instead of JSON — likely a stale standard analysis result.
+            // Continue polling until the VC generation completes or the overall timeout is reached.
+            lastEntryNames = entryNames;
+            lastResultUrl = sanitizeUrl(result.resultUrl);
+
+            console.log(
+              `ZIP contains no JSON file, entries: [${entryNames.join(', ')}], ` +
+                `elapsed: ${Date.now() - startTime}ms/${timeoutMs}ms, continuing to poll...`
+            );
+            await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+            continue;
           }
 
           const jsonContent = jsonEntry.getData().toString('utf8');

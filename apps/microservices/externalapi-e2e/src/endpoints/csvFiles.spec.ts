@@ -497,14 +497,10 @@ async function pollApiUntilComplete(
         throw new Error(`Invalid or missing resultUrl: ${sanitizeUrl(result.resultUrl || '')}`);
       }
 
-      // Don't pass x-api-key header for S3 presigned URLs - they reject custom headers with 403
-      const zipResponse = await axios.get(result.resultUrl, {
-        responseType: 'arraybuffer',
-        validateStatus: (status) => status < 500,
-        maxRedirects: 5,
-      });
+      // Use fetch instead of axios for S3 presigned URLs to avoid default headers causing 403
+      const zipResponse = await fetch(result.resultUrl);
 
-      if (zipResponse.status >= 400) {
+      if (!zipResponse.ok) {
         throw new Error(
           `Failed to download zip file: ${zipResponse.status} ${
             zipResponse.statusText
@@ -512,7 +508,7 @@ async function pollApiUntilComplete(
         );
       }
 
-      const arrayBuffer = zipResponse.data;
+      const arrayBuffer = await zipResponse.arrayBuffer();
 
       if (arrayBuffer.byteLength === 0) {
         throw new Error('Downloaded zip file is empty');

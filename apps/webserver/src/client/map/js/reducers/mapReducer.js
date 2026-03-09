@@ -52,7 +52,6 @@ import {
 } from '../../../common/js/proLayers.config';
 
 const DEFORESTATION_ALERT_LAYER_IDS = [
-  proLayers.integratedDeforestationAlertsID,
   proLayers.raddAlertsID,
   proLayers.gladAlertsID,
   proLayers.gladS2AlertsID,

@@ -4,13 +4,10 @@ import {
   toggleLayer,
   updateDeforestationAlertsDateRange,
 } from '../../../actions/mapActions';
-import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 import DeforestationAlertsMapLegends from './DeforestationAlertsMapLegends';
-import { proLayers } from '../../../../../common/js/proLayers.config';
 import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.constants';
 import { DateRangeSlider } from '../../../../../components';
 import { formatDateValue } from '../../../../../common/js/utils/dateUtils';
-const { integratedDeforestationAlertsID } = proLayers;
 
 const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
   const dispatch = useDispatch();
@@ -67,12 +64,7 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
 
   // legends are different for the integratedDeforestationAlerts layer as it has a different color system
   const LegendSwitcher = ({ layerId }) => {
-    switch (layerId) {
-      case integratedDeforestationAlertsID:
-        return <IntegratedAlertsMapLegends />;
-      default:
-        return <DeforestationAlertsMapLegends alertsName={layerId} />;
-    }
+    return <DeforestationAlertsMapLegends alertsName={layerId} />;
   };
 
   return (

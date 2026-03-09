@@ -146,7 +146,6 @@ const {
   userLocations,
   viirsActiveFiresID,
   soyPlantedArea,
-  integratedDeforestationAlertsID,
   globalIntegratedDisturbanceAlertsId,
   disturbanceAlertsDriversId,
   globalVegetationDisturbanceAlertsId,
@@ -2321,10 +2320,7 @@ class Map extends Component {
     }
 
     if (selectedTimeframe) {
-      if (
-        visibleLayers?.includes(gladAlertsID) ||
-        visibleLayers?.includes(integratedDeforestationAlertsID)
-      ) {
+      if (visibleLayers?.includes(gladAlertsID)) {
         const startDate = new Date();
         const firstDayOfThisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
         switch (selectedTimeframe) {
@@ -2349,9 +2345,7 @@ class Map extends Component {
           resolve();
         });
         promise.then(() => {
-          const layerIdsToUpdate = [gladAlertsID, integratedDeforestationAlertsID].filter((id) =>
-            visibleLayers?.includes(id)
-          );
+          const layerIdsToUpdate = [gladAlertsID].filter((id) => visibleLayers?.includes(id));
           const endDate = selectedTimeframe === 'QUARTER' ? firstDayOfThisMonth : new Date();
           const startIso = startDate.toISOString().split('T')[0];
           const endIso = endDate.toISOString().split('T')[0];

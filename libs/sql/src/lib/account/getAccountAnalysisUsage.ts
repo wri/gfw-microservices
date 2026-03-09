@@ -24,10 +24,11 @@ export async function getAccountAnalysisUsage({
     'uspGetOrganizationAnalysisUsage',
     parameters
   );
-  // convert bigint values that DB returns as string back to number
+  // convert bigint/numeric values that DB returns as string back to number
   return usageDataBigintAsString.map((item) => ({
     ...item,
     total_area_analyzed: Number(item.total_area_analyzed),
     max_area_analyzed: Number(item.max_area_analyzed),
+    total_tokens: Number(item.total_tokens ?? 0),
   }));
 }

@@ -5,7 +5,6 @@ import { AlertsLocationsLevelService } from './alerts.locations.level.service';
 import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
 import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
 import { AlertsSummaryService } from './alerts.summary.service';
-import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
 import { AlertsGlobalIntegratedDisturbanceDailyService } from './alerts.global.integrated.disturbance.daily.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
 import {
@@ -27,7 +26,6 @@ describe('AlertsFileService', () => {
   let alertsPrioritiesAdminAreasLevelService: AlertsPrioritiesAdminAreasLevelService;
   let alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService;
   let alertsSummaryService: AlertsSummaryService;
-  let alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService;
   let alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService;
   let clientStoreConnection: ClientStoreConnection;
 
@@ -42,9 +40,6 @@ describe('AlertsFileService', () => {
     alertsPrioritiesLocationsLevelService = new AlertsPrioritiesLocationsLevelService();
     alertsSummaryService = new AlertsSummaryService();
     clientStoreConnection = new ClientStoreConnection();
-    alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService(
-      clientStoreConnection
-    );
     alertsGlobalIntegratedDisturbanceDailyService =
       new AlertsGlobalIntegratedDisturbanceDailyService(new ClientStoreConnection());
 
@@ -55,7 +50,6 @@ describe('AlertsFileService', () => {
       alertsPrioritiesAdminAreasLevelService,
       alertsPrioritiesLocationsLevelService,
       alertsSummaryService,
-      alertsIntegratedNaturalForestService,
       alertsGlobalIntegratedDisturbanceDailyService,
       clientStoreConnection
     );
@@ -74,15 +68,11 @@ describe('AlertsFileService', () => {
       } as AlertFieldsFileRequest;
 
       jest
-        .spyOn(alertsIntegratedNaturalForestService, 'start')
-        .mockImplementation(() => Promise.resolve());
-      jest
         .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
         .mockImplementation(() => Promise.resolve());
 
       await service.start(filters);
 
-      expect(alertsIntegratedNaturalForestService.start).toHaveBeenCalledWith(filters);
       expect(alertsGlobalIntegratedDisturbanceDailyService.start).toHaveBeenCalledWith(filters);
     });
 
@@ -116,7 +106,6 @@ describe('AlertsFileService', () => {
 
   describe('process', () => {
     beforeEach(() => {
-      jest.spyOn(alertsIntegratedNaturalForestService, 'start').mockImplementation(() => undefined);
       jest
         .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
         .mockImplementation(() => undefined);
@@ -132,16 +121,12 @@ describe('AlertsFileService', () => {
       const analysisData = [] as DashboardDataType[];
 
       jest
-        .spyOn(alertsIntegratedNaturalForestService, 'process')
-        .mockImplementation(() => Promise.resolve());
-      jest
         .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'process')
         .mockImplementation(() => Promise.resolve());
 
       await service.start(filters);
       service.process(analysisData, filters);
 
-      expect(alertsIntegratedNaturalForestService.process).toHaveBeenCalledWith(analysisData);
       expect(alertsGlobalIntegratedDisturbanceDailyService.process).toHaveBeenCalledWith(
         analysisData
       );
@@ -186,13 +171,9 @@ describe('AlertsFileService', () => {
         listName: 'IntegratedAlerts_NaturalForest_Daily',
       } as AlertFieldsFileRequest;
 
-      jest.spyOn(alertsIntegratedNaturalForestService, 'start').mockImplementation(() => undefined);
       jest
         .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'start')
         .mockImplementation(() => undefined);
-      jest
-        .spyOn(alertsIntegratedNaturalForestService, 'finish')
-        .mockImplementation(() => Promise.resolve());
       jest
         .spyOn(alertsGlobalIntegratedDisturbanceDailyService, 'finish')
         .mockImplementation(() => Promise.resolve());
@@ -201,7 +182,6 @@ describe('AlertsFileService', () => {
       await service.start(filters);
       await service.finish(filters);
 
-      expect(alertsIntegratedNaturalForestService.finish).toHaveBeenCalledWith(filters);
       expect(alertsGlobalIntegratedDisturbanceDailyService.finish).toHaveBeenCalledWith(filters);
       expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
       expect(service.finishProcess).toHaveBeenCalledWith(filters);

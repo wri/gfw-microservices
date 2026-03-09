@@ -350,22 +350,6 @@ describe('Validate CSV Files for Alerts', () => {
             'Number of locations',
           ],
         },
-        'AAT Argentina Polygons Generic_IntegratedAlerts_NaturalForest_Daily.csv': {
-          columns: [
-            'List Name',
-            'Location Name',
-            'Alert Type',
-            'Start Date',
-            'End Date',
-            'Date',
-            'Location Size (HA)',
-            'Confidence Level',
-            'Total # of alerts',
-            '# Alerts in SBTN Natural Forest',
-            '# Alerts in JRC Natural Forest',
-            '# of locations',
-          ],
-        },
         'README.csv': { isReadme: true },
       };
 

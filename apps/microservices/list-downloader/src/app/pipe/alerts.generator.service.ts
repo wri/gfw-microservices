@@ -35,7 +35,7 @@ export class AlertsGeneratorService extends IFileGenerator {
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i + 1 };
       const analysisData = await this.alertDataService.getDataPaginated(newFilter);
-      this.alertsFileService.process(analysisData, newFilter);
+      this.alertsFileService.process(analysisData);
       return i;
     };
 

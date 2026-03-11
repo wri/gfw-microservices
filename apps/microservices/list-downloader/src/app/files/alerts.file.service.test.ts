@@ -74,7 +74,7 @@ describe('AlertsFileService', () => {
         .mockImplementation(() => Promise.resolve());
 
       await service.start(filters);
-      service.process(analysisData, filters);
+      service.process(analysisData);
 
       expect(alertsGlobalIntegratedDisturbanceDailyService.process).toHaveBeenCalledWith(
         analysisData

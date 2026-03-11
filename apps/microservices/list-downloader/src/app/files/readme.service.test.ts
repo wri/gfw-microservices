@@ -55,7 +55,7 @@ describe('ReadmeService', () => {
     expect(fs.copyFile).toHaveBeenCalledWith(sourceDir, destFile, expect.any(Function));
   });
 
-  it('should merge daily_alerts_readme and global_integrated_disturbance_alerts_daily_readme when the filter type is Alerts and the selectedTimeFrame is Day', async () => {
+  it('should copy global_integrated_disturbance_alerts_daily_readme when the filter type is Alerts', async () => {
     const filters: AlertFieldsFileRequest = {
       key: 'test-key',
       type: 'alerts',
@@ -64,26 +64,16 @@ describe('ReadmeService', () => {
       listName: 'TestList',
     };
 
-    // Access the readmeMergeServices instance from the service
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const serviceReadmeMergeServices = (service as any).readmeMergeServices;
-    const processFilesSpy = jest
-      .spyOn(serviceReadmeMergeServices, 'processFiles')
-      .mockResolvedValue('/tmp/wri-test-key/README.csv');
+    const sourceDir = '/mock/source/dir/global_integrated_disturbance_alerts_daily_readme.csv';
+    const destFile = '/tmp/wri-test-key/README.csv';
+
+    (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
+      callback(null);
+    });
 
     await service.write(filters);
 
-    expect(processFilesSpy).toHaveBeenCalledWith(
-      [
-        '/mock/source/dir/global_integrated_disturbance_alerts_daily_readme.csv',
-        '/mock/source/dir/daily_alerts_readme.csv',
-        '/mock/source/dir/alerts_readme.csv',
-      ],
-      null,
-      '/tmp/wri-test-key/',
-      'TestList'
-    );
-    expect(fs.copyFile).not.toHaveBeenCalled();
+    expect(fs.copyFile).toHaveBeenCalledWith(sourceDir, destFile, expect.any(Function));
   });
 
   it('should not break when readme file does not exist', async () => {
@@ -109,73 +99,10 @@ describe('ReadmeService', () => {
     expect(fs.copyFile).not.toHaveBeenCalled();
   });
 
-  it('should return array with daily_alerts_readme.csv and global_integrated_disturbance_alerts_daily_readme.csv when selectedTimeframe is DAY', () => {
-    const filters: AlertFieldsFileRequest = {
-      key: 'test-key',
-      type: 'alerts',
-      selectedTimeframe: AlertsTimeframes.DAY,
-      selectedAlert: '',
-    };
+  it('should return global_integrated_disturbance_alerts_daily_readme.csv', () => {
+    const result = service.alertsReadmeData();
 
-    const result = service.alertsReadmeData(filters);
-
-    expect(result).toEqual([
-      'global_integrated_disturbance_alerts_daily_readme.csv',
-      'daily_alerts_readme.csv',
-      'alerts_readme.csv',
-    ]);
-  });
-
-  it('should return alerts_readme.csv when selectedTimeframe is WEEK', () => {
-    const filters: AlertFieldsFileRequest = {
-      key: 'test-key',
-      type: 'alerts',
-      selectedTimeframe: AlertsTimeframes.WEEK,
-      selectedAlert: '',
-    };
-
-    const result = service.alertsReadmeData(filters);
-
-    expect(result).toBe('alerts_readme.csv');
-  });
-
-  it('should return alerts_readme.csv when selectedTimeframe is MONTH', () => {
-    const filters: AlertFieldsFileRequest = {
-      key: 'test-key',
-      type: 'alerts',
-      selectedTimeframe: AlertsTimeframes.MONTH,
-      selectedAlert: '',
-    };
-
-    const result = service.alertsReadmeData(filters);
-
-    expect(result).toBe('alerts_readme.csv');
-  });
-
-  it('should return alerts_readme.csv when selectedTimeframe is QUARTER', () => {
-    const filters: AlertFieldsFileRequest = {
-      key: 'test-key',
-      type: 'alerts',
-      selectedTimeframe: AlertsTimeframes.QUARTER,
-      selectedAlert: '',
-    };
-
-    const result = service.alertsReadmeData(filters);
-
-    expect(result).toBe('alerts_readme.csv');
-  });
-
-  it('should return alerts_readme.csv when selectedTimeframe is YEAR', () => {
-    const filters: AlertFieldsFileRequest = {
-      key: 'test-key',
-      type: 'alerts',
-      selectedTimeframe: AlertsTimeframes.YEAR,
-      selectedAlert: '',
-    };
-
-    const result = service.alertsReadmeData(filters);
-
-    expect(result).toBe('alerts_readme.csv');
+    expect(result).toBe('global_integrated_disturbance_alerts_daily_readme.csv');
   });
 
   it('should return everything_commodity_risk_readme.csv when listView is commodity_risk', () => {

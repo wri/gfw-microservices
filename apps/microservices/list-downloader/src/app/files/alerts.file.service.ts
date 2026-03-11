@@ -27,7 +27,7 @@ export class AlertsFileService extends IPipeService {
     this.alertsGlobalIntegratedDisturbanceDailyService.start(filters);
   }
 
-  process(analysisData: DashboardDataType[], filters: AlertFieldsFileRequest) {
+  process(analysisData: DashboardDataType[]) {
     this.alertsGlobalIntegratedDisturbanceDailyService.process(analysisData);
   }
 

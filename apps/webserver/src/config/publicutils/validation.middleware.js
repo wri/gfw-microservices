@@ -5,7 +5,7 @@ const { fromZodError } = require('zod-validation-error');
  * Maximum size for string fields to prevent oversized payloads
  */
 const MAX_STRING_LENGTH = 1000;
-const MAX_EMAIL_LENGTH = 254; // RFC 5321
+const MAX_EMAIL_LENGTH = 50; // Database constraint: NVARCHAR(50)
 const MAX_PHONE_LENGTH = 50;
 const MAX_NAME_LENGTH = 35;
 const MAX_TITLE_LENGTH = 150;
@@ -133,25 +133,39 @@ const validateRequest = (schema) => {
         // Check if error is due to unknown keys
         const hasUnknownKeys = error.errors.some((err) => err.code === 'unrecognized_keys');
 
+        const isDevelopment = process.env.NODE_ENV !== 'production';
+
         if (hasUnknownKeys) {
           const unknownKeys = error.errors
             .filter((err) => err.code === 'unrecognized_keys')
             .flatMap((err) => err.keys || []);
 
-          return res.status(400).json({
+          const response = {
             error: 'Bad Request',
             message: 'Invalid request: unknown fields provided',
             details: `Unrecognized key(s) in object: ${unknownKeys.join(', ')}`,
-            validationErrors: error.errors,
-          });
+          };
+
+          // Only include detailed validation errors in non-production environments
+          if (isDevelopment) {
+            response.validationErrors = error.errors;
+          }
+
+          return res.status(400).json(response);
         }
 
-        return res.status(400).json({
+        const response = {
           error: 'Bad Request',
           message: 'Invalid request data',
           details: validationError.message,
-          validationErrors: error.errors,
-        });
+        };
+
+        // Only include detailed validation errors in non-production environments
+        if (isDevelopment) {
+          response.validationErrors = error.errors;
+        }
+
+        return res.status(400).json(response);
       }
 
       // Handle other errors

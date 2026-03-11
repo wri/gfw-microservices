@@ -385,8 +385,8 @@ describe('POST /profile/updateuser - Input Validation', () => {
       expect(mockUpdateUserInfo).not.toHaveBeenCalled();
     });
 
-    it('should reject email exceeding 254 characters', async () => {
-      const longEmail = 'a'.repeat(250) + '@example.com';
+    it('should reject email exceeding 50 characters', async () => {
+      const longEmail = 'a'.repeat(39) + '@example.com'; // 51 chars total (39 + 12)
       const response = await request(app).post('/profile/updateuser').send({
         id: 1,
         first_name: 'John',

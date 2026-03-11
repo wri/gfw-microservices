@@ -231,12 +231,13 @@ export = (app, limiter) => {
       res.status(200).json(result);
     } catch (err) {
       logger.error('POST /profile/updateuser', err);
-      // Return proper error response instead of sending the error object directly
-      const statusCode = err.statusCode || 500;
-      const errorMessage = err.message || 'Failed to update user information';
+      // Map errorUtils.createErrorMessage shape to response
+      // Note: systemMessage is excluded to prevent exposing sensitive internal details
+      const statusCode = err.errorCode || 500;
+      const errorMessage = err.userMessage || err.message || 'Failed to update user information';
       res.status(statusCode).json({
-        error: 'Update Failed',
-        message: errorMessage,
+        errorCode: err.errorCode,
+        userMessage: errorMessage,
       });
     }
   });

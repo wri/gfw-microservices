@@ -353,7 +353,7 @@ describe('validation.middleware', () => {
       });
 
       it('should reject email exceeding max length', () => {
-        const longEmail = 'a'.repeat(250) + '@example.com';
+        const longEmail = 'a'.repeat(39) + '@example.com'; // 51 chars (39 + 12)
         const data = {
           id: 1,
           first_name: 'John',
@@ -361,7 +361,7 @@ describe('validation.middleware', () => {
           email: longEmail,
         };
 
-        expect(() => updateUserSchema.parse(data)).toThrow('Email must not exceed 254 characters');
+        expect(() => updateUserSchema.parse(data)).toThrow('Email must not exceed 50 characters');
       });
 
       it('should accept valid email', () => {

@@ -1,0 +1,13 @@
+CSV Name,Description,Version,Column,Column Description
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,List Name,Name of List
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Location Name,Name of Location
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Alert Type,Selected Alert Type
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Start Date,Start Date of Selected Time Period
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,End Date,End Date of Selected Time Period
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Date,Date Selected
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Location Size,Size of Location (Ha)
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Confidence Level,Type of confidence level
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,Total # of alerts,Count of Alerts in total
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,# Alerts in SBTN Natural Forest,Count of Alerts in SBTN
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,# Alerts in JRC Natural Forest,Count of Alerts in JRC
+<LISTNAME>_IntegratedAlerts_NaturalForest_Daily,Natural Forest Daily Alerts by Location,Deprecated,# of locations,Count of Locations

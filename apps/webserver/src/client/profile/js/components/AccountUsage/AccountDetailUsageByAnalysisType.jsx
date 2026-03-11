@@ -72,17 +72,19 @@ function AccountDetailUsageByAnalysisType({
       };
     }
 
-    const locationsAnalyzed = analysisUsageByType
-      .filter((item) => item.analysis_type !== 'ALERTS-BATCH') // Exclude Weekly Alerts from total
-      .reduce((sum, item) => sum + (parseInt(item.locations_analyzed) || 0), 0);
-
-    const hectaresAnalyzed = analysisUsageByType
-      .filter((item) => item.analysis_type !== 'ALERTS-BATCH') // Exclude Weekly Alerts from total
-      .reduce((sum, item) => sum + (parseFloat(item.hectares_analyzed) || 0), 0);
-
-    const listsAnalyzed = analysisUsageByType
-      .filter((item) => item.analysis_type !== 'ALERTS-BATCH') // Exclude Weekly Alerts from lists total
-      .reduce((sum, item) => sum + (parseInt(item.lists_analyzed) || 0), 0);
+    // Calculate totals in a single pass for efficiency
+    const { locationsAnalyzed, hectaresAnalyzed, listsAnalyzed } = analysisUsageByType.reduce(
+      (totals, item) => {
+        // Exclude Weekly Alerts from locations, hectares, and lists totals
+        if (item.analysis_type !== 'ALERTS-BATCH') {
+          totals.locationsAnalyzed += parseInt(item.locations_analyzed) || 0;
+          totals.hectaresAnalyzed += parseFloat(item.hectares_analyzed) || 0;
+          totals.listsAnalyzed += parseInt(item.lists_analyzed) || 0;
+        }
+        return totals;
+      },
+      { locationsAnalyzed: 0, hectaresAnalyzed: 0, listsAnalyzed: 0 }
+    );
 
     const tokensUsed = analysisUsageByType.reduce((sum, item) => {
       const value = item.total_tokens;
@@ -355,7 +357,7 @@ function AccountDetailUsageByAnalysisType({
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                               {formatDigit(element.lists_analyzed || 0)}
                               <Tooltip
-                                title="Weeks of analysis is a sum of the number of lists with Weekly Alerts applied multiplied by the number of weeks each list has been automatically updated. This number is not reflected in the total listed below."
+                                title='"Weeks of analysis" is a sum of the number of lists with Weekly Alerts applied multiplied by the number of weeks each list has been automatically updated. This number is not reflected in the total listed below.'
                                 arrow
                                 placement="top"
                               >
@@ -384,7 +386,7 @@ function AccountDetailUsageByAnalysisType({
                       </TableCell>
                       {isTokenizationAvailable && (
                         <TableCell align="right">
-                          {formatDigit(element.total_tokens || 'N/A')}
+                          {element.total_tokens == null ? 'N/A' : formatDigit(element.total_tokens)}
                         </TableCell>
                       )}
                     </TableRow>

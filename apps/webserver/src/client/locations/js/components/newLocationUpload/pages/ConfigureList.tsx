@@ -628,8 +628,18 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
 
 const popoverHelperTextStyle: SxProps = {
   '& > a': {
-    color: '#00F',
+    color: 'link.main',
     textDecoration: 'underline',
+    '&:hover': {
+      color: 'link.hover',
+    },
+    '&:active': {
+      color: 'link.active',
+    },
+    '&:focus-visible': {
+      outline: '2px solid currentColor',
+      outlineOffset: '2px',
+    },
   },
 };
 
@@ -644,18 +654,26 @@ const listOfPopoverHelperText: {
       This analysis provides users with statistics on forest coverage and forest loss which occurred
       after 2020. It differs from other analyses on GFW Pro in that it is based upon forest maps
       aligned as closely as possible with the definition of forest adopted by the{' '}
-      <a href="https://www.fao.org/home/en/" target="_blank">
+      <a href="https://www.fao.org/home/en/" target="_blank" rel="noopener noreferrer">
         United Nations Food and Agriculture Organization
       </a>
       . The 2020 cut-off date used here aligns with requirements recently adopted by the European
       Union, and the summary statistics may be referred to when conducting due diligence assessments
       and disclosing deforestation within the supply chain. This analysis utilizes two maps of 2020
       forest cover: the Natural Forest map, derived from the{' '}
-      <a href="https://wri-datalab.earthengine.app/view/sbtn-natural-lands" target="_blank">
+      <a
+        href="https://wri-datalab.earthengine.app/view/sbtn-natural-lands"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Natural Lands Ecosystem Map
       </a>{' '}
       developed by the Science Based Targets Network (SBTN), and the{' '}
-      <a href="https://forest-observatory.ec.europa.eu/forest/gfc2020" target="_blank">
+      <a
+        href="https://forest-observatory.ec.europa.eu/forest/gfc2020"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         Global Map of Forest Cover
       </a>
       , developed by the Joint Research Centre.
@@ -674,6 +692,7 @@ const listOfPopoverHelperText: {
       <a
         href="https://data.globalforestwatch.org/maps/gfw::tree-cover-loss-1/about"
         target="_blank"
+        rel="noopener noreferrer"
       >
         tree cover loss
       </a>{' '}

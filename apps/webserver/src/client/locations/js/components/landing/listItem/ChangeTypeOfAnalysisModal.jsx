@@ -22,7 +22,8 @@ const AddAnalysisTypeConfirmationMessage = () => {
         <a
           href="/about?section=Fees"
           target="_blank"
-          style={{ color: '#97bd3d', textDecoration: 'underline' }}
+          rel="noopener noreferrer"
+          className="change-type-of-analysis-modal__link"
         >
           here
         </a>

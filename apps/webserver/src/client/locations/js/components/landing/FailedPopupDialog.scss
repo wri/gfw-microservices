@@ -9,7 +9,21 @@
   }
 
   a {
-    color: $gfw-green;
+    color: #404041;
+    text-decoration: underline;
+
+    &:hover {
+      color: #1a1919;
+    }
+
+    &:active {
+      color: #a1a1a1;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #1a1919;
+      outline-offset: 2px;
+    }
   }
 }
 

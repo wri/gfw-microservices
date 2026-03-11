@@ -245,8 +245,18 @@ export function SummaryAndSubmit() {
               information{' '}
               <Link
                 href={ExternalLinks.UploadFees}
-                sx={{ textDecoration: 'none', color: 'primary.main' }}
+                sx={{
+                  textDecoration: 'underline',
+                  color: 'link.main',
+                  '&:hover': { color: 'link.hover' },
+                  '&:active': { color: 'link.active' },
+                  '&:focus-visible': {
+                    outline: '2px solid currentColor',
+                    outlineOffset: '2px',
+                  },
+                }}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 here
               </Link>
@@ -328,8 +338,18 @@ export function SummaryAndSubmit() {
               )}{' '}
               <Link
                 href={ExternalLinks.UploadFees}
-                sx={{ textDecoration: 'none', color: 'primary.main' }}
+                sx={{
+                  textDecoration: 'underline',
+                  color: 'link.main',
+                  '&:hover': { color: 'link.hover' },
+                  '&:active': { color: 'link.active' },
+                  '&:focus-visible': {
+                    outline: '2px solid currentColor',
+                    outlineOffset: '2px',
+                  },
+                }}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 {linkHereText}
               </Link>

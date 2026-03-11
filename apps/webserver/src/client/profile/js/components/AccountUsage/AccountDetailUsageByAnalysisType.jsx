@@ -101,8 +101,8 @@ function AccountDetailUsageByAnalysisType({
   const exportUsage = async () => {
     try {
       const url = organizationId
-        ? `/analytics/usage/users/download?orgId=${organizationId}`
-        : `/analytics/myorg/usage/users/download`;
+        ? `/analytics/usage/users/download?orgId=${organizationId}&startDate=${startDateAnalysis}&endDate=${endDateAnalysis}`
+        : `/analytics/myorg/usage/users/download?startDate=${startDateAnalysis}&endDate=${endDateAnalysis}`;
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'same-origin',

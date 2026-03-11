@@ -3,12 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {
-  AlertFieldsFileRequest,
-  AlertsTimeframes,
-  BasicFieldsFileRequest,
-  ListFieldsFileRequest,
-} from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest, ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../../validators/server-config';
 import { ReadmeMergeServices } from '../shared/readme.merge.service';
 @Injectable({
@@ -60,25 +55,8 @@ export class ReadmeService {
     }
   }
 
-  alertsReadmeData(filters: AlertFieldsFileRequest): string | string[] {
-    const { selectedTimeframe } = filters;
-
-    if (selectedTimeframe === AlertsTimeframes.DAY) {
-      return [
-        'global_integrated_disturbance_alerts_daily_readme.csv',
-        'daily_alerts_readme.csv',
-        'alerts_readme.csv',
-      ];
-    }
-
-    const alertsFilesByTimeFrame = {
-      [AlertsTimeframes.WEEK]: 'alerts_readme.csv',
-      [AlertsTimeframes.MONTH]: 'alerts_readme.csv',
-      [AlertsTimeframes.QUARTER]: 'alerts_readme.csv',
-      [AlertsTimeframes.YEAR]: 'alerts_readme.csv',
-    };
-
-    return alertsFilesByTimeFrame[selectedTimeframe];
+  alertsReadmeData(): string {
+    return 'global_integrated_disturbance_alerts_daily_readme.csv';
   }
 
   everythingBundleReadmeData(filters: ListFieldsFileRequest) {
@@ -166,24 +144,7 @@ export class ReadmeService {
     }
 
     // Get the file(s) to copy
-    let fileToCopyResult: string | string[] | null;
-    if (type === 'alerts') {
-      const alertFilters = filters as AlertFieldsFileRequest;
-      fileToCopyResult = returnFileToCopy[type](alertFilters);
-
-      // Handle alerts with DAY timeframe - merge multiple README files
-      if (Array.isArray(fileToCopyResult)) {
-        await this.readmeMergeServices.processFiles(
-          fileToCopyResult.map((file) => this.getSourceDir(file)),
-          null,
-          this.getPathDir(key),
-          listName || ''
-        );
-        return;
-      }
-    } else {
-      fileToCopyResult = returnFileToCopy[type](filters);
-    }
+    const fileToCopyResult: string | null = returnFileToCopy[type](filters);
 
     // Handle single README file copy
     const fileToCopy = fileToCopyResult as string;

@@ -16,22 +16,12 @@
   14 Other
 */
 export const SELECTED_TIMEFRAME_DAY = 'DAY';
-export const SELECTED_TIMEFRAME_WEEK = 'WEEK';
-export const SELECTED_TIMEFRAME_MONTH = 'MONTH';
-export const SELECTED_TIMEFRAME_QUARTER = 'QUARTER';
-export const SELECTED_TIMEFRAME_YEAR = 'YEAR';
-export const SELECTED_ALERT_INTEGRATED = 'Integrated';
 
 // number of threads that will be used to process the data
 export const POOL_SIZE = 5;
 export const MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
 
-export const DATE_FORMAT_CSV = 'dd MMM yyyy';
 export const DATE_FORMAT = 'yyyy-MM-dd';
-
-export const ALERTS_PRIORITIES_LOCATION_LEVEL = 'AlertsPriorities_LocationsLevel';
-export const ALERTS_LOCATION_LEVEL = 'Alerts_LocationsLevel';
-export const ALERTS_LOCATION_LEVEL_DAILY = 'Alerts_LocationsLevel_Daily';
 
 export const templateColumns = {
   COMMODITY_GENERIC: [
@@ -1543,21 +1533,6 @@ export const OTHER_KPIS_HEADER = {
   protectedAreasAreaPercentage: 'Overlap with WDPA (%)',
   landmarkArea: 'Overlap with Indigenous Lands (Ha)',
   landmarkAreaPercentage: 'Overlap with Indigenous Lands (%)',
-} as const;
-
-export const ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER = {
-  listName: 'List Name',
-  locationName: 'Location Name',
-  alertType: 'Alert Type',
-  startDate: 'Start Date',
-  endDate: 'End Date',
-  date: 'Date',
-  totalHa: 'Location Size (HA)',
-  confidenceLevel: 'Confidence Level',
-  totalAlerts: 'Total # of alerts',
-  alertSbtn: '# Alerts in SBTN Natural Forest',
-  alertsJRC: '# Alerts in JRC Natural Forest',
-  numberLocations: '# of locations',
 } as const;
 
 export const GLOBAL_INTEGRATED_DISTURBANCE_ALERTS_DAILY_CSV_HEADER = {

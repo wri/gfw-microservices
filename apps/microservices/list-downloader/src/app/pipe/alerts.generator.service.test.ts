@@ -3,7 +3,7 @@ import { Logger } from '@nestjs/common';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { AlertsDataService } from '../data/alerts.data.service';
 import { AlertsFileService } from '../files/alerts.file.service';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { subDays, endOfDay, format } from 'date-fns';
 import { AlertFieldsFileRequest, AlertsTimeframes } from '@wri-monorepos/sql';
 
 describe('AlertsGeneratorService', () => {
@@ -42,10 +42,10 @@ describe('AlertsGeneratorService', () => {
   it('should call all necessary methods in makeFile', async () => {
     const mockFilters: AlertFieldsFileRequest = {
       listId: 123,
-      selectedTimeframe: AlertsTimeframes.MONTH,
+      selectedTimeframe: AlertsTimeframes.DAY,
       selectedAlert: '',
       key: 'example-key',
-      listName: 'Alerts_Month',
+      listName: 'Alerts_Day',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(2);
@@ -93,10 +93,10 @@ describe('AlertsGeneratorService', () => {
   it('should log the number of pages during makeFile', async () => {
     const mockFilters: AlertFieldsFileRequest = {
       listId: 123,
-      selectedTimeframe: AlertsTimeframes.MONTH,
+      selectedTimeframe: AlertsTimeframes.DAY,
       selectedAlert: '',
       key: 'example-key',
-      listName: 'Alerts_Month',
+      listName: 'Alerts_Day',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(3);
@@ -145,10 +145,10 @@ describe('AlertsGeneratorService', () => {
   it('should set startDate and endDate if not provided in filters', async () => {
     const mockFilters: AlertFieldsFileRequest = {
       listId: 123,
-      selectedTimeframe: AlertsTimeframes.MONTH,
+      selectedTimeframe: AlertsTimeframes.DAY,
       selectedAlert: '',
       key: 'example-key',
-      listName: 'Alerts_Month',
+      listName: 'Alerts_Day',
     };
 
     mockAlertsDataService.getNumberOfPages.mockResolvedValue(1);
@@ -186,8 +186,7 @@ describe('AlertsGeneratorService', () => {
 
     await service.makeFile(mockFilters);
 
-    const lastMonth = subMonths(new Date(), 1);
-    expect(mockFilters.startDate).toEqual(format(startOfMonth(lastMonth), 'yyyy-MM-dd 00:00:00'));
-    expect(mockFilters.endDate).toEqual(format(endOfMonth(lastMonth), 'yyyy-MM-dd 23:59:59'));
+    expect(mockFilters.startDate).toEqual(format(subDays(new Date(), 1), 'yyyy-MM-dd 00:00:00'));
+    expect(mockFilters.endDate).toEqual(format(endOfDay(new Date()), 'yyyy-MM-dd 23:59:59'));
   });
 });

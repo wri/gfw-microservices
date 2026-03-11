@@ -1,12 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
   DashboardDataType,
-  getDashboardData,
-  getGFWListsDashboardData,
   SQLUtils,
-  GFWList,
   ClientStoreConnection,
-  Lists,
   ListsAnalysisStatus,
   getDashboardDataPaginated,
   CountDashboardDataType,
@@ -15,16 +11,11 @@ import {
   getCountGFWListsDashboardData,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
 export class AlertsRepository {
-  @InjectRepository(GFWList, 'default')
-  private gfwListRepository: Repository<GFWList>;
-
   private readonly logger = new Logger(AlertsRepository.name);
 
   constructor(
@@ -51,46 +42,6 @@ export class AlertsRepository {
       // log the error but do not fail the main query
       this.logger.error(`Error logging alerts: ${error.stack || error.message || error}`);
     }
-  }
-
-  async findDashboardDataByListId(listID: number, clientDatabase: string) {
-    await this.logAlertsList(listID, clientDatabase);
-    const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
-
-    return await SQLUtils.queryDB<DashboardDataType[]>(
-      clientDatabase,
-      getDashboardData,
-      parameters
-    );
-  }
-
-  async findGFWListDashboardDataByListId(listID: number) {
-    await this.logAlertsList(listID, this.config.get('MSSQL_DATABASE', { infer: true }));
-    const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
-
-    return await SQLUtils.queryDB<DashboardDataType[]>(
-      this.config.get('MSSQL_DATABASE', { infer: true }),
-      getGFWListsDashboardData,
-      parameters
-    );
-  }
-
-  async findGFWListDashboardTimestampByListId(listID: number) {
-    const list = await this.gfwListRepository.findOne({ where: { id: listID } });
-    return {
-      dashboardLastResults: list.dashboardLastResults,
-      dashboardLastSubmit: list.dashboardLastSubmit,
-    };
-  }
-
-  async findDashboardTimestampByListId(listID: number, clientDatabase: string) {
-    const connection = await this.createOrganizationConnection(clientDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const list = await listRepository.findOne({ where: { id: listID } });
-    return {
-      dashboardLastResults: list.dashboardLastResults,
-      dashboardLastSubmit: list.dashboardLastSubmit,
-    };
   }
 
   async countDashboardData(listID: number, clientDatabase: string) {

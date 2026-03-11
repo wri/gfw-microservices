@@ -497,6 +497,10 @@ async function pollApiUntilComplete(
         throw new Error(`Invalid or missing resultUrl: ${sanitizeUrl(result.resultUrl || '')}`);
       }
 
+      // add 10 second delay for S3 consistency after API returns completed but before downloading
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+
+      console.log(`Downloading from "${result.resultUrl}" at time ${new Date().toISOString()}`);
       // Use fetch instead of axios for S3 presigned URLs to avoid default headers causing 403
       const zipResponse = await fetch(result.resultUrl);
 

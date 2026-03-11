@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
+import { AlertFieldsFileRequest, AlertsTimeframes } from '@wri-monorepos/sql';
 import { IFileGenerator } from './i.file.generator';
 import { AlertsDataService } from '../data/alerts.data.service';
 import * as asyncPool from 'tiny-async-pool';
@@ -20,7 +20,14 @@ export class AlertsGeneratorService extends IFileGenerator {
 
   async makeFile(filters: AlertFieldsFileRequest): Promise<void> {
     const numberOfPages = await this.alertDataService.getNumberOfPages(filters);
-    const { listId, startDate, endDate } = filters;
+    const { listId, startDate, endDate, selectedTimeframe } = filters;
+
+    if (selectedTimeframe && selectedTimeframe !== AlertsTimeframes.DAY) {
+      this.logger.warn(
+        `(${listId}) - Only DAY timeframe is supported for alerts export. Received: ${selectedTimeframe}`
+      );
+    }
+
     if (!startDate || !endDate) {
       const dates = this.getDefaultDateRange();
       filters.startDate = dates.startDate;

@@ -91,7 +91,7 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"
-          label={`${getAnalysisLabel(analysisTypes.ALERTS)} *`}
+          label={getAnalysisLabel(analysisTypes.ALERTS)}
           value={ALERTS}
           data-cy="alerts-tab"
           sx={{

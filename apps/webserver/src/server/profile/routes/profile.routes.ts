@@ -8,6 +8,10 @@ import * as AccountManager from '../../../config/publicutils/accountManager.util
 import * as PolicyManager from '../../../config/publicutils/policyManager.utils';
 import rateLimiterUtil from '../../../config/lib/limiter-util';
 import * as logger from '../../../config/privateutils/logger.utils';
+import {
+  validateRequest,
+  updateUserSchema,
+} from '../../../config/publicutils/validation.middleware';
 
 const BASE_URL = '/profile'; // Used to compose API calls to EAPI Microservice
 const API_BASE_URL = `/api${BASE_URL}`; // Used for API calls, mostly for routes that return JSON and call the EAPI microservice
@@ -188,7 +192,7 @@ export = (app, limiter) => {
       });
   });
 
-  app.post('/profile/updateuser', (req, res) => {
+  app.post('/profile/updateuser', validateRequest(updateUserSchema), async (req, res) => {
     logger.info('POST /profile/updateuser');
     const {
       id,
@@ -206,30 +210,36 @@ export = (app, limiter) => {
       auth_preference_id,
     } = req.body;
 
-    UserManager.updateUserInfo({
-      req,
-      user_id: id,
-      user_first_name: first_name,
-      user_middle_initial: middle_initial,
-      user_last_name: last_name,
-      user_email: email,
-      user_phone: phone,
-      user_title_id: title_id,
-      other_title,
-      access_level_id,
-      email_subscription: enableAlerts,
-      arr_user_geography_ids: geographies,
-      arr_user_commodity_ids: commodities,
-      user_auth_preference_id: auth_preference_id,
-      loggedUserAccessLevelId: req.session.user_access_level_id,
-    })
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((err) => {
-        logger.error('POST /profile/updateuser', err);
-        res.send(err);
+    try {
+      const result = await UserManager.updateUserInfo({
+        req,
+        user_id: id,
+        user_first_name: first_name,
+        user_middle_initial: middle_initial,
+        user_last_name: last_name,
+        user_email: email,
+        user_phone: phone,
+        user_title_id: title_id,
+        other_title,
+        access_level_id,
+        email_subscription: enableAlerts,
+        arr_user_geography_ids: geographies,
+        arr_user_commodity_ids: commodities,
+        user_auth_preference_id: auth_preference_id,
+        loggedUserAccessLevelId: req.session.user_access_level_id,
       });
+      res.status(200).json(result);
+    } catch (err) {
+      logger.error('POST /profile/updateuser', err);
+      // Map errorUtils.createErrorMessage shape to response
+      // Note: systemMessage is excluded to prevent exposing sensitive internal details
+      const statusCode = err.errorCode || 500;
+      const errorMessage = err.userMessage || err.message || 'Failed to update user information';
+      res.status(statusCode).json({
+        errorCode: err.errorCode,
+        userMessage: errorMessage,
+      });
+    }
   });
 
   app.post('/profile/deletePolicy', (req, res) => {

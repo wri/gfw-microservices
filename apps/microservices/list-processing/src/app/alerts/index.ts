@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 import { AlertsController } from './alerts.controller';
 import { AlertsService } from './alerts.service';
 import { AlertsRepository } from './alerts.repository';
-import { ClientStoreConnection, GFWList, SqlModule } from '@wri-monorepos/sql';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClientStoreConnection, SqlModule } from '@wri-monorepos/sql';
 
 @Module({
-  imports: [SqlModule, TypeOrmModule.forFeature([GFWList], 'default')],
+  imports: [SqlModule],
   controllers: [AlertsController],
   providers: [AlertsService, AlertsRepository, ClientStoreConnection],
 })

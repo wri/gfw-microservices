@@ -76,4 +76,6 @@ export const ExternalLinks = {
 export const ReusableText = {
   EudrLegalDisclaimer:
     'Our services do not provide certification or guarantee that any deforestation-related activities, data, or supply chains comply with the European Union Deforestation Regulation (EUDR). Compliance with EUDR requirements remains the sole responsibility of the relevant parties, and we recommend consulting with appropriate legal and regulatory experts for verification and certification. ',
+  AlertsUnsubscribeNotice:
+    "This list has been unsubscribed from Recent Deforestation Alerts weekly update. Please click 'Change Analysis' to select Weekly Alerts and resubmit your list to be re-enrolled in automatic weekly alerts. Note that running analysis counts towards your account usage limits.",
 };

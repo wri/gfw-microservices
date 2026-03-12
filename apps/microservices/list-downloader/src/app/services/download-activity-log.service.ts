@@ -10,7 +10,7 @@ export interface DownloadActivityLogData {
   fileType: 'csv' | 'shapefile' | 'json';
   downloadType: string; // e.g., 'input', 'results', 'afi', 'alerts', etc.
   analysisType?: string; // for diagnostics, e.g., 'commodityRiskDiagnosticLocationSummary'
-  source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'; // Where the download was triggered from
+  source?: 'listDetails' | 'landing' | 'diagnostics'; // Where the download was triggered from
 }
 
 @Injectable()
@@ -84,13 +84,10 @@ export class DownloadActivityLogService {
     }
   }
 
-  private getActivityTypeId(
-    source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'
-  ): number {
+  private getActivityTypeId(source?: 'listDetails' | 'landing' | 'diagnostics'): number {
     const sourceToActivityTypeMap = {
       listDetails: ListActivityTypesEnum.ListDetailsDownload,
       landing: ListActivityTypesEnum.ListLandingDownload,
-      dashboard: ListActivityTypesEnum.ListDashboardDownload,
       diagnostics: ListActivityTypesEnum.ListDiagnosticsDownload,
     };
 
@@ -110,7 +107,7 @@ export class DownloadActivityLogService {
     fileType: 'csv' | 'shapefile' | 'json',
     downloadType: string,
     analysisType?: string,
-    source?: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'
+    source?: 'listDetails' | 'landing' | 'diagnostics'
   ): string {
     const fileTypeDisplay =
       fileType === 'csv' ? 'CSV' : fileType === 'shapefile' ? 'Shapefile' : 'JSON';
@@ -129,13 +126,10 @@ export class DownloadActivityLogService {
     return description;
   }
 
-  private getSourceDisplayName(
-    source: 'listDetails' | 'landing' | 'dashboard' | 'diagnostics'
-  ): string {
+  private getSourceDisplayName(source: 'listDetails' | 'landing' | 'diagnostics'): string {
     const displayNames = {
       listDetails: 'List Details',
       landing: 'Landing Page',
-      dashboard: 'Dashboard',
       diagnostics: 'Diagnostics',
     };
     return displayNames[source] || 'Unknown';

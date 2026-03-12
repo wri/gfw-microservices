@@ -2,25 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AlertsRepository } from './alerts.repository';
 import { ClientStoreConnection } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { GFWList } from '@wri-monorepos/sql';
-import { Repository } from 'typeorm';
 import { DashboardDataType, CountDashboardDataType } from '@wri-monorepos/sql';
 
 describe('AlertsRepository', () => {
   let repository: AlertsRepository;
   let configService: jest.Mocked<ConfigService>;
-  let gfwListRepository: jest.Mocked<Repository<GFWList>>;
-
-  const mockGFWList: Partial<GFWList> = {
-    id: 1,
-    listName: 'Test List',
-    listTableName: 'test_table',
-    listAnalysisTableName: 'test_analysis',
-    listStatusId: 1,
-    dashboardLastResults: new Date(),
-    dashboardLastSubmit: new Date(),
-  };
 
   const mockDashboardData: DashboardDataType[] = [
     {
@@ -74,62 +60,11 @@ describe('AlertsRepository', () => {
             get: jest.fn(),
           },
         },
-        {
-          provide: getRepositoryToken(GFWList, 'default'),
-          useValue: {
-            findOne: jest.fn(),
-          },
-        },
       ],
     }).compile();
 
     repository = module.get<AlertsRepository>(AlertsRepository);
     configService = module.get(ConfigService);
-    gfwListRepository = module.get(getRepositoryToken(GFWList, 'default'));
-  });
-
-  describe('findDashboardDataByListId', () => {
-    it('should return dashboard data for a given list ID', async () => {
-      const listId = 1;
-      const clientDatabase = 'test-db';
-
-      jest
-        .spyOn(repository as AlertsRepository, 'findDashboardDataByListId')
-        .mockResolvedValue(mockDashboardData);
-
-      const result = await repository.findDashboardDataByListId(listId, clientDatabase);
-
-      expect(result).toEqual(mockDashboardData);
-    });
-  });
-
-  describe('findGFWListDashboardDataByListId', () => {
-    it('should return GFW list dashboard data for a given list ID', async () => {
-      const listId = 1;
-      configService.get.mockReturnValue('gfw-db');
-
-      jest
-        .spyOn(repository as AlertsRepository, 'findGFWListDashboardDataByListId')
-        .mockResolvedValue(mockDashboardData);
-
-      const result = await repository.findGFWListDashboardDataByListId(listId);
-
-      expect(result).toEqual(mockDashboardData);
-    });
-  });
-
-  describe('findGFWListDashboardTimestampByListId', () => {
-    it('should return dashboard timestamps for a GFW list', async () => {
-      const listId = 1;
-      gfwListRepository.findOne.mockResolvedValue(mockGFWList as GFWList);
-
-      const result = await repository.findGFWListDashboardTimestampByListId(listId);
-
-      expect(result).toEqual({
-        dashboardLastResults: mockGFWList.dashboardLastResults,
-        dashboardLastSubmit: mockGFWList.dashboardLastSubmit,
-      });
-    });
   });
 
   describe('countDashboardData', () => {
@@ -202,35 +137,6 @@ describe('AlertsRepository', () => {
       );
 
       expect(result).toEqual(mockDashboardData);
-    });
-  });
-
-  describe('findDashboardTimestampByListId', () => {
-    it('should return dashboard timestamps for a client list', async () => {
-      const listId = 1;
-      const clientDatabase = 'test-db';
-      const mockList = {
-        dashboardLastResults: new Date(),
-        dashboardLastSubmit: new Date(),
-      };
-
-      const mockConnection = {
-        getRepository: jest.fn().mockReturnValue({
-          findOne: jest.fn().mockResolvedValue(mockList),
-        }),
-      };
-
-      jest
-        .spyOn(repository as any, 'createOrganizationConnection')
-        .mockResolvedValue(mockConnection);
-
-      const result = await repository.findDashboardTimestampByListId(listId, clientDatabase);
-
-      expect(result).toEqual({
-        dashboardLastResults: mockList.dashboardLastResults,
-        dashboardLastSubmit: mockList.dashboardLastSubmit,
-      });
-      expect(repository['createOrganizationConnection']).toHaveBeenCalledWith(clientDatabase);
     });
   });
 });

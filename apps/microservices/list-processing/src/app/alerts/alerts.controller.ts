@@ -23,34 +23,6 @@ const GFWPaginatedQuerySchema = z.object({
 export class AlertsController {
   constructor(private readonly alertsService: AlertsService) {}
 
-  @Get(':listID/dashboardData')
-  async getDashboardData(
-    @Param('listID') listID: number,
-    @Query(new ZodValidationPipe(DatabaseQuerySchema)) query: DatabaseQueryParam
-  ) {
-    const { clientDatabase } = query;
-    return await this.alertsService.getDashboardData(listID, clientDatabase);
-  }
-
-  @Get(':listID/GFWListDashboardData')
-  async getGFWListDashboardData(@Param('listID') listID: number) {
-    return await this.alertsService.getGFWListDashboardData(listID);
-  }
-
-  @Get(':listID/GFWListDashboardDataTimestamp')
-  getGFWListDashboardTimestamp(@Param('listID') listID: number) {
-    return this.alertsService.getGFWListDashboardTimestamp(listID);
-  }
-
-  @Get(':listID/dashboardDataTimestamp')
-  getDashboardTimestamp(
-    @Param('listID') listID: number,
-    @Query(new ZodValidationPipe(DatabaseQuerySchema)) query: DatabaseQueryParam
-  ) {
-    const { clientDatabase } = query;
-    return this.alertsService.getDashboardTimestamp(listID, clientDatabase);
-  }
-
   @Get(':listID/countGFWDashboardData')
   async countGFWDashboardData(@Param('listID') listID: number) {
     return await this.alertsService.countGFWDashboardData(listID);

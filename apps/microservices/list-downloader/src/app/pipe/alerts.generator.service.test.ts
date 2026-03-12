@@ -193,4 +193,23 @@ describe('AlertsGeneratorService', () => {
     expect(mockFilters.startDate).toEqual(format(subDays(fixedDate, 1), 'yyyy-MM-dd 00:00:00'));
     expect(mockFilters.endDate).toEqual(format(endOfDay(fixedDate), 'yyyy-MM-dd 23:59:59'));
   });
+
+  it('should coerce non-DAY selectedTimeframe to DAY', async () => {
+    const mockFilters: AlertFieldsFileRequest = {
+      listId: 123,
+      selectedTimeframe: AlertsTimeframes.WEEK,
+      selectedAlert: '',
+      key: 'example-key',
+      listName: 'Alerts_Week',
+      startDate: '2026-01-01 00:00:00',
+      endDate: '2026-01-07 23:59:59',
+    };
+
+    mockAlertsDataService.getNumberOfPages.mockResolvedValue(1);
+    mockAlertsDataService.getDataPaginated.mockResolvedValue([]);
+
+    await service.makeFile(mockFilters);
+
+    expect(mockFilters.selectedTimeframe).toEqual(AlertsTimeframes.DAY);
+  });
 });

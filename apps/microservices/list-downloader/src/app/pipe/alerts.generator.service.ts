@@ -24,8 +24,9 @@ export class AlertsGeneratorService extends IFileGenerator {
 
     if (selectedTimeframe && selectedTimeframe !== AlertsTimeframes.DAY) {
       this.logger.warn(
-        `(${listId}) - Only DAY timeframe is supported for alerts export. Received: ${selectedTimeframe}`
+        `(${listId}) - Only DAY timeframe is supported for alerts export. Received: ${selectedTimeframe}. Coercing to DAY.`
       );
+      filters.selectedTimeframe = AlertsTimeframes.DAY;
     }
 
     if (!startDate || !endDate) {

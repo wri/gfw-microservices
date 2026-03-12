@@ -72,6 +72,8 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       analysisTable,
       saveAsDraft: isSavingAsDraft,
       analysisIds,
+      organization_id: organizationId,
+      options,
     } = request.request as RequestNewList;
 
     this.logger.log(`Creating list table ${listTable} in ${organizationDatabase}`);
@@ -87,7 +89,14 @@ export class CreateLocationSchema extends AbstractHandler<ChainType> {
       `Creating analysis status records for list ${listId} in ${organizationDatabase}`
     );
 
-    await setListAnalysisStatus(organizationDatabase, listId, analysisIds, listStatusId);
+    await setListAnalysisStatus(
+      organizationDatabase,
+      listId,
+      analysisIds,
+      listStatusId,
+      organizationId,
+      options
+    );
     this.logger.log(
       `Created analysis status records for list ${listId} in ${organizationDatabase}`
     );

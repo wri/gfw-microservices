@@ -550,6 +550,7 @@ export class ListAnalysisService {
         startAnalysis: true,
         isExternalAPIProcess: true,
         saveAsDraft: false,
+        options: newListDetails.options, // Pass options for analysis configuration
       });
       this.logger.log('Event analysis response: ', processListResponse.data);
 

@@ -15,20 +15,15 @@ const mockedGetAllFilesAndZip = getAllFilesAndZip as jest.MockedFunction<typeof 
 describe('AlertsFileService', () => {
   let service: AlertsFileService;
   let alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService;
-  let clientStoreConnection: ClientStoreConnection;
 
   beforeEach(() => {
     mockedGetAllFilesAndZip.mockReset();
     mockedGetAllFilesAndZip.mockResolvedValue('ok');
 
-    clientStoreConnection = new ClientStoreConnection();
     alertsGlobalIntegratedDisturbanceDailyService =
       new AlertsGlobalIntegratedDisturbanceDailyService(new ClientStoreConnection());
 
-    service = new AlertsFileService(
-      alertsGlobalIntegratedDisturbanceDailyService,
-      clientStoreConnection
-    );
+    service = new AlertsFileService(alertsGlobalIntegratedDisturbanceDailyService);
   });
 
   it('should be defined', () => {

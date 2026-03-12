@@ -37,6 +37,7 @@ describe('AlertsGeneratorService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
   it('should call all necessary methods in makeFile', async () => {
@@ -143,6 +144,9 @@ describe('AlertsGeneratorService', () => {
   });
 
   it('should set startDate and endDate if not provided in filters', async () => {
+    const fixedDate = new Date('2026-03-12T12:00:00Z');
+    jest.useFakeTimers({ now: fixedDate });
+
     const mockFilters: AlertFieldsFileRequest = {
       listId: 123,
       selectedTimeframe: AlertsTimeframes.DAY,
@@ -186,7 +190,7 @@ describe('AlertsGeneratorService', () => {
 
     await service.makeFile(mockFilters);
 
-    expect(mockFilters.startDate).toEqual(format(subDays(new Date(), 1), 'yyyy-MM-dd 00:00:00'));
-    expect(mockFilters.endDate).toEqual(format(endOfDay(new Date()), 'yyyy-MM-dd 23:59:59'));
+    expect(mockFilters.startDate).toEqual(format(subDays(fixedDate, 1), 'yyyy-MM-dd 00:00:00'));
+    expect(mockFilters.endDate).toEqual(format(endOfDay(fixedDate), 'yyyy-MM-dd 23:59:59'));
   });
 });

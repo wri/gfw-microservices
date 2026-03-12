@@ -1,9 +1,5 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
-import {
-  AlertFieldsFileRequest,
-  ClientStoreConnection,
-  DashboardDataType,
-} from '@wri-monorepos/sql';
+import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
@@ -16,8 +12,7 @@ export class AlertsFileService extends IPipeService {
   private readonly logger = new Logger(AlertsFileService.name);
 
   constructor(
-    private readonly alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService,
-    private readonly clientStoreConnection: ClientStoreConnection
+    private readonly alertsGlobalIntegratedDisturbanceDailyService: AlertsGlobalIntegratedDisturbanceDailyService
   ) {
     super();
   }

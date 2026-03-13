@@ -22,7 +22,11 @@ export default class ControlPanel extends Component {
           <svg>
             <use xlinkHref="#icon-warning" />
           </svg>
-          <p>Please turn on a Forest Change layer to analyze before using the analysis tool.</p>
+          <p>
+            In order to draw a polygon and analyze the location, please select one of the following
+            layers to enable the analysis tool: Tree cover loss, Tree cover gain, Tree biomass loss,
+            GLAD-L, GLAD-S2 or VIIRS.
+          </p>
         </div>
       </div>
     );

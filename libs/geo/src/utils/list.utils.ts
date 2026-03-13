@@ -10,6 +10,7 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -227,7 +228,9 @@ export const ComposeCopyQueryStatement = async (
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
   // get valid columns from AnalysisSchema by extracting the 'name' property values
-  const validColumns = Object.values(AnalysisSchema.columns).map((column: any) => column.name);
+  const validColumns = Object.values(AnalysisSchema.columns).map(
+    (column: { name?: string }) => column.name
+  );
 
   // Extract column names and filter to include only valid ones
   const columnNames = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
@@ -452,7 +455,6 @@ export async function setListAnalysisStatus(
   let weeklyAlertsOptIn = false;
   if (organizationId) {
     try {
-      const { featureFlagsService } = await import('@wri-monorepos/shared');
       const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
       const flags = await getFeatureFlagsForCurrentOrg(organizationId!);
       weeklyAlertsOptIn = flags.some(

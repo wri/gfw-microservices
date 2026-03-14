@@ -17,6 +17,7 @@ DECLARE @PARAM NVARCHAR(max);
 DECLARE @TABLE NVARCHAR(80);
 
 BEGIN
+  SET NOCOUNT ON;
   create table #TotArea_org (
     total_area_analyzed BIGINT,
     max_area_analyzed BIGINT,
@@ -36,12 +37,11 @@ BEGIN
   FETCH NEXT FROM @MyCursor
   INTO @DBName
 
-  SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp LEFT JOIN [gfwpro].[dbo].[ChargeRate] cr ON lp.analysis_type = cr.analysis_type AND cr.effective_date = (SELECT MAX(cr2.effective_date) FROM [gfwpro].[dbo].[ChargeRate] cr2 WHERE cr2.analysis_type = lp.analysis_type AND cr2.effective_date <= lp.analysis_end_time) WHERE analysis_end_time >= ''{START_DATE}'' AND analysis_end_time <= ''{END_DATE}'' AND lp.user_id IS NOT NULL AND (lp.analysis_type <> ''GHG'' OR lp.analysis_end_time >= ''2025-11-22'') ';  SET @TABLE = '#TotArea_org'
+  SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp LEFT JOIN [gfwpro].[dbo].[ChargeRate] cr ON lp.analysis_type = cr.analysis_type AND cr.effective_date = (SELECT MAX(cr2.effective_date) FROM [gfwpro].[dbo].[ChargeRate] cr2 WHERE cr2.analysis_type = lp.analysis_type AND cr2.effective_date <= lp.analysis_end_time) WHERE analysis_end_time >= ''{START_DATE}'' AND analysis_end_time <= ''{END_DATE}'' AND lp.user_id IS NOT NULL AND (lp.analysis_type <> ''GHG'' OR lp.analysis_end_time >= ''2025-11-22'') ';
+  SET @TABLE = '#TotArea_org';
   SET @PARAM = 'ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as total_area_analyzed, ISNULL(MAX(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as max_area_analyzed, COUNT(Distinct lp.list_id) as number_of_lists_analyzed, ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' THEN 0 ELSE lp.locations_analyzed END), 0) as locations_analyzed, ISNULL(SUM((ISNULL(lp.locations_analyzed, 0) * ISNULL(cr.location_rate, 0)) + ISNULL(cr.list_rate, 0)), 0) as total_tokens, {organization} as organization_id';
 
-  PRINT @PARAM
   SET @SQL = REPLACE(@SQL, '{PARAM}', @PARAM)
-  PRINT @SQL
   SET @SQL = REPLACE(@SQL, '{TABLE}', @TABLE)
 
   WHILE @@FETCH_STATUS = 0
@@ -52,7 +52,6 @@ BEGIN
     SET @SQLQuery = REPLACE(@SQLQuery, '{START_DATE}', @startDate)
     SET @SQLQuery = REPLACE(@SQLQuery, '{END_DATE}', @endDate)
     SET @SQLQuery = REPLACE(@SQLQuery, '{organization}',  @id)
-    PRINT @SQLQuery
     BEGIN TRY
       EXEC sp_executesql @SQLQuery
     END TRY

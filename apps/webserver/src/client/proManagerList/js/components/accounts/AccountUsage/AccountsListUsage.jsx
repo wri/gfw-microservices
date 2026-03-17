@@ -20,6 +20,7 @@ import { LoadingModal } from '../../../../../components';
 import featureFlags from '../../../../../../utils/general.utils';
 
 function AccountsListUsage({ setIsLoading }) {
+  const isProManager = window.location.pathname.startsWith('/pro-manager');
   const { isTokenizationAvailable } = featureFlags;
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
@@ -87,7 +88,7 @@ function AccountsListUsage({ setIsLoading }) {
                     {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
                   </TableCell>
                   <TableCell align="right">
-                    {isTokenizationAvailable
+                    {isProManager || isTokenizationAvailable
                       ? accountProfileStrings.accountUsageLabels.tokens
                       : accountProfileStrings.accountUsageLabels.locationsAnalyzed}
                   </TableCell>

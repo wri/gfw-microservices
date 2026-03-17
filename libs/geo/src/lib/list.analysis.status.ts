@@ -117,15 +117,15 @@ export const setSelectedAnalyses = async (
 const getListName = async (organizationDatabase: string, list_id: number) => {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
-  const { listName } = await listRepository.findOne({ where: { id: list_id } });
-  return listName;
+  const list = await listRepository.findOne({ where: { id: list_id } });
+  return list?.listName ?? '';
 };
 
 const getUserEmail = async (organizationDatabase: string, user_id: number) => {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const userRepository = connection.getRepository(User);
-  const { email } = await userRepository.findOne({ where: { id: user_id } });
-  return email;
+  const user = await userRepository.findOne({ where: { id: user_id } });
+  return user?.email ?? '';
 };
 
 const checkIsTestFlow = (
@@ -299,7 +299,11 @@ export const handleCreateAnalysis = async (
       listId,
     });
 
-    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
+    const microserviceEnvironment = (
+      process.env.MICROSERVICES_ENV ||
+      process.env.NODE_ENV ||
+      ''
+    ).toUpperCase();
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
       microserviceEnvironment,
       organizationDb,
@@ -544,13 +548,17 @@ export const isGHGCommodityValid = async (
     return true;
   } catch (error) {
     Logger.error('validateYields', error.stack || error);
-    await saveAnalysisStatusErrorInfo(
-      organizationDb,
-      id,
-      error.message,
-      listStatus.Inactive,
-      'GHG'
-    );
+    try {
+      await saveAnalysisStatusErrorInfo(
+        organizationDb,
+        id,
+        error.message,
+        listStatus.Inactive,
+        'GHG'
+      );
+    } catch (saveError) {
+      Logger.error('saveAnalysisStatusErrorInfo failed', saveError.stack || saveError);
+    }
     throw new BadRequestException(error.message || error.stack || error);
   }
 };

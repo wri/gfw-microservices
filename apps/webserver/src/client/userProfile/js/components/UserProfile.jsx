@@ -721,7 +721,7 @@ export default function UserProfile(props) {
             variant="contained"
             className={`${status_id === USER_STATUS.Active ? 'button-disabled' : ''}`}
             disabled={status_id === USER_STATUS.Active}
-            onClick={activateUser}
+            onClick={() => activateUser()}
             style={{ marginRight: '10px' }}
           >
             {profilePage.profileManager.activate}

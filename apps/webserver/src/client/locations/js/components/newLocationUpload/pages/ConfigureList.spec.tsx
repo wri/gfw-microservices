@@ -374,6 +374,27 @@ describe('ConfigureList', () => {
     expect(palmRiskCheckbox).not.toBeChecked();
   }, 15100);
 
+  it('should toggle dependent checkboxes alerts and weekly alerts', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const alertsCheckbox = screen.getByRole('checkbox', {
+      name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
+    });
+    const weeklyCheckbox = screen.getByRole('checkbox', { name: /weekly alerts/i });
+
+    // Checking Weekly should auto-check ALERTS
+    await user.click(weeklyCheckbox);
+
+    expect(weeklyCheckbox).toBeChecked();
+    expect(alertsCheckbox).toBeChecked();
+
+    // Unchecking ALERTS should also uncheck Weekly
+    await user.click(alertsCheckbox);
+
+    expect(alertsCheckbox).not.toBeChecked();
+    expect(weeklyCheckbox).not.toBeChecked();
+  }, 15100);
+
   it('should go back to the previous page', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 

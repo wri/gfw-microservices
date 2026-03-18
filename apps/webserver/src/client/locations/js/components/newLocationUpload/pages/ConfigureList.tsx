@@ -653,7 +653,7 @@ const popoverHelperTextStyle: SxProps = {
 };
 
 const childOptionDescriptions: Record<string, ReactNode> = {
-  Weekly: (
+  [AlertsAnalysisFrequency.WEEKLY]: (
     <>
       Recent global integrated disturbance alerts, automatically updated weekly.
       <br />

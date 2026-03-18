@@ -457,9 +457,7 @@ export async function setListAnalysisStatus(
     try {
       const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
       const flags = await getFeatureFlagsForCurrentOrg(organizationId!);
-      weeklyAlertsOptIn = flags.some(
-        (flag) => flag.flagId === 'WeeklyAlerts' && flag.flagState
-      );
+      weeklyAlertsOptIn = flags.some((flag) => flag.flagId === 'WeeklyAlerts' && flag.flagState);
     } catch (error) {
       // If feature flag lookup fails, fall back to disabled (opt-in not required)
       weeklyAlertsOptIn = false;

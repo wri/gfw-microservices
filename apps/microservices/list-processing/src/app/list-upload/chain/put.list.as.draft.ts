@@ -29,6 +29,8 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
       list_name,
       hasUnanalyzableError = false,
       isExternalAPIProcess = false,
+      organization_id: organizationId,
+      options,
     } = request as RequestNewList;
 
     if (saveAsDraft) {
@@ -40,7 +42,14 @@ export class PutListAsDraft extends AbstractHandler<ChainType> {
 
       if (organization_database && list_id) {
         await this.putListAsDraft(organization_database, list_id);
-        await setListAnalysisStatus(organization_database, list_id, analysisIds, listStatus.Draft);
+        await setListAnalysisStatus(
+          organization_database,
+          list_id,
+          analysisIds,
+          listStatus.Draft,
+          organizationId,
+          options
+        );
 
         if (!isExternalAPIProcess && user_id) {
           const userEmail = await getUserEmail(organization_database, user_id);

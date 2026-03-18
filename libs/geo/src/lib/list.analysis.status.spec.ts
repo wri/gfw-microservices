@@ -403,6 +403,66 @@ describe('list.analysis.status.ts', () => {
       });
     });
 
+    it('should duplicate rows if analysisId=ALERTS and options=Weekly', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
+        { id: 'ALERTS', last_run: '2025-02-01T00:00:00Z' },
+      ]);
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 10,
+          analysisId: 'ALERTS',
+          options: 'Weekly',
+          status: 2,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+
+      expect(result).toHaveLength(2);
+
+      expect(result[0]).toMatchObject({
+        listId: 10,
+        analysisId: 'ALERTS',
+        options: 'Weekly',
+        status: 2,
+        analysisIdLastModifed: '2025-02-01T00:00:00Z',
+      });
+
+      expect(result[1]).toMatchObject({
+        listId: 10,
+        analysisId: 'Weekly',
+        options: 'Weekly',
+        status: 2,
+        analysisIdLastModifed: '2025-02-01T00:00:00Z',
+      });
+    });
+
+    it('should NOT duplicate rows if analysisId=ALERTS but options != Weekly', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
+        { id: 'ALERTS', last_run: '2025-02-01T00:00:00Z' },
+      ]);
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 11,
+          analysisId: 'ALERTS',
+          options: null,
+          status: 2,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        listId: 11,
+        analysisId: 'ALERTS',
+        options: null,
+        status: 2,
+        analysisIdLastModifed: '2025-02-01T00:00:00Z',
+      });
+    });
+
     it('should NOT duplicate rows if analysisId=FCD but options != PalmRisk', async () => {
       (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue(
         mockAnalysisTypesLastModifiedData

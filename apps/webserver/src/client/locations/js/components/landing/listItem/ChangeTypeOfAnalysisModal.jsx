@@ -6,6 +6,10 @@ import errorLogger from '../../../../../common/js/utils/errorLogger';
 import { PillButton } from '../../../../../components';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import {
+  analysisTypes,
+  AlertsAnalysisFrequency,
+} from '../../../../../../config/env/analysisTypes.constants';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -40,7 +44,16 @@ function ChangeTypeOfAnalysisModal({
   commodity,
   isPalmRiskActive,
 }) {
-  const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
+  const initialAnalysisSelection = [
+    ...new Set(
+      listAnalysesStatus.flatMap(({ analysisId, options }) => {
+        if (analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY) {
+          return [analysisId, AlertsAnalysisFrequency.WEEKLY];
+        }
+        return [analysisId];
+      })
+    ),
+  ];
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
   const [newAnalysesToRun, setNewAnalysesToRun] = useState([]);

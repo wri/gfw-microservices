@@ -480,8 +480,11 @@ export async function setListAnalysisStatus(
           value.options = analysisTypes.PALM_RISK;
         }
 
-        // GPV-5141 default options=Weekly for ALERTS analysis
-        if (normalizedAnalysisId === analysisTypes.ALERTS) {
+        // GPV-5141 options=Weekly for ALERTS analysis when Weekly is selected
+        if (
+          normalizedAnalysisId === analysisTypes.ALERTS &&
+          analysisIds.includes(AlertsAnalysisFrequency.WEEKLY)
+        ) {
           value.options = AlertsAnalysisFrequency.WEEKLY;
         }
 

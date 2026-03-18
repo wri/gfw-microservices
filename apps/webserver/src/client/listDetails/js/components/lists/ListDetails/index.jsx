@@ -95,7 +95,10 @@ import {
 } from '../../../../../../config/env/gfwLists.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  AlertsAnalysisFrequency,
+} from '../../../../../../config/env/analysisTypes.constants';
 import {
   FOREST_CHANGE_VIEW,
   COMMODITY_RISK_VIEW,
@@ -152,6 +155,15 @@ export default class ListDetails extends Component {
         listAnalysesStatus.push({
           analysisId: analysisTypes.PALM_RISK,
           status, // same status as FCD analysis
+        });
+      }
+
+      const isALERTSWithWeekly =
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
+      if (isALERTSWithWeekly) {
+        listAnalysesStatus.push({
+          analysisId: AlertsAnalysisFrequency.WEEKLY,
+          status,
         });
       }
     });

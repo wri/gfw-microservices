@@ -63,7 +63,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
         organizationDatabase,
         listId,
         analysisTypesToProcess,
-        listStatus.Draft
+        listStatus.Draft,
+        organizationId
       );
       this.logger.debug(`List ${listId} is set as draft so going to skip analysis`);
       return request;

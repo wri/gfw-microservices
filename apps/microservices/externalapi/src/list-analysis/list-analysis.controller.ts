@@ -149,7 +149,7 @@ export class ListAnalysisController {
     @Req() request: RequestSchema
   ) {
     new ZodValidationPipe(requestSchema).transform(request);
-    const { userEmail } = reanalyzeBody;
+    const { userEmail, options } = reanalyzeBody;
     const {
       user: { organizationId, organization_user_id },
     } = request;
@@ -158,7 +158,8 @@ export class ListAnalysisController {
       listId,
       organizationId,
       userEmail,
-      organization_user_id
+      organization_user_id,
+      options
     );
     return analysisResult;
   }

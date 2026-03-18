@@ -723,7 +723,8 @@ export class ListAnalysisService {
     listId: number,
     organizationId: number,
     userEmail: string,
-    organization_user_id: number
+    organization_user_id: number,
+    options?: string
   ) {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
@@ -742,7 +743,8 @@ export class ListAnalysisService {
         userEmail ? true : false,
         organization_user_id,
         organizationDetails.subscriptionStatusId,
-        true
+        true,
+        options
       );
       return response;
     } catch (error) {

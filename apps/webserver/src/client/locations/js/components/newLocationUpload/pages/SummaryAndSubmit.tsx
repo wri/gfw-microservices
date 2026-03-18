@@ -29,6 +29,8 @@ import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
+import featureFlags from '../../../../../../utils/general.utils';
+const { isWeeklyAlertsAvailable } = featureFlags as any;
 
 export function SummaryAndSubmit() {
   const history = useHistory();
@@ -237,7 +239,9 @@ export function SummaryAndSubmit() {
                     analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
 
                   const isWeeklyAlertsIncluded =
-                    analysis?.id === 'ALERTS' && uploadLocationState.typeOfAnalysis.Weekly;
+                    isWeeklyAlertsAvailable &&
+                    analysis?.id === 'ALERTS' &&
+                    uploadLocationState.typeOfAnalysis.Weekly;
 
                   return (
                     <li key={key}>

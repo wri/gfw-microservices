@@ -10,6 +10,7 @@ import {
   analysisTypes,
   AlertsAnalysisFrequency,
 } from '../../../../../../config/env/analysisTypes.constants';
+import featureFlags from '../../../../../../utils/general.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -44,10 +45,15 @@ function ChangeTypeOfAnalysisModal({
   commodity,
   isPalmRiskActive,
 }) {
+  const { isWeeklyAlertsAvailable } = featureFlags;
   const initialAnalysisSelection = [
     ...new Set(
       listAnalysesStatus.flatMap(({ analysisId, options }) => {
-        if (analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY) {
+        if (
+          isWeeklyAlertsAvailable &&
+          analysisId === analysisTypes.ALERTS &&
+          options === AlertsAnalysisFrequency.WEEKLY
+        ) {
           return [analysisId, AlertsAnalysisFrequency.WEEKLY];
         }
         return [analysisId];

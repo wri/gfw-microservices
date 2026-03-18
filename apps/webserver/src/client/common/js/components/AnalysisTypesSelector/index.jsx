@@ -10,6 +10,9 @@ import {
 } from '../../../../../config/env/analysisTypes.constants';
 import { HelperTextWithPopover } from '../../../../components';
 import { ExternalLinks, ReusableText } from '../../../../utils/constants';
+import featureFlags from '../../../../../utils/general.utils';
+
+const { isWeeklyAlertsAvailable } = featureFlags;
 
 import './AnalysisTypesSelector.scss';
 
@@ -47,7 +50,7 @@ function AnalysisTypesSelector({
   };
 
   const baseOptions = analysisTypesForUI.flatMap((option) => {
-    if (option.id === analysisTypes.ALERTS) {
+    if (option.id === analysisTypes.ALERTS && isWeeklyAlertsAvailable) {
       return [option, weeklyAlertsAnalysis];
     }
     if (

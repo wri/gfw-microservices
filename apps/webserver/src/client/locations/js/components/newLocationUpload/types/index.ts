@@ -17,6 +17,7 @@ export type UserList = {
   listAnalysesStatus: {
     listId: number;
     analysisId: 'FCD' | 'AFI' | 'ALERTS';
+    options?: string | null;
   }[];
 };
 

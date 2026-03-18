@@ -237,6 +237,33 @@ describe('list.analysis.status.ts', () => {
         mockExistingStatusData
       );
     });
+
+    it('should include ALERTS in analysesToAdd when Weekly is newly selected but ALERTS already exists', async () => {
+      const mockExistingStatusData = [{ analysisId: 'ALERTS', status: listStatus.Pending }];
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        ['ALERTS', 'Weekly'],
+        fakeAnalysisStatus
+      );
+
+      // ALERTS must be included so setListAnalysisStatus can update its options to 'Weekly'
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining(['Weekly', 'ALERTS']),
+        fakeAnalysisStatus
+      );
+    });
   });
 
   describe('updateListAnalysis', () => {

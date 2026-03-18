@@ -15,6 +15,7 @@ const {
 
 import { analysisTypes, listStatus, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
+import { featureFlagsService } from '@wri-monorepos/shared';
 import axios from 'axios';
 import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
@@ -165,12 +166,22 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     return res.status(400).json({ message: 'analysisIds is required' });
   }
 
-  const validAnalysisIds = new Set([
-    ...Object.values(analysisTypes),
-    AlertsAnalysisFrequency.WEEKLY,
-  ]);
-  if (selectedAnalysis.some((analysisId) => !validAnalysisIds.has(analysisId))) {
-    return res.status(400).json({ message: 'analysisIds is not valid' });
+  const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+    await featureFlagsService();
+  const orgId = await getClientIdByClientStoreDatabaseName(organization_database);
+  const orgFlags = await getFeatureFlagsForCurrentOrg(orgId);
+  const isWeeklyAlertsEnabled = orgFlags.some(
+    (f) => f.flagId === 'WeeklyAlerts' && f.flagState === true
+  );
+
+  if (selectedAnalysis && selectedAnalysis.length > 0) {
+    const validAnalysisIds = new Set([
+      ...Object.values(analysisTypes),
+      ...(isWeeklyAlertsEnabled ? [AlertsAnalysisFrequency.WEEKLY] : []),
+    ]);
+    if (selectedAnalysis.some((analysisId) => !validAnalysisIds.has(analysisId))) {
+      return res.status(400).json({ message: 'analysisIds is not valid' });
+    }
   }
 
   try {

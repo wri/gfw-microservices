@@ -80,6 +80,8 @@ import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
 
+import featureFlags from '../../../../../../utils/general.utils';
+
 // STYLE
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
@@ -159,7 +161,9 @@ export default class ListDetails extends Component {
       }
 
       const isALERTSWithWeekly =
-        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
+        featureFlags.isWeeklyAlertsAvailable &&
+        analysisId === analysisTypes.ALERTS &&
+        options === AlertsAnalysisFrequency.WEEKLY;
       if (isALERTSWithWeekly) {
         listAnalysesStatus.push({
           analysisId: AlertsAnalysisFrequency.WEEKLY,

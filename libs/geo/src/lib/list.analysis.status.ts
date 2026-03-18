@@ -104,8 +104,22 @@ export const setSelectedAnalyses = async (
   const existingIds = new Set(currentAnalyses.map((a) => a.analysisId));
 
   // Filter out which ones are actually new (not already selected in the list)
-  const analysesToAdd = selectedAnalysisIds.filter((id) => !existingIds.has(id));
+  let analysesToAdd = selectedAnalysisIds.filter((id) => !existingIds.has(id));
 
+  // When a child option (Weekly/PalmRisk) is newly being added but its parent already
+  // exists, force-include the parent so its 'options' field gets updated in the DB.
+  if (
+    analysesToAdd.includes(AlertsAnalysisFrequency.WEEKLY) &&
+    existingIds.has(analysisTypes.ALERTS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.ALERTS];
+  }
+  if (
+    analysesToAdd.includes(analysisTypes.PALM_RISK) &&
+    existingIds.has(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.FOREST_CHANGE_DIAGNOSTICS];
+  }
   // Delete the ones that are no longer selected
   await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, currentAnalyses);
 

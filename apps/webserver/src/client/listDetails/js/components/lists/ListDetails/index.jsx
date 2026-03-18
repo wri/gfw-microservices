@@ -154,6 +154,14 @@ export default class ListDetails extends Component {
           status, // same status as FCD analysis
         });
       }
+
+      const isALERTSWithWeekly = analysisId === analysisTypes.ALERTS && options === 'Weekly';
+      if (isALERTSWithWeekly) {
+        listAnalysesStatus.push({
+          analysisId: 'Weekly',
+          status,
+        });
+      }
     });
 
     const {

@@ -41,6 +41,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
       ALERTS: true,
       FCD: true,
       PalmRisk: true,
+      Weekly: false,
     },
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: 1.1, longitude: 1.1 }],
@@ -437,7 +438,7 @@ describe('ConfigureList', () => {
 
     await user.click(
       screen.getByRole('checkbox', {
-        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
+        name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
       })
     );
 
@@ -453,6 +454,7 @@ describe('ConfigureList', () => {
         FCD: false,
         AFI: false,
         ALERTS: true,
+        Weekly: false,
       },
     });
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
@@ -499,11 +501,12 @@ describe('ConfigureList', () => {
     );
   }, 15100);
 
-  it('should only show the three available types of analysis', () => {
+  it('should show the available types of analysis including Weekly Alerts', () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const amountOfTypesOfAnalysis = screen.getAllByRole('checkbox');
 
-    expect(amountOfTypesOfAnalysis.length).toBe(3);
+    // AFI, ALERTS, Weekly, FCD (PalmRisk only shows for Palm oil)
+    expect(amountOfTypesOfAnalysis.length).toBe(4);
   });
 });

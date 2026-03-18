@@ -23,6 +23,7 @@ import {
   analysisTypes,
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
+  AlertsAnalysisFrequency,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -416,8 +417,13 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
       const isFCDWithPalmRisk =
         analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
         options === analysisTypes.PALM_RISK;
+      const isALERTSWithWeekly =
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
+
       const analysisIdsToPush = isFCDWithPalmRisk
-        ? [analysisId, analysisTypes.PALM_RISK] // FCD with PalmRisk sub-analysis
+        ? [analysisId, analysisTypes.PALM_RISK]
+        : isALERTSWithWeekly
+        ? [analysisId, AlertsAnalysisFrequency.WEEKLY]
         : [analysisId];
 
       for (const id of analysisIdsToPush) {

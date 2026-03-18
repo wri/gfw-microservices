@@ -40,7 +40,12 @@ function ChangeTypeOfAnalysisModal({
   commodity,
   isPalmRiskActive,
 }) {
-  const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
+  const initialAnalysisSelection = listAnalysesStatus.flatMap(({ analysisId, options }) => {
+    if (analysisId === 'ALERTS' && options === 'Weekly') {
+      return [analysisId, 'Weekly'];
+    }
+    return [analysisId];
+  });
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
   const [newAnalysesToRun, setNewAnalysesToRun] = useState([]);

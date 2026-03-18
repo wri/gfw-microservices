@@ -7,6 +7,7 @@ export const listUploadNewRequestSchema = z.object({
   listName: z.string(),
   analysisIDs: analysisIdsCsvSchema,
   commodity: z.string().max(150),
+  options: z.string().optional(),
 });
 
 export type ListUploadNewRequestSchema = z.infer<typeof listUploadNewRequestSchema>;
@@ -19,6 +20,8 @@ export class ListUploadNewRequest {
   analysisIDs: string;
   @ApiProperty()
   commodity: string;
+  @ApiProperty({ required: false })
+  options?: string;
 }
 
 export class ListUploadNewResponse {

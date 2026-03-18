@@ -540,11 +540,20 @@ export async function setListAnalysisStatusByTypes(
   clientDatabase: string,
   listId: number,
   analysisTypesToProcess: string,
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  organizationId?: number,
+  options?: string
 ) {
   const analysisTypesToUpdate = analysisTypesToProcess
     .split(',')
     .map((type) => type.trim())
     .filter(Boolean);
-  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status);
+  return await setListAnalysisStatus(
+    clientDatabase,
+    listId,
+    analysisTypesToUpdate,
+    status,
+    organizationId,
+    options
+  );
 }

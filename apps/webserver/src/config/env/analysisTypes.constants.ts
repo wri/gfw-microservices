@@ -26,7 +26,7 @@ export const analysisTypesOptionsNewNames = [
     id: analysisTypes.ALERTS,
     label: 'Recent Disturbance Alerts',
     shortLabel: 'Alerts',
-    description: 'Recent disturbance alerts, updated weekly',
+    description: 'Recent global integrated disturbance alerts for one time analysis.',
     showInUI: true,
   },
   {
@@ -60,9 +60,9 @@ export enum AlertsAnalysisFrequency {
 
 export const weeklyAlertsAnalysis = {
   id: AlertsAnalysisFrequency.WEEKLY,
-  label: 'Weekly',
+  label: 'Weekly Alerts',
   shortLabel: AlertsAnalysisFrequency.WEEKLY,
-  description: 'Recent disturbance alerts, updated weekly',
+  description: 'Recent global integrated disturbance alerts, automatically updated weekly.',
 };
 
 export const analysisIdsOptionsMap = {

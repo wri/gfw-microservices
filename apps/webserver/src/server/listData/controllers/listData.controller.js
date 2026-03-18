@@ -13,7 +13,7 @@ const {
   geoTrellisAnalyzeListController,
 } = require('../../geoTrellis/controllers/geoTrellis.controller');
 
-import { analysisTypes, listStatus } from '@wri-monorepos/constants';
+import { analysisTypes, listStatus, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
 import axios from 'axios';
 import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
@@ -165,7 +165,11 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     return res.status(400).json({ message: 'analysisIds is required' });
   }
 
-  if (selectedAnalysis.some((analysisId) => !Object.values(analysisTypes).includes(analysisId))) {
+  const validAnalysisIds = new Set([
+    ...Object.values(analysisTypes),
+    AlertsAnalysisFrequency.WEEKLY,
+  ]);
+  if (selectedAnalysis.some((analysisId) => !validAnalysisIds.has(analysisId))) {
     return res.status(400).json({ message: 'analysisIds is not valid' });
   }
 
@@ -176,7 +180,9 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     if (isAddingAnalysis && !saveAsDraft) {
       // Because GHG analysis is only valid via EAPI
       const analysesForGeoTrellis = newAnalysesToRun.filter(
-        (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
+        (analysisId) =>
+          analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS &&
+          analysisId !== AlertsAnalysisFrequency.WEEKLY
       );
 
       if (analysesForGeoTrellis.length === 0) {

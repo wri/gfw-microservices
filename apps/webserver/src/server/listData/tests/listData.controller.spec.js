@@ -32,6 +32,7 @@ jest.mock('../../../config/privateutils/list.utils', () => ({
 jest.mock('@wri-monorepos/constants', () => ({
   analysisTypes: { Loss: 'Loss', Density: 'Density' },
   listStatus: { Draft: 'Draft', Pending: 'Pending' },
+  AlertsAnalysisFrequency: { WEEKLY: 'Weekly' },
 }));
 
 jest.mock('@wri-monorepos/geo', () => ({

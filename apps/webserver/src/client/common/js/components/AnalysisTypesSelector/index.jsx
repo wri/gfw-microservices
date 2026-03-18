@@ -66,7 +66,12 @@ function AnalysisTypesSelector({
       Recent global integrated disturbance alerts, automatically updated weekly.
       <br />
       Selecting Weekly Alerts will deduct from available usage. Please see our{' '}
-      <Link href={ExternalLinks.PriceSheet} target="_blank" underline="none">
+      <Link
+        href={ExternalLinks.PriceSheet}
+        target="_blank"
+        rel="noopener noreferrer"
+        underline="none"
+      >
         Price Sheet
       </Link>{' '}
       for more information.

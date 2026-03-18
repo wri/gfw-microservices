@@ -658,7 +658,12 @@ const childOptionDescriptions: Record<string, ReactNode> = {
       Recent global integrated disturbance alerts, automatically updated weekly.
       <br />
       Selecting Weekly Alerts will deduct from available usage. Please see our{' '}
-      <Link href={ExternalLinks.PriceSheet} target="_blank" underline="none">
+      <Link
+        href={ExternalLinks.PriceSheet}
+        target="_blank"
+        rel="noopener noreferrer"
+        underline="none"
+      >
         Price Sheet
       </Link>{' '}
       for more information.
@@ -721,7 +726,7 @@ const listOfPopoverHelperText: Record<string, ReactNode> = {
       be applied to palm oil mills.
     </Typography>
   ),
-  Weekly: (
+  [AlertsAnalysisFrequency.WEEKLY]: (
     <Typography variant="caption">
       Weekly Alerts automatically updates your list's disturbance alerts on a weekly basis.
       Selecting this option will deduct from your available usage each week the analysis runs.

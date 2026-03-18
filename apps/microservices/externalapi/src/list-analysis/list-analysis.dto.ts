@@ -75,6 +75,8 @@ export const deleteListBodySchema = z.object({
 export class requestEmailBody {
   @ApiProperty()
   userEmail: string;
+  @ApiProperty({ required: false })
+  options?: string;
 }
 export class DeleteListRequest extends requestEmailBody {}
 export class GenerateFCDDefReportAnalyseBody extends requestEmailBody {}
@@ -95,4 +97,5 @@ export interface AnalysesGenerateRequest {
 
 export const reanalyzeAnalysisBodySchema = z.object({
   userEmail: z.string().email(),
+  options: z.string().optional(),
 });

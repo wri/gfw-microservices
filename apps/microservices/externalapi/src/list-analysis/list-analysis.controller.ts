@@ -149,7 +149,16 @@ export class ListAnalysisController {
     @Req() request: RequestSchema
   ) {
     new ZodValidationPipe(requestSchema).transform(request);
-    const { userEmail } = reanalyzeBody;
+    const { userEmail, options } = reanalyzeBody;
+
+    // Validate that options is only used with Alerts analysis
+    if (options && analysisId.toUpperCase() !== 'ALERTS') {
+      throw new HttpException(
+        'The "options" field can only be used when analysisId is "Alerts"',
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     const {
       user: { organizationId, organization_user_id },
     } = request;
@@ -158,7 +167,8 @@ export class ListAnalysisController {
       listId,
       organizationId,
       userEmail,
-      organization_user_id
+      organization_user_id,
+      options
     );
     return analysisResult;
   }

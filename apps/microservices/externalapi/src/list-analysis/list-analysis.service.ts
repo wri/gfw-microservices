@@ -467,6 +467,17 @@ export class ListAnalysisService {
       if (typeof newListDetails.commodity === 'undefined') {
         throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
       }
+
+      // Validate that options is only used with Alerts analysis
+      if (newListDetails.options) {
+        const analysisIds = newListDetails.analysisIDs; // Already an array of transformed values
+        if (!analysisIds.includes('ALERTS')) {
+          throwCustomErrorResponse(
+            'The "options" field can only be used when analysisIDs includes "Alerts"',
+            HttpStatus.BAD_REQUEST
+          );
+        }
+      }
     } catch (error) {
       return error;
     }
@@ -550,6 +561,7 @@ export class ListAnalysisService {
         startAnalysis: true,
         isExternalAPIProcess: true,
         saveAsDraft: false,
+        options: newListDetails.options, // Pass options for analysis configuration
       });
       this.logger.log('Event analysis response: ', processListResponse.data);
 
@@ -722,7 +734,8 @@ export class ListAnalysisService {
     listId: number,
     organizationId: number,
     userEmail: string,
-    organization_user_id: number
+    organization_user_id: number,
+    options?: string
   ) {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
@@ -741,7 +754,8 @@ export class ListAnalysisService {
         userEmail ? true : false,
         organization_user_id,
         organizationDetails.subscriptionStatusId,
-        true
+        true,
+        options
       );
       return response;
     } catch (error) {

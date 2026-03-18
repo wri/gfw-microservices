@@ -1,12 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service';
 import { AlertsFileService } from './alerts.file.service';
-import { AlertsHistoryService } from './alerts.history.service';
 import { AlertsGlobalIntegratedDisturbanceDailyService } from './alerts.global.integrated.disturbance.daily.service';
-import { AlertsLocationsLevelService } from './alerts.locations.level.service';
-import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
-import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
-import { AlertsSummaryService } from './alerts.summary.service';
 import { ArgentinaDeforestationService } from './argentina-deforestation.service';
 import { ArgentinaOverlapService } from './argentina.overlap.service';
 import { CommodityRiskDiagnosticLocationSummaryService } from './commodity.risk.diagnostic.location.summary.service';
@@ -40,14 +34,8 @@ import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
 @Module({
   imports: [AwsModule, SqlModule],
   providers: [
-    AlertsAdminAreasLevelService,
     AlertsFileService,
-    AlertsHistoryService,
     AlertsGlobalIntegratedDisturbanceDailyService,
-    AlertsLocationsLevelService,
-    AlertsPrioritiesAdminAreasLevelService,
-    AlertsPrioritiesLocationsLevelService,
-    AlertsSummaryService,
     ArgentinaDeforestationService,
     ArgentinaOverlapService,
     CommodityRiskDiagnosticLocationSummaryService,
@@ -78,14 +66,8 @@ import { GhgIntermediateOutputs } from './ghg.intermediate.outputs.service';
     GhgIntermediateOutputs,
   ],
   exports: [
-    AlertsAdminAreasLevelService,
     AlertsFileService,
-    AlertsHistoryService,
     AlertsGlobalIntegratedDisturbanceDailyService,
-    AlertsLocationsLevelService,
-    AlertsPrioritiesAdminAreasLevelService,
-    AlertsPrioritiesLocationsLevelService,
-    AlertsSummaryService,
     ArgentinaDeforestationService,
     ArgentinaOverlapService,
     CommodityRiskDiagnosticLocationSummaryService,

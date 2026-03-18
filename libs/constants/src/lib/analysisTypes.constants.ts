@@ -36,7 +36,7 @@ export const analysisTypesOptionsNewNames = [
     id: analysisTypes.ALERTS,
     label: 'Recent Disturbance Alerts',
     shortLabel: 'Alerts',
-    description: 'Recent disturbance alerts, updated weekly',
+    description: 'Recent global integrated disturbance alerts for one time analysis.',
     showInUI: true,
   },
   {

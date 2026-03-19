@@ -40,6 +40,17 @@ jest.mock('@wri-monorepos/geo', () => ({
   setSelectedAnalyses: jest.fn(),
 }));
 
+jest.mock('@wri-monorepos/shared', () => ({
+  featureFlagsService: jest.fn().mockResolvedValue({
+    getClientIdByClientStoreDatabaseName: jest.fn().mockResolvedValue(1),
+    getFeatureFlagsForCurrentOrg: jest
+      .fn()
+      .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
+  }),
+  retryWithDelay: (fn) => fn(),
+  isRetryableError: jest.fn().mockReturnValue(false),
+}));
+
 jest.mock('../../geoTrellis/controllers/geoTrellis.controller', () => ({
   geoTrellisAnalyzeListController: jest.fn(),
 }));
@@ -203,7 +214,7 @@ describe('listData.controller', () => {
     it('creates selection as draft', async () => {
       req.body = { selectedAnalysis: [], saveAsDraft: true };
       await setSelectedAnalysesCtrl(req, res);
-      expect(setSelectedAnalyses).toHaveBeenCalledWith('org', '1', [], listStatus.Draft);
+      expect(setSelectedAnalyses).toHaveBeenCalledWith('org', '1', [], listStatus.Draft, 1);
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         message: 'List analysis selection created successfully',
@@ -217,7 +228,8 @@ describe('listData.controller', () => {
         'org',
         '1',
         [analysisTypes.Loss],
-        listStatus.Pending
+        listStatus.Pending,
+        1
       );
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
@@ -241,7 +253,8 @@ describe('listData.controller', () => {
         'org',
         '1',
         [analysisTypes.Loss, analysisTypes.Density],
-        listStatus.Pending
+        listStatus.Pending,
+        1
       );
       expect(listUtils.getListNameSchema).toHaveBeenCalledWith(req, '1');
       expect(geoTrellisAnalyzeListController).toHaveBeenCalledWith(
@@ -268,7 +281,8 @@ describe('listData.controller', () => {
         'org',
         '1',
         [analysisTypes.Loss],
-        listStatus.Pending
+        listStatus.Pending,
+        1
       );
       expect(geoTrellisAnalyzeListController).not.toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(201);

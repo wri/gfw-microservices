@@ -1,6 +1,7 @@
 import * as AWSSES from '../../../config/privateutils/ses.utils';
 import * as logger from '../../../config/privateutils/logger.utils';
 
+import { AlertsAnalysisFrequency } from '@wri-monorepos/constants';
 import {
   extractAnalysisTypes,
   handleCreateAnalysis,
@@ -28,6 +29,9 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
 
   const listAnalysisStatusData = await getListAnalysisStatusByListId(databaseName, listID);
   const analysisIds = listAnalysisStatusData?.map(({ analysisId }) => analysisId) ?? [];
+  const weeklyOptions = analysisIds.includes(AlertsAnalysisFrequency.WEEKLY)
+    ? AlertsAnalysisFrequency.WEEKLY
+    : undefined;
 
   try {
     const result = await handleCreateAnalysis(
@@ -38,7 +42,8 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
       user_email ? true : false,
       organization_user_id,
       subscriptionStatusId,
-      reanalyze
+      reanalyze,
+      weeklyOptions
     );
 
     const analysiTypes = extractAnalysisTypes(

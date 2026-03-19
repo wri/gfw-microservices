@@ -579,6 +579,271 @@ describe('ListAnalysisService', () => {
         response: { errorDetails: 'Analysis limit reached' },
       });
     });
+
+    // GPV-5329: Remove Weekly Alerts option without triggering analysis
+    describe('GPV-5329: Remove Weekly Alerts option', () => {
+      beforeEach(() => {
+        // Clear the mock before each test in this describe block
+        (handleCreateAnalysis as jest.Mock).mockClear();
+      });
+
+      it('should remove Weekly option when options is empty string for ALERTS analysis', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 456;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockAlertsAnalysis = {
+          listId: 456,
+          analysisId: 'ALERTS',
+          options: 'Weekly',
+          status: listStatus.Active,
+        };
+
+        const mockUpdate = jest.fn().mockResolvedValue(true);
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: jest.fn().mockResolvedValue(mockAlertsAnalysis),
+            update: mockUpdate,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          '' // Empty string to trigger removal
+        );
+
+        // Should return success message
+        expect(result).toEqual({ message: 'Weekly alerts option removed successfully' });
+
+        // Should have called update with null options
+        expect(mockUpdate).toHaveBeenCalledWith(
+          { listId: 456, analysisId: 'ALERTS' },
+          { options: null }
+        );
+
+        // Should NOT have called handleCreateAnalysis
+        expect(handleCreateAnalysis).not.toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should throw NotFoundException when ALERTS analysis does not exist', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 999;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: jest.fn().mockResolvedValue(null), // No analysis found
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        await expect(
+          service.createAnalysis(
+            analysisId,
+            listId,
+            organizationId,
+            USER_EMAIL,
+            organization_user_id,
+            '' // Empty string
+          )
+        ).rejects.toThrow(NotFoundException);
+
+        await expect(
+          service.createAnalysis(
+            analysisId,
+            listId,
+            organizationId,
+            USER_EMAIL,
+            organization_user_id,
+            ''
+          )
+        ).rejects.toThrow('No ALERTS analysis found for list 999');
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should proceed with normal analysis when options is NOT empty string', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 123;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockList = {
+          listId: 123,
+          analysisId: 'ALERTS',
+          status: listStatus.Pending,
+        };
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: () => mockList,
+            update: () => true,
+            save: () => true,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const mockResponseHandleCreateAnalysis = { statusText: 'OK' };
+        (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockResponseHandleCreateAnalysis);
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          'Weekly' // Non-empty string - normal flow
+        );
+
+        // Should proceed with normal analysis
+        expect(result).toBe(mockResponseHandleCreateAnalysis);
+        expect(handleCreateAnalysis).toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should proceed with normal analysis when analysisId is NOT ALERTS', async () => {
+        const analysisId = 'FCD';
+        const listId = 123;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockList = {
+          listId: 123,
+          analysisId: 'FCD',
+          status: listStatus.Pending,
+        };
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: () => mockList,
+            update: () => true,
+            save: () => true,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const mockResponseHandleCreateAnalysis = { statusText: 'OK' };
+        (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockResponseHandleCreateAnalysis);
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          '' // Empty string but NOT ALERTS - normal flow
+        );
+
+        // Should proceed with normal analysis
+        expect(result).toBe(mockResponseHandleCreateAnalysis);
+        expect(handleCreateAnalysis).toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should proceed with normal analysis when options is undefined', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 123;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockList = {
+          listId: 123,
+          analysisId: 'ALERTS',
+          status: listStatus.Pending,
+        };
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: () => mockList,
+            update: () => true,
+            save: () => true,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const mockResponseHandleCreateAnalysis = { statusText: 'OK' };
+        (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockResponseHandleCreateAnalysis);
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id
+          // options is undefined - normal flow
+        );
+
+        // Should proceed with normal analysis
+        expect(result).toBe(mockResponseHandleCreateAnalysis);
+        expect(handleCreateAnalysis).toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should handle case-insensitive ALERTS analysis id', async () => {
+        const analysisId = 'alerts'; // lowercase
+        const listId = 456;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockAlertsAnalysis = {
+          listId: 456,
+          analysisId: 'ALERTS',
+          options: 'Weekly',
+          status: listStatus.Active,
+        };
+
+        const mockUpdate = jest.fn().mockResolvedValue(true);
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: jest.fn().mockResolvedValue(mockAlertsAnalysis),
+            update: mockUpdate,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          '' // Empty string
+        );
+
+        // Should still work with lowercase
+        expect(result).toEqual({ message: 'Weekly alerts option removed successfully' });
+        expect(mockUpdate).toHaveBeenCalled();
+        expect(handleCreateAnalysis).not.toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+    });
   });
 
   describe('generateDownloadBundle', () => {

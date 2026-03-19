@@ -728,6 +728,11 @@ export class ListAnalysisService {
   ) {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
+    if (options === '' && analysisId.toUpperCase() === 'ALERTS') {
+      await this.removeWeeklyAlertsOption(organizationDetails.organizationDb, listId);
+      return { message: 'Weekly alerts option removed successfully' };
+    }
+
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       organization_user_id,
@@ -754,6 +759,29 @@ export class ListAnalysisService {
       throw error;
     }
   }
+
+  private async removeWeeklyAlertsOption(
+    organizationDatabase: string,
+    listId: number
+  ): Promise<void> {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    // Check if the ALERTS analysis exists for this list
+    const alertsAnalysis = await listAnalysisStatusRepository.findOne({
+      where: {
+        listId: listId,
+        analysisId: 'ALERTS',
+      },
+    });
+
+    if (!alertsAnalysis) {
+      throw new NotFoundException(`No ALERTS analysis found for list ${listId}`);
+    }
+
+    // Update only the options field to NULL
+    await listAnalysisStatusRepository.update({ listId, analysisId: 'ALERTS' }, { options: null });
+  }
+
   async getGhgLocationErrors(
     listId: number,
     clientDatabase: string

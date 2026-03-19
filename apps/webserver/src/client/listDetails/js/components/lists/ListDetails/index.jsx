@@ -301,18 +301,26 @@ export default class ListDetails extends Component {
   }
 
   computeSyntheticWeeklyEntry(selectedList) {
-    if (!featureFlags.isWeeklyAlertsAvailable) return null;
+    if (!featureFlags.isWeeklyAlertsAvailable) {
+      return null;
+    }
     const listAnalysesStatus = selectedList?.listAnalysesStatus;
-    if (!listAnalysesStatus) return null;
+    if (!listAnalysesStatus) {
+      return null;
+    }
     const weeklyAlreadyAdded = listAnalysesStatus.some(
       (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
     );
-    if (weeklyAlreadyAdded) return null;
+    if (weeklyAlreadyAdded) {
+      return null;
+    }
     const alertsWithWeekly = listAnalysesStatus.find(
       ({ analysisId, options }) =>
         analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
     );
-    if (!alertsWithWeekly) return null;
+    if (!alertsWithWeekly) {
+      return null;
+    }
     return { analysisId: AlertsAnalysisFrequency.WEEKLY, status: alertsWithWeekly.status };
   }
 

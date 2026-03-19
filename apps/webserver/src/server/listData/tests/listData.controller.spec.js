@@ -47,6 +47,8 @@ jest.mock('@wri-monorepos/shared', () => ({
       .fn()
       .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
   }),
+  retryWithDelay: (fn) => fn(),
+  isRetryableError: jest.fn().mockReturnValue(false),
 }));
 
 jest.mock('../../geoTrellis/controllers/geoTrellis.controller', () => ({

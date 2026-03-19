@@ -165,4 +165,24 @@ describe('ChangeTypeOfAnalysisModal', () => {
     );
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
   });
+
+  it('does not reload when save fails with server error', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ message: 'create list analysis failed' }),
+      })
+    );
+
+    renderComponent();
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
+      })
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Submit Analysis' }));
+
+    await waitFor(() => expect(window.location.reload).not.toHaveBeenCalled());
+  });
 });

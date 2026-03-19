@@ -73,8 +73,8 @@ function ChangeTypeOfAnalysisModal({
   }, [selectedAnalysis]);
 
   const saveAnalysisSelection = useCallback(
-    (saveAsDraft = false) =>
-      fetch(`/api/list/${listId}/selectedAnalyses`, {
+    async (saveAsDraft = false) => {
+      const response = await fetch(`/api/list/${listId}/selectedAnalyses`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
@@ -84,7 +84,13 @@ function ChangeTypeOfAnalysisModal({
           isAddingAnalysis,
           newAnalysesToRun,
         }),
-      }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to save analysis selection');
+      }
+      return response;
+    },
     [selectedAnalysis, isAddingAnalysis, newAnalysesToRun]
   );
 
@@ -126,7 +132,10 @@ function ChangeTypeOfAnalysisModal({
     setSelectedAnalysis(initialAnalysisSelection);
   };
 
-  const isSelectionUnchanged = isEqual(selectedAnalysis.sort(), initialAnalysisSelection.sort());
+  const isSelectionUnchanged = isEqual(
+    [...selectedAnalysis].sort(),
+    [...initialAnalysisSelection].sort()
+  );
 
   const hasDraftInSelection = selectedAnalysis.some((analysisId) => {
     const match = listAnalysesStatus.find((item) => item.analysisId === analysisId);

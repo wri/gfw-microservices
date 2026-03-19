@@ -167,13 +167,18 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
   }
 
   try {
-    const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-      await featureFlagsService();
-    const orgId = await getClientIdByClientStoreDatabaseName(organization_database);
-    const orgFlags = await getFeatureFlagsForCurrentOrg(orgId);
-    const isWeeklyAlertsEnabled = orgFlags.some(
-      (f) => f.flagId === 'WeeklyAlerts' && f.flagState === true
-    );
+    let isWeeklyAlertsEnabled = true; // default to allowing Weekly
+    try {
+      const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+        await featureFlagsService();
+      const orgId = await getClientIdByClientStoreDatabaseName(organization_database);
+      const orgFlags = await getFeatureFlagsForCurrentOrg(orgId);
+      isWeeklyAlertsEnabled = orgFlags.some(
+        (f) => f.flagId === 'WeeklyAlerts' && f.flagState === true
+      );
+    } catch (flagError) {
+      logger.warn(`Failed to check WeeklyAlerts feature flag, defaulting to enabled: ${flagError}`);
+    }
 
     if (selectedAnalysis && selectedAnalysis.length > 0) {
       const validAnalysisIds = new Set([

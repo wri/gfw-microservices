@@ -248,6 +248,7 @@ describe('list.analysis.status.ts', () => {
 
     it('should include ALERTS in analysesToAdd when Weekly is newly selected but ALERTS already exists', async () => {
       const mockExistingStatusData = [{ analysisId: 'ALERTS', status: listStatus.Pending }];
+      const fakeOrgId = 42;
 
       jest
         .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
@@ -261,16 +262,18 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         ['ALERTS', 'Weekly'],
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        fakeOrgId
       );
 
       // ALERTS must be included so setListAnalysisStatus can update its options to 'Weekly'
+      // organizationId must be forwarded so the feature-flag check in setListAnalysisStatus works
       expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         expect.arrayContaining(['Weekly', 'ALERTS']),
         fakeAnalysisStatus,
-        undefined,
+        fakeOrgId,
         AlertsAnalysisFrequency.WEEKLY
       );
     });

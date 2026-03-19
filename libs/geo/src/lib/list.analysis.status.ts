@@ -96,7 +96,8 @@ export const setSelectedAnalyses = async (
   clientDatabase: string,
   listId: number,
   selectedAnalysisIds: string[],
-  statusToApply = listStatus.Pending
+  statusToApply = listStatus.Pending,
+  organizationId?: number
 ) => {
   const currentAnalyses = await getListAnalysisStatusByListId(clientDatabase, listId);
 
@@ -133,7 +134,7 @@ export const setSelectedAnalyses = async (
       listId,
       analysesToAdd,
       statusToApply,
-      undefined,
+      organizationId,
       weeklyOptions
     );
   }

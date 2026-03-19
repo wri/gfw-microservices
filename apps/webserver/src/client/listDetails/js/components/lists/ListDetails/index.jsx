@@ -226,6 +226,7 @@ export default class ListDetails extends Component {
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
       isDcfActive,
+      syntheticWeeklyEntry: null,
     };
   }
 
@@ -264,12 +265,18 @@ export default class ListDetails extends Component {
           (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
         );
         if (!weeklyAlreadyAdded) {
-          listAnalysesStatus.forEach(({ analysisId, options, status }) => {
-            if (analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY) {
-              listAnalysesStatus.push({ analysisId: AlertsAnalysisFrequency.WEEKLY, status });
-            }
-          });
-          this.forceUpdate();
+          const alertsWithWeekly = listAnalysesStatus.find(
+            ({ analysisId, options }) =>
+              analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
+          );
+          if (alertsWithWeekly) {
+            this.setState({
+              syntheticWeeklyEntry: {
+                analysisId: AlertsAnalysisFrequency.WEEKLY,
+                status: alertsWithWeekly.status,
+              },
+            });
+          }
         }
       }
     }
@@ -1910,7 +1917,13 @@ export default class ListDetails extends Component {
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
 
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
+    const rawListAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
+    const { syntheticWeeklyEntry } = this.state;
+    const listAnalysesStatus =
+      syntheticWeeklyEntry &&
+      !rawListAnalysesStatus.some((a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY)
+        ? [...rawListAnalysesStatus, syntheticWeeklyEntry]
+        : rawListAnalysesStatus;
 
     const isGfwList = selectedList.isGlobalForestWatchList;
 

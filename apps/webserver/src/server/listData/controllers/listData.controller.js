@@ -167,17 +167,20 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
   }
 
   try {
-    let isWeeklyAlertsEnabled = true; // default to allowing Weekly
+    let isWeeklyAlertsEnabled = false; // default to disallowing Weekly (fail closed)
+    let orgId;
     try {
       const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
         await featureFlagsService();
-      const orgId = await getClientIdByClientStoreDatabaseName(organization_database);
+      orgId = await getClientIdByClientStoreDatabaseName(organization_database);
       const orgFlags = await getFeatureFlagsForCurrentOrg(orgId);
       isWeeklyAlertsEnabled = orgFlags.some(
         (f) => f.flagId === 'WeeklyAlerts' && f.flagState === true
       );
     } catch (flagError) {
-      logger.warn(`Failed to check WeeklyAlerts feature flag, defaulting to enabled: ${flagError}`);
+      logger.warn(
+        `Failed to check WeeklyAlerts feature flag, defaulting to disabled: ${flagError}`
+      );
     }
 
     if (selectedAnalysis && selectedAnalysis.length > 0) {
@@ -191,7 +194,13 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     }
 
     const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;
-    await setSelectedAnalyses(organization_database, listId, selectedAnalysis, statusToApply);
+    await setSelectedAnalyses(
+      organization_database,
+      listId,
+      selectedAnalysis,
+      statusToApply,
+      orgId
+    );
 
     if (isAddingAnalysis && !saveAsDraft) {
       // Because GHG analysis is only valid via EAPI

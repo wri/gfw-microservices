@@ -91,7 +91,7 @@ function ChangeTypeOfAnalysisModal({
       }
       return response;
     },
-    [selectedAnalysis, isAddingAnalysis, newAnalysesToRun]
+    [listId, selectedAnalysis, isAddingAnalysis, newAnalysesToRun]
   );
 
   const saveAsDraft = async () => {

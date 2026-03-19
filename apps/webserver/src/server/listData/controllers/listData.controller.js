@@ -191,6 +191,14 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
       if (selectedAnalysis.some((analysisId) => !validAnalysisIds.has(analysisId))) {
         return res.status(400).json({ message: 'analysisIds is not valid' });
       }
+      if (
+        selectedAnalysis.includes(AlertsAnalysisFrequency.WEEKLY) &&
+        !selectedAnalysis.includes(analysisTypes.ALERTS)
+      ) {
+        return res
+          .status(400)
+          .json({ message: 'Weekly Alerts requires ALERTS to also be selected' });
+      }
     }
 
     const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;

@@ -258,27 +258,9 @@ export default class ListDetails extends Component {
 
     // Add synthetic Weekly analysis entry after mount so the feature flag is read
     // from localStorage after the async getFeatureFlags() call resolves
-    if (featureFlags.isWeeklyAlertsAvailable) {
-      const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus;
-      if (listAnalysesStatus) {
-        const weeklyAlreadyAdded = listAnalysesStatus.some(
-          (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
-        );
-        if (!weeklyAlreadyAdded) {
-          const alertsWithWeekly = listAnalysesStatus.find(
-            ({ analysisId, options }) =>
-              analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
-          );
-          if (alertsWithWeekly) {
-            this.setState({
-              syntheticWeeklyEntry: {
-                analysisId: AlertsAnalysisFrequency.WEEKLY,
-                status: alertsWithWeekly.status,
-              },
-            });
-          }
-        }
-      }
+    const syntheticWeeklyEntry = this.computeSyntheticWeeklyEntry(selectedLists[0]);
+    if (syntheticWeeklyEntry) {
+      this.setState({ syntheticWeeklyEntry });
     }
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
@@ -318,8 +300,31 @@ export default class ListDetails extends Component {
     store.dispatch(updateSelectedLocations([]));
   }
 
+  computeSyntheticWeeklyEntry(selectedList) {
+    if (!featureFlags.isWeeklyAlertsAvailable) return null;
+    const listAnalysesStatus = selectedList?.listAnalysesStatus;
+    if (!listAnalysesStatus) return null;
+    const weeklyAlreadyAdded = listAnalysesStatus.some(
+      (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (weeklyAlreadyAdded) return null;
+    const alertsWithWeekly = listAnalysesStatus.find(
+      ({ analysisId, options }) =>
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (!alertsWithWeekly) return null;
+    return { analysisId: AlertsAnalysisFrequency.WEEKLY, status: alertsWithWeekly.status };
+  }
+
   componentDidUpdate(prevProps) {
     const { listView, selectedLists, filters } = this.props;
+
+    const prevSelectedList = prevProps.selectedLists[0];
+    const currSelectedList = selectedLists[0];
+    if (prevSelectedList?.id !== currSelectedList?.id) {
+      this.setState({ syntheticWeeklyEntry: this.computeSyntheticWeeklyEntry(currSelectedList) });
+    }
+
     if (listView !== prevProps.listView) {
       const columnNames = this.refreshColumns();
 

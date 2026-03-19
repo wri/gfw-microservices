@@ -30,9 +30,9 @@ import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
 import featureFlags from '../../../../../../utils/general.utils';
-const { isWeeklyAlertsAvailable } = featureFlags as any;
 
 export function SummaryAndSubmit() {
+  const isWeeklyAlertsAvailable = (featureFlags as any).isWeeklyAlertsAvailable;
   const history = useHistory();
   const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);

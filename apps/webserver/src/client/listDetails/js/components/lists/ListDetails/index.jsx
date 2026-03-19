@@ -159,17 +159,6 @@ export default class ListDetails extends Component {
           status, // same status as FCD analysis
         });
       }
-
-      const isALERTSWithWeekly =
-        featureFlags.isWeeklyAlertsAvailable &&
-        analysisId === analysisTypes.ALERTS &&
-        options === AlertsAnalysisFrequency.WEEKLY;
-      if (isALERTSWithWeekly) {
-        listAnalysesStatus.push({
-          analysisId: AlertsAnalysisFrequency.WEEKLY,
-          status,
-        });
-      }
     });
 
     const {
@@ -266,6 +255,24 @@ export default class ListDetails extends Component {
     const { listData, filters, selectedLists } = this.props;
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
+    // Add synthetic Weekly analysis entry after mount so the feature flag is read
+    // from localStorage after the async getFeatureFlags() call resolves
+    if (featureFlags.isWeeklyAlertsAvailable) {
+      const listAnalysesStatus = selectedLists[0]?.listAnalysesStatus;
+      if (listAnalysesStatus) {
+        const weeklyAlreadyAdded = listAnalysesStatus.some(
+          (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+        );
+        if (!weeklyAlreadyAdded) {
+          listAnalysesStatus.forEach(({ analysisId, options, status }) => {
+            if (analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY) {
+              listAnalysesStatus.push({ analysisId: AlertsAnalysisFrequency.WEEKLY, status });
+            }
+          });
+          this.forceUpdate();
+        }
+      }
+    }
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
       event_label: 'Accessed List: ' + list_name,

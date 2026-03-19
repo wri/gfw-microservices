@@ -12,8 +12,6 @@ import { HelperTextWithPopover } from '../../../../components';
 import { ExternalLinks, ReusableText } from '../../../../utils/constants';
 import featureFlags from '../../../../../utils/general.utils';
 
-const { isWeeklyAlertsAvailable } = featureFlags;
-
 import './AnalysisTypesSelector.scss';
 
 const getUpdatedSelection = (selectedAnalyses, selectedAnalysisId) => {
@@ -50,7 +48,7 @@ function AnalysisTypesSelector({
   };
 
   const baseOptions = analysisTypesForUI.flatMap((option) => {
-    if (option.id === analysisTypes.ALERTS && isWeeklyAlertsAvailable) {
+    if (option.id === analysisTypes.ALERTS && featureFlags.isWeeklyAlertsAvailable) {
       return [option, weeklyAlertsAnalysis];
     }
     if (

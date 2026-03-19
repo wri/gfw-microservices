@@ -42,8 +42,6 @@ import { listNameSchema } from '../utils/schema';
 import { DATA_CY, ExternalLinks, ReusableText } from '../../../../../utils/constants';
 import featureFlags from '../../../../../../utils/general.utils';
 
-const { isWeeklyAlertsAvailable } = featureFlags as any;
-
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
 
@@ -238,10 +236,13 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         // Raw DB data stores child options on the parent row's 'options' field,
         // not as separate rows. Match PalmRisk/Weekly from parent options when no direct row found.
         if (!found && typeOfAnalysis.id === AlertsAnalysisFrequency.WEEKLY) {
-          found = template.listAnalysesStatus.find(
-            (x) =>
-              x.analysisId === analysisTypes.ALERTS && x.options === AlertsAnalysisFrequency.WEEKLY
-          );
+          found =
+            (featureFlags as any).isWeeklyAlertsAvailable &&
+            template.listAnalysesStatus.find(
+              (x) =>
+                x.analysisId === analysisTypes.ALERTS &&
+                x.options === AlertsAnalysisFrequency.WEEKLY
+            );
         }
         if (!found && typeOfAnalysis.id === analysisTypes.PALM_RISK) {
           found = template.listAnalysesStatus.find(
@@ -509,7 +510,11 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2, width: 'fit-content' }}>
           {typeOfAnalysisMap
             .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
-            .filter((x) => isWeeklyAlertsAvailable || x.id !== AlertsAnalysisFrequency.WEEKLY)
+            .filter(
+              (x) =>
+                (featureFlags as any).isWeeklyAlertsAvailable ||
+                x.id !== AlertsAnalysisFrequency.WEEKLY
+            )
             .map(({ id, label, description }) => {
               const isPalmRisk = id === analysisTypes.PALM_RISK;
               const isWeeklyAlerts = id === AlertsAnalysisFrequency.WEEKLY;

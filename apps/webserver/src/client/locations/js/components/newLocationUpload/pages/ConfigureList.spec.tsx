@@ -26,6 +26,11 @@ jest.mock('@mui/material', () => ({
   Dialog: () => <div data-testid="mock-dialog" />,
 }));
 
+jest.mock('../../../../../../utils/general.utils', () => ({
+  __esModule: true,
+  default: { isWeeklyAlertsAvailable: true },
+}));
+
 jest.mock('../contexts');
 const mockSetUploadLocationConfigureList = jest.fn();
 const mockClearUploadType = jest.fn();

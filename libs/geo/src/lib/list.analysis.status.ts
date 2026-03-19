@@ -125,7 +125,17 @@ export const setSelectedAnalyses = async (
 
   // Only insert/update the new ones
   if (analysesToAdd.length > 0) {
-    await setListAnalysisStatus(clientDatabase, listId, analysesToAdd, statusToApply);
+    const weeklyOptions = selectedAnalysisIds.includes(AlertsAnalysisFrequency.WEEKLY)
+      ? AlertsAnalysisFrequency.WEEKLY
+      : undefined;
+    await setListAnalysisStatus(
+      clientDatabase,
+      listId,
+      analysesToAdd,
+      statusToApply,
+      undefined,
+      weeklyOptions
+    );
   }
 };
 

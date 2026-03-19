@@ -18,7 +18,11 @@ import {
   upgradeListSchema,
 } from '@wri-monorepos/sql';
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
-import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
+import {
+  analysisTypesOptionsNewNames,
+  listStatus,
+  AlertsAnalysisFrequency,
+} from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 import * as LU from '../utils/list.utils';
 const getListAnalysisStatus = LU.getListAnalysisStatus;
@@ -192,7 +196,9 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         fakeAnalysisIds,
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        undefined
       );
       expect(updateListAnalysisSpy).not.toHaveBeenCalled();
     });
@@ -226,7 +232,9 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         ['NewAnalysis'],
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        undefined
       );
 
       // Should call deleteListAnalyses with all selected analysis IDs and existing data
@@ -261,7 +269,9 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         expect.arrayContaining(['Weekly', 'ALERTS']),
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        AlertsAnalysisFrequency.WEEKLY
       );
     });
   });

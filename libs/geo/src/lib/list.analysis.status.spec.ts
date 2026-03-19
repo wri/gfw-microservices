@@ -18,7 +18,11 @@ import {
   upgradeListSchema,
 } from '@wri-monorepos/sql';
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
-import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
+import {
+  analysisTypesOptionsNewNames,
+  listStatus,
+  AlertsAnalysisFrequency,
+} from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 import * as LU from '../utils/list.utils';
 const getListAnalysisStatus = LU.getListAnalysisStatus;
@@ -192,7 +196,9 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         fakeAnalysisIds,
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        undefined
       );
       expect(updateListAnalysisSpy).not.toHaveBeenCalled();
     });
@@ -226,7 +232,9 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         ['NewAnalysis'],
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        undefined
       );
 
       // Should call deleteListAnalyses with all selected analysis IDs and existing data
@@ -235,6 +243,38 @@ describe('list.analysis.status.ts', () => {
         fakeListId,
         newAnalysisIds,
         mockExistingStatusData
+      );
+    });
+
+    it('should include ALERTS in analysesToAdd when Weekly is newly selected but ALERTS already exists', async () => {
+      const mockExistingStatusData = [{ analysisId: 'ALERTS', status: listStatus.Pending }];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        ['ALERTS', 'Weekly'],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // ALERTS must be included so setListAnalysisStatus can update its options to 'Weekly'
+      // organizationId must be forwarded so the feature-flag check in setListAnalysisStatus works
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining(['Weekly', 'ALERTS']),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        AlertsAnalysisFrequency.WEEKLY
       );
     });
   });

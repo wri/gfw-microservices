@@ -80,6 +80,8 @@ import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
 
+import featureFlags from '../../../../../../utils/general.utils';
+
 // STYLE
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
@@ -157,15 +159,6 @@ export default class ListDetails extends Component {
           status, // same status as FCD analysis
         });
       }
-
-      const isALERTSWithWeekly =
-        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
-      if (isALERTSWithWeekly) {
-        listAnalysesStatus.push({
-          analysisId: AlertsAnalysisFrequency.WEEKLY,
-          status,
-        });
-      }
     });
 
     const {
@@ -233,6 +226,7 @@ export default class ListDetails extends Component {
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
       isDcfActive,
+      syntheticWeeklyEntry: null,
     };
   }
 
@@ -262,6 +256,12 @@ export default class ListDetails extends Component {
     const { listData, filters, selectedLists } = this.props;
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
+    // Add synthetic Weekly analysis entry after mount so the feature flag is read
+    // from localStorage after the async getFeatureFlags() call resolves
+    const syntheticWeeklyEntry = this.computeSyntheticWeeklyEntry(selectedLists[0]);
+    if (syntheticWeeklyEntry) {
+      this.setState({ syntheticWeeklyEntry });
+    }
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
       event_label: 'Accessed List: ' + list_name,
@@ -300,8 +300,39 @@ export default class ListDetails extends Component {
     store.dispatch(updateSelectedLocations([]));
   }
 
+  computeSyntheticWeeklyEntry(selectedList) {
+    if (!featureFlags.isWeeklyAlertsAvailable) {
+      return null;
+    }
+    const listAnalysesStatus = selectedList?.listAnalysesStatus;
+    if (!listAnalysesStatus) {
+      return null;
+    }
+    const weeklyAlreadyAdded = listAnalysesStatus.some(
+      (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (weeklyAlreadyAdded) {
+      return null;
+    }
+    const alertsWithWeekly = listAnalysesStatus.find(
+      ({ analysisId, options }) =>
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (!alertsWithWeekly) {
+      return null;
+    }
+    return { analysisId: AlertsAnalysisFrequency.WEEKLY, status: alertsWithWeekly.status };
+  }
+
   componentDidUpdate(prevProps) {
     const { listView, selectedLists, filters } = this.props;
+
+    const prevSelectedList = prevProps.selectedLists[0];
+    const currSelectedList = selectedLists[0];
+    if (prevSelectedList?.id !== currSelectedList?.id) {
+      this.setState({ syntheticWeeklyEntry: this.computeSyntheticWeeklyEntry(currSelectedList) });
+    }
+
     if (listView !== prevProps.listView) {
       const columnNames = this.refreshColumns();
 
@@ -1899,7 +1930,13 @@ export default class ListDetails extends Component {
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
 
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
+    const rawListAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
+    const { syntheticWeeklyEntry } = this.state;
+    const listAnalysesStatus =
+      syntheticWeeklyEntry &&
+      !rawListAnalysesStatus.some((a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY)
+        ? [...rawListAnalysesStatus, syntheticWeeklyEntry]
+        : rawListAnalysesStatus;
 
     const isGfwList = selectedList.isGlobalForestWatchList;
 

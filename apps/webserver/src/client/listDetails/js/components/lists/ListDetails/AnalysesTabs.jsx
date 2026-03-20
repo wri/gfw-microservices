@@ -19,7 +19,33 @@ function AnalysesTabs({
   listViewOptions,
   listAnalysesStatus,
   hasLocationWithErrors,
+  staleAnalysisIds = [],
 }) {
+  const viewToAnalysisId = {
+    [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
+    [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+    [COMMODITY_RISK_VIEW]: analysisTypes.PALM_RISK,
+  };
+
+  const getStaleIndicator = (view) => {
+    const analysisId = viewToAnalysisId[view];
+    if (staleAnalysisIds.includes(analysisId)) {
+      return (
+        <span
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            backgroundColor: '#4CAF50',
+            display: 'inline-block',
+            marginLeft: 4,
+          }}
+        />
+      );
+    }
+    return null;
+  };
+
   const getStatusIcon = (status) => {
     switch (status) {
       case listStatus.Pending:
@@ -53,8 +79,9 @@ function AnalysesTabs({
           icon={getStatusIcon(post2020RiskAssessmentStatus)}
           iconPosition="start"
           label={
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Typography>{getAnalysisLabel(analysisTypes.DEFORESTATION_KPIS)}</Typography>
+              {getStaleIndicator(POST_2020_RISK_ASSESSMENT_VIEW)}
               <HelperTextWithPopover
                 label={<Typography x={{ fontWeight: 500 }}>EUDR</Typography>}
                 sx={{
@@ -91,7 +118,11 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"
-          label={getAnalysisLabel(analysisTypes.ALERTS)}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {getAnalysisLabel(analysisTypes.ALERTS)}
+            </Box>
+          }
           value={ALERTS}
           data-cy="alerts-tab"
           sx={{
@@ -111,7 +142,12 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"
-          label={getAnalysisLabel(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)}
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {getAnalysisLabel(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)}
+              {getStaleIndicator(FOREST_CHANGE_VIEW)}
+            </Box>
+          }
           value={FOREST_CHANGE_VIEW}
           data-cy="post-2000-tab"
           sx={{
@@ -132,7 +168,12 @@ function AnalysesTabs({
 
         <Tab
           iconPosition="start"
-          label="Palm Risk Assessment"
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              Palm Risk Assessment
+              {getStaleIndicator(COMMODITY_RISK_VIEW)}
+            </Box>
+          }
           value={COMMODITY_RISK_VIEW}
           data-cy="palm-risk-assessment-tab"
           sx={{

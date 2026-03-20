@@ -10,6 +10,8 @@ import ConfirmDialog from '../../../locations/js/components/lists/download/confi
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
+import useStaleAnalysis from '../common/useStaleAnalysis';
+import StaleAnalysisBanner from '../../../listDetails/js/components/lists/ListDetails/StaleAnalysisBanner';
 import { forestLossDatasetIds, forestLossDatasets } from './forestLossDatasets.constants';
 import '../common/DiagnosticsContainer.scss';
 import { LoadingModal } from '../../../components';
@@ -30,6 +32,8 @@ function AfiDiagnostics() {
   const locationId = parseInt(new URLSearchParams(location.search).get('locationId'), 10);
   const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
   const [selectedList, setSelectedList] = useState({});
+
+  const isStale = useStaleAnalysis(listId, analysisTypes.DEFORESTATION_KPIS);
 
   const getAfiAnalysisForListId = () => {
     // Base URL
@@ -117,6 +121,7 @@ function AfiDiagnostics() {
     <>
       <LoadingModal isLoading={isLoading} />
       {!isLoading && DiagnosticsStatusMessage}
+      {!isLoading && isStale && <StaleAnalysisBanner />}
       {!isLoading && !isListBeingAnalyzed && (
         <div style={{ backgroundColor: 'rgb(250, 250, 250)' }}>
           <DiagnosticsMenuBar

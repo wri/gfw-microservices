@@ -74,6 +74,8 @@ import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/ut
 import WrappedReactTable from './WrappedReactTable';
 import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
+import StaleAnalysisBanner, { getStaleAnalysisIds } from './StaleAnalysisBanner';
+import { fetchEnrichedAnalysisStatuses } from '../../../../../common/js/utils/selectedAnalysesCache';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
@@ -227,6 +229,7 @@ export default class ListDetails extends Component {
       forestDataset: forestDataSet.NaturalForestMap,
       isDcfActive,
       syntheticWeeklyEntry: null,
+      staleAnalysisIds: [],
     };
   }
 
@@ -298,6 +301,22 @@ export default class ListDetails extends Component {
     );
 
     store.dispatch(updateSelectedLocations([]));
+
+    this.fetchStaleAnalysisData(selectedLists[0]?.id);
+  }
+
+  fetchStaleAnalysisData(listId) {
+    if (!listId) {
+      return;
+    }
+    fetchEnrichedAnalysisStatuses(listId)
+      .then((enrichedStatuses) => {
+        const staleAnalysisIds = getStaleAnalysisIds(enrichedStatuses);
+        this.setState({ staleAnalysisIds });
+      })
+      .catch((error) => {
+        console.warn('Failed to fetch stale analysis data', error);
+      });
   }
 
   computeSyntheticWeeklyEntry(selectedList) {
@@ -1920,6 +1939,7 @@ export default class ListDetails extends Component {
       isGHGActive,
       isOnlyGHGActive,
       isDcfActive,
+      staleAnalysisIds,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -2087,6 +2107,12 @@ export default class ListDetails extends Component {
                 isListWithErrors={isListWithErrors}
                 isOnlyGHGActive={isOnlyGHGActive}
               />
+
+              {staleAnalysisIds.length > 0 && (
+                <StaleAnalysisBanner
+                  onResubmit={() => this.setState({ draftSubmitDialogOpen: true })}
+                />
+              )}
             </>
           )}
 
@@ -2320,6 +2346,7 @@ export default class ListDetails extends Component {
                           changeListView={this.changeListView}
                           listAnalysesStatus={listAnalysesStatus}
                           hasLocationWithErrors={hasLocationWithErrors}
+                          staleAnalysisIds={staleAnalysisIds}
                         />
                       )}
 

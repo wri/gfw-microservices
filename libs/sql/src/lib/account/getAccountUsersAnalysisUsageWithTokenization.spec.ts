@@ -11,9 +11,7 @@ type UsageWithTokenizationRow = {
 };
 
 type ConnectionMock = {
-  query: MockedFunction<
-    (sql: string, params?: unknown[]) => Promise<UsageWithTokenizationRow[]>
-  >;
+  query: MockedFunction<(sql: string, params?: unknown[]) => Promise<UsageWithTokenizationRow[]>>;
 };
 
 const mockQuery: MockedFunction<

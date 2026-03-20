@@ -711,7 +711,7 @@ describe('Pro Manager Utils Tests', () => {
       subscriptionStatusId: 1,
       MaxAreaPerList: 100.5,
       MaxAreaAnalyzeablePerYear: 500.25,
-      max_locations_per_year: 10,
+      tokens_per_year: 10,
     };
 
     beforeEach(() => {
@@ -736,9 +736,9 @@ describe('Pro Manager Utils Tests', () => {
           value: payload.MaxAreaAnalyzeablePerYear,
         },
         {
-          field: 'max_locations_per_year',
+          field: 'tokens_per_year',
           type: expect.anything(),
-          value: payload.max_locations_per_year,
+          value: payload.tokens_per_year,
         },
       ]);
     });
@@ -769,7 +769,7 @@ describe('Pro Manager Utils Tests', () => {
       organizationId: 10,
       MaxAreaPerList: 123.45,
       MaxAreaAnalyzeablePerYear: 678.9,
-      max_locations_per_year: 50,
+      tokens_per_year: 50,
     };
 
     beforeEach(() => {
@@ -792,9 +792,9 @@ describe('Pro Manager Utils Tests', () => {
             value: payload.MaxAreaAnalyzeablePerYear,
           },
           {
-            field: 'max_locations_per_year',
+            field: 'tokens_per_year',
             type: expect.anything(),
-            value: payload.max_locations_per_year,
+            value: payload.tokens_per_year,
           },
         ]
       );

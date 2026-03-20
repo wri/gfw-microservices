@@ -3,7 +3,7 @@
  * @param {Int} subscriptionStatusId
  * @param {Decimal} MaxAreaPerList
  * @param {Decimal} MaxAreaAnalyzeablePerYear
- * @param {Int} max_locations_per_year
+ * @param {Float} tokens_per_year
  */
-export const setGlobalAnalysisLimit = `INSERT INTO AnalysisLimits (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear, max_locations_per_year, update_time)
-VALUES (NULL, @subscriptionStatusId, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear, @max_locations_per_year, GETDATE());`;
+export const setGlobalAnalysisLimit = `INSERT INTO AnalysisLimits (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear, tokens_per_year, max_locations_per_year, update_time)
+VALUES (NULL, @subscriptionStatusId, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear, @tokens_per_year, @tokens_per_year, GETDATE());`;

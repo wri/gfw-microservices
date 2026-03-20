@@ -37,7 +37,10 @@ export async function getAccountUsersAnalysisUsage(
       parameters
     );
   } catch (error) {
-    throw new Error(error);
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error(String(error));
   }
 }
 

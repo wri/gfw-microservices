@@ -148,8 +148,9 @@ export default function AccountUsageContainer() {
       : ((locations / totalLocationsAnalyzed) * 100).toFixed(2);
   };
 
+  const totalTokens = usageDataPerUser.reduce((acc, user) => acc + user.total_tokens, 0);
+
   const getTokensPercentage = (tokens) => {
-    const totalTokens = usageDataPerUser.reduce((acc, user) => acc + user.total_tokens, 0);
     return totalTokens === 0 ? '0.00' : ((tokens / totalTokens) * 100).toFixed(2);
   };
 

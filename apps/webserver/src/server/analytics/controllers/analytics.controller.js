@@ -178,11 +178,14 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
       const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
       const orgFlags = await getFeatureFlagsForCurrentOrg(organization_id);
       isTokenizationEnabled = orgFlags.some(
-        (f) => f.flagId === 'Tokenization' && f.flagState === true
+        (f) => f.flagId === 'Tokenization' && Boolean(f.flagState)
       );
     } catch (flagError) {
       logger.warn(
-        `Failed to check Tokenization feature flag, defaulting to disabled: ${flagError}`
+        `Failed to check Tokenization feature flag, defaulting to disabled: ${
+          flagError && flagError.message ? flagError.message : flagError
+        }`,
+        flagError
       );
     }
 

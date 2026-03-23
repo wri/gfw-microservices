@@ -6,4 +6,4 @@
  * @param {Float} tokens_per_year
  */
 export const setGlobalAnalysisLimit = `INSERT INTO AnalysisLimits (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear, tokens_per_year, max_locations_per_year, update_time)
-VALUES (NULL, @subscriptionStatusId, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear, @tokens_per_year, @tokens_per_year, GETDATE());`;
+VALUES (NULL, @subscriptionStatusId, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear, @tokens_per_year, 90900900900, GETDATE());`;

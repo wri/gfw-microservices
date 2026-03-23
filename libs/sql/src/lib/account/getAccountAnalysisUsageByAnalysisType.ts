@@ -58,9 +58,9 @@ interface TokenizationResult {
 const DEFAULT_TOKENIZATION_VALUES = {
   location_rate: null,
   list_rate: null,
-  total_location_tokens: null,
-  total_list_tokens: null,
-  total_tokens: null,
+  total_location_tokens: 0,
+  total_list_tokens: 0,
+  total_tokens: 0,
   effective_rate_date: null,
 };
 

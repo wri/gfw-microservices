@@ -12,14 +12,12 @@ import AccountUsageContainer from './AccountUsageContent';
 export default function AccountUsage({
   total_area_analyzed,
   locations_analyzed,
+  total_tokens,
   maxLocations,
   maxArea,
+  maxTokens,
 }) {
   const { isTokenizationAvailable } = featureFlags;
-
-  const locationsLabel = isTokenizationAvailable
-    ? profilePage.accountUsage.tokens
-    : profilePage.accountUsage.locationsAnalyzed;
 
   const InfoBubbleLocationsAnalyzed = () => {
     if (isTokenizationAvailable) {
@@ -91,9 +89,13 @@ export default function AccountUsage({
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6}>
           <AccountUsageContainer
-            label={locationsLabel}
-            usedValue={locations_analyzed}
-            maxValue={maxLocations}
+            label={
+              isTokenizationAvailable
+                ? profilePage.accountUsage.tokens
+                : profilePage.accountUsage.locationsAnalyzed
+            }
+            usedValue={isTokenizationAvailable ? total_tokens : locations_analyzed}
+            maxValue={isTokenizationAvailable ? maxTokens : maxLocations}
             InfoBubbleContent={InfoBubbleLocationsAnalyzed}
           />
         </Grid>

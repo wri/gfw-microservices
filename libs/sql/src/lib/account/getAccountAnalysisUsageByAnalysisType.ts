@@ -45,8 +45,8 @@ const TOKENIZATION_EFFECTIVE_DATE = new Date('2025-11-22T00:00:00.000Z');
 interface TokenizationResult {
   analysis_type: string;
   total_area_analyzed: string | number;
-  total_location_tokens: string | number | null;
-  total_list_tokens: string | number | null;
+  total_location_tokens: string | number;
+  total_list_tokens: string | number;
   location_rate: string | number | null;
   list_rate: string | number | null;
   effective_rate_date: Date | null;
@@ -249,9 +249,9 @@ export async function getAccountAnalysisUsageByAnalysisType({
           // Tokenization fields
           location_rate: hasTokenData ? parseFloat(String(tokenData.location_rate)) || null : null,
           list_rate: hasTokenData ? parseFloat(String(tokenData.list_rate)) || null : null,
-          total_location_tokens: hasTokenData ? locationTokens : null,
-          total_list_tokens: hasTokenData ? listTokens : null,
-          total_tokens: hasTokenData ? locationTokens + listTokens : null,
+          total_location_tokens: hasTokenData ? locationTokens : 0,
+          total_list_tokens: hasTokenData ? listTokens : 0,
+          total_tokens: hasTokenData ? locationTokens + listTokens : 0,
           effective_rate_date: tokenData?.effective_rate_date || null,
         },
       ];

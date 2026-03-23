@@ -172,6 +172,7 @@ export default function AccountUsageContainer() {
           {...usageData}
           maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
           maxLocations={usageLimitsData?.max_locations_per_year}
+          maxTokens={usageLimitsData?.tokens_per_year}
         />
       </Box>
 

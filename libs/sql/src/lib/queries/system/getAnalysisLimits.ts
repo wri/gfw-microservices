@@ -39,9 +39,8 @@ DECLARE @SQL NVARCHAR(MAX)
                         ,ISNULL(SUM(a.tokens_per_year), 0) AS tokens_per_year
                     FROM Organizations o
                     LEFT JOIN AnalysisLimits a ON a.OrgID = o.id
-                    LEFT JOIN SubscriptionStatuses ss ON ss.id = o.subscription_status_id
                     WHERE o.id = @orgID
-                    GROUP BY a.OrgID, a.OrgType, o.organization_name, ss.status_name';
+                    GROUP BY a.OrgID, a.OrgType, o.organization_name';
 
 
 -- debug

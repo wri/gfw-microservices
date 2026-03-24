@@ -230,7 +230,18 @@
     }
   }
   a {
-    color: #97bd3d;
+    color: #404041;
+    text-decoration: underline;
+    &:hover {
+      color: #1a1919;
+    }
+    &:active {
+      color: #a1a1a1;
+    }
+    &:focus-visible {
+      outline: 2px solid #404041;
+      outline-offset: 2px;
+    }
   }
 }
 
@@ -239,8 +250,18 @@
   a {
     word-break: break-word;
     word-wrap: break-word;
-    text-decoration: none;
-    color: #97bd3d;
+    text-decoration: underline;
+    color: #404041;
+    &:hover {
+      color: #1a1919;
+    }
+    &:active {
+      color: #a1a1a1;
+    }
+    &:focus-visible {
+      outline: 2px solid #404041;
+      outline-offset: 2px;
+    }
   }
 }
 
@@ -414,13 +435,27 @@
 
 .modal-instructions {
   a {
-    color: #97bd3d;
+    color: #404041;
+    text-decoration: underline;
+    &:hover {
+      color: #1a1919;
+    }
+    &:active {
+      color: #a1a1a1;
+    }
   }
 }
 
 .basemap-modal-content {
   a {
-    color: #97bd3d;
+    color: #404041;
+    text-decoration: underline;
+    &:hover {
+      color: #1a1919;
+    }
+    &:active {
+      color: #a1a1a1;
+    }
   }
 }
 

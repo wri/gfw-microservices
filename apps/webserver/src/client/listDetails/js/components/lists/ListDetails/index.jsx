@@ -1831,8 +1831,9 @@ export default class ListDetails extends Component {
 
     // Banner should show if:
     // 1. List has Alerts analysis
-    // 2. The options field is not 'Weekly' (meaning it was unsubscribed)
-    return alertsAnalysis && alertsAnalysis.options !== 'Weekly';
+    // 2. The options field exists and is explicitly not 'Weekly' (meaning it was unsubscribed)
+    // Note: undefined/null options means the list is subscribed (legacy behavior before GPV-5142 migration)
+    return alertsAnalysis && alertsAnalysis.options != null && alertsAnalysis.options !== 'Weekly';
   }
 
   render() {

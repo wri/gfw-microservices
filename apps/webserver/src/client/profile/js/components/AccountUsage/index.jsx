@@ -81,9 +81,11 @@ export default function AccountUsageContainer() {
     )
       .then((res) => res.json())
       .then((data) => {
-        const { organizationUsersAnalysisUsage = [], isTokenizationEnabled = false } = data;
+        const { organizationUsersAnalysisUsage = [], isTokenizationEnabled: tokenFlag } = data;
         setUsageDataPerUser(organizationUsersAnalysisUsage);
-        setIsTokenizationEnabled(isTokenizationEnabled);
+        if (tokenFlag !== undefined) {
+          setIsTokenizationEnabled(tokenFlag);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -182,6 +184,7 @@ export default function AccountUsageContainer() {
         setEndDateAnalysis={setEndDateAnalysis}
         startDateAnalysis={startDateAnalysis}
         endDateAnalysis={endDateAnalysis}
+        showTokens={isTokenizationEnabled}
       >
         <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
         <TableContainer component={Paper}>

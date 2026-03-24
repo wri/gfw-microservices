@@ -13,8 +13,9 @@ const {
   geoTrellisAnalyzeListController,
 } = require('../../geoTrellis/controllers/geoTrellis.controller');
 
-import { analysisTypes, listStatus } from '@wri-monorepos/constants';
+import { analysisTypes, listStatus, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
+import { featureFlagsService } from '@wri-monorepos/shared';
 import axios from 'axios';
 import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
@@ -165,18 +166,56 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     return res.status(400).json({ message: 'analysisIds is required' });
   }
 
-  if (selectedAnalysis.some((analysisId) => !Object.values(analysisTypes).includes(analysisId))) {
-    return res.status(400).json({ message: 'analysisIds is not valid' });
-  }
-
   try {
+    let isWeeklyAlertsEnabled = false; // default to disallowing Weekly (fail closed)
+    let orgId;
+    try {
+      const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
+        await featureFlagsService();
+      orgId = await getClientIdByClientStoreDatabaseName(organization_database);
+      const orgFlags = await getFeatureFlagsForCurrentOrg(orgId);
+      isWeeklyAlertsEnabled = orgFlags.some(
+        (f) => f.flagId === 'WeeklyAlerts' && f.flagState === true
+      );
+    } catch (flagError) {
+      logger.warn(
+        `Failed to check WeeklyAlerts feature flag, defaulting to disabled: ${flagError}`
+      );
+    }
+
+    if (selectedAnalysis && selectedAnalysis.length > 0) {
+      const validAnalysisIds = new Set([
+        ...Object.values(analysisTypes),
+        ...(isWeeklyAlertsEnabled ? [AlertsAnalysisFrequency.WEEKLY] : []),
+      ]);
+      if (selectedAnalysis.some((analysisId) => !validAnalysisIds.has(analysisId))) {
+        return res.status(400).json({ message: 'analysisIds is not valid' });
+      }
+      if (
+        selectedAnalysis.includes(AlertsAnalysisFrequency.WEEKLY) &&
+        !selectedAnalysis.includes(analysisTypes.ALERTS)
+      ) {
+        return res
+          .status(400)
+          .json({ message: 'Weekly Alerts requires ALERTS to also be selected' });
+      }
+    }
+
     const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;
-    await setSelectedAnalyses(organization_database, listId, selectedAnalysis, statusToApply);
+    await setSelectedAnalyses(
+      organization_database,
+      listId,
+      selectedAnalysis,
+      statusToApply,
+      orgId
+    );
 
     if (isAddingAnalysis && !saveAsDraft) {
       // Because GHG analysis is only valid via EAPI
       const analysesForGeoTrellis = newAnalysesToRun.filter(
-        (analysisId) => analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS
+        (analysisId) =>
+          analysisId !== analysisTypes.GREENHOUSE_GAS_EMISSIONS &&
+          analysisId !== AlertsAnalysisFrequency.WEEKLY
       );
 
       if (analysesForGeoTrellis.length === 0) {

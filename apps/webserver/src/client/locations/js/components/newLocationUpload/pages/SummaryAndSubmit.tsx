@@ -21,14 +21,18 @@ import { FileValidationHelper, NavBar } from '../components';
 import {
   analysisTypes,
   analysisTypesOptionsNewNames,
+  AlertsAnalysisFrequency,
+  weeklyAlertsAnalysis,
 } from '../../../../../../config/env/analysisTypes.constants';
 import { commodities } from '../utils/constants';
 import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
+import featureFlags from '../../../../../../utils/general.utils';
 
 export function SummaryAndSubmit() {
+  const isWeeklyAlertsAvailable = (featureFlags as any).isWeeklyAlertsAvailable;
   const history = useHistory();
   const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -222,18 +226,34 @@ export function SummaryAndSubmit() {
             </Typography>
             <Box component="ul" sx={{ color: 'text.secondary' }}>
               {Object.entries(uploadLocationState.typeOfAnalysis)
-                .filter(([key, isChecked]) => isChecked && key !== analysisTypes.PALM_RISK)
+                .filter(
+                  ([key, isChecked]) =>
+                    isChecked &&
+                    key !== analysisTypes.PALM_RISK &&
+                    key !== AlertsAnalysisFrequency.WEEKLY
+                )
                 .map(([key]) => {
                   const analysis = analysisTypesOptionsNewNames.find((x) => x.id === key);
 
                   const isPalmRiskIncluded =
                     analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
 
+                  const isWeeklyAlertsIncluded =
+                    isWeeklyAlertsAvailable &&
+                    analysis?.id === 'ALERTS' &&
+                    uploadLocationState.typeOfAnalysis.Weekly;
+
                   return (
                     <li key={key}>
                       <Typography variant="caption">{analysis?.label}</Typography>
                       {isPalmRiskIncluded && (
                         <Typography variant="caption"> (Includes Palm Risk Assessment)</Typography>
+                      )}
+                      {isWeeklyAlertsIncluded && (
+                        <Typography variant="caption">
+                          {' '}
+                          (Includes {weeklyAlertsAnalysis.label})
+                        </Typography>
                       )}
                     </li>
                   );

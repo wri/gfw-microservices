@@ -172,7 +172,7 @@ module.exports = (app, limiter) => {
       MaxAreaPerList = 0,
       MaxAreaAnalyzeablePerYear = 0,
       subscriptionStatusId,
-      max_locations_per_year = 0,
+      tokens_per_year = 0,
     } = req.body;
 
     try {
@@ -180,7 +180,7 @@ module.exports = (app, limiter) => {
         subscriptionStatusId,
         MaxAreaPerList,
         MaxAreaAnalyzeablePerYear,
-        max_locations_per_year,
+        tokens_per_year,
       });
 
       res.send({
@@ -199,7 +199,7 @@ module.exports = (app, limiter) => {
       organizationId,
       MaxAreaPerList = 0,
       MaxAreaAnalyzeablePerYear = 0,
-      max_locations_per_year = 0,
+      tokens_per_year = 0,
     } = req.body;
 
     try {
@@ -207,7 +207,7 @@ module.exports = (app, limiter) => {
         organizationId,
         MaxAreaPerList,
         MaxAreaAnalyzeablePerYear,
-        max_locations_per_year,
+        tokens_per_year,
       });
 
       res.send({

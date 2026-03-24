@@ -7,6 +7,7 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
+  Link,
   MenuItem,
   Select,
   TextField,
@@ -33,9 +34,13 @@ import { typeOfAnalysisMap, commodities, customCommodities } from '../utils/cons
 import { useFetch } from '../../../../../hooks';
 import debounce from 'lodash/debounce';
 import { fetchListsByCommodity } from '../../../../../api/list';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  AlertsAnalysisFrequency,
+} from '../../../../../../config/env/analysisTypes.constants';
 import { listNameSchema } from '../utils/schema';
-import { DATA_CY, ReusableText } from '../../../../../utils/constants';
+import { DATA_CY, ExternalLinks, ReusableText } from '../../../../../utils/constants';
+import featureFlags from '../../../../../../utils/general.utils';
 
 type CommoditiesType = (typeof commodities)[keyof typeof commodities];
 const commodityValues = Object.values(commodities) as [CommoditiesType, ...CommoditiesType[]];
@@ -51,6 +56,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       PalmRisk: z.coerce.boolean(),
       ALERTS: z.coerce.boolean(),
       AFI: z.coerce.boolean(),
+      Weekly: z.coerce.boolean(),
       customCommodity: z.string().optional(),
     })
     .superRefine((data, ctx) => {
@@ -132,6 +138,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
       FCD: typeOfAnalysis.FCD || false,
       ALERTS: typeOfAnalysis.ALERTS || false,
       AFI: typeOfAnalysis.AFI || false,
+      Weekly: typeOfAnalysis.Weekly || false,
       customCommodity: '',
     },
   });
@@ -224,7 +231,27 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         analysisIds: template?.listAnalysesStatus.map((x) => x.analysisId) || [],
       };
       typeOfAnalysisMap.forEach((typeOfAnalysis) => {
-        const found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+        let found = template.listAnalysesStatus.find((x) => x.analysisId === typeOfAnalysis.id);
+
+        // Raw DB data stores child options on the parent row's 'options' field,
+        // not as separate rows. Match PalmRisk/Weekly from parent options when no direct row found.
+        if (!found && typeOfAnalysis.id === AlertsAnalysisFrequency.WEEKLY) {
+          found =
+            (featureFlags as any).isWeeklyAlertsAvailable &&
+            template.listAnalysesStatus.find(
+              (x) =>
+                x.analysisId === analysisTypes.ALERTS &&
+                x.options === AlertsAnalysisFrequency.WEEKLY
+            );
+        }
+        if (!found && typeOfAnalysis.id === analysisTypes.PALM_RISK) {
+          found = template.listAnalysesStatus.find(
+            (x) =>
+              x.analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+              x.options === analysisTypes.PALM_RISK
+          );
+        }
+
         setValue(typeOfAnalysis.id as keyof FormFields, !!found);
       });
     }
@@ -257,6 +284,16 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     if (id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS && !e.target.checked) {
       setValue(analysisTypes.PALM_RISK, false);
     }
+
+    // Weekly Alerts requires ALERTS to be selected (it's a child analysis of ALERTS)
+    if (id === AlertsAnalysisFrequency.WEEKLY && e.target.checked) {
+      setValue(analysisTypes.ALERTS, true);
+    }
+
+    // If ALERTS is unchecked, also uncheck Weekly Alerts (parent-child relationship)
+    if (id === analysisTypes.ALERTS && !e.target.checked) {
+      setValue(AlertsAnalysisFrequency.WEEKLY, false);
+    }
   };
 
   const onSubmit = (data: FormFields) => {
@@ -276,6 +313,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         FCD: data.FCD,
         AFI: data.AFI,
         ALERTS: data.ALERTS,
+        Weekly: data.Weekly,
       },
     });
 
@@ -472,8 +510,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 2, width: 'fit-content' }}>
           {typeOfAnalysisMap
             .filter((x) => selectedCommodity === 'Palm oil' || x.id !== analysisTypes.PALM_RISK)
+            .filter(
+              (x) =>
+                (featureFlags as any).isWeeklyAlertsAvailable ||
+                x.id !== AlertsAnalysisFrequency.WEEKLY
+            )
             .map(({ id, label, description }) => {
               const isPalmRisk = id === analysisTypes.PALM_RISK;
+              const isWeeklyAlerts = id === AlertsAnalysisFrequency.WEEKLY;
+              const isChildOption = isPalmRisk || isWeeklyAlerts;
               const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
 
               return (
@@ -496,7 +541,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                       }
                       sx={{
                         textTransform: 'none',
-                        ml: isPalmRisk ? 2 : 0,
+                        ml: isChildOption ? 2 : 0,
                         '&:hover': {
                           cursor: 'default',
                         },
@@ -548,7 +593,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                             </Box>
 
                             <Typography variant="caption" color="text.secondary">
-                              {description}
+                              {childOptionDescriptions[id] || description}
                             </Typography>
                           </Box>
                           <HelperTextWithPopover>
@@ -633,12 +678,26 @@ const popoverHelperTextStyle: SxProps = {
   },
 };
 
-const listOfPopoverHelperText: {
-  [analysisTypes.DEFORESTATION_KPIS]: ReactNode;
-  [analysisTypes.ALERTS]: ReactNode;
-  [analysisTypes.FOREST_CHANGE_DIAGNOSTICS]: ReactNode;
-  [analysisTypes.PALM_RISK]: ReactNode;
-} = {
+const childOptionDescriptions: Record<string, ReactNode> = {
+  [AlertsAnalysisFrequency.WEEKLY]: (
+    <>
+      Recent global integrated disturbance alerts, automatically updated weekly.
+      <br />
+      Selecting Weekly Alerts will deduct from available usage. Please see our{' '}
+      <Link
+        href={ExternalLinks.PriceSheet}
+        target="_blank"
+        rel="noopener noreferrer"
+        underline="none"
+      >
+        Price Sheet
+      </Link>{' '}
+      for more information.
+    </>
+  ),
+};
+
+const listOfPopoverHelperText: Record<string, ReactNode> = {
   AFI: (
     <Typography variant="caption" sx={popoverHelperTextStyle}>
       This analysis provides users with statistics on forest coverage and forest loss which occurred
@@ -691,6 +750,12 @@ const listOfPopoverHelperText: {
       of multiple mills. This information can support decision-making by buyers and traders as they
       prioritize engagement and interventions within their supply chain. This analysis should only
       be applied to palm oil mills.
+    </Typography>
+  ),
+  [AlertsAnalysisFrequency.WEEKLY]: (
+    <Typography variant="caption">
+      Weekly Alerts automatically updates your list's disturbance alerts on a weekly basis.
+      Selecting this option will deduct from your available usage each week the analysis runs.
     </Typography>
   ),
 };

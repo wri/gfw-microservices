@@ -20,14 +20,16 @@ export default function AccountProfileLimitsSetting() {
   const { subscriptionLimits, extraLimits } = analysis_limits || {};
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
+  const isProManager = window.location.pathname.startsWith('/pro-manager');
   const { isTokenizationAvailable } = featureFlags;
 
-  const locationsLabel = isTokenizationAvailable
-    ? accountProfileStrings.accountLimitsSetting.tokensPerYear
-    : accountProfileStrings.accountLimitsSetting.locationsPerYear;
+  const locationsLabel =
+    isProManager || isTokenizationAvailable
+      ? accountProfileStrings.accountLimitsSetting.tokensPerYear
+      : accountProfileStrings.accountLimitsSetting.locationsPerYear;
 
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
-    max_locations_per_year: 0,
+    tokens_per_year: 0,
     MaxAreaAnalyzeablePerYear: 0,
     organizationId,
   });
@@ -40,8 +42,8 @@ export default function AccountProfileLimitsSetting() {
   const validateLimitsFormData = (data) => {
     let errors = [];
 
-    if (!data.max_locations_per_year) {
-      errors.push('The field "Max Locations Per Year" cannot be empty');
+    if (!data.tokens_per_year) {
+      errors.push('The field "Tokens Per Year" cannot be empty');
     }
     if (!data.MaxAreaAnalyzeablePerYear) {
       errors.push('The field "Area Per Year" cannot be empty');
@@ -110,7 +112,7 @@ export default function AccountProfileLimitsSetting() {
           <Grid container direction="column">
             <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
             <TextField
-              value={formatInputValue(subscriptionLimits?.max_locations_per_year)}
+              value={formatInputValue(subscriptionLimits?.tokens_per_year)}
               disabled={true}
               size="small"
               variant="outlined"
@@ -143,7 +145,7 @@ export default function AccountProfileLimitsSetting() {
           <Grid container direction="column">
             <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
             <TextField
-              value={formatInputValue(extraLimits?.max_locations_per_year)}
+              value={formatInputValue(extraLimits?.tokens_per_year)}
               disabled={true}
               size="small"
               variant="outlined"
@@ -182,10 +184,10 @@ export default function AccountProfileLimitsSetting() {
           <Grid container direction="column">
             <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
             <TextField
-              name="max_locations_per_year"
-              id="max_locations_per_year"
-              onChange={(e) => onChangeUpdateField('max_locations_per_year', e.target.value)}
-              value={accountLimitsFormData.max_locations_per_year}
+              name="tokens_per_year"
+              id="tokens_per_year"
+              onChange={(e) => onChangeUpdateField('tokens_per_year', e.target.value)}
+              value={accountLimitsFormData.tokens_per_year}
               disabled={!isEditingDisabled}
               size="small"
               variant="outlined"
@@ -220,7 +222,7 @@ export default function AccountProfileLimitsSetting() {
           >
             Add Limits
           </PillButton>
-          {isTokenizationAvailable && (
+          {(isProManager || isTokenizationAvailable) && (
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               Updating the limits will affect all organizations at time of account renewal. Limits
               are visible to both internal and external users.

@@ -53,6 +53,7 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       saveAsDraft,
       analysisIds,
       isExternalAPIProcess,
+      options,
     } = request.request as RequestNewList;
 
     const analysisTypesToProcess = analysisIds.join(',');
@@ -80,7 +81,8 @@ export class StartAnalysis extends AbstractHandler<ChainType> {
       !isExternalAPIProcess,
       user_id,
       subscriptionStatusId,
-      false
+      false,
+      options
     );
 
     if (result !== 'OK' && result !== 'Created') {

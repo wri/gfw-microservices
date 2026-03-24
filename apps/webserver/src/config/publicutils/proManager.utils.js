@@ -634,17 +634,13 @@ export const updateAccountSubscriptionStatus = async (
  * @returns {Promise<payload>}
  */
 export const updateGlobalAnalysisLimits = async (request, payload) => {
-  const {
-    subscriptionStatusId,
-    MaxAreaPerList,
-    MaxAreaAnalyzeablePerYear,
-    max_locations_per_year,
-  } = payload;
+  const { subscriptionStatusId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, tokens_per_year } =
+    payload;
   const params = [
     { field: 'subscriptionStatusId', type: sql.Int, value: subscriptionStatusId },
     { field: 'MaxAreaPerList', type: sql.Decimal, value: MaxAreaPerList },
     { field: 'MaxAreaAnalyzeablePerYear', type: sql.Decimal, value: MaxAreaAnalyzeablePerYear },
-    { field: 'max_locations_per_year', type: sql.Int, value: max_locations_per_year },
+    { field: 'tokens_per_year', type: sql.Float, value: tokens_per_year },
   ];
 
   try {
@@ -670,13 +666,12 @@ export const updateGlobalAnalysisLimits = async (request, payload) => {
  * @returns {Promise<payload>}
  */
 export const updateAccountAnalysisLimits = async (request, payload) => {
-  const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, max_locations_per_year } =
-    payload;
+  const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, tokens_per_year } = payload;
   const params = [
     { field: 'OrgID', type: sql.Int, value: organizationId },
     { field: 'MaxAreaPerList', type: sql.Decimal, value: MaxAreaPerList },
     { field: 'MaxAreaAnalyzeablePerYear', type: sql.Decimal, value: MaxAreaAnalyzeablePerYear },
-    { field: 'max_locations_per_year', type: sql.Int, value: max_locations_per_year },
+    { field: 'tokens_per_year', type: sql.Float, value: tokens_per_year },
   ];
 
   try {

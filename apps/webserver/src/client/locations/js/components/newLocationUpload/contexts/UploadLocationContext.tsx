@@ -18,6 +18,7 @@ export type UploadLocationState = {
     PalmRisk: boolean;
     ALERTS: boolean;
     AFI: boolean;
+    Weekly: boolean;
   };
   isDraft?: boolean;
   isUmlFile?: boolean;
@@ -42,6 +43,7 @@ type UploadLocationType = {
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
+      Weekly: boolean;
     };
   }) => void;
   addFile: (uploadedFile: PresignedUrl) => void;
@@ -82,6 +84,7 @@ type UploadLocationAction =
           FCD: boolean;
           AFI: boolean;
           ALERTS: boolean;
+          Weekly: boolean;
         };
       };
     }
@@ -134,6 +137,7 @@ const uploadLocationInitialState: UploadLocationState = {
     FCD: false,
     AFI: false,
     ALERTS: false,
+    Weekly: false,
   },
   isDraft: undefined,
   isUmlFile: false,
@@ -198,6 +202,7 @@ export function UploadLocationProvider({ children }: UploadLocationProviderProps
       FCD: boolean;
       AFI: boolean;
       ALERTS: boolean;
+      Weekly: boolean;
     };
   }) => {
     dispatch({ type: 'ConfigureList', payload: data });

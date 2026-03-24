@@ -19,7 +19,7 @@ import FieldLabel from './FieldLabel';
  */
 const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
   const defaultFields = {
-    max_locations_per_year: 0,
+    tokens_per_year: 0,
     MaxAreaAnalyzeablePerYear: 0,
   };
 
@@ -46,10 +46,12 @@ function AccountLimitsGlobal({ setIsLoading }) {
   const dialog = useDialog();
   const [globalLimitsFormData, setGlobalLimitsFormData] = useState(globalLimitsFormDataObject);
   const [formHasChanges, setFormHasChanges] = useState(false);
+  const isProManager = window.location.pathname.startsWith('/pro-manager');
   const { isTokenizationAvailable } = featureFlags;
-  const locationsLabel = isTokenizationAvailable
-    ? accountLimitsStrings.tokensPerYear
-    : accountLimitsStrings.locationsPerYear;
+  const locationsLabel =
+    isProManager || isTokenizationAvailable
+      ? accountLimitsStrings.tokensPerYear
+      : accountLimitsStrings.locationsPerYear;
 
   const onChangeUpdateField = (orgType, fieldName, value) => {
     setGlobalLimitsFormData((prevData) => {
@@ -159,12 +161,12 @@ function AccountLimitsGlobal({ setIsLoading }) {
             <Grid container direction="column">
               <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
               <TextField
-                name="max_locations_per_year"
-                id="STANDARD_SUBSCRIPTION-max_locations_per_year"
+                name="tokens_per_year"
+                id="STANDARD_SUBSCRIPTION-tokens_per_year"
                 onChange={({ target }) =>
                   onChangeUpdateField(STANDARD_SUBSCRIPTION, target.name, target.value)
                 }
-                value={globalLimitsFormData[STANDARD_SUBSCRIPTION]?.max_locations_per_year || 0}
+                value={globalLimitsFormData[STANDARD_SUBSCRIPTION]?.tokens_per_year || 0}
                 size="small"
                 variant="outlined"
               />
@@ -195,12 +197,12 @@ function AccountLimitsGlobal({ setIsLoading }) {
             <Grid container direction="column">
               <FieldLabel aria-label={locationsLabel}>{locationsLabel}</FieldLabel>
               <TextField
-                name="max_locations_per_year"
-                id="PREMIUM_SUBSCRIPTION-max_locations_per_year"
+                name="tokens_per_year"
+                id="PREMIUM_SUBSCRIPTION-tokens_per_year"
                 onChange={({ target }) =>
                   onChangeUpdateField(PREMIUM_SUBSCRIPTION, target.name, target.value)
                 }
-                value={globalLimitsFormData[PREMIUM_SUBSCRIPTION]?.max_locations_per_year || 0}
+                value={globalLimitsFormData[PREMIUM_SUBSCRIPTION]?.tokens_per_year || 0}
                 size="small"
                 variant="outlined"
               />
@@ -235,7 +237,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
             >
               Update Limits
             </PillButton>
-            {isTokenizationAvailable && (
+            {(isProManager || isTokenizationAvailable) && (
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Updating the limits will affect all organizations at time of account renewal. Limits
                 are visible to both internal and external users.

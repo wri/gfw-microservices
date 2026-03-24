@@ -12,18 +12,20 @@ export const getAnalysisLimits = `BEGIN
 
 DECLARE @SQL NVARCHAR(MAX)
 
-    SET @SQL =  'SELECT
+    SET @SQL =  'SELECT TOP 1
                     a.OrgID
                     ,a.OrgType
                     ,o.organization_name
                     ,ss.status_name as subscription_name
-                    ,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
-                    ,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
-                    ,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year
-                    ,ISNULL(SUM(a.tokens_per_year), 0) AS tokens_per_year
+                    ,ISNULL(a.MaxAreaAnalyzeablePerYear, 0) AS MaxAreaAnalyzeablePerYear
+                    ,ISNULL(a.MaxAreaPerList, 0) AS MaxAreaPerList
+                    ,ISNULL(a.max_locations_per_year, 0) AS max_locations_per_year
+                    ,ISNULL(a.tokens_per_year, 0) AS tokens_per_year
                 FROM AnalysisLimits a
                 LEFT JOIN Organizations o ON a.OrgID = o.id
-                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType';
+                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType
+                WHERE a.OrgType = @orgType
+                ORDER BY a.update_time desc';
 
     IF @orgID IS NOT NULL
         SET @SQL = 'SELECT
@@ -37,20 +39,9 @@ DECLARE @SQL NVARCHAR(MAX)
                         ,ISNULL(SUM(a.tokens_per_year), 0) AS tokens_per_year
                     FROM Organizations o
                     LEFT JOIN AnalysisLimits a ON a.OrgID = o.id
-                    LEFT JOIN SubscriptionStatuses ss ON ss.id = o.subscription_status_id';
+                    WHERE o.id = @orgID
+                    GROUP BY a.OrgID, a.OrgType, o.organization_name';
 
-
-
-IF @orgID IS NOT NULL
-BEGIN
-    SET @SQL = @SQL + ' WHERE o.id = @orgID';
-END
-ELSE IF @orgType IS NOT NULL
-BEGIN
-    SET @SQL = @SQL + ' WHERE a.OrgType = @orgType';
-END
-
-SET @SQL = @SQL + ' GROUP BY a.OrgID, a.OrgType, o.organization_name, ss.status_name';
 
 -- debug
 -- PRINT @SQL

@@ -228,7 +228,9 @@ export const ComposeCopyQueryStatement = async (
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
   // get valid columns from AnalysisSchema by extracting the 'name' property values
-  const validColumns = Object.values(AnalysisSchema.columns).map((column: any) => column.name);
+  const validColumns = Object.values(AnalysisSchema.columns).map(
+    (column: { name?: string }) => column.name
+  );
 
   // Extract column names and filter to include only valid ones
   const columnNames = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
@@ -455,9 +457,7 @@ export async function setListAnalysisStatus(
     try {
       const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
       const flags = await getFeatureFlagsForCurrentOrg(organizationId!);
-      weeklyAlertsOptIn = flags.some(
-        (flag) => flag.flagId === 'weekly-alerts-opt-in' && flag.flagState
-      );
+      weeklyAlertsOptIn = flags.some((flag) => flag.flagId === 'WeeklyAlerts' && flag.flagState);
     } catch (error) {
       // If feature flag lookup fails, fall back to disabled (opt-in not required)
       weeklyAlertsOptIn = false;

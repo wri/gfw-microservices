@@ -1,5 +1,22 @@
 import { createTheme } from '@mui/material/styles';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    link: {
+      main: string;
+      hover: string;
+      active: string;
+    };
+  }
+  interface PaletteOptions {
+    link?: {
+      main?: string;
+      hover?: string;
+      active?: string;
+    };
+  }
+}
+
 export const theme = createTheme({
   shape: {
     borderRadius: 5,
@@ -61,6 +78,11 @@ export const theme = createTheme({
       300: '#F6C5C1',
       500: '#C11101',
       700: '#8D0D01',
+    },
+    link: {
+      main: '#404041',
+      hover: '#1A1919',
+      active: '#A1A1A1',
     },
     background: {
       default: '#F5F5F5',

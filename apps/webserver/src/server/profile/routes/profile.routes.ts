@@ -208,6 +208,7 @@ export = (app, limiter) => {
       geographies,
       commodities,
       auth_preference_id,
+      marketing_email_opt_out,
     } = req.body;
 
     try {
@@ -226,6 +227,7 @@ export = (app, limiter) => {
         arr_user_geography_ids: geographies,
         arr_user_commodity_ids: commodities,
         user_auth_preference_id: auth_preference_id,
+        marketing_email_opt_out,
         loggedUserAccessLevelId: req.session.user_access_level_id,
       });
       res.status(200).json(result);

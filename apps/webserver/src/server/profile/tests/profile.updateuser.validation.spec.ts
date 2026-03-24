@@ -64,6 +64,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
         geographies,
         commodities,
         auth_preference_id,
+        marketing_email_opt_out,
       } = req.body;
 
       UserManager.updateUserInfo({
@@ -81,6 +82,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
         arr_user_geography_ids: geographies,
         arr_user_commodity_ids: commodities,
         user_auth_preference_id: auth_preference_id,
+        marketing_email_opt_out,
         loggedUserAccessLevelId: req.session.user_access_level_id,
       })
         .then((result) => {
@@ -280,6 +282,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
           geographies: [1, 2, 3],
           commodities: [10, 20],
           auth_preference_id: 1,
+          marketing_email_opt_out: true,
         });
 
       expect(response.status).toBe(200);
@@ -298,6 +301,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
           arr_user_geography_ids: [1, 2, 3],
           arr_user_commodity_ids: [10, 20],
           user_auth_preference_id: 1,
+          marketing_email_opt_out: true,
         })
       );
     });

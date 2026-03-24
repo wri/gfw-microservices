@@ -173,6 +173,7 @@ describe('validation.middleware', () => {
           geographies: [1, 2, 3],
           commodities: [10, 20],
           auth_preference_id: 1,
+          marketing_email_opt_out: true,
         };
 
         middleware(mockReq, mockRes, mockNext);
@@ -673,6 +674,58 @@ describe('validation.middleware', () => {
         expect(() => updateUserSchema.parse(data)).toThrow(
           'Access level ID must be a positive integer'
         );
+      });
+    });
+
+    describe('marketing_email_opt_out validation', () => {
+      it('should accept boolean true', () => {
+        const data = {
+          id: 1,
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john@example.com',
+          marketing_email_opt_out: true,
+        };
+
+        const result = updateUserSchema.parse(data);
+        expect(result.marketing_email_opt_out).toBe(true);
+      });
+
+      it('should accept boolean false', () => {
+        const data = {
+          id: 1,
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john@example.com',
+          marketing_email_opt_out: false,
+        };
+
+        const result = updateUserSchema.parse(data);
+        expect(result.marketing_email_opt_out).toBe(false);
+      });
+
+      it('should default to false if not provided', () => {
+        const data = {
+          id: 1,
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john@example.com',
+        };
+
+        const result = updateUserSchema.parse(data);
+        expect(result.marketing_email_opt_out).toBe(false);
+      });
+
+      it('should reject non-boolean value', () => {
+        const data = {
+          id: 1,
+          first_name: 'John',
+          last_name: 'Doe',
+          email: 'john@example.com',
+          marketing_email_opt_out: 'yes',
+        };
+
+        expect(() => updateUserSchema.parse(data)).toThrow();
       });
     });
   });

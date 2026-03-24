@@ -521,6 +521,7 @@ export const createNewUser = (
  *  param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  *  param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
  *  param  {Number}  user_auth_preference_id
+ *  param  {Boolean} marketing_email_opt_out - Whether the user opts out of marketing emails.
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
 export const updateUserInfo = ({
@@ -538,6 +539,7 @@ export const updateUserInfo = ({
   arr_user_geography_ids = [],
   arr_user_commodity_ids = [],
   user_auth_preference_id = 0,
+  marketing_email_opt_out = false,
   loggedUserAccessLevelId,
 }) => {
   return new Promise((resolve, reject) => {
@@ -551,6 +553,7 @@ export const updateUserInfo = ({
       { field: 'titleId', type: sql.Int, value: user_title_id },
       { field: 'other_title', type: sql.NVarChar(150), value: other_title },
       { field: 'email_subscription', type: sql.Bit, value: email_subscription },
+      { field: 'marketing_email_opt_out', type: sql.Bit, value: marketing_email_opt_out },
       { field: 'commodity_ids', type: sql.VarChar(200), value: arr_user_commodity_ids.toString() },
       { field: 'geography_ids', type: sql.VarChar(200), value: arr_user_geography_ids.toString() },
     ];

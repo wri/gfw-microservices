@@ -87,6 +87,7 @@ const updateUserSchema = z
       .nonnegative('Auth preference ID must be a non-negative integer')
       .optional()
       .default(0),
+    marketing_email_opt_out: z.boolean().optional().default(false),
   })
   .strict(); // Reject any unknown keys
 

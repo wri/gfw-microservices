@@ -17,11 +17,17 @@ function AnalysisListChips({ listAnalysesStatus = [] }) {
     return allAnalysisLabels.find((option) => option.id === analysisId)?.shortLabel;
   };
 
-  // Synthesize a Weekly entry when the ALERTS row has options='Weekly'
+  // Synthesize a Weekly entry when the ALERTS row has options='Weekly',
+  // but only if a Weekly row is not already present in the data (e.g. from
+  // resolveListAnalysisStatuses) to avoid duplicate chips and React key collisions.
+  const hasWeeklyEntry = listAnalysesStatus.some(
+    (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+  );
   const entries = listAnalysesStatus.flatMap((entry) => {
     const items = [entry];
     if (
       featureFlags.isWeeklyAlertsAvailable &&
+      !hasWeeklyEntry &&
       entry.analysisId === analysisTypes.ALERTS &&
       entry.options === AlertsAnalysisFrequency.WEEKLY
     ) {

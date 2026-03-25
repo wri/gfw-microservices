@@ -19,6 +19,7 @@ import {
 } from '@wri-monorepos/sql';
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import {
+  analysisTypes,
   analysisTypesOptionsNewNames,
   listStatus,
   AlertsAnalysisFrequency,
@@ -280,7 +281,7 @@ describe('list.analysis.status.ts', () => {
 
     it('should include ALERTS in analysesToAdd when Weekly is removed but ALERTS remains, to clear options', async () => {
       const mockExistingStatusData = [
-        { analysisId: 'ALERTS', status: listStatus.Active, options: 'Weekly' },
+        { analysisId: analysisTypes.ALERTS, status: listStatus.Active, options: AlertsAnalysisFrequency.WEEKLY },
         { analysisId: 'AFI', status: listStatus.Active },
       ];
       const fakeOrgId = 42;

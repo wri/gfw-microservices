@@ -133,8 +133,14 @@ export const setSelectedAnalyses = async (
   ) {
     analysesToAdd = [...analysesToAdd, analysisTypes.ALERTS];
   }
-  // Delete the ones that are no longer selected
-  await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, currentAnalyses);
+  // Delete the ones that are no longer selected.
+  // Filter out synthetic option-only analysis rows (like WEEKLY) so that
+  // their deletion cannot trigger an options-only SQL update that affects
+  // other analyses on the list.
+  const deletableAnalyses = currentAnalyses.filter(
+    (analysis) => analysis.analysisId !== AlertsAnalysisFrequency.WEEKLY
+  );
+  await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, deletableAnalyses);
 
   // Only insert/update the new ones
   if (analysesToAdd.length > 0) {

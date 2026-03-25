@@ -281,7 +281,11 @@ describe('list.analysis.status.ts', () => {
 
     it('should include ALERTS in analysesToAdd when Weekly is removed but ALERTS remains, to clear options', async () => {
       const mockExistingStatusData = [
-        { analysisId: analysisTypes.ALERTS, status: listStatus.Active, options: AlertsAnalysisFrequency.WEEKLY },
+        {
+          analysisId: analysisTypes.ALERTS,
+          status: listStatus.Active,
+          options: AlertsAnalysisFrequency.WEEKLY,
+        },
         { analysisId: 'AFI', status: listStatus.Active },
       ];
       const fakeOrgId = 42;

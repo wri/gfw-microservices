@@ -121,6 +121,18 @@ export const setSelectedAnalyses = async (
   ) {
     analysesToAdd = [...analysesToAdd, analysisTypes.FOREST_CHANGE_DIAGNOSTICS];
   }
+
+  // When Weekly is being removed but ALERTS remains, force-include ALERTS
+  // so its options field gets cleared in the DB.
+  const alertsRow = currentAnalyses.find((a) => a.analysisId === analysisTypes.ALERTS);
+  if (
+    alertsRow?.options === AlertsAnalysisFrequency.WEEKLY &&
+    selectedAnalysisIds.includes(analysisTypes.ALERTS) &&
+    !selectedAnalysisIds.includes(AlertsAnalysisFrequency.WEEKLY) &&
+    !analysesToAdd.includes(analysisTypes.ALERTS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.ALERTS];
+  }
   // Delete the ones that are no longer selected
   await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, currentAnalyses);
 

@@ -277,6 +277,40 @@ describe('list.analysis.status.ts', () => {
         AlertsAnalysisFrequency.WEEKLY
       );
     });
+
+    it('should include ALERTS in analysesToAdd when Weekly is removed but ALERTS remains, to clear options', async () => {
+      const mockExistingStatusData = [
+        { analysisId: 'ALERTS', status: listStatus.Active, options: 'Weekly' },
+        { analysisId: 'AFI', status: listStatus.Active },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        ['ALERTS', 'AFI'],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // ALERTS must be re-upserted so its options field gets cleared (no Weekly)
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining(['ALERTS']),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        undefined
+      );
+    });
   });
 
   describe('updateListAnalysis', () => {

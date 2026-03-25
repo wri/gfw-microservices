@@ -12,6 +12,7 @@ import { ValidateMandatoryFields } from './chain/validate.mandatory.fields';
 import { ValidateLocationName } from './chain/validate.location.name';
 import { AdjustGeoData } from './chain/adjust.geo.data';
 import { ConvertPoint2Polygon } from './chain/convert.point.2.polygon';
+import { ValidateLatLongGeojson } from './chain/validate.lat.long.geojson';
 
 @Injectable()
 export class PreviewListUploadService {
@@ -40,6 +41,7 @@ export class PreviewListUploadService {
     const validateMandatoryFields = new ValidateMandatoryFields();
     const validateLocationName = new ValidateLocationName();
     const convertPoint2Polygon = new ConvertPoint2Polygon();
+    const validateLatLongGeojson = new ValidateLatLongGeojson();
 
     downloadS3File
       .setNext(parseData)
@@ -48,6 +50,7 @@ export class PreviewListUploadService {
       .setNext(validateMandatoryFields) // depends on centroid calculation in adjustGeoData
       .setNext(validateLocationName)
       .setNext(convertPoint2Polygon) // converts points with analysisArea/analysisRadius to polygons
+      .setNext(validateLatLongGeojson) // validates coordinates are in supported range
       .setNext(gadmService); // depends on convertPoint2Polygon
 
     const response = await AbstractHandler.runFullChain(downloadS3File, chainType);

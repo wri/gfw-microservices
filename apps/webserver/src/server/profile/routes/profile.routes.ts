@@ -211,9 +211,30 @@ export = (app, limiter) => {
     } = req.body;
 
     try {
+      // Security: Derive user ID from authenticated session
+      const authenticatedUserId = req.session.organization_user_id;
+      const requestedUserId = id;
+      const isAdmin = UserManager.isAdministrator(req);
+
+      // Authorization check: Non-admin users can only update their own profile
+      // If requestedUserId is null/undefined, treat as self-update
+      if (!isAdmin && requestedUserId && requestedUserId !== authenticatedUserId) {
+        logger.warn(
+          `POST /profile/updateuser - Unauthorized attempt: User ${authenticatedUserId} tried to update user ${requestedUserId}`
+        );
+        res.status(403).json({
+          errorCode: 403,
+          userMessage: "You are not authorized to update another user's profile",
+        });
+        return;
+      }
+
+      // Use the authenticated user ID for self-updates, or the requested ID for admin updates
+      const targetUserId = isAdmin && requestedUserId ? requestedUserId : authenticatedUserId;
+
       const result = await UserManager.updateUserInfo({
         req,
-        user_id: id,
+        user_id: targetUserId,
         user_first_name: first_name,
         user_middle_initial: middle_initial,
         user_last_name: last_name,

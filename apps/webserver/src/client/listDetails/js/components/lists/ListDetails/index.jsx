@@ -105,8 +105,10 @@ import {
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
-// eslint-disable-next-line no-redeclare
-import featureFlags from '../../../../../../utils/general.utils';
+import featureFlagsUtil from '../../../../../../utils/general.utils';
+
+// Use featureFlagsUtil to avoid identifier conflicts
+const featureFlags = featureFlagsUtil;
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
 const ALERTS_UNSUBSCRIBE_BANNER_KEY = 'GFW-is-alerts-unsubscribe-banner-dismissed';

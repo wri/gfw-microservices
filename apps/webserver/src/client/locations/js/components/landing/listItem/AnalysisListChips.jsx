@@ -11,7 +11,11 @@ import featureFlags from '../../../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';
 
 function AnalysisListChips({ listAnalysesStatus = [] }) {
-  const allAnalysisLabels = [...analysisTypesOptionsNewNames, weeklyAlertsAnalysis];
+  // Only include the Weekly label when the feature flag is enabled so that server-side
+  // Weekly entries are also hidden (not just the synthesized one) when the flag is off.
+  const allAnalysisLabels = featureFlags.isWeeklyAlertsAvailable
+    ? [...analysisTypesOptionsNewNames, weeklyAlertsAnalysis]
+    : [...analysisTypesOptionsNewNames];
 
   const getShortLabel = (analysisId) => {
     return allAnalysisLabels.find((option) => option.id === analysisId)?.shortLabel;

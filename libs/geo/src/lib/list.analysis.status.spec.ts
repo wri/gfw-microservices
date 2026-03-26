@@ -317,6 +317,44 @@ describe('list.analysis.status.ts', () => {
         undefined
       );
     });
+
+    it('should include FCD in analysesToAdd when PalmRisk is removed but FCD remains, to clear options', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+          status: listStatus.Active,
+          options: analysisTypes.PALM_RISK,
+        },
+        { analysisId: analysisTypes.DEFORESTATION_KPIS, status: listStatus.Active },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.DEFORESTATION_KPIS],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // FCD must be re-upserted so its options field gets cleared (no PalmRisk)
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.FOREST_CHANGE_DIAGNOSTICS]),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        undefined
+      );
+    });
   });
 
   describe('updateListAnalysis', () => {

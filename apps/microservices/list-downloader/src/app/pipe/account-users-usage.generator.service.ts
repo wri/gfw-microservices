@@ -122,7 +122,9 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
           this.getAnalysisTypeLabel(dataRow['Analysis Type']),
           dataRow['Hectares'].toString(),
           dataRow['Locations'].toString(),
-          (dataRow['Token Cost'] ?? 0).toString(),
+          (dataRow['Per Location Cost'] ?? 0).toString(),
+          (dataRow['Processing Cost'] ?? 0).toString(),
+          (dataRow['Total Cost'] ?? 0).toString(),
           dataRow['Date/Timestamp'],
           dataRow['UI/API'],
         ];

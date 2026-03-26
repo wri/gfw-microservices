@@ -24,6 +24,7 @@ import {
   UPDATE_SELECTED_LIST,
   DEFORESTATION_DISPLAY_FORMAT,
   NATURAL_FOREST_LOSS_DATA_SOURCE,
+  SHOW_INFO_POPOVER,
 } from '../constants/actionTypes';
 
 export function changeView(data) {
@@ -112,6 +113,10 @@ export function updateBubbleData(bubbleData) {
 
 export function updatePopoverAnchorEl(anchorEl) {
   return { type: UPDATE_POPOVER_ANCHOR, anchorEl };
+}
+
+export function showInfoPopover({ displayPopover, popoverLoading, bubbleData, anchorEl }) {
+  return { type: SHOW_INFO_POPOVER, displayPopover, popoverLoading, bubbleData, anchorEl };
 }
 
 export function setLanguage(data) {

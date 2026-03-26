@@ -1,10 +1,9 @@
 // REDUX - Store
 import {
   updateInfoBubbleCache,
-  toggleInfoPopover,
   updatePopoverLoadingId,
-  updateBubbleData,
-  updatePopoverAnchorEl,
+  showInfoPopover,
+  toggleInfoPopover,
 } from '../actions/locationActions';
 import store from '../store';
 import errorLogger from '../../../common/js/utils/errorLogger';
@@ -24,10 +23,14 @@ export const togglePopover = (evt, infoBubbleCache) => {
   };
 
   if (checkInfoBubbleCache(infoBubbleId)) {
-    store.dispatch(toggleInfoPopover(true));
-    store.dispatch(updatePopoverLoadingId(''));
-    store.dispatch(updateBubbleData(infoBubbleCache[infoBubbleId]));
-    store.dispatch(updatePopoverAnchorEl(target));
+    store.dispatch(
+      showInfoPopover({
+        displayPopover: true,
+        popoverLoading: '',
+        bubbleData: infoBubbleCache[infoBubbleId],
+        anchorEl: target,
+      })
+    );
     // early return if we have the info in cache
     return;
   }
@@ -38,10 +41,14 @@ export const togglePopover = (evt, infoBubbleCache) => {
   request.addEventListener('load', () => {
     const resp = JSON.parse(request.response);
     store.dispatch(updateInfoBubbleCache(infoBubbleId, resp.data));
-    store.dispatch(toggleInfoPopover(true));
-    store.dispatch(updatePopoverLoadingId(''));
-    store.dispatch(updateBubbleData(resp.data));
-    store.dispatch(updatePopoverAnchorEl(target));
+    store.dispatch(
+      showInfoPopover({
+        displayPopover: true,
+        popoverLoading: '',
+        bubbleData: resp.data,
+        anchorEl: target,
+      })
+    );
   });
 
   request.onerror = () => {

@@ -25,6 +25,7 @@ import {
   UPDATE_SELECTED_LIST,
   DEFORESTATION_DISPLAY_FORMAT,
   NATURAL_FOREST_LOSS_DATA_SOURCE,
+  SHOW_INFO_POPOVER,
 } from '../constants/actionTypes';
 import cloneDeep from 'lodash/cloneDeep';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
@@ -187,6 +188,8 @@ export function updatePopoverState(state = initialLocationState.popover, action)
   const { type, displayPopover, popoverLoading, bubbleData, anchorEl } = action;
 
   switch (type) {
+    case SHOW_INFO_POPOVER:
+      return { displayPopover, popoverLoading, bubbleData, anchorEl };
     case TOGGLE_POPOVER:
       return {
         ...state,

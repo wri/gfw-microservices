@@ -11,14 +11,19 @@ const transifex = Transifex.live.translateText;
 export const PlanetTilesOptions = () => {
   const [planetTiles, setPlanetTiles] = useState();
   const [planetColor, setPlanetColor] = useState('rgb');
-  const [selectedPlanetTileLayer, setSelectedPlanetTileLayer] = useState();
+  const [selectedVisualTile, setSelectedVisualTile] = useState(
+    () => store.getState().planetTileLayer
+  );
+  const [analyticMosaicMap, setAnalyticMosaicMap] = useState({});
 
   useEffect(() => {
     axios.get(`${window.location.origin}/map/getPlanetTilesInfo`).then((response) => {
-      const tilesInfo = response.data.mosaics
+      const mosaics = response.data.mosaics;
+
+      const tilesInfo = mosaics
         .filter((tile) => tile.name.includes('global_monthly'))
         .map((tile) => {
-          // sample tile name: global_monthly_2023-01_mosaic
+          // sample tile name: global_monthly_2025_03_mosaic
           const match = tile.name.match(/\d{4}_\d{2}/);
           const yearAndMonth = match && match[0]?.replace(/_/g, '-');
           // Format month/year in a timezone-agnostic way using UTC, so the label is always correct regardless of user timezone.
@@ -35,31 +40,57 @@ export const PlanetTilesOptions = () => {
           } else {
             label = 'Invalid date';
           }
-          const res = {
+          return {
             tileName: tile.name,
             label,
+            yearMonth: yearAndMonth,
           };
-          return res;
         });
+
+      // Build a mapping from yearMonth to analytic mosaic name.
+      // Analytic mosaics support proc=cir (False Color), visual ones (global_monthly) do not.
+      const analyticMap = {};
+      mosaics
+        .filter((tile) => tile.name.includes('planet_medres_normalized_analytic'))
+        .forEach((tile) => {
+          const match = tile.name.match(/\d{4}-\d{2}/);
+          if (match) {
+            analyticMap[match[0]] = tile.name;
+          }
+        });
+
       const reversedTiles = tilesInfo.reverse();
       setPlanetTiles(reversedTiles);
-    });
-
-    store.subscribe(() => {
-      const { planetTileLayer } = store.getState();
-      setSelectedPlanetTileLayer(planetTileLayer);
+      setAnalyticMosaicMap(analyticMap);
     });
   }, []);
 
+  const getAnalyticTile = (visualTileName) => {
+    if (!visualTileName) {
+      return null;
+    }
+    const match = visualTileName.match(/\d{4}_\d{2}/);
+    const yearMonth = match && match[0]?.replace(/_/g, '-');
+    return yearMonth ? analyticMosaicMap[yearMonth] : null;
+  };
+
+  const getTileLayerForDispatch = (visualTile, color) => {
+    if (color === 'cir') {
+      return getAnalyticTile(visualTile) || visualTile;
+    }
+    return visualTile;
+  };
+
   const handlePlanetTile = (evt) => {
-    store.dispatch(updatePlanetTileLayer(evt.target.value));
+    const visualTile = evt.target.value;
+    setSelectedVisualTile(visualTile);
+    store.dispatch(updatePlanetTileLayer(getTileLayerForDispatch(visualTile, planetColor)));
   };
 
   const handlePlanetColorChange = (val) => {
-    const { planetTileLayer } = store.getState();
     setPlanetColor(val);
     store.dispatch(updatePlanetTileColor(val));
-    store.dispatch(updatePlanetTileLayer(planetTileLayer));
+    store.dispatch(updatePlanetTileLayer(getTileLayerForDispatch(selectedVisualTile, val)));
   };
 
   const naturalColorString = transifex('Natural color');
@@ -67,7 +98,7 @@ export const PlanetTilesOptions = () => {
 
   return (
     <div className="planet-options">
-      <select onChange={(evt) => handlePlanetTile(evt)} value={selectedPlanetTileLayer}>
+      <select onChange={(evt) => handlePlanetTile(evt)} value={selectedVisualTile}>
         {planetTiles &&
           planetTiles.map((tileInfo) => {
             return (

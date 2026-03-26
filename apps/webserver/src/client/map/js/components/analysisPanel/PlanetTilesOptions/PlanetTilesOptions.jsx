@@ -77,7 +77,9 @@ export const PlanetTilesOptions = () => {
 
   // Use yearMonth from tileInfo to avoid re-parsing dates in the analytic lookup.
   const getAnalyticTile = (visualTileName) => {
-    if (!visualTileName || !planetTiles) {return null;}
+    if (!visualTileName || !planetTiles) {
+      return null;
+    }
     const tileInfo = planetTiles.find((t) => t.tileName === visualTileName);
     return tileInfo?.yearMonth ? analyticMosaicMap[tileInfo.yearMonth] : null;
   };
@@ -91,7 +93,7 @@ export const PlanetTilesOptions = () => {
         store.dispatch(updatePlanetTileLayer(analyticTile));
       }
     }
-  }, [analyticMosaicMap]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [analyticMosaicMap]);
 
   const getTileLayerForDispatch = (visualTile, color) => {
     if (color === 'cir') {

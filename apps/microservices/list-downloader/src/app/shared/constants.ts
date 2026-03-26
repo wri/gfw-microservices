@@ -1560,7 +1560,9 @@ export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Analysis Type',
   'Hectares',
   'Locations',
-  'Token Cost',
+  'Per Location Cost',
+  'Processing Cost',
+  'Total Cost',
   'Date/Timestamp',
   'UI/API',
 ];

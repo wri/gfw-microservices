@@ -238,12 +238,13 @@ describe('list.analysis.status.ts', () => {
         undefined
       );
 
-      // Should call deleteListAnalyses with all selected analysis IDs and existing data
+      // Should call deleteListAnalyses with all selected analysis IDs and the
+      // non-option-only rows (PalmRisk is filtered out as a synthetic option row).
       expect(deleteListAnalysesSpy).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         newAnalysisIds,
-        mockExistingStatusData
+        [{ analysisId: 'FCD', status: listStatus.Pending }]
       );
     });
 
@@ -286,7 +287,7 @@ describe('list.analysis.status.ts', () => {
           status: listStatus.Active,
           options: AlertsAnalysisFrequency.WEEKLY,
         },
-        { analysisId: 'AFI', status: listStatus.Active },
+        { analysisId: analysisTypes.DEFORESTATION_KPIS, status: listStatus.Active },
       ];
       const fakeOrgId = 42;
 
@@ -301,7 +302,7 @@ describe('list.analysis.status.ts', () => {
       await setSelectedAnalyses(
         fakeClientDatabase,
         fakeListId,
-        ['ALERTS', 'AFI'],
+        [analysisTypes.ALERTS, analysisTypes.DEFORESTATION_KPIS],
         fakeAnalysisStatus,
         fakeOrgId
       );
@@ -310,7 +311,7 @@ describe('list.analysis.status.ts', () => {
       expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
-        expect.arrayContaining(['ALERTS']),
+        expect.arrayContaining([analysisTypes.ALERTS]),
         fakeAnalysisStatus,
         fakeOrgId,
         undefined

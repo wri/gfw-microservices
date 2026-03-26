@@ -133,12 +133,27 @@ export const setSelectedAnalyses = async (
   ) {
     analysesToAdd = [...analysesToAdd, analysisTypes.ALERTS];
   }
+
+  // When PalmRisk is being removed but FCD remains, force-include FCD
+  // so its options field gets cleared in the DB.
+  const fcdRow = currentAnalyses.find(
+    (a) => a.analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  );
+  if (
+    fcdRow?.options === analysisTypes.PALM_RISK &&
+    selectedAnalysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS) &&
+    !selectedAnalysisIds.includes(analysisTypes.PALM_RISK) &&
+    !analysesToAdd.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.FOREST_CHANGE_DIAGNOSTICS];
+  }
+
   // Delete the ones that are no longer selected.
-  // Filter out synthetic option-only analysis rows (like WEEKLY) so that
-  // their deletion cannot trigger an options-only SQL update that affects
-  // other analyses on the list.
+  // Filter out ALL synthetic option-only analysis rows (based on analysisIdsOptionsMap) so
+  // their deletion cannot trigger an options-only SQL update that affects other analyses.
+  const allOptionIds = new Set(flatten(Object.values(analysisIdsOptionsMap)));
   const deletableAnalyses = currentAnalyses.filter(
-    (analysis) => analysis.analysisId !== AlertsAnalysisFrequency.WEEKLY
+    (analysis) => !allOptionIds.has(analysis.analysisId)
   );
   await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, deletableAnalyses);
 

@@ -19,6 +19,7 @@ import {
 } from '@wri-monorepos/sql';
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
 import {
+  analysisTypes,
   analysisTypesOptionsNewNames,
   listStatus,
   AlertsAnalysisFrequency,
@@ -237,12 +238,13 @@ describe('list.analysis.status.ts', () => {
         undefined
       );
 
-      // Should call deleteListAnalyses with all selected analysis IDs and existing data
+      // Should call deleteListAnalyses with all selected analysis IDs and the
+      // non-option-only rows (PalmRisk is filtered out as a synthetic option row).
       expect(deleteListAnalysesSpy).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         newAnalysisIds,
-        mockExistingStatusData
+        [{ analysisId: 'FCD', status: listStatus.Pending }]
       );
     });
 
@@ -275,6 +277,82 @@ describe('list.analysis.status.ts', () => {
         fakeAnalysisStatus,
         fakeOrgId,
         AlertsAnalysisFrequency.WEEKLY
+      );
+    });
+
+    it('should include ALERTS in analysesToAdd when Weekly is removed but ALERTS remains, to clear options', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.ALERTS,
+          status: listStatus.Active,
+          options: AlertsAnalysisFrequency.WEEKLY,
+        },
+        { analysisId: analysisTypes.DEFORESTATION_KPIS, status: listStatus.Active },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.ALERTS, analysisTypes.DEFORESTATION_KPIS],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // ALERTS must be re-upserted so its options field gets cleared (no Weekly)
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.ALERTS]),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        undefined
+      );
+    });
+
+    it('should include FCD in analysesToAdd when PalmRisk is removed but FCD remains, to clear options', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+          status: listStatus.Active,
+          options: analysisTypes.PALM_RISK,
+        },
+        { analysisId: analysisTypes.DEFORESTATION_KPIS, status: listStatus.Active },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.DEFORESTATION_KPIS],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // FCD must be re-upserted so its options field gets cleared (no PalmRisk)
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.FOREST_CHANGE_DIAGNOSTICS]),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        undefined
       );
     });
   });

@@ -107,9 +107,6 @@ import { AlertsDateSelector } from './components/AlertsDateSelector';
 import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
 import featureFlagsUtil from '../../../../../../utils/general.utils';
 
-// Use featureFlagsUtil to avoid identifier conflicts
-const featureFlags = featureFlagsUtil;
-
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
 const ALERTS_UNSUBSCRIBE_BANNER_KEY = 'GFW-is-alerts-unsubscribe-banner-dismissed';
 
@@ -2171,7 +2168,7 @@ export default class ListDetails extends Component {
               </Alert>
             )}
 
-            {featureFlags.isWeeklyAlertsAvailable &&
+            {featureFlagsUtil.isWeeklyAlertsAvailable &&
               !isGfwList &&
               !this.state.isAlertsUnsubscribeBannerDismissed &&
               this.shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) && (

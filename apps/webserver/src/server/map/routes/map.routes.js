@@ -54,6 +54,8 @@ module.exports = (app, limiter) => {
     axios
       .get(url)
       .then((results) => {
+        const mosaicNames = results.data?.mosaics?.map((m) => m.name) ?? [];
+        logger.info('getPlanetTilesInfo mosaics', { mosaicNames });
         res.set('Cache-control', results.headers['cache-control']);
         res.contentType(results.headers['content-type']);
         res.send(results.data);

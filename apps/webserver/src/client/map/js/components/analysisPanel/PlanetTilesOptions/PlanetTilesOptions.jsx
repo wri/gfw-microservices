@@ -45,15 +45,19 @@ export const PlanetTilesOptions = () => {
           };
         });
 
-      // Build a mapping from yearMonth to analytic mosaic name.
-      // Analytic mosaics support proc=cir (False Color), visual ones (global_monthly) do not.
+      // Build a mapping from yearMonth (YYYY-MM) to analytic mosaic name.
+      // Analytic mosaics support proc=cir (False Color); visual ones (global_monthly) do not.
+      // Broaden the filter to catch any mosaic with 'analytic' in its name (handles both
+      // 'planet_medres_normalized_analytic_YYYY-MM_mosaic' and newer naming conventions).
+      // The date regex handles both dash-separated (2025-03) and underscore-separated (2025_03) formats.
       const analyticMap = {};
       mosaics
-        .filter((tile) => tile.name.includes('planet_medres_normalized_analytic'))
+        .filter((tile) => !tile.name.includes('global_monthly') && tile.name.includes('analytic'))
         .forEach((tile) => {
-          const match = tile.name.match(/\d{4}-\d{2}/);
-          if (match) {
-            analyticMap[match[0]] = tile.name;
+          const match = tile.name.match(/\d{4}[-_]\d{2}/);
+          const yearMonth = match && match[0]?.replace(/_/g, '-');
+          if (yearMonth && !analyticMap[yearMonth]) {
+            analyticMap[yearMonth] = tile.name;
           }
         });
 
@@ -116,6 +120,7 @@ export const PlanetTilesOptions = () => {
 
   const naturalColorString = transifex('Natural color');
   const falseColorString = transifex('False color');
+  const hasAnalyticMosaics = Object.keys(analyticMosaicMap).length > 0;
 
   return (
     <div className="planet-options">
@@ -129,11 +134,15 @@ export const PlanetTilesOptions = () => {
             );
           })}
       </select>
-      <select onChange={(e) => handlePlanetColorChange(e.target.value)} value={planetColor}>
+      <select
+        onChange={(e) => handlePlanetColorChange(e.target.value)}
+        value={planetColor}
+        disabled={!hasAnalyticMosaics}
+      >
         <option key={'rgb'} value={'rgb'}>
           {naturalColorString}
         </option>
-        <option key={'cir'} value={'cir'}>
+        <option key={'cir'} value={'cir'} disabled={!hasAnalyticMosaics}>
           {falseColorString}
         </option>
       </select>

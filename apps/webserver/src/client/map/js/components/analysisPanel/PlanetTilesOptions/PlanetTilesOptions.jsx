@@ -10,10 +10,8 @@ const transifex = Transifex.live.translateText;
 
 export const PlanetTilesOptions = () => {
   const [planetTiles, setPlanetTiles] = useState();
-  const [planetColor, setPlanetColor] = useState('rgb');
-  const [selectedVisualTile, setSelectedVisualTile] = useState(
-    () => store.getState().planetTileLayer
-  );
+  const [planetColor, setPlanetColor] = useState(() => store.getState().planetTileColor);
+  const [selectedVisualTile, setSelectedVisualTile] = useState(null);
   const [analyticMosaicMap, setAnalyticMosaicMap] = useState({});
 
   useEffect(() => {
@@ -62,17 +60,38 @@ export const PlanetTilesOptions = () => {
       const reversedTiles = tilesInfo.reverse();
       setPlanetTiles(reversedTiles);
       setAnalyticMosaicMap(analyticMap);
+
+      // Resolve the stored tile to a visual tile name (it may be analytic if CIR was previously selected).
+      const storedLayer = store.getState().planetTileLayer;
+      if (storedLayer.includes('global_monthly')) {
+        setSelectedVisualTile(storedLayer);
+      } else {
+        // It's an analytic tile; extract YYYY-MM and find the matching visual tile.
+        const analyticMatch = storedLayer.match(/\d{4}-\d{2}/);
+        const yearMonth = analyticMatch && analyticMatch[0];
+        const matchingVisual = reversedTiles.find((t) => t.yearMonth === yearMonth);
+        setSelectedVisualTile(matchingVisual?.tileName ?? reversedTiles[0]?.tileName ?? null);
+      }
     });
   }, []);
 
+  // Use yearMonth from tileInfo to avoid re-parsing dates in the analytic lookup.
   const getAnalyticTile = (visualTileName) => {
-    if (!visualTileName) {
-      return null;
-    }
-    const match = visualTileName.match(/\d{4}_\d{2}/);
-    const yearMonth = match && match[0]?.replace(/_/g, '-');
-    return yearMonth ? analyticMosaicMap[yearMonth] : null;
+    if (!visualTileName || !planetTiles) {return null;}
+    const tileInfo = planetTiles.find((t) => t.tileName === visualTileName);
+    return tileInfo?.yearMonth ? analyticMosaicMap[tileInfo.yearMonth] : null;
   };
+
+  // Re-dispatch the correct analytic layer once analyticMosaicMap is populated,
+  // in case the user switched to CIR before the async fetch completed.
+  useEffect(() => {
+    if (planetColor === 'cir' && Object.keys(analyticMosaicMap).length > 0 && selectedVisualTile) {
+      const analyticTile = getAnalyticTile(selectedVisualTile);
+      if (analyticTile) {
+        store.dispatch(updatePlanetTileLayer(analyticTile));
+      }
+    }
+  }, [analyticMosaicMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getTileLayerForDispatch = (visualTile, color) => {
     if (color === 'cir') {
@@ -98,7 +117,7 @@ export const PlanetTilesOptions = () => {
 
   return (
     <div className="planet-options">
-      <select onChange={(evt) => handlePlanetTile(evt)} value={selectedVisualTile}>
+      <select onChange={(evt) => handlePlanetTile(evt)} value={selectedVisualTile || ''}>
         {planetTiles &&
           planetTiles.map((tileInfo) => {
             return (

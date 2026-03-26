@@ -56,6 +56,7 @@ export const ERROR_CODES = {
   failedToSetStatus: 408,
   failedToGetUserInfo: 409,
   failedToGetSecret: 410,
+  unauthorizedUserModification: 411,
   // Organizations
   failedToGetOrganizations: 500,
   failedToDeleteOrganization: 501,

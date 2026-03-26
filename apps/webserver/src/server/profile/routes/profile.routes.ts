@@ -8,6 +8,7 @@ import * as AccountManager from '../../../config/publicutils/accountManager.util
 import * as PolicyManager from '../../../config/publicutils/policyManager.utils';
 import rateLimiterUtil from '../../../config/lib/limiter-util';
 import * as logger from '../../../config/privateutils/logger.utils';
+import * as errorUtils from '../../../config/privateutils/error.utils';
 import {
   validateRequest,
   updateUserSchema,
@@ -222,9 +223,15 @@ export = (app, limiter) => {
         logger.warn(
           `POST /profile/updateuser - Unauthorized attempt: User ${authenticatedUserId} tried to update user ${requestedUserId}`
         );
+        const errorResponse = errorUtils.createErrorMessage(
+          req,
+          errorUtils.ERROR_CODES.unauthorizedUserModification,
+          "You are not authorized to update another user's profile",
+          `User ${authenticatedUserId} attempted to modify user ${requestedUserId}`
+        );
         res.status(403).json({
-          errorCode: 403,
-          userMessage: "You are not authorized to update another user's profile",
+          errorCode: errorResponse.errorCode,
+          userMessage: errorResponse.userMessage,
         });
         return;
       }
@@ -254,9 +261,9 @@ export = (app, limiter) => {
       logger.error('POST /profile/updateuser', err);
       // Map errorUtils.createErrorMessage shape to response
       // Note: systemMessage is excluded to prevent exposing sensitive internal details
-      const statusCode = err.errorCode || 500;
+      // Always use HTTP 500 for server errors; errorCode in body is for internal tracking
       const errorMessage = err.userMessage || err.message || 'Failed to update user information';
-      res.status(statusCode).json({
+      res.status(500).json({
         errorCode: err.errorCode,
         userMessage: errorMessage,
       });

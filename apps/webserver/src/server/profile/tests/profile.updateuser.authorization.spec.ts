@@ -7,6 +7,7 @@ import {
 } from '../../../config/publicutils/validation.middleware';
 import * as UserManager from '../../../config/publicutils/userManager.utils';
 import * as logger from '../../../config/privateutils/logger.utils';
+import * as errorUtils from '../../../config/privateutils/error.utils';
 
 // Mock dependencies
 jest.mock('../../../config/privateutils/logger.utils', () => ({
@@ -19,6 +20,17 @@ jest.mock('../../../config/privateutils/logger.utils', () => ({
       UserUpdated: 'UserUpdated',
     },
   },
+}));
+
+jest.mock('../../../config/privateutils/error.utils', () => ({
+  ERROR_CODES: {
+    unauthorizedUserModification: 411,
+  },
+  createErrorMessage: jest.fn((req, errorCode, userMsg, systemMsg) => ({
+    errorCode,
+    userMessage: userMsg,
+    systemMessage: systemMsg,
+  })),
 }));
 
 jest.mock('../../../config/publicutils/userManager.utils', () => ({
@@ -73,9 +85,15 @@ describe('POST /profile/updateuser - Authorization Controls (IDOR Prevention)', 
           logger.warn(
             `POST /profile/updateuser - Unauthorized attempt: User ${authenticatedUserId} tried to update user ${requestedUserId}`
           );
+          const errorResponse = errorUtils.createErrorMessage(
+            req,
+            errorUtils.ERROR_CODES.unauthorizedUserModification,
+            "You are not authorized to update another user's profile",
+            `User ${authenticatedUserId} attempted to modify user ${requestedUserId}`
+          );
           res.status(403).json({
-            errorCode: 403,
-            userMessage: "You are not authorized to update another user's profile",
+            errorCode: errorResponse.errorCode,
+            userMessage: errorResponse.userMessage,
           });
           return;
         }
@@ -103,9 +121,9 @@ describe('POST /profile/updateuser - Authorization Controls (IDOR Prevention)', 
         res.status(200).json(result);
       } catch (err) {
         logger.error('POST /profile/updateuser', err);
-        const statusCode = err.errorCode || 500;
+        // Always use HTTP 500 for server errors; errorCode in body is for internal tracking
         const errorMessage = err.userMessage || err.message || 'Failed to update user information';
-        res.status(statusCode).json({
+        res.status(500).json({
           errorCode: err.errorCode,
           userMessage: errorMessage,
         });
@@ -143,7 +161,7 @@ describe('POST /profile/updateuser - Authorization Controls (IDOR Prevention)', 
 
       expect(response.status).toBe(403);
       expect(response.body).toMatchObject({
-        errorCode: 403,
+        errorCode: 411,
         userMessage: "You are not authorized to update another user's profile",
       });
       expect(mockUpdateUserInfo).not.toHaveBeenCalled();
@@ -343,7 +361,7 @@ describe('POST /profile/updateuser - Authorization Controls (IDOR Prevention)', 
 
       // Should be rejected with 403
       expect(response.status).toBe(403);
-      expect(response.body.errorCode).toBe(403);
+      expect(response.body.errorCode).toBe(411);
       expect(mockUpdateUserInfo).not.toHaveBeenCalled();
 
       // Verify security warning was logged

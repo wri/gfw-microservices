@@ -311,12 +311,11 @@ describe('POST /profile/updateuser - Authorization Controls (IDOR Prevention)', 
 
   describe('Proof of Concept from Security Report', () => {
     it('should prevent the documented IDOR attack (User 32 modifying User 33)', async () => {
-      mockIsAdministrator.mockReturnValue(false);
-
       // User testaccount2 (ID: 32) attempts to modify testaccount3 (ID: 33)
       jest.clearAllMocks();
       mockUpdateUserInfo = UserManager.updateUserInfo as jest.Mock;
       mockIsAdministrator = UserManager.isAdministrator as jest.Mock;
+      mockIsAdministrator.mockReturnValue(false);
       const attackerUserId = 32;
       const victimUserId = 33;
 

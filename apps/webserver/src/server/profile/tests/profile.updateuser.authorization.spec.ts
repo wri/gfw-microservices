@@ -227,15 +227,15 @@ describe('POST /profile/updateuser - Authorization Controls (IDOR Prevention)', 
 
   describe('Admin User Authorization', () => {
     beforeEach(() => {
+      jest.clearAllMocks();
+      mockIsAdministrator = UserManager.isAdministrator as jest.Mock;
+      mockUpdateUserInfo = UserManager.updateUserInfo as jest.Mock;
       mockIsAdministrator.mockReturnValue(true);
       mockUpdateUserInfo.mockResolvedValue(true);
     });
 
     it("should allow admin to update another user's profile", async () => {
       const adminUserId = 1;
-      jest.clearAllMocks();
-      mockUpdateUserInfo = UserManager.updateUserInfo as jest.Mock;
-      mockIsAdministrator = UserManager.isAdministrator as jest.Mock;
       const targetUserId = 33;
 
       app = createApp({

@@ -4,6 +4,7 @@ const { subHours, isBefore } = require('date-fns');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const config = require(path.resolve('./config/config')).default;
 
 /** @function {checkActive}
  *   @summary Used to check if the user is an active user
@@ -152,6 +153,24 @@ const checkProManagerAuthentication = (request, response, next) => {
   }
 };
 
+/** @function {checkAdministrator}
+ *   @summary Used to check if the user is an organization administrator.
+ *   @param {Object} request - request
+ *   @param {Object} response - response
+ *   @param {Object} next - action
+ */
+const checkAdministrator = (request, response, next) => {
+  const { user_access_level_id } = request.session;
+  if (user_access_level_id === config.platformVars.accessLevel.Administrator) {
+    next();
+  } else {
+    response.status(403).json({
+      error: 'Forbidden: Administrator access required',
+      redirect: '/',
+    });
+  }
+};
+
 /** @function {checkRecognized}
  *   @summary Used to check if the user has gone through the first stage of login (but not verified).
  *   @param {Object} request - request
@@ -182,6 +201,7 @@ const rateLimitUnauthenticated = {
 
 module.exports = {
   checkActive,
+  checkAdministrator,
   checkAuthentication,
   checkInactivity,
   checkOrganization,

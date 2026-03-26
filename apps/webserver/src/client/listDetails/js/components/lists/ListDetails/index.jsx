@@ -105,6 +105,7 @@ import {
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
+// eslint-disable-next-line no-redeclare
 import featureFlags from '../../../../../../utils/general.utils';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';

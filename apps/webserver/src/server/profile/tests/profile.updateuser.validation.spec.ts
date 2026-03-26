@@ -7,6 +7,7 @@ import {
 } from '../../../config/publicutils/validation.middleware';
 import * as UserManager from '../../../config/publicutils/userManager.utils';
 import * as logger from '../../../config/privateutils/logger.utils';
+import * as errorUtils from '../../../config/privateutils/error.utils';
 
 // Mock dependencies
 jest.mock('../../../config/privateutils/logger.utils', () => ({
@@ -20,13 +21,26 @@ jest.mock('../../../config/privateutils/logger.utils', () => ({
   },
 }));
 
+jest.mock('../../../config/privateutils/error.utils', () => ({
+  ERROR_CODES: {
+    unauthorizedUserModification: 411,
+  },
+  createErrorMessage: jest.fn((req, errorCode, userMsg, systemMsg) => ({
+    errorCode,
+    userMessage: userMsg,
+    systemMessage: systemMsg,
+  })),
+}));
+
 jest.mock('../../../config/publicutils/userManager.utils', () => ({
   updateUserInfo: jest.fn(),
+  isAdministrator: jest.fn(),
 }));
 
 describe('POST /profile/updateuser - Input Validation', () => {
   let app;
   let mockUpdateUserInfo;
+  let mockIsAdministrator;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -39,6 +53,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
     app.use((req, res, next) => {
       req.session = {
         organization_id: 1,
+        organization_user_id: 1, // Set authenticated user ID
         user_access_level_id: 2,
         last_activity_time: new Date(),
       };
@@ -46,9 +61,12 @@ describe('POST /profile/updateuser - Input Validation', () => {
     });
 
     mockUpdateUserInfo = UserManager.updateUserInfo;
+    mockIsAdministrator = UserManager.isAdministrator as jest.Mock;
+    // Default to non-admin for validation tests
+    mockIsAdministrator.mockReturnValue(false);
 
     // Define the route
-    app.post('/profile/updateuser', validateRequest(updateUserSchema), (req, res) => {
+    app.post('/profile/updateuser', validateRequest(updateUserSchema), async (req, res) => {
       logger.info('POST /profile/updateuser');
       const {
         id,
@@ -66,35 +84,61 @@ describe('POST /profile/updateuser - Input Validation', () => {
         auth_preference_id,
       } = req.body;
 
-      UserManager.updateUserInfo({
-        req,
-        user_id: id,
-        user_first_name: first_name,
-        user_middle_initial: middle_initial,
-        user_last_name: last_name,
-        user_email: email,
-        user_phone: phone,
-        user_title_id: title_id,
-        other_title,
-        access_level_id,
-        email_subscription: enableAlerts,
-        arr_user_geography_ids: geographies,
-        arr_user_commodity_ids: commodities,
-        user_auth_preference_id: auth_preference_id,
-        loggedUserAccessLevelId: req.session.user_access_level_id,
-      })
-        .then((result) => {
-          res.status(200).json(result);
-        })
-        .catch((err) => {
-          logger.error('POST /profile/updateuser', err);
-          const statusCode = err.statusCode || 500;
-          const errorMessage = err.message || 'Failed to update user information';
-          res.status(statusCode).json({
-            error: 'Update Failed',
-            message: errorMessage,
+      try {
+        // Security: Derive user ID from authenticated session
+        const authenticatedUserId = req.session.organization_user_id;
+        const requestedUserId = id;
+        const isAdmin = UserManager.isAdministrator(req);
+
+        // Authorization check: Non-admin users can only update their own profile
+        // If requestedUserId is null/undefined, treat as self-update
+        if (!isAdmin && requestedUserId && requestedUserId !== authenticatedUserId) {
+          logger.warn(
+            `POST /profile/updateuser - Unauthorized attempt: User ${authenticatedUserId} tried to update user ${requestedUserId}`
+          );
+          const errorResponse = errorUtils.createErrorMessage(
+            req,
+            errorUtils.ERROR_CODES.unauthorizedUserModification,
+            "You are not authorized to update another user's profile",
+            `User ${authenticatedUserId} attempted to modify user ${requestedUserId}`
+          );
+          res.status(403).json({
+            errorCode: errorResponse.errorCode,
+            userMessage: errorResponse.userMessage,
           });
+          return;
+        }
+
+        // Use the authenticated user ID for self-updates, or the requested ID for admin updates
+        const targetUserId = isAdmin && requestedUserId ? requestedUserId : authenticatedUserId;
+
+        const result = await UserManager.updateUserInfo({
+          req,
+          user_id: targetUserId,
+          user_first_name: first_name,
+          user_middle_initial: middle_initial,
+          user_last_name: last_name,
+          user_email: email,
+          user_phone: phone,
+          user_title_id: title_id,
+          other_title,
+          access_level_id,
+          email_subscription: enableAlerts,
+          arr_user_geography_ids: geographies,
+          arr_user_commodity_ids: commodities,
+          user_auth_preference_id: auth_preference_id,
+          loggedUserAccessLevelId: req.session.user_access_level_id,
         });
+        res.status(200).json(result);
+      } catch (err) {
+        logger.error('POST /profile/updateuser', err);
+        // Always use HTTP 500 for server errors; errorCode in body is for internal tracking
+        const errorMessage = err.userMessage || err.message || 'Failed to update user information';
+        res.status(500).json({
+          errorCode: err.errorCode,
+          userMessage: errorMessage,
+        });
+      }
     });
   });
 
@@ -244,7 +288,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
       mockUpdateUserInfo.mockResolvedValue(true);
 
       const response = await request(app).post('/profile/updateuser').send({
-        id: 1,
+        id: 1, // Same as authenticated user ID in session
         first_name: 'John',
         last_name: 'Doe',
         email: 'john@example.com',
@@ -253,7 +297,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
       expect(response.status).toBe(200);
       expect(mockUpdateUserInfo).toHaveBeenCalledWith(
         expect.objectContaining({
-          user_id: 1,
+          user_id: 1, // Uses authenticated user ID
           user_first_name: 'John',
           user_last_name: 'Doe',
           user_email: 'john@example.com',
@@ -267,7 +311,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
       const response = await request(app)
         .post('/profile/updateuser')
         .send({
-          id: 123,
+          id: 1, // Same as authenticated user ID
           first_name: 'Jane',
           middle_initial: 'M',
           last_name: 'Smith',
@@ -285,7 +329,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
       expect(response.status).toBe(200);
       expect(mockUpdateUserInfo).toHaveBeenCalledWith(
         expect.objectContaining({
-          user_id: 123,
+          user_id: 1, // Uses authenticated user ID
           user_first_name: 'Jane',
           user_middle_initial: 'M',
           user_last_name: 'Smith',
@@ -306,7 +350,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
       mockUpdateUserInfo.mockResolvedValue(true);
 
       const response = await request(app).post('/profile/updateuser').send({
-        id: 1,
+        id: 1, // Same as authenticated user ID
         first_name: '  John  ',
         last_name: '  Doe  ',
         email: '  john@example.com  ',
@@ -351,8 +395,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
 
     it('should return proper error response on backend failure', async () => {
       mockUpdateUserInfo.mockRejectedValue({
-        statusCode: 500,
-        message: 'Database error',
+        userMessage: 'Database error',
       });
 
       const response = await request(app).post('/profile/updateuser').send({
@@ -364,8 +407,7 @@ describe('POST /profile/updateuser - Input Validation', () => {
 
       expect(response.status).toBe(500);
       expect(response.body).toMatchObject({
-        error: 'Update Failed',
-        message: 'Database error',
+        userMessage: 'Database error',
       });
     });
   });

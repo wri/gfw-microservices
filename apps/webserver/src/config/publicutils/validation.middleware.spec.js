@@ -185,14 +185,16 @@ describe('validation.middleware', () => {
 
   describe('updateUserSchema', () => {
     describe('required fields', () => {
-      it('should reject when id is missing', () => {
+      it('should allow when id is missing (optional for self-updates)', () => {
         const data = {
           first_name: 'John',
           last_name: 'Doe',
           email: 'john@example.com',
         };
 
-        expect(() => updateUserSchema.parse(data)).toThrow();
+        expect(() => updateUserSchema.parse(data)).not.toThrow();
+        const result = updateUserSchema.parse(data);
+        expect(result.id).toBeUndefined();
       });
 
       it('should reject when first_name is missing', () => {

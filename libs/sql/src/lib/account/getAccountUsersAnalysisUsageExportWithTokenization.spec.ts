@@ -554,7 +554,9 @@ describe('getAccountUsersAnalysisUsageExportWithTokenization', () => {
       const queryCall = mockQuery.mock.calls[0];
       const sqlQuery = queryCall[0] as string;
 
-      expect(sqlQuery).toContain('JOIN dbo.Users u ON COALESCE(lp.user_id, last_alerts_user.user_id, l.user_id) = u.id');
+      expect(sqlQuery).toContain(
+        'JOIN dbo.Users u ON COALESCE(lp.user_id, last_alerts_user.user_id, l.user_id) = u.id'
+      );
       expect(sqlQuery).toContain('LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id');
       expect(sqlQuery).toContain('LEFT JOIN dbo.ExternalUploads eu');
       expect(sqlQuery).toContain('LEFT JOIN [gfwpro].[dbo].[ChargeRate] cr');

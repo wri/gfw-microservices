@@ -206,7 +206,6 @@ export async function getAccountAnalysisUsageByAnalysisType({
       .addSelect('lp.analysisType', 'analysis_type')
       .where('lp.analysisEndTime >= :startDateTime', { startDateTime })
       .andWhere('lp.analysisEndTime <= :endDateTime', { endDateTime })
-      .andWhere('lp.userId IS NOT NULL')
       .andWhere(
         new Brackets((qb) =>
           qb

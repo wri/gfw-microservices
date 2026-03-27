@@ -99,7 +99,17 @@ class Locations extends Component {
   }
 
   storeDidUpdate = () => {
-    this.setState(store.getState());
+    const { view, userFolders, selectedFolder, canopyModalVisible, language } = store.getState();
+    const prev = this.state;
+    if (
+      view !== prev.view ||
+      userFolders !== prev.userFolders ||
+      selectedFolder !== prev.selectedFolder ||
+      canopyModalVisible !== prev.canopyModalVisible ||
+      language !== prev.language
+    ) {
+      this.setState({ view, userFolders, selectedFolder, canopyModalVisible, language });
+    }
   };
 
   getGeomFromMap = (isAddingLocationFromMap) => {

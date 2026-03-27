@@ -28,7 +28,7 @@ export async function getAccountUsersAnalysisUsageExportWithTokenization(
 
   // Raw SQL query that joins ListsProcessing with Users, LargeLists, ExternalUploads,
   // and ChargeRate from system database to get tokenization data
-  // For ALERTS-BATCH (weekly alerts), user_id is NULL so we join to Lists table to get list owner
+  // For ALERTS-BATCH (weekly alerts), user_id is NULL so we use the last user who ran ALERTS on that list
   const query = `
     SELECT
       u.email AS 'Username',
@@ -51,7 +51,16 @@ export async function getAccountUsersAnalysisUsageExportWithTokenization(
       END AS 'Effective Rate Date'
     FROM dbo.ListsProcessing lp
     LEFT JOIN dbo.Lists l ON lp.list_id = l.id
-    JOIN dbo.Users u ON COALESCE(lp.user_id, l.user_id) = u.id
+    OUTER APPLY (
+      -- Get the last user who ran one-time ALERTS on this specific list
+      SELECT TOP 1 user_id
+      FROM dbo.ListsProcessing
+      WHERE list_id = lp.list_id
+        AND analysis_type = 'ALERTS'
+        AND user_id IS NOT NULL
+      ORDER BY analysis_end_time DESC
+    ) last_alerts_user
+    JOIN dbo.Users u ON COALESCE(lp.user_id, last_alerts_user.user_id, l.user_id) = u.id
     LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id
     LEFT JOIN dbo.ExternalUploads eu ON ll.s3_filename = eu.uploadKeyFile
     LEFT JOIN [${systemDbName}].[dbo].[ChargeRate] cr ON 

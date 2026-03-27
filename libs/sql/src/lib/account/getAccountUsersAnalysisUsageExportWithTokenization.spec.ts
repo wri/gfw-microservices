@@ -554,7 +554,7 @@ describe('getAccountUsersAnalysisUsageExportWithTokenization', () => {
       const queryCall = mockQuery.mock.calls[0];
       const sqlQuery = queryCall[0] as string;
 
-      expect(sqlQuery).toContain('JOIN dbo.Users u ON COALESCE(lp.user_id, l.user_id) = u.id');
+      expect(sqlQuery).toContain('JOIN dbo.Users u ON COALESCE(lp.user_id, last_alerts_user.user_id, l.user_id) = u.id');
       expect(sqlQuery).toContain('LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id');
       expect(sqlQuery).toContain('LEFT JOIN dbo.ExternalUploads eu');
       expect(sqlQuery).toContain('LEFT JOIN [gfwpro].[dbo].[ChargeRate] cr');
@@ -574,7 +574,7 @@ describe('getAccountUsersAnalysisUsageExportWithTokenization', () => {
       expect(sqlQuery).toContain('cr2.effective_date <= lp.analysis_end_time');
     });
 
-    it('includes join to Lists table for ALERTS-BATCH user attribution', async () => {
+    it('includes join to Lists table and last ALERTS user for ALERTS-BATCH attribution', async () => {
       await getAccountUsersAnalysisUsageExportWithTokenization('org_db', {
         startDate: '2025-12-01',
         endDate: '2025-12-31',
@@ -584,7 +584,9 @@ describe('getAccountUsersAnalysisUsageExportWithTokenization', () => {
       const sqlQuery = queryCall[0] as string;
 
       expect(sqlQuery).toContain('LEFT JOIN dbo.Lists l ON lp.list_id = l.id');
-      expect(sqlQuery).toContain('COALESCE(lp.user_id, l.user_id)');
+      expect(sqlQuery).toContain('OUTER APPLY');
+      expect(sqlQuery).toContain("analysis_type = 'ALERTS'");
+      expect(sqlQuery).toContain('COALESCE(lp.user_id, last_alerts_user.user_id, l.user_id)');
     });
 
     it('orders results by analysis_start_time DESC', async () => {

@@ -145,7 +145,6 @@ async function calculateTokenUsage(
         )
       WHERE lp.analysis_end_time >= @0
         AND lp.analysis_end_time <= @1
-        AND lp.user_id IS NOT NULL
     ) q0
     GROUP BY q0.analysis_type
   `;

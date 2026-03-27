@@ -20,8 +20,6 @@ import {
   UPDATE_INFO_BUBBLE_CACHE,
   TOGGLE_POPOVER,
   UPDATE_LOADING_ICON_ID,
-  UPDATE_BUBBLE_DATA,
-  UPDATE_POPOVER_ANCHOR,
   UPDATE_SELECTED_LIST,
   DEFORESTATION_DISPLAY_FORMAT,
   NATURAL_FOREST_LOSS_DATA_SOURCE,
@@ -199,16 +197,6 @@ export function updatePopoverState(state = initialLocationState.popover, action)
       return {
         ...state,
         popoverLoading,
-      };
-    case UPDATE_BUBBLE_DATA:
-      return {
-        ...state,
-        bubbleData,
-      };
-    case UPDATE_POPOVER_ANCHOR:
-      return {
-        ...state,
-        anchorEl,
       };
     default:
       return state;

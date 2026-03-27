@@ -19,8 +19,6 @@ import {
   UPDATE_INFO_BUBBLE_CACHE,
   TOGGLE_POPOVER,
   UPDATE_LOADING_ICON_ID,
-  UPDATE_BUBBLE_DATA,
-  UPDATE_POPOVER_ANCHOR,
   UPDATE_SELECTED_LIST,
   DEFORESTATION_DISPLAY_FORMAT,
   NATURAL_FOREST_LOSS_DATA_SOURCE,
@@ -105,14 +103,6 @@ export function toggleInfoPopover(displayPopover) {
 
 export function updatePopoverLoadingId(popoverLoading) {
   return { type: UPDATE_LOADING_ICON_ID, popoverLoading };
-}
-
-export function updateBubbleData(bubbleData) {
-  return { type: UPDATE_BUBBLE_DATA, bubbleData };
-}
-
-export function updatePopoverAnchorEl(anchorEl) {
-  return { type: UPDATE_POPOVER_ANCHOR, anchorEl };
 }
 
 export function showInfoPopover({ displayPopover, popoverLoading, bubbleData, anchorEl }) {

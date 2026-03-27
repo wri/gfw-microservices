@@ -16,8 +16,6 @@ export const togglePopover = (evt, infoBubbleCache) => {
   const target = evt.currentTarget;
   const infoBubbleId = target.id;
 
-  store.dispatch(updatePopoverLoadingId(infoBubbleId));
-
   const checkInfoBubbleCache = (id) => {
     return infoBubbleCache[id] !== undefined && infoBubbleCache[id] !== null;
   };
@@ -35,7 +33,8 @@ export const togglePopover = (evt, infoBubbleCache) => {
     return;
   }
 
-  // if the info is not in the cache, go get it
+  // if the info is not in the cache, go get it — show loading state first
+  store.dispatch(updatePopoverLoadingId(infoBubbleId));
   const request = new XMLHttpRequest();
 
   request.addEventListener('load', () => {

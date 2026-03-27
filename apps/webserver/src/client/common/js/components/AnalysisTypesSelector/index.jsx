@@ -1,4 +1,4 @@
-import { Typography, Box, Link, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { Typography, Box, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';
 import {
@@ -8,7 +8,7 @@ import {
   weeklyAlertsAnalysis,
   AlertsAnalysisFrequency,
 } from '../../../../../config/env/analysisTypes.constants';
-import { HelperTextWithPopover } from '../../../../components';
+import { HelperTextWithPopover, Link } from '../../../../components';
 import { ExternalLinks, ReusableText } from '../../../../utils/constants';
 import featureFlags from '../../../../../utils/general.utils';
 
@@ -67,12 +67,7 @@ function AnalysisTypesSelector({
       Recent global integrated disturbance alerts, automatically updated weekly.
       <br />
       Selecting Weekly Alerts will deduct from available usage. Please see our{' '}
-      <Link
-        href={ExternalLinks.PriceSheet}
-        target="_blank"
-        rel="noopener noreferrer"
-        underline="none"
-      >
+      <Link href={ExternalLinks.PriceSheet} target="_blank" rel="noopener noreferrer">
         Price Sheet
       </Link>{' '}
       for more information.
@@ -86,9 +81,10 @@ function AnalysisTypesSelector({
         <Typography variant="caption">
           Select which type(s) of data analysis you'd like to be available for this list. Note that
           analysis processing counts towards your account usage limits. See more information{' '}
-          <Link href="/about?section=Fees" underline="none" target="_blank">
-            here.
+          <Link href="/about?section=Fees" target="_blank">
+            here
           </Link>
+          .
         </Typography>
         <br />
         {analysisOptions.map(({ id, label, description }) => (

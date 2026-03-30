@@ -29,7 +29,12 @@ const envModule = ConfigModule.forRoot({
           entities: [],
           extra: {
             trustServerCertificate: true,
+            options: {
+              connectTimeout: 30000,
+              requestTimeout: 15000,
+            },
           },
+          poolSize: 5,
         } as DataSourceOptions;
       },
     }),

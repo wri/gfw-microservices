@@ -69,7 +69,12 @@ export const createDatasourceConfig = (
     port: parseInt(process.env.MSSQL_PORT, 10),
     extra: {
       trustServerCertificate: true,
+      options: {
+        connectTimeout: 30000,
+        requestTimeout: 30000,
+      },
     },
+    poolSize: 10,
   };
 };
 

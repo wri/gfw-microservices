@@ -68,7 +68,6 @@ export const profileInfo = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ message: 'Error getting profile info' });
       });
   }
 };

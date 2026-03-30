@@ -66,7 +66,6 @@ export const userProfileData = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
       });
   } else {
     AuthManager.getUserInfo(req)
@@ -92,7 +91,6 @@ export const userProfileData = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
       });
   }
 };
@@ -126,7 +124,6 @@ export const createNewUserProfile = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
       });
   } else {
     AuthManager.getUserInfo(req)
@@ -146,7 +143,6 @@ export const createNewUserProfile = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
       });
   }
 };

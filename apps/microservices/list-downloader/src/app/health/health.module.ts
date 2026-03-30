@@ -33,8 +33,12 @@ const envModule = ConfigModule.forRoot({
               connectTimeout: 30000,
               requestTimeout: 15000,
             },
+            pool: {
+              max: 5,
+              min: 1,
+              idleTimeoutMillis: 30000,
+            },
           },
-          poolSize: 5,
         } as DataSourceOptions;
       },
     }),

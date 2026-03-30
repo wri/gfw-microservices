@@ -73,8 +73,12 @@ export const createDatasourceConfig = (
         connectTimeout: 30000,
         requestTimeout: 30000,
       },
+      pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000,
+      },
     },
-    poolSize: 10,
   } as TypeOrmModuleOptions;
 };
 

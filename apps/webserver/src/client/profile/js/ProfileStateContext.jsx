@@ -31,7 +31,12 @@ export default function ProfileContextProvider({ children }) {
         'Content-type': 'application/json',
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setProfileInfo(data);
         setIsLoading(false);

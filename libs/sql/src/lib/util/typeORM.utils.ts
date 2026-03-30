@@ -68,7 +68,16 @@ export const createDatasourceConfig = (
     dropSchema: env === TEST_ENVIRONMENT,
     port: parseInt(process.env.MSSQL_PORT, 10),
     extra: {
-      trustServerCertificate: true,
+      connectionTimeout: 30000,
+      requestTimeout: 30000,
+      options: {
+        trustServerCertificate: true,
+      },
+      pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000,
+      },
     },
   };
 };
@@ -90,7 +99,7 @@ export class TypeOrmSystemModule {
 // NOTE: mutex must be used when accessing these maps
 const mutexWithTimeout = withTimeout(
   new Mutex(),
-  20100, // longer than 15000 ms tedious/SQL Server timeout
+  35000, // longer than 30000 ms connectionTimeout
   new Error('Error on try to establish connection')
 );
 const staticConnections: Map<string, ConnectionCacheItem> = new Map();

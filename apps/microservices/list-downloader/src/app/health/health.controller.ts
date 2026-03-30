@@ -22,7 +22,7 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      async () => this.db.pingCheck('database'),
+      async () => this.db.pingCheck('database', { timeout: 10000 }),
       async () =>
         this.http.pingCheck(
           'LP',

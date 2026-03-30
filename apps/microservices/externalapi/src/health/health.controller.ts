@@ -21,7 +21,7 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      async () => this.db.pingCheck('database'),
+      async () => this.db.pingCheck('database', { timeout: 10000 }),
       async () => this.http.pingCheck('LP', `${process.env.LLP_BASE_URL}/api/HealthCheck`),
       async () => this.http.pingCheck('LD', `${process.env.LD_MICROSERVICE_URL}/HealthCheck`),
       () => this.memory.checkHeap('memory_heap', 4 * 1024 * 1024 * 1024), // 4GB

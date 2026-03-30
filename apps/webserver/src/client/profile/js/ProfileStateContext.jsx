@@ -38,6 +38,7 @@ export default function ProfileContextProvider({ children }) {
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false);
       });
   }, []);
 

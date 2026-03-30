@@ -848,23 +848,28 @@ class Map extends Component {
       const planetColorValue = store.getState().planetTileColor;
       const planetBasemapLayer = this.view.map.findLayerById(PLANET_BASEMAP);
       const index = this.view.map.layers.findIndex((l) => l.id === PLANET_BASEMAP);
+      const newUrl = `${window.location.origin}/map/getPlanetTile/basemaps/v1/planet-tiles/${planetTileLayer}/gmap/{level}/{col}/{row}.png?proc=${planetColorValue}`;
 
       if (!planetBasemapLayer.visible) {
-        this.changeBasemap(PLANET_BASEMAP);
+        // Planet is not the active basemap — just update the URL so it's ready
+        // when the user switches to Planet. Do NOT force a basemap switch.
+        planetBasemapLayer.urlTemplate = newUrl;
+      } else {
+        // Planet is currently active — update URL and force a tile refresh by
+        // removing and re-adding the layer (ArcGIS WebTileLayer is not reactive).
+        const duplicate = planetBasemapLayer;
+        duplicate.urlTemplate = newUrl;
+
+        const promise = new Promise((resolve) => {
+          this.view.map.remove(planetBasemapLayer);
+          resolve();
+        });
+        promise.then(() => {
+          this.view.map.add(duplicate);
+          duplicate.visible = true;
+          this.view.map.layers.reorder(duplicate, index);
+        });
       }
-
-      const duplicate = planetBasemapLayer;
-      duplicate.urlTemplate = `${window.location.origin}/map/getPlanetTile/basemaps/v1/planet-tiles/${planetTileLayer}/gmap/{level}/{col}/{row}.png?proc=${planetColorValue}`;
-
-      const promise = new Promise((resolve) => {
-        this.view.map.remove(planetBasemapLayer);
-        resolve();
-      });
-      promise.then(() => {
-        this.view.map.add(duplicate);
-        duplicate.visible = true;
-        this.view.map.layers.reorder(duplicate, index);
-      });
     }
 
     const { deforestationAlertsDateRanges, biomassRange } = this.state;

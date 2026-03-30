@@ -2,27 +2,23 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import store from '../../../store';
-import { updatePlanetTileLayer, updatePlanetTileColor } from '../../../actions/mapActions';
-
+import { updatePlanetTileLayer } from '../../../actions/mapActions';
 import './PlanetTilesOptions.scss';
-
-const transifex = Transifex.live.translateText;
 
 export const PlanetTilesOptions = () => {
   const [planetTiles, setPlanetTiles] = useState();
-  const [planetColor, setPlanetColor] = useState('rgb');
-  const [selectedPlanetTileLayer, setSelectedPlanetTileLayer] = useState();
+  const [selectedTile, setSelectedTile] = useState(null);
 
   useEffect(() => {
     axios.get(`${window.location.origin}/map/getPlanetTilesInfo`).then((response) => {
       const tilesInfo = response.data.mosaics
         .filter((tile) => tile.name.includes('global_monthly'))
         .map((tile) => {
-          // sample tile name: global_monthly_2023-01_mosaic
+          // sample tile name: global_monthly_2025_03_mosaic
           const match = tile.name.match(/\d{4}_\d{2}/);
           const yearAndMonth = match && match[0]?.replace(/_/g, '-');
-          // Format month/year in a timezone-agnostic way using UTC, so the label is always correct regardless of user timezone.
-          // If the tile name does not match the expected pattern, show 'Invalid date' for easier debugging.
+          // Format month/year in a timezone-agnostic way using UTC, so the label is always
+          // correct regardless of user timezone.
           let label;
           if (yearAndMonth) {
             const [year, month] = yearAndMonth.split('-');
@@ -35,56 +31,35 @@ export const PlanetTilesOptions = () => {
           } else {
             label = 'Invalid date';
           }
-          const res = {
-            tileName: tile.name,
-            label,
-          };
-          return res;
+          return { tileName: tile.name, label };
         });
+
       const reversedTiles = tilesInfo.reverse();
       setPlanetTiles(reversedTiles);
-    });
 
-    store.subscribe(() => {
-      const { planetTileLayer } = store.getState();
-      setSelectedPlanetTileLayer(planetTileLayer);
+      const storedLayer = store.getState().planetTileLayer;
+      const matching = reversedTiles.find((t) => t.tileName === storedLayer);
+      const initialSelection = matching?.tileName ?? reversedTiles[0]?.tileName ?? null;
+      setSelectedTile(initialSelection);
+      if (initialSelection && initialSelection !== storedLayer) {
+        store.dispatch(updatePlanetTileLayer(initialSelection));
+      }
     });
   }, []);
 
-  const handlePlanetTile = (evt) => {
-    store.dispatch(updatePlanetTileLayer(evt.target.value));
+  const handleChange = (evt) => {
+    const tile = evt.target.value;
+    setSelectedTile(tile);
+    store.dispatch(updatePlanetTileLayer(tile));
   };
-
-  const handlePlanetColorChange = (val) => {
-    const { planetTileLayer } = store.getState();
-    setPlanetColor(val);
-    store.dispatch(updatePlanetTileColor(val));
-    store.dispatch(updatePlanetTileLayer(planetTileLayer));
-  };
-
-  const naturalColorString = transifex('Natural color');
-  const falseColorString = transifex('False color');
 
   return (
-    <div className="planet-options">
-      <select onChange={(evt) => handlePlanetTile(evt)} value={selectedPlanetTileLayer}>
-        {planetTiles &&
-          planetTiles.map((tileInfo) => {
-            return (
-              <option key={tileInfo.tileName} value={tileInfo.tileName}>
-                {tileInfo.label}
-              </option>
-            );
-          })}
-      </select>
-      <select onChange={(e) => handlePlanetColorChange(e.target.value)} value={planetColor}>
-        <option key={'rgb'} value={'rgb'}>
-          {naturalColorString}
+    <select onChange={handleChange} value={selectedTile || ''}>
+      {planetTiles?.map((tileInfo) => (
+        <option key={tileInfo.tileName} value={tileInfo.tileName}>
+          {tileInfo.label}
         </option>
-        <option key={'cir'} value={'cir'}>
-          {falseColorString}
-        </option>
-      </select>
-    </div>
+      ))}
+    </select>
   );
 };

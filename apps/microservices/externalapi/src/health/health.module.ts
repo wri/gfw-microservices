@@ -26,10 +26,10 @@ const envModule = ConfigModule.forRoot({
           database: process.env.MSSQL_DATABASE,
           entities: [],
           extra: {
-            trustServerCertificate: true,
+            connectionTimeout: 30000,
+            requestTimeout: 15000,
             options: {
-              connectTimeout: 30000,
-              requestTimeout: 15000,
+              trustServerCertificate: true,
             },
             pool: {
               max: 5,

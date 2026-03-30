@@ -75,7 +75,7 @@ export const createDatasourceConfig = (
       },
     },
     poolSize: 10,
-  };
+  } as TypeOrmModuleOptions;
 };
 
 export class TypeOrmSystemModule {

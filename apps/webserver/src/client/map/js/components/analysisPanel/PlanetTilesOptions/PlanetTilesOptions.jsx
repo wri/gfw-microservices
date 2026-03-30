@@ -39,7 +39,11 @@ export const PlanetTilesOptions = () => {
 
       const storedLayer = store.getState().planetTileLayer;
       const matching = reversedTiles.find((t) => t.tileName === storedLayer);
-      setSelectedTile(matching?.tileName ?? reversedTiles[0]?.tileName ?? null);
+      const initialSelection = matching?.tileName ?? reversedTiles[0]?.tileName ?? null;
+      setSelectedTile(initialSelection);
+      if (initialSelection && initialSelection !== storedLayer) {
+        store.dispatch(updatePlanetTileLayer(initialSelection));
+      }
     });
   }, []);
 

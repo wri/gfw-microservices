@@ -108,7 +108,13 @@ function AccountsListUsage({ setIsLoading }) {
                     </TableCell>
                     <TableCell align="right">{numberWithCommas(row.max_area_analyzed)}</TableCell>
                     <TableCell align="right">{numberWithCommas(row.total_area_analyzed)}</TableCell>
-                    <TableCell align="right">{numberWithCommas(row.locations_analyzed)}</TableCell>
+                    <TableCell align="right">
+                      {numberWithCommas(
+                        isProManager || isTokenizationAvailable
+                          ? row.total_tokens
+                          : row.locations_analyzed
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

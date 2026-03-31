@@ -6,6 +6,8 @@ const AccountManager = require(path.resolve('./config/publicutils/accountManager
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 
+const PROFILE_ERROR_MESSAGE = 'Failed loading user profile data.';
+
 /**
  * @function userProfile
  * @summary
@@ -66,7 +68,7 @@ export const userProfileData = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
+        res.status(500).json({ error: PROFILE_ERROR_MESSAGE });
       });
   } else {
     AuthManager.getUserInfo(req)
@@ -92,7 +94,7 @@ export const userProfileData = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
+        res.status(500).json({ error: PROFILE_ERROR_MESSAGE });
       });
   }
 };
@@ -126,7 +128,7 @@ export const createNewUserProfile = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
+        res.status(500).json({ error: PROFILE_ERROR_MESSAGE });
       });
   } else {
     AuthManager.getUserInfo(req)
@@ -146,7 +148,7 @@ export const createNewUserProfile = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ error: 'Failed loading user profile data' });
+        res.status(500).json({ error: PROFILE_ERROR_MESSAGE });
       });
   }
 };

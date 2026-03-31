@@ -43,6 +43,7 @@ export default function ProfileContextProvider({ children }) {
       })
       .catch((error) => {
         console.log(error);
+        setProfileInfo({ users: [], userInfo: {} });
         setIsLoading(false);
       });
   }, []);

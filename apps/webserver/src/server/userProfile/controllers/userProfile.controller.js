@@ -111,11 +111,11 @@ export const createNewUserProfile = (req, res) => {
 
     Promise.all(promises)
       .then((results) => {
-        const [usersList, userInfo] = results;
+        const [userInfo] = results;
 
         res.status(200).json({
-          users: usersList,
-          userInfo, // TODO: use getAccountProfile..or should this be called accountInfo ?
+          users: [],
+          userInfo,
           userToEdit: {},
           classifications: classes,
           commodities: commoditiesData,

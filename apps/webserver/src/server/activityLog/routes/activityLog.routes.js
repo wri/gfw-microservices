@@ -31,6 +31,7 @@ module.exports = (app, limiter) => {
   }
 
   app.use('/activity-log', routeMiddlewares);
+  app.use('/activityLog', routeMiddlewares);
 
   app.get('/activity-log', (req, res) => {
     console.log('GET /activity-log');

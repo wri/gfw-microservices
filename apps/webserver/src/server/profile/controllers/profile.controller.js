@@ -50,7 +50,7 @@ export const profileInfo = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.status(500).json({ message: 'Error getting profile info' });
+        res.status(500).json({ error: 'Error getting profile info' });
       });
   } else {
     AuthManager.getUserInfo(req)
@@ -68,6 +68,7 @@ export const profileInfo = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
+        res.status(500).json({ error: 'Error getting profile info' });
       });
   }
 };

@@ -141,6 +141,13 @@ const errorMessageBuilder = ({
       },
     },
     {
+      match: (msg) => msg.startsWith('Latitude out of supported range'),
+      message: {
+        title: 'Invalid file',
+        body: 'One or more locations have a latitude outside the supported range. Latitudes must be between 62°S (-62) and 84°N (84). Please check your coordinates and re-upload.',
+      },
+    },
+    {
       match: (msg) => msg.startsWith('Error while parsing the data'),
       message: {
         title: 'Invalid file',

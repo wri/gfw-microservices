@@ -96,44 +96,59 @@ export const theme = createTheme({
     fontWeightMedium: 500,
     fontWeightBold: 700,
     h1: {
-      fontSize: '2.25rem',
-      fontWeight: '500',
+      fontSize: '3.75rem', // WRI level 1100: 60px
+      fontWeight: 700,
+      lineHeight: '5rem', // 80px
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: '500',
+      fontSize: '3rem', // WRI level 1000: 48px
+      fontWeight: 700,
+      lineHeight: '4rem', // 64px
     },
     h3: {
-      fontSize: '1.75rem',
-      fontWeight: '500',
+      fontSize: '2.25rem', // WRI level 900: 36px
+      fontWeight: 700,
+      lineHeight: '2.5rem', // 40px
     },
     h4: {
-      fontSize: '1.5rem',
-      fontWeight: '500',
+      fontSize: '1.875rem', // WRI level 800: 30px
+      fontWeight: 700,
+      lineHeight: '2.25rem', // 36px
     },
     h5: {
-      fontSize: '1.25rem',
-      fontWeight: '500',
+      fontSize: '1.5rem', // WRI level 700: 24px
+      fontWeight: 600,
+      lineHeight: '2rem', // 32px
     },
     h6: {
-      fontSize: '1.125rem',
-      fontWeight: '500',
+      fontSize: '1.25rem', // WRI level 600: 20px
+      fontWeight: 600,
+      lineHeight: '1.75rem', // 28px
     },
     subtitle1: {
       fontSize: '1.125rem',
+      fontWeight: 400,
+      lineHeight: '1.5rem',
     },
     subtitle2: {
       fontSize: '1rem',
+      fontWeight: 400,
+      lineHeight: '1.5rem',
     },
     body1: {
       fontSize: '1rem',
+      fontWeight: 400,
+      lineHeight: '1.5rem',
     },
     body2: {
       fontSize: '0.875rem',
+      fontWeight: 400,
+      lineHeight: '1.25rem',
     },
     caption: {
       fontSize: '0.75rem',
-      lineHeight: '0.9375rem',
+      fontWeight: 400,
+      lineHeight: '1rem',
     },
   },
   components: {

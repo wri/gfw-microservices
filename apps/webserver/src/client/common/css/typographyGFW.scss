@@ -4,7 +4,7 @@
 // Font family
 $gfw-font-family: 'Fira Sans', sans-serif;
 
-// Font size increment
+// Font size increment (legacy scale — do not remove, used across the codebase)
 $font-size-regular: 12px;
 $font-size-medium: 14px;
 $font-size-medium-large: 16px;
@@ -14,6 +14,18 @@ $font-size-xx-large: 35px;
 $font-size-xxx-large: 47px;
 $font-size-xxxx-large: 64px;
 
+// WRI design system type scale
+$font-size-wri-200: 12px; // caption
+$font-size-wri-300: 14px; // caption
+$font-size-wri-400: 16px; // body
+$font-size-wri-500: 18px; // body
+$font-size-wri-600: 20px; // subtitle
+$font-size-wri-700: 24px; // subtitle
+$font-size-wri-800: 30px; // headline
+$font-size-wri-900: 36px; // headline
+$font-size-wri-1000: 48px; // headline
+$font-size-wri-1100: 60px; // display headline
+
 // Font weight increment
 $font-weight-light: 300;
 $font-weight-regular: 400;
@@ -22,62 +34,62 @@ $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
 h1 {
-  font-size: $font-size-xxx-large;
-  font-weight: $font-weight-light;
+  font-size: $font-size-wri-1100;
+  font-weight: $font-weight-bold;
   color: $gfw-dark-gray;
-  line-height: 1em;
+  line-height: 80px;
 }
 h2 {
-  font-size: $font-size-xx-large;
-  font-weight: $font-weight-light;
+  font-size: $font-size-wri-1000;
+  font-weight: $font-weight-bold;
   color: $gfw-dark-gray;
-  line-height: 1em;
+  line-height: 64px;
 }
 h3 {
-  font-size: $font-size-large;
-  font-weight: $font-weight-medium;
+  font-size: $font-size-wri-900;
+  font-weight: $font-weight-bold;
   color: $gfw-dark-gray;
-  line-height: 1em;
+  line-height: 40px;
 }
 h4 {
-  font-size: $font-size-medium;
-  font-weight: $font-weight-medium;
+  font-size: $font-size-wri-800;
+  font-weight: $font-weight-semibold;
   color: $gfw-dark-gray;
-  line-height: 1em;
+  line-height: 36px;
 }
 
 %uppercase {
   text-transform: uppercase;
 }
 
-// Type style settings
+// Type style settings (aligned with WRI design system)
 $text-settings: (
   100: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, dark),
     font-weight: $font-weight-regular,
-    font-size: $font-size-regular,
+    font-size: $font-size-wri-200,
     line-height: 1.5,
   ),
   200: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, dark),
     font-weight: $font-weight-regular,
-    font-size: $font-size-medium,
+    font-size: $font-size-wri-300,
     line-height: 1.5,
   ),
   300: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, dark),
     font-weight: $font-weight-regular,
-    font-size: $font-size-medium-large,
+    font-size: $font-size-wri-400,
     line-height: 1.5,
   ),
   400: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
     font-weight: $font-weight-regular,
-    font-size: $font-size-large,
+    font-size: $font-size-wri-500,
     line-height: 1.5,
   ),
 );
@@ -86,47 +98,44 @@ $heading-settings: (
   100: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
-    font-weight: $font-weight-bold,
-    font-size: $font-size-regular,
-    line-height: 1.2,
-    text-transform: uppercase,
+    font-weight: $font-weight-regular,
+    font-size: $font-size-wri-200,
+    line-height: 1.33,
   ),
   200: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
-    font-weight: $font-weight-medium,
-    font-size: $font-size-medium,
-    line-height: 1.2,
-    text-transform: uppercase,
+    font-weight: $font-weight-regular,
+    font-size: $font-size-wri-300,
+    line-height: 1.43,
   ),
   300: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
-    font-weight: $font-weight-medium,
-    font-size: $font-size-medium-large,
-    line-height: 1.2,
-    text-transform: uppercase,
+    font-weight: $font-weight-regular,
+    font-size: $font-size-wri-400,
+    line-height: 1.5,
   ),
   400: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
-    font-weight: $font-weight-regular,
-    font-size: $font-size-large,
-    line-height: 1.2,
+    font-weight: $font-weight-semibold,
+    font-size: $font-size-wri-600,
+    line-height: 1.4,
   ),
   500: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
-    font-weight: $font-weight-light,
-    font-size: $font-size-x-large,
-    line-height: 1.2,
+    font-weight: $font-weight-semibold,
+    font-size: $font-size-wri-700,
+    line-height: 1.33,
   ),
   600: (
     font-family: $gfw-font-family,
     color: map-get($font-colors, normal),
-    font-weight: $font-weight-light,
-    font-size: $font-size-xx-large,
-    line-height: 1.2,
+    font-weight: $font-weight-bold,
+    font-size: $font-size-wri-900,
+    line-height: 1.11,
   ),
 );
 

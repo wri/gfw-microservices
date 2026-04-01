@@ -21,6 +21,22 @@ describe('ValidateLatLongGeojson', () => {
     });
   });
 
+  describe('isLatitudeInSupportedRange', () => {
+    it('should return true for latitudes within supported range', () => {
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(0)).toBe(true);
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(-62)).toBe(true);
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(84)).toBe(true);
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(45)).toBe(true);
+    });
+
+    it('should return false for latitudes outside supported range', () => {
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(-63)).toBe(false);
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(-90)).toBe(false);
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(85)).toBe(false);
+      expect(ValidateLatLongGeojson.isLatitudeInSupportedRange(90)).toBe(false);
+    });
+  });
+
   describe('isValidLongitude', () => {
     it('should return true for valid longitudes', () => {
       expect(ValidateLatLongGeojson.isValidLongitude(0)).toBe(true);
@@ -200,6 +216,101 @@ describe('ValidateLatLongGeojson', () => {
       expect(result.geojson.features.length).toBe(1);
       expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
         'Invalid polygon geometry',
+      ]);
+    });
+
+    it('should reject point with latitude south of 62S', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [0, -63],
+              },
+              properties: {
+                country: 'Antarctica',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
+        'Latitude out of supported range (must be between 62°S and 84°N)',
+      ]);
+    });
+
+    it('should reject point with latitude north of 84N', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [10, 85],
+              },
+              properties: {
+                country: 'Norway',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
+        'Latitude out of supported range (must be between 62°S and 84°N)',
+      ]);
+    });
+
+    it('should reject polygon with vertex outside supported latitude range', async () => {
+      const input: ChainType = {
+        request: {
+          organization_database: 'test_db',
+          path: 'path',
+        },
+        geojson: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Polygon',
+                coordinates: [
+                  [
+                    [0, -60],
+                    [2, -60],
+                    [2, -63],
+                    [0, -63],
+                    [0, -60],
+                  ],
+                ],
+              },
+              properties: {
+                country: 'Chile',
+              },
+            },
+          ],
+        },
+      };
+
+      const result = await validator.handle(input);
+      expect(result.geojson.features[0].properties.errorDetails).toStrictEqual([
+        'Latitude out of supported range (must be between 62°S and 84°N)',
       ]);
     });
 

@@ -159,6 +159,28 @@ describe('UploadLocationPreviewErrorMessage', () => {
     ).toBeInTheDocument();
   });
 
+  it('should render latitude out of range error message', () => {
+    const error = {
+      errors: ['Latitude out of supported range (must be between 62°S and 84°N)'],
+    };
+
+    render(
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
+    );
+
+    expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/one or more locations have a latitude outside the supported range/i)
+    ).toBeInTheDocument();
+  });
+
   it('should render platform error message for unknown errors', () => {
     const error = {
       errors: ['Random error'],

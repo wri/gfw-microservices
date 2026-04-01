@@ -18,9 +18,11 @@ export default function AccountUsage({
   maxTokens,
 }) {
   const { isTokenizationAvailable } = featureFlags;
+  const isProManager = window.location.pathname.startsWith('/pro-manager');
+  const showTokens = isProManager || isTokenizationAvailable;
 
   const InfoBubbleLocationsAnalyzed = () => {
-    if (isTokenizationAvailable) {
+    if (showTokens) {
       return (
         <>
           <h3 class="bubble-title">Tokens</h3>
@@ -90,12 +92,12 @@ export default function AccountUsage({
         <Grid item xs={12} sm={6}>
           <AccountUsageContainer
             label={
-              isTokenizationAvailable
+              showTokens
                 ? profilePage.accountUsage.tokens
                 : profilePage.accountUsage.locationsAnalyzed
             }
-            usedValue={isTokenizationAvailable ? total_tokens : locations_analyzed}
-            maxValue={isTokenizationAvailable ? maxTokens : maxLocations}
+            usedValue={showTokens ? total_tokens : locations_analyzed}
+            maxValue={showTokens ? maxTokens : maxLocations}
             InfoBubbleContent={InfoBubbleLocationsAnalyzed}
           />
         </Grid>

@@ -112,7 +112,7 @@ export const theme = createTheme({
     },
     h4: {
       fontSize: '1.875rem', // WRI level 800: 30px
-      fontWeight: 700,
+      fontWeight: 600,
       lineHeight: '2.25rem', // 36px
     },
     h5: {

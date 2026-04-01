@@ -37,25 +37,25 @@ h1 {
   font-size: $font-size-wri-1100;
   font-weight: $font-weight-bold;
   color: $gfw-dark-gray;
-  line-height: 80px;
+  line-height: 1.33; // 80/60
 }
 h2 {
   font-size: $font-size-wri-1000;
   font-weight: $font-weight-bold;
   color: $gfw-dark-gray;
-  line-height: 64px;
+  line-height: 1.33; // 64/48
 }
 h3 {
   font-size: $font-size-wri-900;
   font-weight: $font-weight-bold;
   color: $gfw-dark-gray;
-  line-height: 40px;
+  line-height: 1.11; // 40/36
 }
 h4 {
   font-size: $font-size-wri-800;
   font-weight: $font-weight-semibold;
   color: $gfw-dark-gray;
-  line-height: 36px;
+  line-height: 1.2; // 36/30
 }
 
 %uppercase {

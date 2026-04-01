@@ -361,6 +361,7 @@ export = (app, limiter) => {
 
   app.use(`${API_BASE_URL}/api-keys`, [
     ...routeMiddlewares,
+    middlewares.checkAdministrator,
     eapiRoutes,
     runEAPIMicroserviceRequest,
   ]);

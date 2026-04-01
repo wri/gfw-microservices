@@ -122,8 +122,10 @@ function AccountUsageInfoBubbles() {
         setAccountUsageData({
           total_area_analyzed: accountUsage.total_area_analyzed ?? 0,
           locations_analyzed: accountUsage.locations_analyzed ?? 0,
+          total_tokens: accountUsage.total_tokens ?? 0,
           maxLocations: accountLimits.max_locations_per_year ?? 0,
           maxArea: accountLimits.MaxAreaAnalyzeablePerYear ?? 0,
+          maxTokens: accountLimits.tokens_per_year ?? 0,
         });
       })
       .catch((error) => {

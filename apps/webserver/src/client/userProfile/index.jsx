@@ -37,13 +37,19 @@ function App() {
         'Content-type': 'application/json',
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setUserProfileData(data);
         setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false);
       });
   }, []);
 

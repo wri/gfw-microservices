@@ -7,7 +7,12 @@ import {
 import { OrganizationService } from '../list-analysis/organization.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
-import { ClientStoreConnection, Lists, ListsAnalysisStatus, Organization } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  Lists,
+  ListsAnalysisStatus,
+  Organization,
+} from '@wri-monorepos/sql';
 import { In } from 'typeorm';
 
 @Injectable()
@@ -94,7 +99,7 @@ export class ListService {
       const connection = await this.createOrganizationConnection(organization);
       const listRepository = connection.getRepository(Lists);
       const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-      
+
       const allListAnalysis = await listAnalysisStatusRepository.find({
         where: { listId: listId },
       });
@@ -109,7 +114,8 @@ export class ListService {
 
       allListAnalysis.forEach((analysis) => {
         analysisTypes.push(analysis.analysisId);
-        const isWeeklyAlertAnalysis = analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
+        const isWeeklyAlertAnalysis =
+          analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
 
         if (isWeeklyAlertAnalysis) {
           analysisTypes.push('Weekly');
@@ -120,7 +126,7 @@ export class ListService {
         listId: listFound.id,
         listName: listFound.listName,
         locationCount: listFound.listLocationsCount,
-        analysisTypes
+        analysisTypes,
       };
       return listResponse;
     } catch (error) {
@@ -167,16 +173,17 @@ export class ListService {
       allListAnalysis.forEach((analysis) => {
         // Get existing array for this listId, or initialize empty array
         const existingTypes = analysisTypesByListId.get(analysis.listId) || [];
-        
+
         // Add the analysis ID
         existingTypes.push(analysis.analysisId);
-        
+
         // If ALERTS with Weekly, add "Weekly" as separate entry
-        const isWeeklyAlertAnalysis = analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
+        const isWeeklyAlertAnalysis =
+          analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
         if (isWeeklyAlertAnalysis) {
           existingTypes.push('Weekly');
         }
-        
+
         // Update the map with the updated array
         analysisTypesByListId.set(analysis.listId, existingTypes);
       });

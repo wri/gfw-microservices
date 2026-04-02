@@ -87,11 +87,7 @@ export const analysisEnabledLayers = [
   proLayers.viirsActiveFiresID,
 ];
 
-export const visibleLayers = [
-  proLayers.treeCoverLossID,
-  proLayers.treeCoverGainID,
-  proLayers.treeCoverID,
-];
+export const visibleLayers = [proLayers.treeCoverLossID, proLayers.sbtnNaturalLands];
 
 export const layerWarnings = [
   {

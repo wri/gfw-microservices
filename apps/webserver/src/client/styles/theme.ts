@@ -60,9 +60,9 @@ export const theme = createTheme({
     },
     secondary: {
       main: '#5646D0', // 500
-      light: '#D4EAFC',
-      contrastText: '#13487A',
-      dark: '#007ED8',
+      light: '#E8E6FB',
+      contrastText: '#1A1919',
+      dark: '#4C3EAF',
       100: '#F6F5FF',
       200: '#E8E6FB',
       300: '#D0CBF6',

@@ -28,8 +28,21 @@ if [ -z "$RULE_DESCRIPTION" ] || [ ${#SECURITY_GROUPS[@]} -eq 0 ]; then
   usage
 fi
 
-# Fetch current public IP
-CURRENT_PUBLIC_IP="$(curl -4 -s ifconfig.me)/32"
+# Fetch current public IPv4 address
+CURRENT_PUBLIC_IP=$(curl -4 -s https://checkip.amazonaws.com 2>/dev/null | tr -d '[:space:]')
+if [ -z "$CURRENT_PUBLIC_IP" ]; then
+  CURRENT_PUBLIC_IP=$(curl -4 -s https://api4.ipify.org 2>/dev/null | tr -d '[:space:]')
+fi
+if [ -z "$CURRENT_PUBLIC_IP" ]; then
+  echo "Error: Could not determine public IPv4 address." >&2
+  exit 1
+fi
+# Validate IPv4 format to catch unexpected responses (e.g. IPv6)
+if ! echo "$CURRENT_PUBLIC_IP" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+  echo "Error: Retrieved IP '$CURRENT_PUBLIC_IP' is not a valid IPv4 address." >&2
+  exit 1
+fi
+CURRENT_PUBLIC_IP="${CURRENT_PUBLIC_IP}/32"
 
 for SECURITY_GROUP_NAME in "${SECURITY_GROUPS[@]}"; do
   echo "Processing security group: $SECURITY_GROUP_NAME"

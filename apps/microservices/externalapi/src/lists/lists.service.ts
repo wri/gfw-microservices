@@ -7,7 +7,8 @@ import {
 import { OrganizationService } from '../list-analysis/organization.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
-import { ClientStoreConnection, Lists, Organization } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists, ListsAnalysisStatus, Organization } from '@wri-monorepos/sql';
+import { In } from 'typeorm';
 
 @Injectable()
 export class ListService {
@@ -91,17 +92,35 @@ export class ListService {
     try {
       const organization = await this.getOrganizationDetails(organizationId);
       const connection = await this.createOrganizationConnection(organization);
-      const listAnalysisStatusRepository = connection.getRepository(Lists);
-      const listFound = await listAnalysisStatusRepository.findOne({
+      const listRepository = connection.getRepository(Lists);
+      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+      
+      const allListAnalysis = await listAnalysisStatusRepository.find({
+        where: { listId: listId },
+      });
+      const listFound = await listRepository.findOne({
         where: { id: listId },
       });
       if (!listFound) {
         throw new NotFoundException(`List ${listId} status not found.`);
       }
+
+      const analysisTypes: string[] = [];
+
+      allListAnalysis.forEach((analysis) => {
+        analysisTypes.push(analysis.analysisId);
+        const isWeeklyAlertAnalysis = analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
+
+        if (isWeeklyAlertAnalysis) {
+          analysisTypes.push('Weekly');
+        }
+      });
+
       const listResponse: ListInfoResponse = {
         listId: listFound.id,
         listName: listFound.listName,
         locationCount: listFound.listLocationsCount,
+        analysisTypes
       };
       return listResponse;
     } catch (error) {
@@ -135,10 +154,38 @@ export class ListService {
         throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} is out of range`);
       }
 
+      const listIds = paginatedList.map((list) => list.id);
+
+      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+      const allListAnalysis = await listAnalysisStatusRepository.find({
+        where: { listId: In(listIds) },
+      });
+
+      const analysisTypesByListId = new Map<number, string[]>();
+
+      allListAnalysis.forEach((analysis) => {
+        // Get existing array for this listId, or initialize empty array
+        const existingTypes = analysisTypesByListId.get(analysis.listId) || [];
+        
+        // Add the analysis ID
+        existingTypes.push(analysis.analysisId);
+        
+        // If ALERTS with Weekly, add "Weekly" as separate entry
+        const isWeeklyAlertAnalysis = analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
+        if (isWeeklyAlertAnalysis) {
+          existingTypes.push('Weekly');
+        }
+        
+        // Update the map with the updated array
+        analysisTypesByListId.set(analysis.listId, existingTypes);
+      });
+
       const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => ({
         listId: list.id,
         listName: list.listName,
         locationCount: list.listLocationsCount,
+        analysisTypes: analysisTypesByListId.get(list.id) || [], // Get from map or empty array
       }));
 
       return paginatedListInfo;

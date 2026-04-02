@@ -522,12 +522,21 @@ describe('ListService', () => {
       listId: expectedResult.id,
       listName: expectedResult.listName,
       locationCount: expectedResult.listLocationsCount,
+      analysisTypes: [],
     };
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findOne: () => ({ ...expectedResult }),
-      }),
+      getRepository: (entity) => {
+        if (entity === Lists) {
+          return {
+            findOne: () => ({ ...expectedResult }),
+          };
+        }
+        // ListsAnalysisStatus
+        return {
+          find: jest.fn().mockResolvedValue([]),
+        };
+      },
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await listService.getListInfo(organizationId, listId);
@@ -550,9 +559,17 @@ describe('ListService', () => {
     };
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findOne: () => null,
-      }),
+      getRepository: (entity) => {
+        if (entity === Lists) {
+          return {
+            findOne: () => null,
+          };
+        }
+        // ListsAnalysisStatus
+        return {
+          find: jest.fn().mockResolvedValue([]),
+        };
+      },
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(listService.getListInfo(organizationId, listId)).rejects.toThrowError(
@@ -571,59 +588,77 @@ describe('ListService', () => {
         listId: 1024,
         listName: 'Recent test a',
         locationCount: null,
+        analysisTypes: [],
       },
       {
         listId: 1025,
         listName: 'Recent test a2',
         locationCount: null,
+        analysisTypes: [],
       },
       {
         listId: 1027,
         listName: 'southest asia test',
         locationCount: 1,
+        analysisTypes: [],
       },
       {
         listId: 1029,
         listName: 'Recent Investments',
         locationCount: 1,
+        analysisTypes: [],
       },
       {
         listId: 1043,
         listName: 'testbeef',
         locationCount: 1,
+        analysisTypes: [],
       },
       {
         listId: 1046,
         listName: 'Recent Cocoa Generic Gust123',
         locationCount: 999,
+        analysisTypes: [],
       },
       {
         listId: 1050,
         listName: 'Recent Cocoa Generic gust 20230829',
         locationCount: null,
+        analysisTypes: [],
       },
       {
         listId: 1052,
         listName: 'Recent Cocoa Generic gust 202308290052',
         locationCount: null,
+        analysisTypes: [],
       },
       {
         listId: 1003,
         listName: 'Recent Cocoa Generic 2023008290059',
         locationCount: null,
+        analysisTypes: [],
       },
       {
         listId: 1004,
         listName: 'Recent Cocoa Generic 2023008290156',
         locationCount: null,
+        analysisTypes: [],
       },
     ];
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(0, 10), 10]),
-      }),
+      getRepository: (entity) => {
+        if (entity === Lists) {
+          return {
+            findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(0, 10), 10]),
+          };
+        }
+        // ListsAnalysisStatus
+        return {
+          find: jest.fn().mockResolvedValue([]),
+        };
+      },
     });
     const paginatedInfoLists = await listService.getPaginatedListInfo(0, 0, organizationId);
     expect(paginatedInfoLists).toEqual(expectedPaginatedInfoLists);
@@ -659,21 +694,248 @@ describe('ListService', () => {
         listId: 1027,
         listName: 'southest asia test',
         locationCount: 1,
+        analysisTypes: [],
       },
       {
         listId: 1029,
         listName: 'Recent Investments',
         locationCount: 1,
+        analysisTypes: [],
       },
     ];
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(2, 4), 2]),
-      }),
+      getRepository: (entity) => {
+        if (entity === Lists) {
+          return {
+            findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(2, 4), 2]),
+          };
+        }
+        // ListsAnalysisStatus
+        return {
+          find: jest.fn().mockResolvedValue([]),
+        };
+      },
     });
     const paginatedInfoLists = await listService.getPaginatedListInfo(2, 2, organizationId);
     expect(paginatedInfoLists).toEqual(expectedPaginatedInfoLists);
+  });
+
+  // GPV-5185: Tests for analysisTypes field
+  describe('getListInfo with analysisTypes', () => {
+    it('Should return list info with analysis types (no Weekly)', async () => {
+      const organizationId = 1;
+      const mockListData = {
+        id: listId,
+        listName: 'Test List',
+        listLocationsCount: 100,
+      };
+      const mockAnalysisData = [
+        { listId: listId, analysisId: 'FCD', options: null },
+        { listId: listId, analysisId: 'GHG', options: null },
+        { listId: listId, analysisId: 'AFI', options: null },
+      ];
+
+      organizationService.findOrganizationById = jest
+        .fn()
+        .mockResolvedValue({ organizationDb: 'test_db' });
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: (entity) => {
+          if (entity === Lists) {
+            return {
+              findOne: jest.fn().mockResolvedValue(mockListData),
+            };
+          }
+          // ListsAnalysisStatus
+          return {
+            find: jest.fn().mockResolvedValue(mockAnalysisData),
+          };
+        },
+      });
+
+      const result = await listService.getListInfo(organizationId, listId);
+
+      expect(result).toEqual({
+        listId: listId,
+        listName: 'Test List',
+        locationCount: 100,
+        analysisTypes: ['FCD', 'GHG', 'AFI'],
+      });
+    });
+
+    it('Should return list info with ALERTS and Weekly option', async () => {
+      const organizationId = 1;
+      const mockListData = {
+        id: listId,
+        listName: 'Test List with Weekly Alerts',
+        listLocationsCount: 50,
+      };
+      const mockAnalysisData = [
+        { listId: listId, analysisId: 'ALERTS', options: 'Weekly' },
+        { listId: listId, analysisId: 'FCD', options: null },
+      ];
+
+      organizationService.findOrganizationById = jest
+        .fn()
+        .mockResolvedValue({ organizationDb: 'test_db' });
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: (entity) => {
+          if (entity === Lists) {
+            return {
+              findOne: jest.fn().mockResolvedValue(mockListData),
+            };
+          }
+          // ListsAnalysisStatus
+          return {
+            find: jest.fn().mockResolvedValue(mockAnalysisData),
+          };
+        },
+      });
+
+      const result = await listService.getListInfo(organizationId, listId);
+
+      expect(result).toEqual({
+        listId: listId,
+        listName: 'Test List with Weekly Alerts',
+        locationCount: 50,
+        analysisTypes: ['ALERTS', 'Weekly', 'FCD'],
+      });
+    });
+
+    it('Should return list info with empty analysisTypes when no analysis records exist', async () => {
+      const organizationId = 1;
+      const mockListData = {
+        id: listId,
+        listName: 'List without Analysis',
+        listLocationsCount: 25,
+      };
+
+      organizationService.findOrganizationById = jest
+        .fn()
+        .mockResolvedValue({ organizationDb: 'test_db' });
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: (entity) => {
+          if (entity === Lists) {
+            return {
+              findOne: jest.fn().mockResolvedValue(mockListData),
+            };
+          }
+          // ListsAnalysisStatus - empty array
+          return {
+            find: jest.fn().mockResolvedValue([]),
+          };
+        },
+      });
+
+      const result = await listService.getListInfo(organizationId, listId);
+
+      expect(result).toEqual({
+        listId: listId,
+        listName: 'List without Analysis',
+        locationCount: 25,
+        analysisTypes: [],
+      });
+    });
+  });
+
+  describe('getPaginatedListInfo with analysisTypes', () => {
+    it('Should return paginated lists with their respective analysisTypes', async () => {
+      const organizationId = 1;
+      const mockPaginatedLists = [
+        { id: 100, listName: 'List 1', listLocationsCount: 10 },
+        { id: 101, listName: 'List 2', listLocationsCount: 20 },
+        { id: 102, listName: 'List 3', listLocationsCount: 30 },
+      ];
+      const mockAnalysisData = [
+        { listId: 100, analysisId: 'FCD', options: null },
+        { listId: 100, analysisId: 'GHG', options: null },
+        { listId: 101, analysisId: 'ALERTS', options: 'Weekly' },
+        { listId: 101, analysisId: 'AFI', options: null },
+        { listId: 102, analysisId: 'FCD', options: null },
+      ];
+
+      organizationService.findOrganizationById = jest
+        .fn()
+        .mockResolvedValue({ organizationDb: 'test_db' });
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: (entity) => {
+          if (entity === Lists) {
+            return {
+              findAndCount: jest.fn().mockResolvedValue([mockPaginatedLists, 3]),
+            };
+          }
+          // ListsAnalysisStatus
+          return {
+            find: jest.fn().mockResolvedValue(mockAnalysisData),
+          };
+        },
+      });
+
+      const result = await listService.getPaginatedListInfo(10, 1, organizationId);
+
+      expect(result).toEqual([
+        {
+          listId: 100,
+          listName: 'List 1',
+          locationCount: 10,
+          analysisTypes: ['FCD', 'GHG'],
+        },
+        {
+          listId: 101,
+          listName: 'List 2',
+          locationCount: 20,
+          analysisTypes: ['ALERTS', 'Weekly', 'AFI'],
+        },
+        {
+          listId: 102,
+          listName: 'List 3',
+          locationCount: 30,
+          analysisTypes: ['FCD'],
+        },
+      ]);
+    });
+
+    it('Should return paginated lists with empty analysisTypes for lists without analysis', async () => {
+      const organizationId = 1;
+      const mockPaginatedLists = [
+        { id: 200, listName: 'Empty List 1', listLocationsCount: 5 },
+        { id: 201, listName: 'Empty List 2', listLocationsCount: 15 },
+      ];
+
+      organizationService.findOrganizationById = jest
+        .fn()
+        .mockResolvedValue({ organizationDb: 'test_db' });
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+        getRepository: (entity) => {
+          if (entity === Lists) {
+            return {
+              findAndCount: jest.fn().mockResolvedValue([mockPaginatedLists, 2]),
+            };
+          }
+          // ListsAnalysisStatus - empty array
+          return {
+            find: jest.fn().mockResolvedValue([]),
+          };
+        },
+      });
+
+      const result = await listService.getPaginatedListInfo(10, 1, organizationId);
+
+      expect(result).toEqual([
+        {
+          listId: 200,
+          listName: 'Empty List 1',
+          locationCount: 5,
+          analysisTypes: [],
+        },
+        {
+          listId: 201,
+          listName: 'Empty List 2',
+          locationCount: 15,
+          analysisTypes: [],
+        },
+      ]);
+    });
   });
 });

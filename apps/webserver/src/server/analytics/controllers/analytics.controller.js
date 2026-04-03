@@ -263,12 +263,13 @@ export const getMyAccountAnalysisUsageByAnalysisType = async (req, res) => {
   }
 };
 export const getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
-  let { organization_id, subscription_status_id } = req.session;
+  let { organization_id, subscription_status_id, organization_database } = req.session;
 
   try {
     const accountUsagePercentage = await getAccountUsagePercentage({
       organizationId: organization_id,
       subscriptionStatusId: subscription_status_id,
+      organizationDatabase: organization_database,
     });
 
     res.status(200).send({

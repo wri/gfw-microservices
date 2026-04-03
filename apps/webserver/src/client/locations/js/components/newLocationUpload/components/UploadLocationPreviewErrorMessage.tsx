@@ -36,7 +36,7 @@ export function UploadLocationPreviewErrorMessage({
             margin: '1.5rem 0 0.75rem',
             borderRadius: 1,
             border: `2px solid ${theme.palette.error.main}`,
-            backgroundColor: 'error.light',
+            backgroundColor: theme.palette.error[100],
             position: 'relative',
             px: 25,
           }}

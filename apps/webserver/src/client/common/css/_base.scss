@@ -1,5 +1,6 @@
 @import '_variables';
 @import 'colorsGFW.scss';
+@include gfw-color-custom-properties();
 @import 'typographyGFW.scss';
 @import 'dropdown.scss';
 

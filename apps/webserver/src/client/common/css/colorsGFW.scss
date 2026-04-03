@@ -1,39 +1,144 @@
+// =============================================================================
+// WRI Design System — Color Tokens (GFW Pro)
+// Token naming: $color-{category}-{step}
+// =============================================================================
+
+// Neutral scale (WRI standard — do not modify per product)
+$color-neutral-100: #ffffff;
+$color-neutral-200: #f6f6f6;
+$color-neutral-300: #e7e6e6;
+$color-neutral-400: #c9c9c9;
+$color-neutral-500: #9b9b9b;
+$color-neutral-600: #686767;
+$color-neutral-700: #4f4e4e;
+$color-neutral-800: #1a1919;
+$color-neutral-900: #000000;
+
+// Primary brand scale (GFW Pro green)
+$color-primary-100: #fbfff2;
+$color-primary-200: #edf7d7;
+$color-primary-300: #d4e4af;
+$color-primary-400: #b8d279;
+$color-primary-500: #9fc642;
+$color-primary-600: #719223;
+$color-primary-700: #516e10;
+$color-primary-800: #344116;
+$color-primary-900: #1a210b;
+
+// Secondary brand scale (GFW Pro purple/blue)
+$color-secondary-100: #f6f5ff;
+$color-secondary-200: #e8e6fb;
+$color-secondary-300: #d0cbf6;
+$color-secondary-400: #6656e1;
+$color-secondary-500: #5646d0;
+$color-secondary-600: #4c3eaf;
+$color-secondary-700: #3d3487;
+$color-secondary-800: #2e2765;
+$color-secondary-900: #241e4f;
+
+// Semantic — Error (WRI standard)
+$color-error-100: #fff3f4;
+$color-error-500: #a80011;
+
+// Semantic — Warning (WRI standard)
+$color-warning-100: #fef7e5;
+$color-warning-500: #804600;
+
+// Semantic — Success (WRI standard)
+$color-success-100: #f3fff2;
+$color-success-500: #086600;
+
+// =============================================================================
+// CSS Custom Properties (for use as --color-* in component styles)
+// Include this mixin once from a global stylesheet to emit the :root block.
+// =============================================================================
+@mixin gfw-color-custom-properties() {
+  :root {
+    // Neutral
+    --color-neutral-100: #{$color-neutral-100};
+    --color-neutral-200: #{$color-neutral-200};
+    --color-neutral-300: #{$color-neutral-300};
+    --color-neutral-400: #{$color-neutral-400};
+    --color-neutral-500: #{$color-neutral-500};
+    --color-neutral-600: #{$color-neutral-600};
+    --color-neutral-700: #{$color-neutral-700};
+    --color-neutral-800: #{$color-neutral-800};
+    --color-neutral-900: #{$color-neutral-900};
+
+    // Primary (brand)
+    --color-primary-100: #{$color-primary-100};
+    --color-primary-200: #{$color-primary-200};
+    --color-primary-300: #{$color-primary-300};
+    --color-primary-400: #{$color-primary-400};
+    --color-primary-500: #{$color-primary-500};
+    --color-primary-600: #{$color-primary-600};
+    --color-primary-700: #{$color-primary-700};
+    --color-primary-800: #{$color-primary-800};
+    --color-primary-900: #{$color-primary-900};
+
+    // Secondary (brand)
+    --color-secondary-100: #{$color-secondary-100};
+    --color-secondary-200: #{$color-secondary-200};
+    --color-secondary-300: #{$color-secondary-300};
+    --color-secondary-400: #{$color-secondary-400};
+    --color-secondary-500: #{$color-secondary-500};
+    --color-secondary-600: #{$color-secondary-600};
+    --color-secondary-700: #{$color-secondary-700};
+    --color-secondary-800: #{$color-secondary-800};
+    --color-secondary-900: #{$color-secondary-900};
+
+    // Semantic
+    --color-error-100: #{$color-error-100};
+    --color-error-500: #{$color-error-500};
+
+    --color-warning-100: #{$color-warning-100};
+    --color-warning-500: #{$color-warning-500};
+
+    --color-success-100: #{$color-success-100};
+    --color-success-500: #{$color-success-500};
+  }
+}
+
+// =============================================================================
+// Legacy variable aliases — preserved for backward compatibility
+// =============================================================================
+
 // PRIMARY COLORS
-$gfw-green: #97bd3d;
-$gfw-white: #ffffff;
-$gfw-black: #000000;
-$gfw-x-dark-gray: #404041;
-$gfw-x-dark-gray__30: #4040414d;
+$gfw-green: $color-primary-500;
+$gfw-white: $color-neutral-100;
+$gfw-black: $color-neutral-900;
+$gfw-x-dark-gray: $color-neutral-800;
+$gfw-x-dark-gray__30: rgba($color-neutral-800, 0.3);
 $gfw-dark-gray: #555555;
 $gfw-gray-2: #707070;
-$gfw-gray: #a5a5a5;
-$gfw-light-gray-2: #cccccc;
-$gfw-light-gray: #e5e5df;
-$gfw-x-light-gray: #f7f7f7;
+$gfw-gray: $color-neutral-600;
+$gfw-light-gray-2: $color-neutral-400;
+$gfw-light-gray: $color-neutral-300;
+$gfw-x-light-gray: $color-neutral-200;
 
 // SECONDARY COLORS
-$gfw-red: #ed1846;
-$gfw-orange: #e98300;
-$gfw-purple: #6d6de5;
+$gfw-red: $color-error-500;
+$gfw-orange: $color-warning-500;
+$gfw-purple: $color-secondary-500;
 $gfw-pink: #ff6699;
 
 // Theme variables
 $theme-background: #eceff1;
 $theme-highlight: #ff0000;
-$theme-disabled: #bdbdbd;
+$theme-disabled: $color-neutral-400;
 $theme-header: #00bcd4;
 
-$theme-danger-dark-red: #930118;
+$theme-danger-dark-red: $color-error-500;
 $theme-danger-red-2: #d20022;
-$theme-danger-red: #ff0000;
+$theme-danger-red: $color-error-500;
 $theme-danger-light-red-2: #ff4e6b;
-$theme-danger-x-light-red: #ffebee;
+$theme-danger-x-light-red: $color-error-100;
 
 $theme-alert-yellow-2: #ffcc33;
-$theme-alert-x-light-yellow: #fff8e4;
+$theme-alert-x-light-yellow: $color-warning-100;
 
-$theme-new-purple: #5f6bdb;
-$theme-new-x-light-purple: #e6e9ff;
+$theme-new-purple: $color-secondary-400;
+$theme-new-x-light-purple: $color-secondary-100;
 
 $theme-non-blue: #58a9cd;
 $theme-non-x-light-blue: #e0eff6;
@@ -44,9 +149,9 @@ $header-border: $gfw-light-gray;
 
 // Typography style colors
 $font-colors: (
-  light: $gfw-gray,
-  normal: $gfw-x-dark-gray,
-  dark: $gfw-black,
+  light: $color-neutral-600,
+  normal: $color-neutral-800,
+  dark: $color-neutral-900,
 );
 
 //Palm Risk Colors
@@ -61,8 +166,8 @@ $blue: #58a9cd;
 
 // Interface colors
 $gfw-light-green: #b7dd5f;
-$gfw-x-light-green: #edf7d6;
-$gfw-xx-light-green: #f4fae7;
+$gfw-x-light-green: $color-primary-200;
+$gfw-xx-light-green: $color-primary-100;
 
 // Other variables
 $transparent-background: rgba(0, 0, 0, 0);

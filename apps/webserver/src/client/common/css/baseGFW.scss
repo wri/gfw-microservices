@@ -1,4 +1,5 @@
 @import 'colorsGFW.scss';
+@include gfw-color-custom-properties();
 @import 'typographyGFW.scss';
 @import 'flex.scss';
 @import '_variables.scss';

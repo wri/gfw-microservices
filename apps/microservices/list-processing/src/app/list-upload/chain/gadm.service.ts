@@ -11,7 +11,9 @@ import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/re
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
 
-  private BATCH_SIZE = 50;
+  // Reduce batch size to avoid timeouts with GADM API.  See discussion in
+  // https://gfwlcl.slack.com/archives/C07SQUKR74M/p1775236865828449?thread_ts=1775162611.795819&cid=C07SQUKR74M
+  private readonly BATCH_SIZE = 25;
 
   private async retryDataAPI(
     retriesLeft: number,
@@ -57,7 +59,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       },
       {
         retries: retriesLeft,
-        delayMs: 1000,
+        delayMs: 60 * 1000, // 1 minute delay between retries to attempt to avoid 504 errors
         isRetryable: isRetryableError,
         logger: this.logger,
       }

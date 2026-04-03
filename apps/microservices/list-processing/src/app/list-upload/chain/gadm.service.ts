@@ -13,7 +13,7 @@ export class GADMService extends AbstractHandler<ChainType> {
 
   // Reduce batch size to avoid timeouts with GADM API.  See discussion in
   // https://gfwlcl.slack.com/archives/C07SQUKR74M/p1775236865828449?thread_ts=1775162611.795819&cid=C07SQUKR74M
-  private BATCH_SIZE = 25;
+  private readonly BATCH_SIZE = 25;
 
   private async retryDataAPI(
     retriesLeft: number,

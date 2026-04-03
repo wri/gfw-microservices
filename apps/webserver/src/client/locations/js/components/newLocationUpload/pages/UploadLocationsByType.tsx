@@ -53,7 +53,7 @@ export function UploadLocationsByType() {
       case FileAttachState.UploadFailed:
         return {
           border: `2px solid ${theme.palette.error.main}`,
-          backgroundColor: 'error.light',
+          backgroundColor: theme.palette.error[100],
         };
       case FileAttachState.Uploaded:
         return {

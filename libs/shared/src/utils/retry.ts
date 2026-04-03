@@ -38,12 +38,11 @@ export async function retryWithDelay<T>(
       return await fn();
     } catch (err) {
       lastError = err;
-      if (attempt < retries && isRetryable(err)) {
+      if (++attempt < retries && isRetryable(err)) {
         logger?.warn?.(
           `Retryable error: ${err.code || err.message}. Retrying (${retries - attempt} left)...`
         );
         await new Promise((resolve) => setTimeout(resolve, delayMs));
-        attempt++;
       } else {
         break;
       }

@@ -103,7 +103,7 @@ export default class Select extends Component {
       <Page links={pageOptions.links} active="select">
         <SubHeader header="Select Organization" />
         <div className="profile-body">
-          <h2 className="section-title-large">Select which organization you would like to view:</h2>
+          <h3 className="section-title-large">Select which organization you would like to view:</h3>
           <table>
             <thead>
               <tr>

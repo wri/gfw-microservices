@@ -1,4 +1,10 @@
-import { createTheme } from '@mui/material/styles';
+import { createElement } from 'react';
+import { createTheme, alpha } from '@mui/material/styles';
+import {
+  CheckboxUncheckedIcon,
+  CheckboxCheckedIcon,
+  CheckboxIndeterminateIcon,
+} from './checkboxIcons';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -203,6 +209,34 @@ export const theme = createTheme({
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
+      },
+    },
+    MuiCheckbox: {
+      defaultProps: {
+        color: 'primary',
+        icon: createElement(CheckboxUncheckedIcon),
+        checkedIcon: createElement(CheckboxCheckedIcon),
+        indeterminateIcon: createElement(CheckboxIndeterminateIcon),
+      },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: '6px',
+          borderRadius: '4px',
+          // Override global CSS input[type='checkbox'] { z-index: -1 } which blocks clicks
+          '& input[type="checkbox"]': {
+            zIndex: 1,
+          },
+          '&:hover': {
+            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+          },
+          '&.Mui-focusVisible': {
+            outline: `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: '2px',
+          },
+          '&.Mui-disabled': {
+            opacity: 0.38,
+          },
+        }),
       },
     },
     MuiTextField: {

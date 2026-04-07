@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { Checkbox, FormControlLabel, Typography } from '@mui/material';
 import {
   toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   toggleLayer,
@@ -85,24 +86,34 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
           visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''
         }`}
       >
-        <div onClick={toggleGeographicCoverageLayer}>
-          <span className="toggle-switch pointer">
-            <span />
-          </span>
-          <span className="layer-checkbox-label pointer">Geographic coverage</span>
-        </div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={visibleLayers.includes(geographicCoverageLayer)}
+              onChange={toggleGeographicCoverageLayer}
+              disabled={isDisabled}
+            />
+          }
+          label={<Typography variant="body2">Geographic coverage</Typography>}
+          sx={{ ml: 0, mr: 0 }}
+        />
       </li>
       <li
         className={`layer-checkbox ${
           showHighConfidenceAlertsOnDeforestationAlertsLayer ? 'active' : ''
         }`}
       >
-        <div onClick={toggleHighConfidenceAlerts}>
-          <span className="toggle-switch pointer">
-            <span />
-          </span>
-          <span className="layer-checkbox-label pointer">Show only high confidence alerts</span>
-        </div>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={showHighConfidenceAlertsOnDeforestationAlertsLayer}
+              onChange={toggleHighConfidenceAlerts}
+              disabled={isDisabled}
+            />
+          }
+          label={<Typography variant="body2">Show only high confidence alerts</Typography>}
+          sx={{ ml: 0, mr: 0 }}
+        />
       </li>
     </ul>
   );

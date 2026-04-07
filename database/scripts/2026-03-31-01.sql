@@ -40,7 +40,7 @@ DECLARE @RowCount INT;
 DECLARE @TotalProcessed INT = 0;
 DECLARE @TotalUpdated INT = 0;
 DECLARE @DbCount INT = 0;
-DECLARE @RowCountTable TABLE (RowCount INT);
+DECLARE @RowCountTable TABLE (UpdateCount INT);
 
 -- Count total databases first (for progress reporting)
 SELECT @DbCount = COUNT(*) 
@@ -96,7 +96,7 @@ BEGIN
         INSERT INTO @RowCountTable
         EXEC sp_executesql @SQL;
         
-        SELECT @RowCount = RowCount FROM @RowCountTable;
+        SELECT @RowCount = UpdateCount FROM @RowCountTable;
         
         SET @TotalUpdated = @TotalUpdated + @RowCount;
         

@@ -51,7 +51,7 @@ const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
     return () => {
       window.Transifex.live.off?.('onAfterTranslate', handleTranslationUpdate);
     };
-  }, [label]);
+  }, [label, subtitle]);
 
   return (
     <span className="title-text" data-cy={`column-header-${sanitizeLabel(label)}`}>

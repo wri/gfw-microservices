@@ -21,8 +21,6 @@ import downloadRequest from '../../../../../locations/js/components/lists/downlo
 import errorLogger from '../../../../../common/js/utils/errorLogger';
 import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 
-declare function gtag(command: string, action: string, params?: Record<string, string>): void;
-
 interface ListDownloadMenuProps {
   combinedColumns: any[];
   currentUser: { access_level_id: number };
@@ -71,6 +69,7 @@ function ListDownloadMenu({
     'Downloads contain location data only; no analysis'
   );
   const labelDownloadErrorFile = useTransifexTranslation('Download error file CSV');
+  const labelDownload = useTransifexTranslation('Download');
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -152,7 +151,7 @@ function ListDownloadMenu({
           <ListItemIcon>
             <DownloadIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText sx={{ mx: 1 }}>Download</ListItemText>
+          <ListItemText sx={{ mx: 1 }}>{labelDownload}</ListItemText>
           <Box component="span" sx={{ display: 'flex', marginLeft: 'auto' }}>
             {isMenuOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
           </Box>
@@ -167,7 +166,7 @@ function ListDownloadMenu({
           }
           onClick={handleOpenMenu}
         >
-          Download
+          {labelDownload}
         </Button>
       )}
 

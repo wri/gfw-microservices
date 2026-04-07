@@ -103,14 +103,15 @@ function AnalysisTypesSelector({
         <br />
         {analysisOptions.map(({ id, label, description }) => {
           const lang = window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
+          const rawLabel = window.Transifex?.live?.translateText?.(label);
           const translatedLabel =
-            window.Transifex?.live?.translateText?.(label) !== label
-              ? window.Transifex.live.translateText(label)
-              : getManualTranslation(label, lang);
+            rawLabel && rawLabel !== label ? rawLabel : getManualTranslation(label, lang);
+          const rawDescription =
+            description && window.Transifex?.live?.translateText?.(description);
           const translatedDescription =
             description &&
-            (window.Transifex?.live?.translateText?.(description) !== description
-              ? window.Transifex.live.translateText(description)
+            (rawDescription && rawDescription !== description
+              ? rawDescription
               : getManualTranslation(description, lang));
           return (
             <div key={id}>

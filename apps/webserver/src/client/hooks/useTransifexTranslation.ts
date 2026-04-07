@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getManualTranslation } from '../listDetails/js/config/columns/columnHeaders.constants';
+import { getManualTranslation } from '../utils/manualTranslations';
 
 declare global {
   interface Window {

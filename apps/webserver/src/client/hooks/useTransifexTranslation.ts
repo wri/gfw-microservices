@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getManualTranslation } from '../listDetails/js/config/columns/columnHeaders.constants';
 
 declare global {
   interface Window {
@@ -7,6 +8,7 @@ declare global {
         translateText: (text: string) => string;
         onAfterTranslate: (callback: () => void) => void;
         off?: (event: string, callback: () => void) => void;
+        getSelectedLanguageCode?: () => string;
       };
     };
   }
@@ -17,8 +19,11 @@ export function useTransifexTranslation(text) {
 
   const updateTranslation = () => {
     const translated = window.Transifex?.live?.translateText?.(text);
-    if (translated) {
+    if (translated && translated !== text) {
       setTranslatedText(translated);
+    } else {
+      const languageCode = window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
+      setTranslatedText(getManualTranslation(text, languageCode));
     }
   };
 

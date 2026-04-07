@@ -9,12 +9,17 @@ import {
   JRC_NATURAL_FOREST_LOSS,
 } from '../deforestationDisplayFormat.constants';
 import { selectStyle } from './filterStyles';
+import { getManualTranslation } from '../../../../config/columns/columnHeaders.constants';
+
+const lang = () => window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
 
 const NaturalForestLossDataSourceToggle = () => {
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <FormControl variant="outlined" sx={{ ...selectStyle, width: 'auto' }}>
-        <InputLabel sx={{ background: 'white', padding: '0px 10px' }}>Forest Dataset</InputLabel>
+        <InputLabel sx={{ background: 'white', padding: '0px 10px' }}>
+          {getManualTranslation('Forest Dataset', lang())}
+        </InputLabel>
         <Select
           value={store.getState().naturalForestLossDataSource}
           sx={{ fontSize: '0.875rem' }}
@@ -27,14 +32,14 @@ const NaturalForestLossDataSourceToggle = () => {
             value={JRC_NATURAL_FOREST_LOSS}
             data-cy="data-source-toggle-JRC"
           >
-            JRC Global Forest Cover
+            {getManualTranslation('JRC Global Forest Cover', lang())}
           </MenuItem>
           <MenuItem
             key={SBTN_NATURAL_FOREST_LOSS}
             value={SBTN_NATURAL_FOREST_LOSS}
             data-cy="data-source-toggle-SBTN"
           >
-            SBTN Natural Forest Loss
+            {getManualTranslation('SBTN Natural Forest Loss', lang())}
           </MenuItem>
         </Select>
       </FormControl>

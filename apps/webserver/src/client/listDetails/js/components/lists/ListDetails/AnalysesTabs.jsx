@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Box, CircularProgress, Tab, Tabs, Typography } from '@mui/material';
 import {
   analysisTypes,
@@ -12,6 +13,7 @@ import {
 } from './listViews.constants';
 import { HelperTextWithPopover } from '../../../../../components';
 import { ReusableText } from '../../../../../utils/constants';
+import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
 
 function AnalysesTabs({
   listView,
@@ -21,6 +23,45 @@ function AnalysesTabs({
   hasLocationWithErrors,
   staleAnalysisIds = [],
 }) {
+  const alertsLabel = analysisTypesOptionsNewNames.find((a) => a.id === analysisTypes.ALERTS).label;
+  const [translatedAlertsLabel, setTranslatedAlertsLabel] = useState(alertsLabel);
+
+  const forestChangeLabel = analysisTypesOptionsNewNames.find(
+    (a) => a.id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  ).label;
+  const [translatedForestChangeLabel, setTranslatedForestChangeLabel] = useState(forestChangeLabel);
+
+  useEffect(() => {
+    if (!window.Transifex?.live) {
+      return;
+    }
+
+    const updateLabels = () => {
+      const languageCode = window.Transifex.live.getSelectedLanguageCode?.() || 'en';
+
+      const alertsTranslation = window.Transifex.live.translateText(alertsLabel);
+      setTranslatedAlertsLabel(
+        alertsTranslation !== alertsLabel
+          ? alertsTranslation
+          : getManualTranslation(alertsLabel, languageCode)
+      );
+
+      const forestChangeTranslation = window.Transifex.live.translateText(forestChangeLabel);
+      setTranslatedForestChangeLabel(
+        forestChangeTranslation !== forestChangeLabel
+          ? forestChangeTranslation
+          : getManualTranslation(forestChangeLabel, languageCode)
+      );
+    };
+
+    updateLabels();
+    window.Transifex.live.onAfterTranslate(updateLabels);
+
+    return () => {
+      window.Transifex?.live.off?.('onAfterTranslate', updateLabels);
+    };
+  }, [alertsLabel, forestChangeLabel]);
+
   const viewToAnalysisId = {
     [POST_2020_RISK_ASSESSMENT_VIEW]: analysisTypes.DEFORESTATION_KPIS,
     [FOREST_CHANGE_VIEW]: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
@@ -118,11 +159,7 @@ function AnalysesTabs({
         <Tab
           icon={getStatusIcon(post2000TreeCoverLossAnalysisStatus)}
           iconPosition="start"
-          label={
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {getAnalysisLabel(analysisTypes.ALERTS)}
-            </Box>
-          }
+          label={<Box sx={{ display: 'flex', alignItems: 'center' }}>{translatedAlertsLabel}</Box>}
           value={ALERTS}
           data-cy="alerts-tab"
           sx={{
@@ -144,7 +181,7 @@ function AnalysesTabs({
           iconPosition="start"
           label={
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {getAnalysisLabel(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)}
+              {translatedForestChangeLabel}
               {getStaleIndicator(FOREST_CHANGE_VIEW)}
             </Box>
           }

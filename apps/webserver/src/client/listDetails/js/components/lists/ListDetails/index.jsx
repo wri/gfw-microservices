@@ -112,6 +112,7 @@ import {
   forestDataSet,
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
+import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
 
@@ -1815,7 +1816,12 @@ export default class ListDetails extends Component {
       (item) => item.analysisId === analysisIdOfCurrentTab
     );
     const updateTime = currentAnalysis?.updateTime;
-    const analysisUpdatedString = Transifex.live.translateText('Analysis updated');
+    const rawAnalysisUpdated = Transifex.live.translateText('Analysis updated');
+    const languageCode = Transifex.live.getSelectedLanguageCode?.() || 'en';
+    const analysisUpdatedString =
+      rawAnalysisUpdated !== 'Analysis updated'
+        ? rawAnalysisUpdated
+        : getManualTranslation('Analysis updated', languageCode);
     return updateTime ? (
       <>
         <span>{analysisUpdatedString}</span>
@@ -2075,7 +2081,12 @@ export default class ListDetails extends Component {
       ? 'Location Diagnostic'
       : 'List diagnostic';
 
-    const translatedDiagnosticButtonLabel = Transifex.live.translateText(diagnosticButtonLabel);
+    const rawDiagnosticLabel = Transifex.live.translateText(diagnosticButtonLabel);
+    const diagnosticLang = Transifex.live.getSelectedLanguageCode?.() || 'en';
+    const translatedDiagnosticButtonLabel =
+      rawDiagnosticLabel !== diagnosticButtonLabel
+        ? rawDiagnosticLabel
+        : getManualTranslation(diagnosticButtonLabel, diagnosticLang);
 
     return (
       <>
@@ -2401,7 +2412,13 @@ export default class ListDetails extends Component {
                                   startIcon={<Download />}
                                   onClick={() => this.handleDownloadReport(listID, listView)}
                                 >
-                                  {Transifex.live.translateText('Download Report')}
+                                  {(() => {
+                                    const raw = Transifex.live.translateText('Download Report');
+                                    const lang = Transifex.live.getSelectedLanguageCode?.() || 'en';
+                                    return raw !== 'Download Report'
+                                      ? raw
+                                      : getManualTranslation('Download Report', lang);
+                                  })()}
                                 </MaterialButton>
                               )}
                               <span className="list-analysis-actions__analysis-date">

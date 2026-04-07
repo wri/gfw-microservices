@@ -7,8 +7,16 @@ import redirectToMap from '../../../../../common/js/utils/redirect';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import store from '../../../../../locations/js/store';
 import { ALERTS } from './listViews.constants';
+import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => {
+  const raw = Transifex.live.translateText(text);
+  if (raw !== text) {
+    return raw;
+  }
+  const lang = Transifex.live.getSelectedLanguageCode?.() || 'en';
+  return getManualTranslation(text, lang);
+};
 
 const greenButtonStyle = {
   color: '#97bd3d',
@@ -127,7 +135,7 @@ const CustomRow = ({
                     }}
                   >
                     <DriveFileMove sx={{ mr: 1 }} fontSize="small" />
-                    {isGfwList ? 'Copy' : 'Copy/Move'}
+                    {isGfwList ? transifex('Copy') : transifex('Copy/Move')}
                   </MenuItem>
                 )}
 

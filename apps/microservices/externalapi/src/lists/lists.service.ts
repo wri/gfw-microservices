@@ -107,7 +107,7 @@ export class ListService {
         where: { id: listId },
       });
       if (!listFound) {
-        throw new NotFoundException(`List ${listId} status not found.`);
+        throw new NotFoundException(`List ${listId} not found.`);
       }
 
       const analysisTypes: string[] = [];

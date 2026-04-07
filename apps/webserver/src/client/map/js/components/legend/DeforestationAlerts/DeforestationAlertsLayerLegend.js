@@ -81,7 +81,9 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
           onDateChange={handleDateRangeChange}
         />
       </li>
-      <li>
+      <li
+        className={`layer-checkbox ${visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''}`}
+      >
         <FormControlLabel
           control={
             <Checkbox
@@ -91,10 +93,12 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
             />
           }
           label={<Typography variant="body2">Geographic coverage</Typography>}
-          sx={{ ml: 0.5, mr: 0 }}
+          sx={{ ml: 0, mr: 0 }}
         />
       </li>
-      <li>
+      <li
+        className={`layer-checkbox ${showHighConfidenceAlertsOnDeforestationAlertsLayer ? 'active' : ''}`}
+      >
         <FormControlLabel
           control={
             <Checkbox
@@ -104,7 +108,7 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
             />
           }
           label={<Typography variant="body2">Show only high confidence alerts</Typography>}
-          sx={{ ml: 0.5, mr: 0 }}
+          sx={{ ml: 0, mr: 0 }}
         />
       </li>
     </ul>

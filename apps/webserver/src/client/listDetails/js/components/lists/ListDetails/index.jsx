@@ -1075,7 +1075,14 @@ export default class ListDetails extends Component {
       Header: () => {
         const { isEveryRowSelected } = this.state;
         return (
-          <Checkbox checked={isEveryRowSelected} onChange={this.selectAllLocations} sx={{ p: 0 }} />
+          <Checkbox
+            id="column-checkbox-all"
+            checked={isEveryRowSelected}
+            onChange={this.selectAllLocations}
+            sx={{ p: 0 }}
+            inputProps={{ 'aria-label': 'Select all locations', className: 'column-checkbox' }}
+            data-cy="select-all-locations"
+          />
         );
       },
       id: 'checkbox',
@@ -1094,6 +1101,11 @@ export default class ListDetails extends Component {
             checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
             onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
             sx={{ p: 0 }}
+            inputProps={{
+              'aria-label': `Select location ${cellProps.original.location_name || cellProps.original.location_id}`,
+              className: 'column-checkbox column-checkbox-single',
+            }}
+            data-cy={`select-location-${cellProps.original.location_id}`}
           />
         );
       },

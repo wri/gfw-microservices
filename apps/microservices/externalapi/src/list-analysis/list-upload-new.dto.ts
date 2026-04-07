@@ -63,4 +63,6 @@ export class ListInfoResponse {
   listName: string;
   @ApiProperty()
   locationCount: number;
+  @ApiProperty({ type: [String] })
+  analysisTypes: string[];
 }

@@ -113,8 +113,11 @@ import {
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
+import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
+import featureFlagsUtil from '../../../../../../utils/general.utils';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
+const ALERTS_UNSUBSCRIBE_BANNER_KEY = 'GFW-is-alerts-unsubscribe-banner-dismissed';
 
 const ACTIONS = {
   COPY: 'copy',
@@ -175,6 +178,9 @@ export default class ListDetails extends Component {
     } = getActiveAnalysisFlags(selectedList);
 
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
+    const isAlertsUnsubscribeBannerDismissed = !!localStorage.getItem(
+      ALERTS_UNSUBSCRIBE_BANNER_KEY
+    );
 
     this.state = {
       bannerContent: '',
@@ -226,6 +232,7 @@ export default class ListDetails extends Component {
       isGHGActive,
       isOnlyGHGActive,
       isEudrBannerDismissed,
+      isAlertsUnsubscribeBannerDismissed,
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
@@ -1882,6 +1889,19 @@ export default class ListDetails extends Component {
     }
   };
 
+  shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) {
+    // Check if list has ALERTS analysis
+    const alertsAnalysis = listAnalysesStatus?.find(
+      (item) => item.analysisId === 'ALERTS' || item.analysisId === 'Alerts'
+    );
+
+    // Banner should show if:
+    // 1. List has Alerts analysis
+    // 2. The options field exists and is explicitly not 'Weekly' (meaning it was unsubscribed)
+    // Note: undefined/null options means the list is subscribed (legacy behavior before GPV-5142 migration)
+    return alertsAnalysis && alertsAnalysis.options != null && alertsAnalysis.options !== 'Weekly';
+  }
+
   render() {
     const {
       canopyModalVisible: isFilterModalVisible,
@@ -2231,6 +2251,44 @@ export default class ListDetails extends Component {
                 </Typography>
               </Alert>
             )}
+
+            {featureFlagsUtil.isWeeklyAlertsAvailable &&
+              !isGfwList &&
+              !this.state.isAlertsUnsubscribeBannerDismissed &&
+              this.shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) && (
+                <Alert
+                  severity="info"
+                  action={
+                    <IconButton
+                      onClick={() => {
+                        localStorage.setItem(ALERTS_UNSUBSCRIBE_BANNER_KEY, 1);
+                        this.setState({ isAlertsUnsubscribeBannerDismissed: true });
+                      }}
+                    >
+                      <Close fontSize="small" />
+                    </IconButton>
+                  }
+                  sx={{
+                    borderRadius: 1,
+                    mb: 2,
+                    alignItems: 'center',
+                    border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
+                    backgroundColor: (theme) => theme.palette.secondary[100],
+                    color: (theme) => theme.palette.secondary[900],
+                    '& svg': {
+                      color: (theme) => theme.palette.secondary[700],
+                    },
+                  }}
+                >
+                  <Typography variant="body1">
+                    {ReusableText.AlertsUnsubscribeNotice}{' '}
+                    <Link href={ExternalLinks.UploadFees} target="_blank" rel="noopener noreferrer">
+                      See more information here.
+                    </Link>
+                  </Typography>
+                </Alert>
+              )}
+
             {selectedList && (
               <Stack
                 sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}

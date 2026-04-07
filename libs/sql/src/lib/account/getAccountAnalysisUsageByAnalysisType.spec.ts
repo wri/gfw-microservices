@@ -235,9 +235,8 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     const firstAndWhereParams = firstAndWhere[1] as { endDateTime: Date };
     expect(firstAndWhereParams.endDateTime).toEqual(new Date('2025-01-31T23:59:59.997Z'));
 
-    // Second andWhere is 'lp.userId IS NOT NULL', third is the Brackets condition
-    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBe('lp.userId IS NOT NULL');
-    expect(mockQueryBuilder.andWhere.mock.calls[2][0]).toBeInstanceOf(Brackets);
+    // Second andWhere is the Brackets condition (user_id filter removed to include ALERTS-BATCH)
+    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBeInstanceOf(Brackets);
 
     const result = await getAccountAnalysisUsageByAnalysisType({
       startDate: '2024-12-31',

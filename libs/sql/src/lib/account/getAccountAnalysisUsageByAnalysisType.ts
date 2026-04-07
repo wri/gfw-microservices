@@ -145,7 +145,6 @@ async function calculateTokenUsage(
         )
       WHERE lp.analysis_end_time >= @0
         AND lp.analysis_end_time <= @1
-        AND lp.user_id IS NOT NULL
     ) q0
     GROUP BY q0.analysis_type
   `;
@@ -207,7 +206,6 @@ export async function getAccountAnalysisUsageByAnalysisType({
       .addSelect('lp.analysisType', 'analysis_type')
       .where('lp.analysisEndTime >= :startDateTime', { startDateTime })
       .andWhere('lp.analysisEndTime <= :endDateTime', { endDateTime })
-      .andWhere('lp.userId IS NOT NULL')
       .andWhere(
         new Brackets((qb) =>
           qb

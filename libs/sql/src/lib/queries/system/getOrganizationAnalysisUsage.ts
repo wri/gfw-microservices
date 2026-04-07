@@ -45,7 +45,6 @@ BEGIN
   )
   WHERE analysis_end_time >= ''{START_DATE}''
     AND analysis_end_time <= ''{END_DATE}''
-    AND lp.user_id IS NOT NULL
     AND (lp.analysis_type <> ''GHG'' OR lp.analysis_end_time >= ''2025-11-22'') ';
   SET @TABLE = '#TotArea_org';
   SET @PARAM = 'ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as total_area_analyzed,

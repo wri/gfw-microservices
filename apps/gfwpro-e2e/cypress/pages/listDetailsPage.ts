@@ -5,7 +5,7 @@ class ListDetailsPage {
     fullListMapBtn: () => cy.contains('List Map'),
     locationMapBtnOnHover: () => cy.get('[data-cy="locations-map"]'),
     locationMapBtn: () => cy.contains('Location(s) Map'),
-    checkBoxSelectAll: () => cy.get('div.rt-table').find('label.column-checkbox:visible').eq(0),
+    checkBoxSelectAll: () => cy.get('[data-cy="select-all-locations"]'),
     checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionListDetail: () => cy.contains('CSV'),
@@ -66,9 +66,9 @@ class ListDetailsPage {
     if (locations && locations.length > 0) {
       locations.forEach((location) => {
         cy.get('div.rt-table')
-          .find('label.column-checkbox.column-checkbox-single:visible')
+          .find('input.column-checkbox.column-checkbox-single:visible')
           .eq(location - 1)
-          .click();
+          .click({ force: true });
       });
     }
   }

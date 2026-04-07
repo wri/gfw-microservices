@@ -8,6 +8,7 @@ import {
   Box,
   Alert,
   IconButton,
+  Checkbox,
 } from '@mui/material';
 import axios from 'axios';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
@@ -111,8 +112,11 @@ import {
   forestDataSet,
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
+import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
+import featureFlagsUtil from '../../../../../../utils/general.utils';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
+const ALERTS_UNSUBSCRIBE_BANNER_KEY = 'GFW-is-alerts-unsubscribe-banner-dismissed';
 
 const ACTIONS = {
   COPY: 'copy',
@@ -173,6 +177,9 @@ export default class ListDetails extends Component {
     } = getActiveAnalysisFlags(selectedList);
 
     const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
+    const isAlertsUnsubscribeBannerDismissed = !!localStorage.getItem(
+      ALERTS_UNSUBSCRIBE_BANNER_KEY
+    );
 
     this.state = {
       bannerContent: '',
@@ -224,6 +231,7 @@ export default class ListDetails extends Component {
       isGHGActive,
       isOnlyGHGActive,
       isEudrBannerDismissed,
+      isAlertsUnsubscribeBannerDismissed,
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
@@ -1074,16 +1082,14 @@ export default class ListDetails extends Component {
       Header: () => {
         const { isEveryRowSelected } = this.state;
         return (
-          <div className="column-checkbox-container">
-            <input
-              id="column-checkbox-all"
-              className="column-checkbox"
-              type="checkbox"
-              checked={isEveryRowSelected}
-              onChange={this.selectAllLocations}
-            />
-            <label htmlFor="column-checkbox-all" className="column-checkbox" />
-          </div>
+          <Checkbox
+            id="column-checkbox-all"
+            checked={isEveryRowSelected}
+            onChange={this.selectAllLocations}
+            sx={{ p: 0 }}
+            inputProps={{ 'aria-label': 'Select all locations', className: 'column-checkbox' }}
+            data-cy="select-all-locations"
+          />
         );
       },
       id: 'checkbox',
@@ -1098,19 +1104,18 @@ export default class ListDetails extends Component {
         const { selectedLocations } = this.props;
 
         return (
-          <div>
-            <input
-              id={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
-              className="column-checkbox"
-              checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
-              onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
-              type="checkbox"
-            />
-            <label
-              htmlFor={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
-              className="column-checkbox column-checkbox-single"
-            />
-          </div>
+          <Checkbox
+            checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
+            onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
+            sx={{ p: 0 }}
+            inputProps={{
+              'aria-label': `Select location ${
+                cellProps.original.location_name || cellProps.original.location_id
+              }`,
+              className: 'column-checkbox column-checkbox-single',
+            }}
+            data-cy={`select-location-${cellProps.original.location_id}`}
+          />
         );
       },
     };
@@ -1878,6 +1883,19 @@ export default class ListDetails extends Component {
     }
   };
 
+  shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) {
+    // Check if list has ALERTS analysis
+    const alertsAnalysis = listAnalysesStatus?.find(
+      (item) => item.analysisId === 'ALERTS' || item.analysisId === 'Alerts'
+    );
+
+    // Banner should show if:
+    // 1. List has Alerts analysis
+    // 2. The options field exists and is explicitly not 'Weekly' (meaning it was unsubscribed)
+    // Note: undefined/null options means the list is subscribed (legacy behavior before GPV-5142 migration)
+    return alertsAnalysis && alertsAnalysis.options != null && alertsAnalysis.options !== 'Weekly';
+  }
+
   render() {
     const {
       canopyModalVisible: isFilterModalVisible,
@@ -2222,6 +2240,44 @@ export default class ListDetails extends Component {
                 </Typography>
               </Alert>
             )}
+
+            {featureFlagsUtil.isWeeklyAlertsAvailable &&
+              !isGfwList &&
+              !this.state.isAlertsUnsubscribeBannerDismissed &&
+              this.shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) && (
+                <Alert
+                  severity="info"
+                  action={
+                    <IconButton
+                      onClick={() => {
+                        localStorage.setItem(ALERTS_UNSUBSCRIBE_BANNER_KEY, 1);
+                        this.setState({ isAlertsUnsubscribeBannerDismissed: true });
+                      }}
+                    >
+                      <Close fontSize="small" />
+                    </IconButton>
+                  }
+                  sx={{
+                    borderRadius: 1,
+                    mb: 2,
+                    alignItems: 'center',
+                    border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
+                    backgroundColor: (theme) => theme.palette.secondary[100],
+                    color: (theme) => theme.palette.secondary[900],
+                    '& svg': {
+                      color: (theme) => theme.palette.secondary[700],
+                    },
+                  }}
+                >
+                  <Typography variant="body1">
+                    {ReusableText.AlertsUnsubscribeNotice}{' '}
+                    <Link href={ExternalLinks.UploadFees} target="_blank" rel="noopener noreferrer">
+                      See more information here.
+                    </Link>
+                  </Typography>
+                </Alert>
+              )}
+
             {selectedList && (
               <Stack
                 sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}

@@ -1,4 +1,49 @@
-import { createTheme } from '@mui/material/styles';
+import { createElement } from 'react';
+import { createTheme, alpha } from '@mui/material/styles';
+import {
+  CheckboxUncheckedIcon,
+  CheckboxCheckedIcon,
+  CheckboxIndeterminateIcon,
+} from './checkboxIcons';
+
+declare module '@mui/material/styles' {
+  interface Palette {
+    neutral: {
+      100: string;
+      200: string;
+      300: string;
+      400: string;
+      500: string;
+      600: string;
+      700: string;
+      800: string;
+      900: string;
+    };
+    link: {
+      main: string;
+      hover: string;
+      active: string;
+    };
+  }
+  interface PaletteOptions {
+    neutral?: {
+      100?: string;
+      200?: string;
+      300?: string;
+      400?: string;
+      500?: string;
+      600?: string;
+      700?: string;
+      800?: string;
+      900?: string;
+    };
+    link?: {
+      main?: string;
+      hover?: string;
+      active?: string;
+    };
+  }
+}
 
 export const theme = createTheme({
   shape: {
@@ -20,10 +65,10 @@ export const theme = createTheme({
       900: '#1A210B',
     },
     secondary: {
-      main: '#58A9CD', // TODO should be the same as 500, sync up with design team
-      light: '#D4EAFC',
-      contrastText: '#13487A',
-      dark: '#007ED8',
+      main: '#5646D0', // 500
+      light: '#E8E6FB',
+      contrastText: '#FFFFFF',
+      dark: '#4C3EAF',
       100: '#F6F5FF',
       200: '#E8E6FB',
       300: '#D0CBF6',
@@ -34,33 +79,43 @@ export const theme = createTheme({
       800: '#2E2765',
       900: '#241E4F',
     },
+    neutral: {
+      100: '#FFFFFF',
+      200: '#F6F6F6',
+      300: '#E7E6E6',
+      400: '#C9C9C9',
+      500: '#9B9B9B',
+      600: '#686767',
+      700: '#4F4E4E',
+      800: '#1A1919',
+      900: '#000000',
+    },
     info: {
       main: '#E0E0E0',
       contrastText: '#3E3E3C',
     },
     text: {
-      primary: '#404041',
-      secondary: '#767575',
+      primary: '#1A1919', // neutral-800
+      secondary: '#4F4E4E', // neutral-700
     },
     success: {
-      100: '#EBF5F2',
-      300: '#C2E5DC',
-      500: '#009E77',
-      700: '#00664D',
+      100: '#F3FFF2',
+      500: '#086600',
     },
     warning: {
-      main: '#FFA500', // TODO should be the same as 500, sync up with design
-      100: '#FBF7EA',
-      300: '#EEDDA5',
-      500: '#A88100',
-      700: '#715804',
+      main: '#804600', // 500
+      100: '#FEF7E5',
+      500: '#804600',
     },
     error: {
-      main: '#F44336', // TODO should be the same as 500, sync up with design team
-      100: '#FFEFED',
-      300: '#F6C5C1',
-      500: '#C11101',
-      700: '#8D0D01',
+      main: '#A80011', // 500
+      100: '#FFF3F4',
+      500: '#A80011',
+    },
+    link: {
+      main: '#404041',
+      hover: '#1A1919',
+      active: '#A1A1A1',
     },
     background: {
       default: '#F5F5F5',
@@ -74,44 +129,59 @@ export const theme = createTheme({
     fontWeightMedium: 500,
     fontWeightBold: 700,
     h1: {
-      fontSize: '2.25rem',
-      fontWeight: '500',
+      fontSize: '3.75rem', // WRI level 1100: 60px
+      fontWeight: 700,
+      lineHeight: '5rem', // 80px
     },
     h2: {
-      fontSize: '2rem',
-      fontWeight: '500',
+      fontSize: '3rem', // WRI level 1000: 48px
+      fontWeight: 700,
+      lineHeight: '4rem', // 64px
     },
     h3: {
-      fontSize: '1.75rem',
-      fontWeight: '500',
+      fontSize: '2.25rem', // WRI level 900: 36px
+      fontWeight: 700,
+      lineHeight: '2.5rem', // 40px
     },
     h4: {
-      fontSize: '1.5rem',
-      fontWeight: '500',
+      fontSize: '1.875rem', // WRI level 800: 30px
+      fontWeight: 600,
+      lineHeight: '2.25rem', // 36px
     },
     h5: {
-      fontSize: '1.25rem',
-      fontWeight: '500',
+      fontSize: '1.5rem', // WRI level 700: 24px
+      fontWeight: 600,
+      lineHeight: '2rem', // 32px
     },
     h6: {
-      fontSize: '1.125rem',
-      fontWeight: '500',
+      fontSize: '1.25rem', // WRI level 600: 20px
+      fontWeight: 600,
+      lineHeight: '1.75rem', // 28px
     },
     subtitle1: {
       fontSize: '1.125rem',
+      fontWeight: 400,
+      lineHeight: '1.5rem',
     },
     subtitle2: {
       fontSize: '1rem',
+      fontWeight: 400,
+      lineHeight: '1.5rem',
     },
     body1: {
       fontSize: '1rem',
+      fontWeight: 400,
+      lineHeight: '1.5rem',
     },
     body2: {
       fontSize: '0.875rem',
+      fontWeight: 400,
+      lineHeight: '1.25rem',
     },
     caption: {
       fontSize: '0.75rem',
-      lineHeight: '0.9375rem',
+      fontWeight: 400,
+      lineHeight: '1rem',
     },
   },
   components: {
@@ -139,6 +209,34 @@ export const theme = createTheme({
     MuiButtonBase: {
       defaultProps: {
         disableRipple: true,
+      },
+    },
+    MuiCheckbox: {
+      defaultProps: {
+        color: 'primary',
+        icon: createElement(CheckboxUncheckedIcon),
+        checkedIcon: createElement(CheckboxCheckedIcon),
+        indeterminateIcon: createElement(CheckboxIndeterminateIcon),
+      },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          padding: '6px',
+          borderRadius: '4px',
+          // Override global CSS input[type='checkbox'] { z-index: -1 } which blocks clicks
+          '& input[type="checkbox"]': {
+            zIndex: 1,
+          },
+          '&:hover': {
+            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+          },
+          '&.Mui-focusVisible': {
+            outline: `2px solid ${theme.palette.primary.main}`,
+            outlineOffset: '2px',
+          },
+          '&.Mui-disabled': {
+            opacity: 0.38,
+          },
+        }),
       },
     },
     MuiTextField: {

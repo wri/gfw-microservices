@@ -1,10 +1,9 @@
 // REDUX - Store
 import {
   updateInfoBubbleCache,
-  toggleInfoPopover,
   updatePopoverLoadingId,
-  updateBubbleData,
-  updatePopoverAnchorEl,
+  showInfoPopover,
+  toggleInfoPopover,
 } from '../actions/locationActions';
 import store from '../store';
 import errorLogger from '../../../common/js/utils/errorLogger';
@@ -17,31 +16,38 @@ export const togglePopover = (evt, infoBubbleCache) => {
   const target = evt.currentTarget;
   const infoBubbleId = target.id;
 
-  store.dispatch(updatePopoverLoadingId(infoBubbleId));
-
   const checkInfoBubbleCache = (id) => {
     return infoBubbleCache[id] !== undefined && infoBubbleCache[id] !== null;
   };
 
   if (checkInfoBubbleCache(infoBubbleId)) {
-    store.dispatch(toggleInfoPopover(true));
-    store.dispatch(updatePopoverLoadingId(''));
-    store.dispatch(updateBubbleData(infoBubbleCache[infoBubbleId]));
-    store.dispatch(updatePopoverAnchorEl(target));
+    store.dispatch(
+      showInfoPopover({
+        displayPopover: true,
+        popoverLoading: '',
+        bubbleData: infoBubbleCache[infoBubbleId],
+        anchorEl: target,
+      })
+    );
     // early return if we have the info in cache
     return;
   }
 
-  // if the info is not in the cache, go get it
+  // if the info is not in the cache, go get it — show loading state first
+  store.dispatch(updatePopoverLoadingId(infoBubbleId));
   const request = new XMLHttpRequest();
 
   request.addEventListener('load', () => {
     const resp = JSON.parse(request.response);
     store.dispatch(updateInfoBubbleCache(infoBubbleId, resp.data));
-    store.dispatch(toggleInfoPopover(true));
-    store.dispatch(updatePopoverLoadingId(''));
-    store.dispatch(updateBubbleData(resp.data));
-    store.dispatch(updatePopoverAnchorEl(target));
+    store.dispatch(
+      showInfoPopover({
+        displayPopover: true,
+        popoverLoading: '',
+        bubbleData: resp.data,
+        anchorEl: target,
+      })
+    );
   });
 
   request.onerror = () => {

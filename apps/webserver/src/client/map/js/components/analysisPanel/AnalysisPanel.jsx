@@ -158,6 +158,11 @@ export default class AnalysisPanel extends Component {
             />
           </div>
         )}
+        {basemap.id === PLANET_BASEMAP && (
+          <div className="landsat-dropdown-root">
+            <PlanetTilesOptions />
+          </div>
+        )}
 
         <span
           className={`info-icon metadata analysis-panel-metadata pointer ${
@@ -169,7 +174,6 @@ export default class AnalysisPanel extends Component {
             <use xlinkHref="#shape-info" className={`${basemap.id + '-basemap-metadata'}`} />
           </svg>
         </span>
-        {basemap.id === PLANET_BASEMAP && <PlanetTilesOptions />}
       </div>
     );
   };

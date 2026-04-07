@@ -23,6 +23,7 @@ module.exports = (app, limiter) => {
     middlewares.checkAuthentication,
     middlewares.checkActive,
     middlewares.checkInactivity,
+    middlewares.checkAdministrator,
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {
@@ -30,6 +31,7 @@ module.exports = (app, limiter) => {
   }
 
   app.use('/activity-log', routeMiddlewares);
+  app.use('/activityLog', routeMiddlewares);
 
   app.get('/activity-log', (req, res) => {
     console.log('GET /activity-log');

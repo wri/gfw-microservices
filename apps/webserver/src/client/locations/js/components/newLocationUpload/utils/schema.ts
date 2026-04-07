@@ -21,10 +21,11 @@ export const coordinateSchema = z.object({
     .refine(
       (value) => {
         const normalizedValue = value.replace(',', '.');
-        return Math.abs(Number(normalizedValue)) <= 90;
+        const lat = Number(normalizedValue);
+        return lat >= -62 && lat <= 84;
       },
       {
-        message: 'This latitude is invalid',
+        message: 'Latitude must be between 62°S (-62) and 84°N (84)',
       }
     ),
   longitude: z

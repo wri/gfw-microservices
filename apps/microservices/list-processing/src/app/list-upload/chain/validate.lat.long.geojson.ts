@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { AbstractHandler, ChainType, RequestNewList } from './types';
+import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from './types';
 import * as turf from '@turf/turf';
 import { Feature, Polygon, MultiPolygon } from 'geojson';
 import { yieldIfLong } from './shared';
@@ -17,6 +17,10 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
 
   public static isNumeric(value: number): boolean {
     return !isNaN(value) && isFinite(value);
+  }
+
+  public static isLatitudeInSupportedRange(lat: number): boolean {
+    return lat >= -62 && lat <= 84;
   }
 
   public static isValidLatLong(lat: number, lon: number): boolean {
@@ -39,14 +43,21 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  validateCoordinates(coordinates: any, country: string): string {
+  validateCoordinates(coordinates: any, country: string | null): string {
     // Check if coordinates is a single point (array of two numbers)
     if (Array.isArray(coordinates) && coordinates.length === 2 && !Array.isArray(coordinates[0])) {
       const [lon, lat] = coordinates;
       if (!ValidateLatLongGeojson.isValidLatLong(lat, lon)) {
         return 'Invalid coordinates';
       }
-      return this.isValidCountry(country) ? '' : 'Invalid location';
+      if (!ValidateLatLongGeojson.isLatitudeInSupportedRange(lat)) {
+        return 'Latitude out of supported range (must be between 62°S and 84°N)';
+      }
+      // country is null in preview mode (gadmService hasn't run yet); skip country check
+      if (country !== null && !this.isValidCountry(country)) {
+        return 'Invalid location';
+      }
+      return '';
     }
 
     // Otherwise, assume it's an array of points or nested arrays
@@ -62,7 +73,10 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
         if (!ValidateLatLongGeojson.isValidLatLong(lat, lon)) {
           return 'Invalid coordinates';
         }
-        if (!this.isValidCountry(country)) {
+        if (!ValidateLatLongGeojson.isLatitudeInSupportedRange(lat)) {
+          return 'Latitude out of supported range (must be between 62°S and 84°N)';
+        }
+        if (country !== null && !this.isValidCountry(country)) {
           return 'Invalid location';
         }
       }
@@ -139,7 +153,9 @@ export class ValidateLatLongGeojson extends AbstractHandler<ChainType> {
       let lastYieldTimestamp = Date.now();
       for (let i = geojson.features.length - 1; i >= 0; i--) {
         const feature = geojson.features[i];
-        const country = (feature.properties?.country as string) || '';
+        // Skip country validation in preview mode: gadmService hasn't run yet, so country is always empty.
+        const isPreview = !!(input.request as PreviewListRequest).preview;
+        const country = isPreview ? null : (feature.properties?.country as string) || '';
         const geometry = feature.geometry;
 
         if (geometry && 'coordinates' in geometry) {

@@ -70,7 +70,6 @@ function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
       key={column.accessor}
       control={
         <Checkbox
-          size="small"
           id={`checkBox-${index}`}
           data-cy={`column-selector-${column.accessor.replace(/\s+/g, '-')}`}
           checked={visibleColumns.includes(column.accessor)}
@@ -82,7 +81,7 @@ function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
           {column.accessor}
         </Typography>
       }
-      sx={{ mb: 0.5 }}
+      sx={{ mb: 0.5, ml: 0 }}
     />
   ));
 
@@ -117,7 +116,6 @@ function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
           <FormControlLabel
             control={
               <Checkbox
-                size="small"
                 checked={allSelected}
                 indeterminate={visibleColumns.length > 0 && !allSelected}
                 onChange={(e) => toggleSelectAll(e.target.checked)}
@@ -129,7 +127,7 @@ function ColumnSelector({ listColumns, visibleColumns, setListColumns }) {
                 Select/Deselect All Columns
               </Typography>
             }
-            sx={{ mb: 1, mt: 2 }}
+            sx={{ mb: 1, mt: 2, ml: 0 }}
           />
 
           <Divider sx={{ mb: 1 }} />

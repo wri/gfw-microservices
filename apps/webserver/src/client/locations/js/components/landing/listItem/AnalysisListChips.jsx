@@ -1,18 +1,49 @@
 import Chip from '@mui/material/Chip';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { analysisTypesOptionsNewNames } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  analysisTypesOptionsNewNames,
+  weeklyAlertsAnalysis,
+  AlertsAnalysisFrequency,
+} from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import featureFlags from '../../../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';
 
 function AnalysisListChips({ listAnalysesStatus = [] }) {
-  const analysisTypesLabels = (analysis) => {
-    return analysisTypesOptionsNewNames.filter((option) => option.id === analysis)?.[0]?.shortLabel;
+  // Only include the Weekly label when the feature flag is enabled so that server-side
+  // Weekly entries are also hidden (not just the synthesized one) when the flag is off.
+  const allAnalysisLabels = featureFlags.isWeeklyAlertsAvailable
+    ? [...analysisTypesOptionsNewNames, weeklyAlertsAnalysis]
+    : [...analysisTypesOptionsNewNames];
+
+  const getShortLabel = (analysisId) => {
+    return allAnalysisLabels.find((option) => option.id === analysisId)?.shortLabel;
   };
+
+  // Synthesize a Weekly entry when the ALERTS row has options='Weekly',
+  // but only if a Weekly row is not already present in the data (e.g. from
+  // resolveListAnalysisStatuses) to avoid duplicate chips and React key collisions.
+  const hasWeeklyEntry = listAnalysesStatus.some(
+    (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+  );
+  const entries = listAnalysesStatus.flatMap((entry) => {
+    const items = [entry];
+    if (
+      featureFlags.isWeeklyAlertsAvailable &&
+      !hasWeeklyEntry &&
+      entry.analysisId === analysisTypes.ALERTS &&
+      entry.options === AlertsAnalysisFrequency.WEEKLY
+    ) {
+      items.push({ analysisId: AlertsAnalysisFrequency.WEEKLY, status: entry.status });
+    }
+    return items;
+  });
 
   return (
     <div className="analysis-chips">
-      {listAnalysesStatus
-        .filter(({ analysisId }) => analysisTypesLabels(analysisId))
+      {entries
+        .filter(({ analysisId }) => getShortLabel(analysisId))
         .map(({ analysisId, status }) => {
           const analysis_status = status;
           const icon = analysis_status === listStatus.Pending ? <RefreshIcon /> : null;
@@ -22,7 +53,7 @@ function AnalysisListChips({ listAnalysesStatus = [] }) {
             <Chip
               key={analysisId}
               icon={icon}
-              label={analysisTypesLabels(analysisId)}
+              label={getShortLabel(analysisId)}
               color={color}
               size="small"
               style={{ height: '17px', marginRight: '10px' }}

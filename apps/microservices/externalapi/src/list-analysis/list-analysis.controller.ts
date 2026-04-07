@@ -8,6 +8,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
@@ -152,10 +153,10 @@ export class ListAnalysisController {
     const { userEmail, options } = reanalyzeBody;
 
     // Validate that options is only used with Alerts analysis
-    if (options && analysisId.toUpperCase() !== 'ALERTS') {
-      throw new HttpException(
-        'The "options" field can only be used when analysisId is "Alerts"',
-        HttpStatus.BAD_REQUEST
+    // Note: Check for undefined (not truthy) because empty string is valid for ALERTS (deactivates Weekly Alerts)
+    if (options !== undefined && analysisId.toUpperCase() !== 'ALERTS') {
+      throw new BadRequestException(
+        'The "options" field can only be used when analysisId is "Alerts"'
       );
     }
 

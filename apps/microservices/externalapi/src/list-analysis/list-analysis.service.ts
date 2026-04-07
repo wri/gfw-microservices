@@ -469,7 +469,8 @@ export class ListAnalysisService {
       }
 
       // Validate that options is only used with Alerts analysis
-      if (newListDetails.options) {
+      // Note: Check for undefined (not truthy) because empty string is valid for ALERTS (deactivates Weekly Alerts)
+      if (newListDetails.options !== undefined) {
         const analysisIds = newListDetails.analysisIDs; // Already an array of transformed values
         if (!analysisIds.includes('ALERTS')) {
           throwCustomErrorResponse(

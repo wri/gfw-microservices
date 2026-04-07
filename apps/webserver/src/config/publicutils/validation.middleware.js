@@ -138,7 +138,7 @@ const validateRequest = (schema) => {
         if (hasUnknownKeys) {
           const unknownKeys = error.errors
             .filter((err) => err.code === 'unrecognized_keys')
-            .flatMap((err) => err.keys || []);
+            .flatMap((err) => ('keys' in err ? err.keys : []));
 
           const response = {
             error: 'Bad Request',

@@ -10,6 +10,7 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -227,7 +228,9 @@ export const ComposeCopyQueryStatement = async (
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId, isGFWList);
 
   // get valid columns from AnalysisSchema by extracting the 'name' property values
-  const validColumns = Object.values(AnalysisSchema.columns).map((column: any) => column.name);
+  const validColumns = Object.values(AnalysisSchema.columns).map(
+    (column: { name?: string }) => column.name
+  );
 
   // Extract column names and filter to include only valid ones
   const columnNames = tableColumns?.map((record: RecordType) => record.COLUMN_NAME) ?? [];
@@ -438,13 +441,28 @@ export async function setListAnalysisStatus(
   clientDatabase: string,
   listId: number,
   analysisIds: string[],
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  organizationId?: number,
+  options?: string
 ) {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
+
+  // Check feature flag for weekly alerts
+  let weeklyAlertsOptIn = false;
+  if (organizationId) {
+    try {
+      const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+      const flags = await getFeatureFlagsForCurrentOrg(organizationId!);
+      weeklyAlertsOptIn = flags.some((flag) => flag.flagId === 'WeeklyAlerts' && flag.flagState);
+    } catch (error) {
+      // If feature flag lookup fails, fall back to disabled (opt-in not required)
+      weeklyAlertsOptIn = false;
+    }
+  }
 
   await Promise.all(
     analysisIds
@@ -481,8 +499,18 @@ export async function setListAnalysisStatus(
         }
 
         // GPV-5141 default options=Weekly for ALERTS analysis
+        // GPV-5181: Handle Weekly Alerts options based on feature flag
         if (normalizedAnalysisId === analysisTypes.ALERTS) {
-          value.options = AlertsAnalysisFrequency.WEEKLY;
+          if (weeklyAlertsOptIn) {
+            // Feature flag is ON: only set Weekly if explicitly provided in options
+            if (options === AlertsAnalysisFrequency.WEEKLY) {
+              value.options = AlertsAnalysisFrequency.WEEKLY;
+            }
+            // Otherwise, leave options as null (not setting Weekly)
+          } else {
+            // Feature flag is OFF: always set Weekly (backward compatibility)
+            value.options = AlertsAnalysisFrequency.WEEKLY;
+          }
         }
 
         const existingRecord = await listAnalysisStatusRepository.findOne({
@@ -510,11 +538,20 @@ export async function setListAnalysisStatusByTypes(
   clientDatabase: string,
   listId: number,
   analysisTypesToProcess: string,
-  status: number = listStatus.Pending
+  status: number = listStatus.Pending,
+  organizationId?: number,
+  options?: string
 ) {
   const analysisTypesToUpdate = analysisTypesToProcess
     .split(',')
     .map((type) => type.trim())
     .filter(Boolean);
-  return await setListAnalysisStatus(clientDatabase, listId, analysisTypesToUpdate, status);
+  return await setListAnalysisStatus(
+    clientDatabase,
+    listId,
+    analysisTypesToUpdate,
+    status,
+    organizationId,
+    options
+  );
 }

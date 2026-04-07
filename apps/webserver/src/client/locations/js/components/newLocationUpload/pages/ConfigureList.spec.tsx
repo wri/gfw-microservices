@@ -26,6 +26,11 @@ jest.mock('@mui/material', () => ({
   Dialog: () => <div data-testid="mock-dialog" />,
 }));
 
+jest.mock('../../../../../../utils/general.utils', () => ({
+  __esModule: true,
+  default: { isWeeklyAlertsAvailable: true },
+}));
+
 jest.mock('../contexts');
 const mockSetUploadLocationConfigureList = jest.fn();
 const mockClearUploadType = jest.fn();
@@ -41,6 +46,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
       ALERTS: true,
       FCD: true,
       PalmRisk: true,
+      Weekly: false,
     },
     area: { measurementUnit: 'hectares', size: 0 },
     coordinates: [{ latitude: 1.1, longitude: 1.1 }],
@@ -373,6 +379,27 @@ describe('ConfigureList', () => {
     expect(palmRiskCheckbox).not.toBeChecked();
   }, 15100);
 
+  it('should toggle dependent checkboxes alerts and weekly alerts', async () => {
+    render(<ConfigureList userLists={mockUserLists} />);
+
+    const alertsCheckbox = screen.getByRole('checkbox', {
+      name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
+    });
+    const weeklyCheckbox = screen.getByRole('checkbox', { name: /weekly alerts/i });
+
+    // Checking Weekly should auto-check ALERTS
+    await user.click(weeklyCheckbox);
+
+    expect(weeklyCheckbox).toBeChecked();
+    expect(alertsCheckbox).toBeChecked();
+
+    // Unchecking ALERTS should also uncheck Weekly
+    await user.click(alertsCheckbox);
+
+    expect(alertsCheckbox).not.toBeChecked();
+    expect(weeklyCheckbox).not.toBeChecked();
+  }, 15100);
+
   it('should go back to the previous page', async () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
@@ -437,7 +464,7 @@ describe('ConfigureList', () => {
 
     await user.click(
       screen.getByRole('checkbox', {
-        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
+        name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
       })
     );
 
@@ -453,6 +480,7 @@ describe('ConfigureList', () => {
         FCD: false,
         AFI: false,
         ALERTS: true,
+        Weekly: false,
       },
     });
     expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
@@ -499,11 +527,12 @@ describe('ConfigureList', () => {
     );
   }, 15100);
 
-  it('should only show the three available types of analysis', () => {
+  it('should show the available types of analysis including Weekly Alerts', () => {
     render(<ConfigureList userLists={mockUserLists} />);
 
     const amountOfTypesOfAnalysis = screen.getAllByRole('checkbox');
 
-    expect(amountOfTypesOfAnalysis.length).toBe(3);
+    // AFI, ALERTS, Weekly, FCD (PalmRisk only shows for Palm oil)
+    expect(amountOfTypesOfAnalysis.length).toBe(4);
   });
 });

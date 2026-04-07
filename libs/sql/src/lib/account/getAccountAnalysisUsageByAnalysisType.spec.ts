@@ -79,9 +79,9 @@ import { ClientStoreConnection } from '../util';
 const defaultTokenFields = {
   location_rate: null,
   list_rate: null,
-  total_location_tokens: null,
-  total_list_tokens: null,
-  total_tokens: null,
+  total_location_tokens: 0,
+  total_list_tokens: 0,
+  total_tokens: 0,
   effective_rate_date: null,
 };
 
@@ -235,9 +235,8 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     const firstAndWhereParams = firstAndWhere[1] as { endDateTime: Date };
     expect(firstAndWhereParams.endDateTime).toEqual(new Date('2025-01-31T23:59:59.997Z'));
 
-    // Second andWhere is 'lp.userId IS NOT NULL', third is the Brackets condition
-    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBe('lp.userId IS NOT NULL');
-    expect(mockQueryBuilder.andWhere.mock.calls[2][0]).toBeInstanceOf(Brackets);
+    // Second andWhere is the Brackets condition (user_id filter removed to include ALERTS-BATCH)
+    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBeInstanceOf(Brackets);
 
     const result = await getAccountAnalysisUsageByAnalysisType({
       startDate: '2024-12-31',
@@ -465,7 +464,7 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
       expect(afiResult?.effective_rate_date).toEqual(effectiveDate);
     });
 
-    it('returns null token fields when no ChargeRate records exist for analysis type', async () => {
+    it('returns 0 token fields when no ChargeRate records exist for analysis type', async () => {
       mockQueryBuilder.getRawMany.mockResolvedValue([
         {
           total_area_analyzed: '50.0',
@@ -487,9 +486,9 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
       expect(fcdResult).toBeDefined();
       expect(fcdResult?.location_rate).toBeNull();
       expect(fcdResult?.list_rate).toBeNull();
-      expect(fcdResult?.total_location_tokens).toBeNull();
-      expect(fcdResult?.total_list_tokens).toBeNull();
-      expect(fcdResult?.total_tokens).toBeNull();
+      expect(fcdResult?.total_location_tokens).toBe(0);
+      expect(fcdResult?.total_list_tokens).toBe(0);
+      expect(fcdResult?.total_tokens).toBe(0);
       expect(fcdResult?.effective_rate_date).toBeNull();
     });
 

@@ -14,10 +14,11 @@ const MAX_ARRAY_LENGTH = 100;
 /**
  * Zod schema for /profile/updateuser endpoint
  * Only allows predefined, valid JSON keys
+ * Note: id is optional - derived from session for non-admin users
  */
 const updateUserSchema = z
   .object({
-    id: z.number().int().positive('User ID must be a positive integer'),
+    id: z.number().int().positive('User ID must be a positive integer').optional().nullable(),
     first_name: z
       .string()
       .trim()
@@ -138,7 +139,7 @@ const validateRequest = (schema) => {
         if (hasUnknownKeys) {
           const unknownKeys = error.errors
             .filter((err) => err.code === 'unrecognized_keys')
-            .flatMap((err) => ('keys' in err ? err.keys : []));
+            .flatMap((err) => ('keys' in err ? err.keys : []) || []);
 
           const response = {
             error: 'Bad Request',

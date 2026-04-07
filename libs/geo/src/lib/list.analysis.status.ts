@@ -23,6 +23,7 @@ import {
   analysisTypes,
   analysisTypesOptionsNewNames,
   analysisIdsOptionsMap,
+  AlertsAnalysisFrequency,
 } from '@wri-monorepos/constants';
 import { S3Service } from '@wri-monorepos/aws';
 import {
@@ -95,7 +96,8 @@ export const setSelectedAnalyses = async (
   clientDatabase: string,
   listId: number,
   selectedAnalysisIds: string[],
-  statusToApply = listStatus.Pending
+  statusToApply = listStatus.Pending,
+  organizationId?: number
 ) => {
   const currentAnalyses = await getListAnalysisStatusByListId(clientDatabase, listId);
 
@@ -103,29 +105,86 @@ export const setSelectedAnalyses = async (
   const existingIds = new Set(currentAnalyses.map((a) => a.analysisId));
 
   // Filter out which ones are actually new (not already selected in the list)
-  const analysesToAdd = selectedAnalysisIds.filter((id) => !existingIds.has(id));
+  let analysesToAdd = selectedAnalysisIds.filter((id) => !existingIds.has(id));
 
-  // Delete the ones that are no longer selected
-  await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, currentAnalyses);
+  // When a child option (Weekly/PalmRisk) is newly being added but its parent already
+  // exists, force-include the parent so its 'options' field gets updated in the DB.
+  if (
+    analysesToAdd.includes(AlertsAnalysisFrequency.WEEKLY) &&
+    existingIds.has(analysisTypes.ALERTS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.ALERTS];
+  }
+  if (
+    analysesToAdd.includes(analysisTypes.PALM_RISK) &&
+    existingIds.has(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.FOREST_CHANGE_DIAGNOSTICS];
+  }
+
+  // When Weekly is being removed but ALERTS remains, force-include ALERTS
+  // so its options field gets cleared in the DB.
+  const alertsRow = currentAnalyses.find((a) => a.analysisId === analysisTypes.ALERTS);
+  if (
+    alertsRow?.options === AlertsAnalysisFrequency.WEEKLY &&
+    selectedAnalysisIds.includes(analysisTypes.ALERTS) &&
+    !selectedAnalysisIds.includes(AlertsAnalysisFrequency.WEEKLY) &&
+    !analysesToAdd.includes(analysisTypes.ALERTS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.ALERTS];
+  }
+
+  // When PalmRisk is being removed but FCD remains, force-include FCD
+  // so its options field gets cleared in the DB.
+  const fcdRow = currentAnalyses.find(
+    (a) => a.analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  );
+  if (
+    fcdRow?.options === analysisTypes.PALM_RISK &&
+    selectedAnalysisIds.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS) &&
+    !selectedAnalysisIds.includes(analysisTypes.PALM_RISK) &&
+    !analysesToAdd.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)
+  ) {
+    analysesToAdd = [...analysesToAdd, analysisTypes.FOREST_CHANGE_DIAGNOSTICS];
+  }
+
+  // Delete the ones that are no longer selected.
+  // Filter out ALL synthetic option-only analysis rows (based on analysisIdsOptionsMap) so
+  // their deletion cannot trigger an options-only SQL update that affects other analyses.
+  const allOptionIds = new Set(flatten(Object.values(analysisIdsOptionsMap)));
+  const deletableAnalyses = currentAnalyses.filter(
+    (analysis) => !allOptionIds.has(analysis.analysisId)
+  );
+  await deleteListAnalyses(clientDatabase, listId, selectedAnalysisIds, deletableAnalyses);
 
   // Only insert/update the new ones
   if (analysesToAdd.length > 0) {
-    await setListAnalysisStatus(clientDatabase, listId, analysesToAdd, statusToApply);
+    const weeklyOptions = selectedAnalysisIds.includes(AlertsAnalysisFrequency.WEEKLY)
+      ? AlertsAnalysisFrequency.WEEKLY
+      : undefined;
+    await setListAnalysisStatus(
+      clientDatabase,
+      listId,
+      analysesToAdd,
+      statusToApply,
+      organizationId,
+      weeklyOptions
+    );
   }
 };
 
 const getListName = async (organizationDatabase: string, list_id: number) => {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const listRepository = connection.getRepository(Lists);
-  const { listName } = await listRepository.findOne({ where: { id: list_id } });
-  return listName;
+  const list = await listRepository.findOne({ where: { id: list_id } });
+  return list?.listName ?? '';
 };
 
 const getUserEmail = async (organizationDatabase: string, user_id: number) => {
   const connection = await new ClientStoreConnection().getConnection(organizationDatabase);
   const userRepository = connection.getRepository(User);
-  const { email } = await userRepository.findOne({ where: { id: user_id } });
-  return email;
+  const user = await userRepository.findOne({ where: { id: user_id } });
+  return user?.email ?? '';
 };
 
 const checkIsTestFlow = (
@@ -215,7 +274,8 @@ export const handleCreateAnalysis = async (
   sendEmail: boolean,
   organization_user_id: number,
   subscriptionStatusId: number,
-  reanalyze = false
+  reanalyze = false,
+  options?: string
 ) => {
   try {
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
@@ -229,7 +289,9 @@ export const handleCreateAnalysis = async (
       organizationDb,
       listId,
       analysisTypesToProcess,
-      listStatus.Pending
+      listStatus.Pending,
+      organizationId,
+      options
     );
 
     const listAnalysisStatusData = await getListAnalysisStatus(organizationDb, listId);
@@ -299,7 +361,11 @@ export const handleCreateAnalysis = async (
       listId,
     });
 
-    const microserviceEnvironment = process.env.MICROSERVICES_ENV;
+    const microserviceEnvironment = (
+      process.env.MICROSERVICES_ENV ||
+      process.env.NODE_ENV ||
+      ''
+    ).toUpperCase();
     const { listName, userEmail: testUserEmail } = await getTestFlowDetails(
       microserviceEnvironment,
       organizationDb,
@@ -412,8 +478,13 @@ export async function resolveListAnalysisStatuses(listAnalysisStatuses: ListsAna
       const isFCDWithPalmRisk =
         analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
         options === analysisTypes.PALM_RISK;
+      const isALERTSWithWeekly =
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY;
+
       const analysisIdsToPush = isFCDWithPalmRisk
-        ? [analysisId, analysisTypes.PALM_RISK] // FCD with PalmRisk sub-analysis
+        ? [analysisId, analysisTypes.PALM_RISK]
+        : isALERTSWithWeekly
+        ? [analysisId, AlertsAnalysisFrequency.WEEKLY]
         : [analysisId];
 
       for (const id of analysisIdsToPush) {
@@ -544,13 +615,17 @@ export const isGHGCommodityValid = async (
     return true;
   } catch (error) {
     Logger.error('validateYields', error.stack || error);
-    await saveAnalysisStatusErrorInfo(
-      organizationDb,
-      id,
-      error.message,
-      listStatus.Inactive,
-      'GHG'
-    );
+    try {
+      await saveAnalysisStatusErrorInfo(
+        organizationDb,
+        id,
+        error.message,
+        listStatus.Inactive,
+        'GHG'
+      );
+    } catch (saveError) {
+      Logger.error('saveAnalysisStatusErrorInfo failed', saveError.stack || saveError);
+    }
     throw new BadRequestException(error.message || error.stack || error);
   }
 };

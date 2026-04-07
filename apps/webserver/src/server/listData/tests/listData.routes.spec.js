@@ -52,11 +52,23 @@ jest.mock('../../../config/privateutils/list.utils', () => ({
 jest.mock('@wri-monorepos/constants', () => ({
   analysisTypes: { Loss: 'Loss', Density: 'Density' },
   listStatus: { Draft: 'Draft', Pending: 'Pending' },
+  AlertsAnalysisFrequency: { WEEKLY: 'Weekly' },
 }));
 
 jest.mock('@wri-monorepos/geo', () => ({
   getListAnalysisStatusByListId: jest.fn(),
   setSelectedAnalyses: jest.fn(),
+}));
+
+jest.mock('@wri-monorepos/shared', () => ({
+  featureFlagsService: jest.fn().mockResolvedValue({
+    getClientIdByClientStoreDatabaseName: jest.fn().mockResolvedValue(1),
+    getFeatureFlagsForCurrentOrg: jest
+      .fn()
+      .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
+  }),
+  retryWithDelay: (fn) => fn(),
+  isRetryableError: jest.fn().mockReturnValue(false),
 }));
 
 const axios = require('axios');

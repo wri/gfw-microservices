@@ -45,8 +45,8 @@ const TOKENIZATION_EFFECTIVE_DATE = new Date('2025-11-22T00:00:00.000Z');
 interface TokenizationResult {
   analysis_type: string;
   total_area_analyzed: string | number;
-  total_location_tokens: string | number | null;
-  total_list_tokens: string | number | null;
+  total_location_tokens: string | number;
+  total_list_tokens: string | number;
   location_rate: string | number | null;
   list_rate: string | number | null;
   effective_rate_date: Date | null;
@@ -58,9 +58,9 @@ interface TokenizationResult {
 const DEFAULT_TOKENIZATION_VALUES = {
   location_rate: null,
   list_rate: null,
-  total_location_tokens: null,
-  total_list_tokens: null,
-  total_tokens: null,
+  total_location_tokens: 0,
+  total_list_tokens: 0,
+  total_tokens: 0,
   effective_rate_date: null,
 };
 
@@ -145,7 +145,6 @@ async function calculateTokenUsage(
         )
       WHERE lp.analysis_end_time >= @0
         AND lp.analysis_end_time <= @1
-        AND lp.user_id IS NOT NULL
     ) q0
     GROUP BY q0.analysis_type
   `;
@@ -207,7 +206,6 @@ export async function getAccountAnalysisUsageByAnalysisType({
       .addSelect('lp.analysisType', 'analysis_type')
       .where('lp.analysisEndTime >= :startDateTime', { startDateTime })
       .andWhere('lp.analysisEndTime <= :endDateTime', { endDateTime })
-      .andWhere('lp.userId IS NOT NULL')
       .andWhere(
         new Brackets((qb) =>
           qb
@@ -249,9 +247,9 @@ export async function getAccountAnalysisUsageByAnalysisType({
           // Tokenization fields
           location_rate: hasTokenData ? parseFloat(String(tokenData.location_rate)) || null : null,
           list_rate: hasTokenData ? parseFloat(String(tokenData.list_rate)) || null : null,
-          total_location_tokens: hasTokenData ? locationTokens : null,
-          total_list_tokens: hasTokenData ? listTokens : null,
-          total_tokens: hasTokenData ? locationTokens + listTokens : null,
+          total_location_tokens: hasTokenData ? locationTokens : 0,
+          total_list_tokens: hasTokenData ? listTokens : 0,
+          total_tokens: hasTokenData ? locationTokens + listTokens : 0,
           effective_rate_date: tokenData?.effective_rate_date || null,
         },
       ];

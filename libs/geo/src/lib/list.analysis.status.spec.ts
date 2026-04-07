@@ -18,7 +18,12 @@ import {
   upgradeListSchema,
 } from '@wri-monorepos/sql';
 import { checkProcessingLimits, readAnalysesLastModifiedTime } from '@wri-monorepos/shared';
-import { analysisTypesOptionsNewNames, listStatus } from '@wri-monorepos/constants';
+import {
+  analysisTypes,
+  analysisTypesOptionsNewNames,
+  listStatus,
+  AlertsAnalysisFrequency,
+} from '@wri-monorepos/constants';
 import * as sql from 'mssql';
 import * as LU from '../utils/list.utils';
 const getListAnalysisStatus = LU.getListAnalysisStatus;
@@ -192,7 +197,9 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         fakeAnalysisIds,
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        undefined
       );
       expect(updateListAnalysisSpy).not.toHaveBeenCalled();
     });
@@ -226,15 +233,126 @@ describe('list.analysis.status.ts', () => {
         fakeClientDatabase,
         fakeListId,
         ['NewAnalysis'],
-        fakeAnalysisStatus
+        fakeAnalysisStatus,
+        undefined,
+        undefined
       );
 
-      // Should call deleteListAnalyses with all selected analysis IDs and existing data
+      // Should call deleteListAnalyses with all selected analysis IDs and the
+      // non-option-only rows (PalmRisk is filtered out as a synthetic option row).
       expect(deleteListAnalysesSpy).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         newAnalysisIds,
-        mockExistingStatusData
+        [{ analysisId: 'FCD', status: listStatus.Pending }]
+      );
+    });
+
+    it('should include ALERTS in analysesToAdd when Weekly is newly selected but ALERTS already exists', async () => {
+      const mockExistingStatusData = [{ analysisId: 'ALERTS', status: listStatus.Pending }];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        ['ALERTS', 'Weekly'],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // ALERTS must be included so setListAnalysisStatus can update its options to 'Weekly'
+      // organizationId must be forwarded so the feature-flag check in setListAnalysisStatus works
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining(['Weekly', 'ALERTS']),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        AlertsAnalysisFrequency.WEEKLY
+      );
+    });
+
+    it('should include ALERTS in analysesToAdd when Weekly is removed but ALERTS remains, to clear options', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.ALERTS,
+          status: listStatus.Active,
+          options: AlertsAnalysisFrequency.WEEKLY,
+        },
+        { analysisId: analysisTypes.DEFORESTATION_KPIS, status: listStatus.Active },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.ALERTS, analysisTypes.DEFORESTATION_KPIS],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // ALERTS must be re-upserted so its options field gets cleared (no Weekly)
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.ALERTS]),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        undefined
+      );
+    });
+
+    it('should include FCD in analysesToAdd when PalmRisk is removed but FCD remains, to clear options', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+          status: listStatus.Active,
+          options: analysisTypes.PALM_RISK,
+        },
+        { analysisId: analysisTypes.DEFORESTATION_KPIS, status: listStatus.Active },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.DEFORESTATION_KPIS],
+        fakeAnalysisStatus,
+        fakeOrgId
+      );
+
+      // FCD must be re-upserted so its options field gets cleared (no PalmRisk)
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.FOREST_CHANGE_DIAGNOSTICS]),
+        fakeAnalysisStatus,
+        fakeOrgId,
+        undefined
       );
     });
   });
@@ -400,6 +518,66 @@ describe('list.analysis.status.ts', () => {
         status: 5,
         // Again, per the current implementation, it’s using the original FCD's last-modified timestamp.
         analysisIdLastModifed: '2025-01-01T00:00:00Z',
+      });
+    });
+
+    it('should duplicate rows if analysisId=ALERTS and options=Weekly', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
+        { id: 'ALERTS', last_run: '2025-02-01T00:00:00Z' },
+      ]);
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 10,
+          analysisId: 'ALERTS',
+          options: 'Weekly',
+          status: 2,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+
+      expect(result).toHaveLength(2);
+
+      expect(result[0]).toMatchObject({
+        listId: 10,
+        analysisId: 'ALERTS',
+        options: 'Weekly',
+        status: 2,
+        analysisIdLastModifed: '2025-02-01T00:00:00Z',
+      });
+
+      expect(result[1]).toMatchObject({
+        listId: 10,
+        analysisId: 'Weekly',
+        options: 'Weekly',
+        status: 2,
+        analysisIdLastModifed: '2025-02-01T00:00:00Z',
+      });
+    });
+
+    it('should NOT duplicate rows if analysisId=ALERTS but options != Weekly', async () => {
+      (readAnalysesLastModifiedTime as jest.Mock).mockResolvedValue([
+        { id: 'ALERTS', last_run: '2025-02-01T00:00:00Z' },
+      ]);
+
+      const input: ListsAnalysisStatus[] = [
+        {
+          listId: 11,
+          analysisId: 'ALERTS',
+          options: null,
+          status: 2,
+        } as ListsAnalysisStatus,
+      ];
+
+      const result = await resolveListAnalysisStatuses(input);
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        listId: 11,
+        analysisId: 'ALERTS',
+        options: null,
+        status: 2,
+        analysisIdLastModifed: '2025-02-01T00:00:00Z',
       });
     });
 

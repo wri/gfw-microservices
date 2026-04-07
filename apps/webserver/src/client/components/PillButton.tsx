@@ -14,6 +14,10 @@ export const PillButton = styled(Button)(({ theme }) => ({
     color: theme.palette.info.contrastText,
   },
 
+  '&.MuiButton-containedSecondary': {
+    color: theme.palette.secondary.contrastText,
+  },
+
   '& > span': {
     margin: 0,
   },

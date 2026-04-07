@@ -1,13 +1,16 @@
-import { Typography, Box, Link, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
+import { Typography, Box, Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import { locationsPage } from '../../config';
 import {
   analysisTypes,
   analysisTypesForUI,
   palmRiskAnalysis,
+  weeklyAlertsAnalysis,
+  AlertsAnalysisFrequency,
 } from '../../../../../config/env/analysisTypes.constants';
-import { HelperTextWithPopover } from '../../../../components';
-import { ReusableText } from '../../../../utils/constants';
+import { HelperTextWithPopover, Link } from '../../../../components';
+import { ExternalLinks, ReusableText } from '../../../../utils/constants';
+import featureFlags from '../../../../../utils/general.utils';
 
 import './AnalysisTypesSelector.scss';
 
@@ -15,13 +18,20 @@ const getUpdatedSelection = (selectedAnalyses, selectedAnalysisId) => {
   const isAnalysisBeingRemoved = selectedAnalyses.includes(selectedAnalysisId);
 
   if (isAnalysisBeingRemoved) {
-    return selectedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
-      ? selectedAnalyses.filter(
-          (selectedType) =>
-            selectedType !== analysisTypes.PALM_RISK &&
-            selectedType !== analysisTypes.FOREST_CHANGE_DIAGNOSTICS
-        )
-      : selectedAnalyses.filter((selectedType) => selectedType !== selectedAnalysisId);
+    if (selectedAnalysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS) {
+      return selectedAnalyses.filter(
+        (selectedType) =>
+          selectedType !== analysisTypes.PALM_RISK &&
+          selectedType !== analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+      );
+    }
+    if (selectedAnalysisId === analysisTypes.ALERTS) {
+      return selectedAnalyses.filter(
+        (selectedType) =>
+          selectedType !== AlertsAnalysisFrequency.WEEKLY && selectedType !== analysisTypes.ALERTS
+      );
+    }
+    return selectedAnalyses.filter((selectedType) => selectedType !== selectedAnalysisId);
   } else {
     return [...selectedAnalyses, selectedAnalysisId];
   }
@@ -37,10 +47,32 @@ function AnalysisTypesSelector({
     setSelectedAnalyses(getUpdatedSelection(selectedAnalyses, selectedAnalysisId));
   };
 
-  const analysisOptions =
-    commodity === 'OILP' || isPalmRiskActive
-      ? [...analysisTypesForUI, palmRiskAnalysis]
-      : analysisTypesForUI;
+  const baseOptions = analysisTypesForUI.flatMap((option) => {
+    if (option.id === analysisTypes.ALERTS && featureFlags.isWeeklyAlertsAvailable) {
+      return [option, weeklyAlertsAnalysis];
+    }
+    if (
+      option.id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+      (commodity === 'OILP' || isPalmRiskActive)
+    ) {
+      return [option, palmRiskAnalysis];
+    }
+    return [option];
+  });
+
+  const analysisOptions = baseOptions;
+
+  const weeklyAlertsDescription = (
+    <>
+      Recent global integrated disturbance alerts, automatically updated weekly.
+      <br />
+      Selecting Weekly Alerts will deduct from available usage. Please see our{' '}
+      <Link href={ExternalLinks.PriceSheet} target="_blank" rel="noopener noreferrer">
+        Price Sheet
+      </Link>{' '}
+      for more information.
+    </>
+  );
 
   return (
     <ThemeProvider>
@@ -49,9 +81,10 @@ function AnalysisTypesSelector({
         <Typography variant="caption">
           Select which type(s) of data analysis you'd like to be available for this list. Note that
           analysis processing counts towards your account usage limits. See more information{' '}
-          <Link href="/about?section=Fees" underline="none" target="_blank">
-            here.
+          <Link href="/about?section=Fees" target="_blank">
+            here
           </Link>
+          .
         </Typography>
         <br />
         {analysisOptions.map(({ id, label, description }) => (
@@ -62,18 +95,27 @@ function AnalysisTypesSelector({
                   checked={selectedAnalyses.includes(id)}
                   onChange={() => handleAnalyzesSelection(id)}
                   disabled={
-                    id === analysisTypes.PALM_RISK &&
-                    !selectedAnalyses.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)
+                    (id === analysisTypes.PALM_RISK &&
+                      !selectedAnalyses.includes(analysisTypes.FOREST_CHANGE_DIAGNOSTICS)) ||
+                    (id === AlertsAnalysisFrequency.WEEKLY &&
+                      !selectedAnalyses.includes(analysisTypes.ALERTS))
                   }
                 />
               }
-              sx={{ mr: 0, mb: 1.5, ml: id === analysisTypes.PALM_RISK ? 2 : 0 }}
+              sx={{
+                mr: 0,
+                mb: 1.5,
+                ml: id === analysisTypes.PALM_RISK || id === AlertsAnalysisFrequency.WEEKLY ? 2 : 0,
+              }}
               label={
                 <Box
                   sx={{ '&:hover': { cursor: 'default' } }}
                   onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+                    const tag = e.target.tagName;
+                    if (tag !== 'A') {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }
                   }}
                 >
                   <Box display="flex" alignItems="center" gap={1}>
@@ -104,7 +146,13 @@ function AnalysisTypesSelector({
                       </HelperTextWithPopover>
                     )}
                   </Box>
-                  {description && <Typography variant="caption">{description}</Typography>}
+                  {description && (
+                    <Typography variant="caption">
+                      {id === AlertsAnalysisFrequency.WEEKLY
+                        ? weeklyAlertsDescription
+                        : description}
+                    </Typography>
+                  )}
                 </Box>
               }
             />

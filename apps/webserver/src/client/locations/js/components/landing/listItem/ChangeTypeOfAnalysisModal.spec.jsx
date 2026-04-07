@@ -93,7 +93,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
     renderComponent();
     await userEvent.click(
       screen.getByRole('checkbox', {
-        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
+        name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
       })
     );
     expect(screen.getByRole('button', { name: /Submit Analysis/i })).toBeEnabled();
@@ -105,7 +105,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
     renderComponent();
     await userEvent.click(
       screen.getByRole('checkbox', {
-        name: /recent disturbance alerts recent disturbance alerts, updated weekly/i,
+        name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
       })
     );
     await userEvent.click(screen.getByRole('button', { name: 'Save as Draft' }));
@@ -144,7 +144,11 @@ describe('ChangeTypeOfAnalysisModal', () => {
   it('calls saveAnalysisSelection and shows confirmation when adding an analysis, then submits after confirmation', async () => {
     renderComponent();
     // Simulate adding a new analysis (assuming "ALERTS" is available in the selector)
-    await userEvent.click(screen.getByRole('checkbox', { name: /alerts/i }));
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
+      })
+    );
     await userEvent.click(screen.getByRole('button', { name: /submit analysis/i }));
     // Confirmation prompt should appear
     expect(screen.getByText(/You have added a new analysis to your list/i)).toBeInTheDocument();
@@ -160,5 +164,25 @@ describe('ChangeTypeOfAnalysisModal', () => {
       })
     );
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+  });
+
+  it('does not reload when save fails with server error', async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 400,
+        json: () => Promise.resolve({ message: 'create list analysis failed' }),
+      })
+    );
+
+    renderComponent();
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
+      })
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Submit Analysis' }));
+
+    await waitFor(() => expect(window.location.reload).not.toHaveBeenCalled());
   });
 });

@@ -100,7 +100,8 @@ describe('StartAnalysis', () => {
         true, // !isExternalAPIProcess (false becomes true via negation)
         1, // user_id
         1, // subscriptionStatusId
-        false // sendEmail parameter
+        false, // reanalyze parameter
+        undefined // options parameter
       );
       expect(result).toBe(mockRequest);
     });

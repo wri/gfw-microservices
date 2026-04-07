@@ -550,6 +550,7 @@ export class ListAnalysisService {
         startAnalysis: true,
         isExternalAPIProcess: true,
         saveAsDraft: false,
+        options: newListDetails.options, // Pass options for analysis configuration
       });
       this.logger.log('Event analysis response: ', processListResponse.data);
 
@@ -722,9 +723,15 @@ export class ListAnalysisService {
     listId: number,
     organizationId: number,
     userEmail: string,
-    organization_user_id: number
+    organization_user_id: number,
+    options?: string
   ) {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
+
+    if (options === '' && analysisId.toUpperCase() === 'ALERTS') {
+      await this.removeWeeklyAlertsOption(organizationDetails.organizationDb, listId);
+      return { message: 'Weekly alerts option removed successfully' };
+    }
 
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
@@ -741,7 +748,8 @@ export class ListAnalysisService {
         userEmail ? true : false,
         organization_user_id,
         organizationDetails.subscriptionStatusId,
-        true
+        true,
+        options
       );
       return response;
     } catch (error) {
@@ -751,6 +759,29 @@ export class ListAnalysisService {
       throw error;
     }
   }
+
+  private async removeWeeklyAlertsOption(
+    organizationDatabase: string,
+    listId: number
+  ): Promise<void> {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    // Check if the ALERTS analysis exists for this list
+    const alertsAnalysis = await listAnalysisStatusRepository.findOne({
+      where: {
+        listId: listId,
+        analysisId: 'ALERTS',
+      },
+    });
+
+    if (!alertsAnalysis) {
+      throw new NotFoundException(`No ALERTS analysis found for list ${listId}`);
+    }
+
+    // Update only the options field to NULL
+    await listAnalysisStatusRepository.update({ listId, analysisId: 'ALERTS' }, { options: null });
+  }
+
   async getGhgLocationErrors(
     listId: number,
     clientDatabase: string

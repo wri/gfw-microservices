@@ -6,6 +6,11 @@ import errorLogger from '../../../../../common/js/utils/errorLogger';
 import { PillButton } from '../../../../../components';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import {
+  analysisTypes,
+  AlertsAnalysisFrequency,
+} from '../../../../../../config/env/analysisTypes.constants';
+import featureFlags from '../../../../../../utils/general.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -22,7 +27,8 @@ const AddAnalysisTypeConfirmationMessage = () => {
         <a
           href="/about?section=Fees"
           target="_blank"
-          style={{ color: '#97bd3d', textDecoration: 'underline' }}
+          rel="noopener noreferrer"
+          className="change-type-of-analysis-modal__link"
         >
           here
         </a>
@@ -40,7 +46,21 @@ function ChangeTypeOfAnalysisModal({
   commodity,
   isPalmRiskActive,
 }) {
-  const initialAnalysisSelection = listAnalysesStatus.map(({ analysisId }) => analysisId);
+  const { isWeeklyAlertsAvailable } = featureFlags;
+  const initialAnalysisSelection = [
+    ...new Set(
+      listAnalysesStatus.flatMap(({ analysisId, options }) => {
+        if (
+          isWeeklyAlertsAvailable &&
+          analysisId === analysisTypes.ALERTS &&
+          options === AlertsAnalysisFrequency.WEEKLY
+        ) {
+          return [analysisId, AlertsAnalysisFrequency.WEEKLY];
+        }
+        return [analysisId];
+      })
+    ),
+  ];
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
   const [newAnalysesToRun, setNewAnalysesToRun] = useState([]);
@@ -54,8 +74,8 @@ function ChangeTypeOfAnalysisModal({
   }, [selectedAnalysis]);
 
   const saveAnalysisSelection = useCallback(
-    (saveAsDraft = false) =>
-      fetch(`/api/list/${listId}/selectedAnalyses`, {
+    async (saveAsDraft = false) => {
+      const response = await fetch(`/api/list/${listId}/selectedAnalyses`, {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
@@ -65,8 +85,14 @@ function ChangeTypeOfAnalysisModal({
           isAddingAnalysis,
           newAnalysesToRun,
         }),
-      }),
-    [selectedAnalysis, isAddingAnalysis, newAnalysesToRun]
+      });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to save analysis selection');
+      }
+      return response;
+    },
+    [listId, selectedAnalysis, isAddingAnalysis, newAnalysesToRun]
   );
 
   const saveAsDraft = async () => {
@@ -107,7 +133,10 @@ function ChangeTypeOfAnalysisModal({
     setSelectedAnalysis(initialAnalysisSelection);
   };
 
-  const isSelectionUnchanged = isEqual(selectedAnalysis.sort(), initialAnalysisSelection.sort());
+  const isSelectionUnchanged = isEqual(
+    [...selectedAnalysis].sort(),
+    [...initialAnalysisSelection].sort()
+  );
 
   const hasDraftInSelection = selectedAnalysis.some((analysisId) => {
     const match = listAnalysesStatus.find((item) => item.analysisId === analysisId);

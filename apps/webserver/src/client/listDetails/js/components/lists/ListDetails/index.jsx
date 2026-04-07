@@ -8,6 +8,7 @@ import {
   Box,
   Alert,
   IconButton,
+  Checkbox,
 } from '@mui/material';
 import axios from 'axios';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
@@ -74,11 +75,15 @@ import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/ut
 import WrappedReactTable from './WrappedReactTable';
 import { getActiveAnalysisFlags } from '../../../utils/listDetails.utils';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
+import StaleAnalysisBanner, { getStaleAnalysisIds } from './StaleAnalysisBanner';
+import { fetchEnrichedAnalysisStatuses } from '../../../../../common/js/utils/selectedAnalysesCache';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
 import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
+
+import featureFlags from '../../../../../../utils/general.utils';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -95,7 +100,10 @@ import {
 } from '../../../../../../config/env/gfwLists.constants';
 import { getListFilterValues } from '../getListFilterValues';
 import getAllColumnNames from '../getAllColumnNames';
-import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import {
+  analysisTypes,
+  AlertsAnalysisFrequency,
+} from '../../../../../../config/env/analysisTypes.constants';
 import {
   FOREST_CHANGE_VIEW,
   COMMODITY_RISK_VIEW,
@@ -228,6 +236,8 @@ export default class ListDetails extends Component {
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
       isDcfActive,
+      syntheticWeeklyEntry: null,
+      staleAnalysisIds: [],
     };
   }
 
@@ -257,6 +267,12 @@ export default class ListDetails extends Component {
     const { listData, filters, selectedLists } = this.props;
     const { list_name, id, isGlobalForestWatchList, associated_gfwlist } = selectedLists[0];
 
+    // Add synthetic Weekly analysis entry after mount so the feature flag is read
+    // from localStorage after the async getFeatureFlags() call resolves
+    const syntheticWeeklyEntry = this.computeSyntheticWeeklyEntry(selectedLists[0]);
+    if (syntheticWeeklyEntry) {
+      this.setState({ syntheticWeeklyEntry });
+    }
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
       event_label: 'Accessed List: ' + list_name,
@@ -293,10 +309,57 @@ export default class ListDetails extends Component {
     );
 
     store.dispatch(updateSelectedLocations([]));
+
+    this.fetchStaleAnalysisData(selectedLists[0]?.id);
+  }
+
+  fetchStaleAnalysisData(listId) {
+    if (!listId) {
+      return;
+    }
+    fetchEnrichedAnalysisStatuses(listId)
+      .then((enrichedStatuses) => {
+        const staleAnalysisIds = getStaleAnalysisIds(enrichedStatuses);
+        this.setState({ staleAnalysisIds });
+      })
+      .catch((error) => {
+        console.warn('Failed to fetch stale analysis data', error);
+      });
+  }
+
+  computeSyntheticWeeklyEntry(selectedList) {
+    if (!featureFlags.isWeeklyAlertsAvailable) {
+      return null;
+    }
+    const listAnalysesStatus = selectedList?.listAnalysesStatus;
+    if (!listAnalysesStatus) {
+      return null;
+    }
+    const weeklyAlreadyAdded = listAnalysesStatus.some(
+      (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (weeklyAlreadyAdded) {
+      return null;
+    }
+    const alertsWithWeekly = listAnalysesStatus.find(
+      ({ analysisId, options }) =>
+        analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (!alertsWithWeekly) {
+      return null;
+    }
+    return { analysisId: AlertsAnalysisFrequency.WEEKLY, status: alertsWithWeekly.status };
   }
 
   componentDidUpdate(prevProps) {
     const { listView, selectedLists, filters } = this.props;
+
+    const prevSelectedList = prevProps.selectedLists[0];
+    const currSelectedList = selectedLists[0];
+    if (prevSelectedList?.id !== currSelectedList?.id) {
+      this.setState({ syntheticWeeklyEntry: this.computeSyntheticWeeklyEntry(currSelectedList) });
+    }
+
     if (listView !== prevProps.listView) {
       const columnNames = this.refreshColumns();
 
@@ -1019,16 +1082,14 @@ export default class ListDetails extends Component {
       Header: () => {
         const { isEveryRowSelected } = this.state;
         return (
-          <div className="column-checkbox-container">
-            <input
-              id="column-checkbox-all"
-              className="column-checkbox"
-              type="checkbox"
-              checked={isEveryRowSelected}
-              onChange={this.selectAllLocations}
-            />
-            <label htmlFor="column-checkbox-all" className="column-checkbox" />
-          </div>
+          <Checkbox
+            id="column-checkbox-all"
+            checked={isEveryRowSelected}
+            onChange={this.selectAllLocations}
+            sx={{ p: 0 }}
+            inputProps={{ 'aria-label': 'Select all locations', className: 'column-checkbox' }}
+            data-cy="select-all-locations"
+          />
         );
       },
       id: 'checkbox',
@@ -1043,19 +1104,18 @@ export default class ListDetails extends Component {
         const { selectedLocations } = this.props;
 
         return (
-          <div>
-            <input
-              id={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
-              className="column-checkbox"
-              checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
-              onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
-              type="checkbox"
-            />
-            <label
-              htmlFor={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
-              className="column-checkbox column-checkbox-single"
-            />
-          </div>
+          <Checkbox
+            checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
+            onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
+            sx={{ p: 0 }}
+            inputProps={{
+              'aria-label': `Select location ${
+                cellProps.original.location_name || cellProps.original.location_id
+              }`,
+              className: 'column-checkbox column-checkbox-single',
+            }}
+            data-cy={`select-location-${cellProps.original.location_id}`}
+          />
         );
       },
     };
@@ -1897,6 +1957,7 @@ export default class ListDetails extends Component {
       isGHGActive,
       isOnlyGHGActive,
       isDcfActive,
+      staleAnalysisIds,
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -1907,7 +1968,13 @@ export default class ListDetails extends Component {
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
 
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
+    const rawListAnalysesStatus = selectedList?.listAnalysesStatus ?? [];
+    const { syntheticWeeklyEntry } = this.state;
+    const listAnalysesStatus =
+      syntheticWeeklyEntry &&
+      !rawListAnalysesStatus.some((a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY)
+        ? [...rawListAnalysesStatus, syntheticWeeklyEntry]
+        : rawListAnalysesStatus;
 
     const isGfwList = selectedList.isGlobalForestWatchList;
 
@@ -2058,6 +2125,12 @@ export default class ListDetails extends Component {
                 isListWithErrors={isListWithErrors}
                 isOnlyGHGActive={isOnlyGHGActive}
               />
+
+              {staleAnalysisIds.length > 0 && (
+                <StaleAnalysisBanner
+                  onResubmit={() => this.setState({ draftSubmitDialogOpen: true })}
+                />
+              )}
             </>
           )}
 
@@ -2329,6 +2402,7 @@ export default class ListDetails extends Component {
                           changeListView={this.changeListView}
                           listAnalysesStatus={listAnalysesStatus}
                           hasLocationWithErrors={hasLocationWithErrors}
+                          staleAnalysisIds={staleAnalysisIds}
                         />
                       )}
 

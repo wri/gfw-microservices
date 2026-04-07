@@ -286,7 +286,17 @@ export default function UserProfile(props) {
 
     const { newUser, id } = state;
     const body = {
-      ...state,
+      id: state.id,
+      first_name: state.first_name,
+      middle_initial: state.middle_initial,
+      last_name: state.last_name,
+      email: state.email,
+      phone: state.phone,
+      title_id: state.title_id,
+      other_title: state.other_title,
+      access_level_id: state.access_level_id,
+      enableAlerts: state.enableAlerts,
+      auth_preference_id: state.auth_preference_id,
       geographies: (state.geographies || []).map((g) => g.value),
       commodities: (state.commodities || []).map((c) => c.value),
     };
@@ -721,7 +731,7 @@ export default function UserProfile(props) {
             variant="contained"
             className={`${status_id === USER_STATUS.Active ? 'button-disabled' : ''}`}
             disabled={status_id === USER_STATUS.Active}
-            onClick={activateUser}
+            onClick={() => activateUser()}
             style={{ marginRight: '10px' }}
           >
             {profilePage.profileManager.activate}

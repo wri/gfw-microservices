@@ -71,7 +71,7 @@ const ArgentinaDownloadConfirmationMessage = () => (
   <div>
     You are downloading results that include analysis based on the{' '}
     <a
-      style={{ color: '#97bd3d' }}
+      className="diagnostics-container__link"
       href="https://www.argentina.gob.ar/ambiente/bosques/monitoreo-bosques-nativos"
       target="_blank"
       rel="noopener noreferrer"

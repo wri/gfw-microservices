@@ -36,7 +36,7 @@ export function UploadLocationPreviewErrorMessage({
             margin: '1.5rem 0 0.75rem',
             borderRadius: 1,
             border: `2px solid ${theme.palette.error.main}`,
-            backgroundColor: 'error.light',
+            backgroundColor: theme.palette.error[100],
             position: 'relative',
             px: 25,
           }}
@@ -138,6 +138,13 @@ const errorMessageBuilder = ({
       message: {
         title: 'Invalid file',
         body: 'Invalid latitude or longitude.',
+      },
+    },
+    {
+      match: (msg) => msg.startsWith('Latitude out of supported range'),
+      message: {
+        title: 'Invalid file',
+        body: 'One or more locations have a latitude outside the supported range. Latitudes must be between 62°S (-62) and 84°N (84). Please check your coordinates and re-upload.',
       },
     },
     {

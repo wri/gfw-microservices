@@ -137,7 +137,9 @@ describe('PutListAsDraft', () => {
         'test_db',
         123,
         ['analysis1'],
-        listStatus.Draft
+        listStatus.Draft,
+        1,
+        undefined
       );
       expect(getUserEmail).toHaveBeenCalledWith('test_db', 456);
       expect((result.request as RequestNewList).saveAsDraft).toBe(true);

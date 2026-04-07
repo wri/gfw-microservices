@@ -16,5 +16,10 @@ export async function getAccountUsagePercentage({ organizationId, subscriptionSt
     accountLimits.max_locations_per_year
   );
 
-  return Math.max(areaUsagePercentage, locationUsagePercentage);
+  const tokenUsagePercentage = calculateAccountUsagePercentage(
+    accountUsage.total_tokens ?? 0,
+    accountLimits.tokens_per_year ?? 0
+  );
+
+  return Math.max(areaUsagePercentage, locationUsagePercentage, tokenUsagePercentage);
 }

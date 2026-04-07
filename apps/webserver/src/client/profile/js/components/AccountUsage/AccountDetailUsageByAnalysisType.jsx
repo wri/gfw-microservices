@@ -12,13 +12,17 @@ import {
   Grid,
   Box,
 } from '@mui/material';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import {
+  KeyboardArrowUp as KeyboardArrowUpIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+} from '@mui/icons-material';
 
 import { formatDigit } from '../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from '../../../../proManagerList/js/components/accounts/AccountUsage/DateRangeSelector.jsx';
 import { accountProfileStrings } from '../../../../common/js/config.js';
+import { useSortableData } from '../../../../hooks';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
+import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 /**
  * Possible duplicate contents from
@@ -27,13 +31,47 @@ import AccountUsageDropMenu from './AccountUsageDropMenu';
  * @summary libs/constants is not buildable and libs/sql complaints about
  * not finding the contents of the filepath above
  */
-const NORMALIZING_ANALYSIS_NAMES = {
+const NORMALIZED_ANALYSIS_NAMES = {
   AFI: 'Post-2020 Risk Assessment',
   ALERTS: 'Recent Disturbance Alerts',
   FCD: 'Post-2000 Forest Change',
   'ALERTS-BATCH': 'Weekly Alerts',
   GHG: 'GHG Emissions',
 };
+
+const WEEKLY_ALERTS_TYPE = 'ALERTS-BATCH';
+
+function SortableHeader({ label, column, orderBy, order, onSort, align = 'right', children }) {
+  return (
+    <TableCell
+      onClick={() => onSort(column)}
+      style={{ cursor: 'pointer', userSelect: 'none' }}
+      align={align}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent:
+            align === 'right' ? 'flex-end' : align === 'center' ? 'center' : 'flex-start',
+        }}
+      >
+        {label}
+        {children}
+        <span style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}>
+          <KeyboardArrowUpIcon
+            fontSize="small"
+            color={orderBy === column && order === 'asc' ? 'primary' : 'disabled'}
+          />
+          <KeyboardArrowDownIcon
+            fontSize="small"
+            color={orderBy === column && order === 'desc' ? 'primary' : 'disabled'}
+          />
+        </span>
+      </div>
+    </TableCell>
+  );
+}
 
 function AccountDetailUsageByAnalysisType({
   analysisUsageByType,
@@ -43,50 +81,50 @@ function AccountDetailUsageByAnalysisType({
   endDateAnalysis,
   children,
   organizationId,
+  showTokens = false,
 }) {
-  const [orderBy, setOrderBy] = useState('analysis_type');
-  const [order, setOrder] = useState('asc');
+  const { sortedData, orderBy, order, handleSort } = useSortableData(analysisUsageByType, {
+    defaultOrderBy: 'analysis_type',
+    defaultOrder: 'asc',
+    numericColumns: ['locations_analyzed', 'hectares_analyzed', 'lists_analyzed', 'total_tokens'],
+  });
 
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
 
-  const handleSort = (column) => {
-    if (orderBy === column) {
-      setOrder(order === 'asc' ? 'desc' : 'asc');
-    } else {
-      setOrderBy(column);
-      setOrder('asc');
-    }
-  };
+  const showTokensColumn = showTokens || !!organizationId;
+  const isWeeklyAlerts = (analysisType) => analysisType === WEEKLY_ALERTS_TYPE;
 
-  const sortedData = useMemo(() => {
-    if (!analysisUsageByType) {
-      return [];
+  // Calculate totals
+  const totals = useMemo(() => {
+    if (!sortedData || sortedData.length === 0) {
+      return null;
     }
-    return [...analysisUsageByType].sort((a, b) => {
-      let aValue = a[orderBy];
-      let bValue = b[orderBy];
-      // For numeric columns, parse as float
-      if (['locations_analyzed', 'hectares_analyzed', 'lists_analyzed'].includes(orderBy)) {
-        aValue = parseFloat(aValue) || 0;
-        bValue = parseFloat(bValue) || 0;
-      } else {
-        if (typeof aValue === 'string') {
-          aValue = aValue.toLowerCase();
-        }
-        if (typeof bValue === 'string') {
-          bValue = bValue.toLowerCase();
-        }
-      }
-      if (aValue < bValue) {
-        return order === 'asc' ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return order === 'asc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [analysisUsageByType, orderBy, order]);
+
+    const nonWeeklyRows = sortedData.filter((r) => r.analysis_type !== WEEKLY_ALERTS_TYPE);
+
+    const totalLocations = sortedData.reduce(
+      (sum, r) => sum + (parseFloat(r.locations_analyzed) || 0),
+      0
+    );
+    const totalHectares = sortedData.reduce(
+      (sum, r) => sum + (parseFloat(r.hectares_analyzed) || 0),
+      0
+    );
+    // Total lists = sum of non-weekly types only (excludes Weekly Alerts weeks_of_analysis)
+    const totalLists = nonWeeklyRows.reduce(
+      (sum, r) => sum + (parseFloat(r.lists_analyzed) || 0),
+      0
+    );
+    const totalTokens = sortedData.reduce((sum, r) => sum + (parseFloat(r.total_tokens) || 0), 0);
+
+    return {
+      locations_analyzed: totalLocations,
+      hectares_analyzed: totalHectares,
+      lists_analyzed: totalLists,
+      total_tokens: totalTokens,
+    };
+  }, [sortedData]);
 
   const handleDownloadConfirmation = (type) => {
     setMessageType(type);
@@ -168,106 +206,110 @@ function AccountDetailUsageByAnalysisType({
               <TableHead>
                 <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
                   <TableCell>{accountProfileStrings.accountUsageLabels.analysisType}</TableCell>
-                  <TableCell
-                    onClick={() => handleSort('locations_analyzed')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
-                      <span
-                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                      >
-                        <KeyboardArrowUpIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'locations_analyzed' && order === 'asc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'locations_analyzed' && order === 'desc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    onClick={() => handleSort('hectares_analyzed')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {accountProfileStrings.accountUsageLabels.hectaresAnalyzed}
-                      <span
-                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                      >
-                        <KeyboardArrowUpIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'hectares_analyzed' && order === 'asc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'hectares_analyzed' && order === 'desc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    onClick={() => handleSort('lists_analyzed')}
-                    style={{ cursor: 'pointer', userSelect: 'none' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {accountProfileStrings.accountUsageLabels.listsAnalyzed}
-                      <span
-                        style={{ display: 'inline-flex', flexDirection: 'column', marginLeft: 4 }}
-                      >
-                        <KeyboardArrowUpIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'lists_analyzed' && order === 'asc' ? 'primary' : 'disabled'
-                          }
-                        />
-                        <KeyboardArrowDownIcon
-                          fontSize="small"
-                          color={
-                            orderBy === 'lists_analyzed' && order === 'desc'
-                              ? 'primary'
-                              : 'disabled'
-                          }
-                        />
-                      </span>
-                    </div>
-                  </TableCell>
+                  <SortableHeader
+                    label={accountProfileStrings.accountUsageLabels.locationsAnalyzed}
+                    column="locations_analyzed"
+                    orderBy={orderBy}
+                    order={order}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label={accountProfileStrings.accountUsageLabels.hectaresAnalyzed}
+                    column="hectares_analyzed"
+                    orderBy={orderBy}
+                    order={order}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label={accountProfileStrings.accountUsageLabels.listsAnalyzed}
+                    column="lists_analyzed"
+                    orderBy={orderBy}
+                    order={order}
+                    onSort={handleSort}
+                  />
+                  {showTokensColumn && (
+                    <SortableHeader
+                      label={accountProfileStrings.accountUsageLabels.tokensUsed}
+                      column="total_tokens"
+                      orderBy={orderBy}
+                      order={order}
+                      onSort={handleSort}
+                    >
+                      <InfoBubble>
+                        <p>
+                          This usage may reflect the token price across one or more price sheets.
+                        </p>
+                      </InfoBubble>
+                    </SortableHeader>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {sortedData.map((element) => (
                   <TableRow key={element.analysis_type}>
                     <TableCell>
-                      {NORMALIZING_ANALYSIS_NAMES[element.analysis_type] ||
+                      {NORMALIZED_ANALYSIS_NAMES[element.analysis_type] ||
                         element.analysis_type ||
                         ''}
                     </TableCell>
-                    <TableCell>{formatDigit(element.locations_analyzed || 0)}</TableCell>
-                    <TableCell>{formatDigit(element.hectares_analyzed || 0)}</TableCell>
-                    <TableCell>{formatDigit(element.lists_analyzed || 0)}</TableCell>
+                    <TableCell align="right">
+                      {formatDigit(element.locations_analyzed || 0)}
+                    </TableCell>
+                    <TableCell align="right">
+                      {formatDigit(element.hectares_analyzed || 0)}
+                    </TableCell>
+                    {isWeeklyAlerts(element.analysis_type) ? (
+                      <TableCell align="center" sx={{ backgroundColor: '#f5f5f5' }}>
+                        <div>
+                          {formatDigit(element.lists_analyzed || 0)}
+                          <InfoBubble>
+                            <p>
+                              Weeks of analysis is a sum of the number of lists with Weekly Alerts
+                              applied multiplied by the number of weeks each list has been
+                              automatically updated. This number is not reflected in the total value
+                              listed below.
+                            </p>
+                          </InfoBubble>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#888' }}>Weeks of analysis</div>
+                      </TableCell>
+                    ) : (
+                      <TableCell align="right">
+                        {formatDigit(element.lists_analyzed || 0)}
+                      </TableCell>
+                    )}
+                    {showTokensColumn && (
+                      <TableCell align="right">
+                        {element.total_tokens == null ? 'N/A' : formatDigit(element.total_tokens)}
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
+                {totals && (
+                  <TableRow sx={{ backgroundColor: '#f5f5f5', fontWeight: 'bold' }}>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Total</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      {formatDigit(totals.locations_analyzed)}
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      {formatDigit(totals.hectares_analyzed)}
+                    </TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      {formatDigit(totals.lists_analyzed)}
+                      <InfoBubble>
+                        <p>This sum excludes the &apos;Weeks of analysis&apos; value.</p>
+                      </InfoBubble>
+                    </TableCell>
+                    {showTokensColumn && (
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                        {formatDigit(totals.total_tokens)}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                )}
                 {sortedData.length === 0 && (!startDateAnalysis || !endDateAnalysis) ? (
                   <TableRow key="no-data">
-                    <TableCell colSpan={4}>
+                    <TableCell colSpan={showTokensColumn ? 5 : 4}>
                       <div
                         style={{
                           display: 'flex',

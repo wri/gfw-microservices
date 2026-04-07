@@ -1,12 +1,26 @@
 import {
+  analysisTypes,
   analysisTypesForUI,
   palmRiskAnalysis,
+  weeklyAlertsAnalysis,
 } from '../../../../../../config/env/analysisTypes.constants';
 
 export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz', 'geojson'];
 export const VALID_FILE_FORMATS_BY_ID = ['csv', 'xls', 'xlsx'];
 
-export const typeOfAnalysisMap = [...analysisTypesForUI, palmRiskAnalysis];
+export const typeOfAnalysisMap = analysisTypesForUI.flatMap<{
+  id: string;
+  label: string;
+  description: string;
+}>((option) => {
+  if (option.id === analysisTypes.ALERTS) {
+    return [option, weeklyAlertsAnalysis];
+  }
+  if (option.id === analysisTypes.FOREST_CHANGE_DIAGNOSTICS) {
+    return [option, palmRiskAnalysis];
+  }
+  return [option];
+});
 
 export const commodities = {
   cattle: 'Cattle',

@@ -71,6 +71,7 @@ export const ExternalLinks = {
   HowToAddressErrorsInUpload:
     'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads',
   UploadFees: 'https://pro.globalforestwatch.org/about?section=Fees',
+  PriceSheet: 'https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/',
 };
 
 export const ReusableText = {

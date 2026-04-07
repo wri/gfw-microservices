@@ -82,7 +82,9 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
         />
       </li>
       <li
-        className={`layer-checkbox ${visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''}`}
+        className={`layer-checkbox ${
+          visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''
+        }`}
       >
         <FormControlLabel
           control={
@@ -97,7 +99,9 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
         />
       </li>
       <li
-        className={`layer-checkbox ${showHighConfidenceAlertsOnDeforestationAlertsLayer ? 'active' : ''}`}
+        className={`layer-checkbox ${
+          showHighConfidenceAlertsOnDeforestationAlertsLayer ? 'active' : ''
+        }`}
       >
         <FormControlLabel
           control={

@@ -1102,7 +1102,9 @@ export default class ListDetails extends Component {
             onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
             sx={{ p: 0 }}
             inputProps={{
-              'aria-label': `Select location ${cellProps.original.location_name || cellProps.original.location_id}`,
+              'aria-label': `Select location ${
+                cellProps.original.location_name || cellProps.original.location_id
+              }`,
               className: 'column-checkbox column-checkbox-single',
             }}
             data-cy={`select-location-${cellProps.original.location_id}`}

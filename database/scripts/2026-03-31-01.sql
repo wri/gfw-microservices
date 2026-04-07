@@ -90,7 +90,7 @@ BEGIN
         SELECT @@ROWCOUNT;
         ';
         
-        -- Execute and capture row count using able variable
+        -- Execute and capture row count using table variable
         DELETE FROM @RowCountTable;
         
         INSERT INTO @RowCountTable

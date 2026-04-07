@@ -530,9 +530,6 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          sx={{
-                            py: 0,
-                          }}
                           checked={!!field.value}
                           onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}

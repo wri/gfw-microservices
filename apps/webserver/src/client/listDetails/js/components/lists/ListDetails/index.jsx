@@ -8,6 +8,7 @@ import {
   Box,
   Alert,
   IconButton,
+  Checkbox,
 } from '@mui/material';
 import axios from 'axios';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
@@ -1074,16 +1075,7 @@ export default class ListDetails extends Component {
       Header: () => {
         const { isEveryRowSelected } = this.state;
         return (
-          <div className="column-checkbox-container">
-            <input
-              id="column-checkbox-all"
-              className="column-checkbox"
-              type="checkbox"
-              checked={isEveryRowSelected}
-              onChange={this.selectAllLocations}
-            />
-            <label htmlFor="column-checkbox-all" className="column-checkbox" />
-          </div>
+          <Checkbox checked={isEveryRowSelected} onChange={this.selectAllLocations} sx={{ p: 0 }} />
         );
       },
       id: 'checkbox',
@@ -1098,19 +1090,11 @@ export default class ListDetails extends Component {
         const { selectedLocations } = this.props;
 
         return (
-          <div>
-            <input
-              id={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
-              className="column-checkbox"
-              checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
-              onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
-              type="checkbox"
-            />
-            <label
-              htmlFor={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
-              className="column-checkbox column-checkbox-single"
-            />
-          </div>
+          <Checkbox
+            checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
+            onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
+            sx={{ p: 0 }}
+          />
         );
       },
     };

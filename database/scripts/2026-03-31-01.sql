@@ -1,5 +1,5 @@
 -- GPV-5156: Disable Weekly Alerts Analysis for all lists
--- Purpose: Set options = NULL for all ALERTS analysis to disable automatic weekly updates
+-- Purpose: Set options = '' for all ALERTS analysis to disable automatic weekly updates
 -- Date: 2026-03-31
 -- Target: All clientstore databases (including inactive orgs and internal test orgs)
 
@@ -83,7 +83,7 @@ BEGIN
         
         -- Then, perform the update
         UPDATE [dbo].[ListsAnalysisStatus]
-        SET [options] = NULL
+        SET [options] = ''''
         WHERE AnalysisID = ''ALERTS''
           AND [options] = ''Weekly'';
         

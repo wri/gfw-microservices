@@ -125,3 +125,24 @@ PRINT '========================================';
 PRINT 'Total databases processed: ' + CAST(@TotalProcessed AS VARCHAR(10));
 PRINT 'Total lists updated: ' + CAST(@TotalUpdated AS VARCHAR(10));
 PRINT '';
+
+-- ========================================
+-- STEP 3: REVIEW BACKUP DATA
+-- ========================================
+
+PRINT 'Displaying backup of all changed records:';
+PRINT '';
+
+-- Show all records that were updated
+SELECT 
+    org_database,
+    list_id,
+    analysis_id,
+    options_before,
+    backup_timestamp
+FROM #WeeklyAlertsBackup
+ORDER BY org_database, list_id;
+
+PRINT '';
+PRINT 'Review complete. Backup data shown above.';
+PRINT 'Note: Backup data is in temp table and will be lost when session ends.';

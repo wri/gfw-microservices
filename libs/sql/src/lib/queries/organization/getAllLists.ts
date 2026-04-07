@@ -22,7 +22,7 @@ export const getAllLists = `SELECT
             ORDER BY LP.analysis_start_time DESC
         ) LP
         WHERE las.ListID = L.id
-        FOR JSON PATH
+        FOR JSON PATH, INCLUDE_NULL_VALUES
     )) AS listAnalysesStatus
 FROM Lists L
 LEFT JOIN LargeLists LL ON L.id = LL.list_id

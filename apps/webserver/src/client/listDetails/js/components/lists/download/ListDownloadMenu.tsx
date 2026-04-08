@@ -19,6 +19,7 @@ import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils
 import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
 import downloadRequest from '../../../../../locations/js/components/lists/download/downloadRequest';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
+import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 
 interface ListDownloadMenuProps {
   combinedColumns: any[];
@@ -61,6 +62,14 @@ function ListDownloadMenu({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<undefined | HTMLElement>(undefined);
   const isMenuOpen = Boolean(anchorEl);
+
+  const labelLocationsCsv = useTransifexTranslation('Location(s) CSV');
+  const labelLocationsShapefile = useTransifexTranslation('Location(s) Shapefile');
+  const labelDownloadsNote = useTransifexTranslation(
+    'Downloads contain location data only; no analysis'
+  );
+  const labelDownloadErrorFile = useTransifexTranslation('Download error file CSV');
+  const labelDownload = useTransifexTranslation('Download');
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -142,7 +151,7 @@ function ListDownloadMenu({
           <ListItemIcon>
             <DownloadIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText sx={{ mx: 1 }}>Download</ListItemText>
+          <ListItemText sx={{ mx: 1 }}>{labelDownload}</ListItemText>
           <Box component="span" sx={{ display: 'flex', marginLeft: 'auto' }}>
             {isMenuOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
           </Box>
@@ -157,7 +166,7 @@ function ListDownloadMenu({
           }
           onClick={handleOpenMenu}
         >
-          Download
+          {labelDownload}
         </Button>
       )}
 
@@ -177,7 +186,7 @@ function ListDownloadMenu({
               target="_blank"
               rel="noopener noreferrer"
             >
-              <ListItemText>Download error file CSV</ListItemText>
+              <ListItemText>{labelDownloadErrorFile}</ListItemText>
             </MenuItem>
           )}
 
@@ -186,7 +195,7 @@ function ListDownloadMenu({
               data-cy="download-list-csv"
               onClick={() => handleMenuClick({ format: 'csv', type: 'input' })}
             >
-              <ListItemText>Location(s) CSV</ListItemText>
+              <ListItemText>{labelLocationsCsv}</ListItemText>
             </MenuItem>
           )}
 
@@ -195,13 +204,13 @@ function ListDownloadMenu({
               data-cy="download-list-shapefile"
               onClick={() => handleMenuClick({ format: 'shapefile', type: 'input' })}
             >
-              <ListItemText>Location(s) Shapefile</ListItemText>
+              <ListItemText>{labelLocationsShapefile}</ListItemText>
             </MenuItem>
           )}
           <Divider />
           <MenuItem>
             <Box sx={{ fontWeight: 'light', fontStyle: 'italic', fontSize: '12px' }}>
-              Downloads contain location data only; no analysis
+              {labelDownloadsNote}
             </Box>
           </MenuItem>
         </MenuList>

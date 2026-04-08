@@ -55,43 +55,9 @@ export const columnHeaders = {
   yes: 'Yes',
 };
 
-// Manual translations for column headers not discovered by Transifex
-// These are used as fallbacks when Transifex.live.translateText returns the original string
-export const columnHeaderTranslations = {
-  'Alerts in Natural Forest': {
-    es: 'Alertas en el Bosque Natural',
-    pt: 'Alertas em Floresta Natural',
-  },
-  'Alerts in Non-Forest': {
-    es: 'Alertas en zonas no forestales',
-    pt: 'Alertas em Áreas Não Florestais',
-  },
-  'Alerts in JRC Forest': {
-    es: 'Alertas en el Bosque JRC',
-    pt: 'Alertas na Floresta JRC',
-  },
-  'All Alerts': {
-    es: 'Todas las alertas',
-    pt: 'Todos os Alertas',
-  },
-};
-
-// Helper function to get manual translation with fallback
-export const getManualTranslation = (text, languageCode) => {
-  const translations = columnHeaderTranslations[text];
-  if (!translations) {
-    return text;
-  }
-
-  // Normalize language code - handle various formats like 'pt', 'pt-BR', 'pt_BR', 'pt-br'
-  const normalizedCode = languageCode?.toLowerCase()?.split(/[-_]/)[0];
-
-  if (normalizedCode === 'es') {
-    return translations.es || text;
-  }
-  if (normalizedCode === 'pt') {
-    return translations.pt || text;
-  }
-
-  return text;
-};
+// Re-exported from the shared translations module for backward compatibility.
+// Add new translations to apps/webserver/src/client/utils/manualTranslations.js
+export {
+  manualTranslations as columnHeaderTranslations,
+  getManualTranslation,
+} from '../../../../utils/manualTranslations';

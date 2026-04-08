@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Stack,
   Button as MaterialButton,
@@ -49,6 +49,7 @@ import {
 } from '../listViews.constants';
 
 import { GFW_LISTS_NUMBER_CONSTANTS } from '../../../../../../../config/env/gfwLists.constants';
+import { getManualTranslation } from '../../../../config/columns/columnHeaders.constants';
 
 export default function Filter({
   filterValues,
@@ -71,6 +72,28 @@ export default function Filter({
   onForestDatasetChange,
 }) {
   const [state, setState] = useState({ ...defaultFilterValues });
+  const [translatedLandCoverLabel, setTranslatedLandCoverLabel] = useState('Land Cover Dataset');
+
+  useEffect(() => {
+    if (!window.Transifex?.live) {
+      return;
+    }
+
+    const updateLandCoverLabel = () => {
+      const raw = window.Transifex.live.translateText('Land Cover Dataset');
+      const lang = window.Transifex.live.getSelectedLanguageCode?.() || 'en';
+      setTranslatedLandCoverLabel(
+        raw === 'Land Cover Dataset' ? getManualTranslation('Land Cover Dataset', lang) : raw
+      );
+    };
+
+    updateLandCoverLabel();
+    window.Transifex.live.onAfterTranslate(updateLandCoverLabel);
+
+    return () => {
+      window.Transifex?.live.off?.('onAfterTranslate', updateLandCoverLabel);
+    };
+  }, []);
 
   const changeCountry = (evt) => {
     setState((prevState) => ({
@@ -313,18 +336,26 @@ export default function Filter({
                       size="small"
                       sx={{ width: 230, mt: shouldRenderLocationsWithErrorsCheckbox ? 1 : 0 }}
                     >
-                      <InputLabel data-cy="alerts-land-cover-label">Land Cover Dataset</InputLabel>
+                      <InputLabel data-cy="alerts-land-cover-label">
+                        {translatedLandCoverLabel}
+                      </InputLabel>
                       <Select
                         data-cy="alerts-land-cover-select"
                         value={forestDataset}
                         onChange={onForestDatasetChange}
-                        label="Land Cover Dataset"
+                        label={translatedLandCoverLabel}
                       >
                         <MenuItem value={forestDataSet.NaturalForestMap}>
-                          {forestDataSet.NaturalForestMap}
+                          {getManualTranslation(
+                            forestDataSet.NaturalForestMap,
+                            window.Transifex?.live?.getSelectedLanguageCode?.() || 'en'
+                          )}
                         </MenuItem>
                         <MenuItem value={forestDataSet.JrcForestLoss}>
-                          {forestDataSet.JrcForestLoss}
+                          {getManualTranslation(
+                            forestDataSet.JrcForestLoss,
+                            window.Transifex?.live?.getSelectedLanguageCode?.() || 'en'
+                          )}
                         </MenuItem>
                       </Select>
                     </FormControl>

@@ -6,6 +6,7 @@ const sanitizeLabel = (label) => label.replace(/\s+/g, '-');
 
 const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
   const [translatedLabel, setTranslatedLabel] = useState(label);
+  const [translatedSubtitle, setTranslatedSubtitle] = useState(subtitle);
 
   const updateTranslation = () => {
     if (!window.Transifex?.live) {
@@ -21,6 +22,15 @@ const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
       setTranslatedLabel(manualTranslation);
     } else {
       setTranslatedLabel(transifexTranslation);
+    }
+
+    if (subtitle) {
+      const transifexSubtitle = window.Transifex.live.translateText(subtitle);
+      if (transifexSubtitle === subtitle) {
+        setTranslatedSubtitle(getManualTranslation(subtitle, languageCode));
+      } else {
+        setTranslatedSubtitle(transifexSubtitle);
+      }
     }
   };
 
@@ -41,7 +51,7 @@ const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
     return () => {
       window.Transifex.live.off?.('onAfterTranslate', handleTranslationUpdate);
     };
-  }, [label]);
+  }, [label, subtitle]);
 
   return (
     <span className="title-text" data-cy={`column-header-${sanitizeLabel(label)}`}>
@@ -50,7 +60,7 @@ const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
         {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
         {subtitle && (
           <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 'normal' }}>
-            {subtitle}
+            {translatedSubtitle}
           </span>
         )}
       </span>

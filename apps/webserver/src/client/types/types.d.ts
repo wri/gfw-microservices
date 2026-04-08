@@ -17,3 +17,5 @@ declare module '*.png' {
   const content: string;
   export default content;
 }
+
+declare function gtag(command: string, action: string, params?: Record<string, string>): void;

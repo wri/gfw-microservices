@@ -12,6 +12,7 @@ import {
 } from '../../../../../../config/env/analysisTypes.constants';
 import featureFlags from '../../../../../../utils/general.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
+import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 import './ChangeTypeOfAnalysisModal.scss';
 
 const AddAnalysisTypeConfirmationMessage = () => {
@@ -142,6 +143,9 @@ function ChangeTypeOfAnalysisModal({
     const match = listAnalysesStatus.find((item) => item.analysisId === analysisId);
     return match?.status === listStatus.Draft;
   });
+
+  const tSubmitAnalysis = useTransifexTranslation('Submit Analysis');
+  const tSaveAsDraft = useTransifexTranslation('Save as Draft');
   return (
     <>
       <Modal
@@ -173,7 +177,7 @@ function ChangeTypeOfAnalysisModal({
               <>
                 {isAddingAnalysis ? (
                   <ButtonWithConfirmationPrompt
-                    buttonLabel="Submit Analysis"
+                    buttonLabel={tSubmitAnalysis}
                     confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
                     disabled={selectedAnalysis.every((analysis) =>
                       initialAnalysisSelection.includes(analysis)
@@ -191,7 +195,7 @@ function ChangeTypeOfAnalysisModal({
                       }
                       onClick={submitSelectedAnalysis}
                     >
-                      Submit Analysis
+                      {tSubmitAnalysis}
                     </PillButton>
                   </>
                 )}
@@ -201,7 +205,7 @@ function ChangeTypeOfAnalysisModal({
                   disabled={isSelectionUnchanged}
                   onClick={saveAsDraft}
                 >
-                  Save as Draft
+                  {tSaveAsDraft}
                 </PillButton>
               </>
             )}

@@ -41,6 +41,9 @@ if (isClient) {
         return text;
       },
       onReady: jest.fn(() => Promise.resolve({})),
+      onAfterTranslate: jest.fn(),
+      getSelectedLanguageCode: jest.fn(() => 'en'),
+      off: jest.fn(),
     },
   };
 

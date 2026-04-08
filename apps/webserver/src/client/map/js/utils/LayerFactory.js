@@ -129,7 +129,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             new WebTileLayer({
               urlTemplate,
               id: layer.id,
-              visible: false,
+              visible: layer.visible || false,
               order: layer.order || undefined,
               view: view,
               opacity: 1,

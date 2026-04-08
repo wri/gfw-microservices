@@ -202,7 +202,7 @@ class Map extends Component {
       listNotAccessible: false,
       popupSelectedFeature: null,
       treeCoverLossDateRange: {
-        startYear: treeCoverLossYearsFC[0],
+        startYear: 2021,
         endYear: treeCoverLossYearsFC[treeCoverLossYearsFC.length - 1],
       },
       treeCoverGainDateRange: {

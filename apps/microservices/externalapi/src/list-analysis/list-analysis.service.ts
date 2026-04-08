@@ -467,6 +467,18 @@ export class ListAnalysisService {
       if (typeof newListDetails.commodity === 'undefined') {
         throwCustomErrorResponse('Missing Commodity value', HttpStatus.BAD_REQUEST);
       }
+
+      // Validate that options is only used with Alerts analysis
+      // Note: Check for undefined (not truthy) because empty string is valid for ALERTS (deactivates Weekly Alerts)
+      if (newListDetails.options !== undefined) {
+        const analysisIds = newListDetails.analysisIDs; // Already an array of transformed values
+        if (!analysisIds.includes('ALERTS')) {
+          throwCustomErrorResponse(
+            'The "options" field can only be used when analysisIDs includes "Alerts"',
+            HttpStatus.BAD_REQUEST
+          );
+        }
+      }
     } catch (error) {
       return error;
     }

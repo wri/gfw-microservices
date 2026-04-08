@@ -1,26 +1,7 @@
 import {
   AnalysisLimit,
-  OrganizationAnalysisUsage,
-  getHALimitForCurrentYear,
+  OrganizationAnalysisUsage
 } from '@wri-monorepos/sql';
-import { featureFlagsService } from '../../lib/utils/feature.flag.service';
-
-const TOKENIZATION_FLAG_ID = 'Tokenization';
-
-/**
- * Checks if tokenization feature flag is enabled for the given organization
- */
-async function isTokenizationEnabled(organizationId: number): Promise<boolean> {
-  try {
-    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-    const flags = await getFeatureFlagsForCurrentOrg(organizationId);
-    return flags.some((flag) => flag.flagId === TOKENIZATION_FLAG_ID && flag.flagState === true);
-  } catch (error) {
-    // If feature flag lookup fails, fall back to disabled to avoid blocking processing unexpectedly
-    return false;
-  }
-}
-
 export interface CalculateListProcessingLimitParams {
   accountLimits: AnalysisLimit;
   accountUsage: OrganizationAnalysisUsage;
@@ -45,15 +26,7 @@ export async function calculateListProcessingLimit({
   accountUsage,
   organizationId,
 }: CalculateListProcessingLimitParams): Promise<number> {
-  let maxAreaAnalyzeablePerYear = accountLimits.MaxAreaAnalyzeablePerYear;
-
-  // Check if tokenization is enabled for this organization
-  const tokenizationEnabled = await isTokenizationEnabled(organizationId);
-
-  if (tokenizationEnabled) {
-    // When tokenization is enabled, use the per-year HA limit based on update_time
-    maxAreaAnalyzeablePerYear = await getHALimitForCurrentYear(organizationId);
-  }
+  const maxAreaAnalyzeablePerYear = accountLimits.MaxAreaAnalyzeablePerYear;
 
   const availableAnalyzableAreaRemaining =
     maxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;

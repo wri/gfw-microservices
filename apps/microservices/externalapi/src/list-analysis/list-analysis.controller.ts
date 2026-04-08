@@ -8,6 +8,7 @@ import {
   Query,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
@@ -150,6 +151,15 @@ export class ListAnalysisController {
   ) {
     new ZodValidationPipe(requestSchema).transform(request);
     const { userEmail, options } = reanalyzeBody;
+
+    // Validate that options is only used with Alerts analysis
+    // Note: Check for undefined (not truthy) because empty string is valid for ALERTS (deactivates Weekly Alerts)
+    if (options !== undefined && analysisId.toUpperCase() !== 'ALERTS') {
+      throw new BadRequestException(
+        'The "options" field can only be used when analysisId is "Alerts"'
+      );
+    }
+
     const {
       user: { organizationId, organization_user_id },
     } = request;

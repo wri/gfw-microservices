@@ -1,11 +1,7 @@
 import { calculateListProcessingLimit } from './calculateListProcessingLimit';
-import {
-  AnalysisLimit,
-  OrganizationAnalysisUsage,
-} from '@wri-monorepos/sql';
+import { AnalysisLimit, OrganizationAnalysisUsage } from '@wri-monorepos/sql';
 
 describe('calculateListProcessingLimit', () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
   });

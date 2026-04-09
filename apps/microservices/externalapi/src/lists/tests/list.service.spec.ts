@@ -522,7 +522,7 @@ describe('ListService', () => {
       listId: expectedResult.id,
       listName: expectedResult.listName,
       locationCount: expectedResult.listLocationsCount,
-      analysisTypes: [],
+      analysisIDs: '',
     };
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
@@ -588,61 +588,61 @@ describe('ListService', () => {
         listId: 1024,
         listName: 'Recent test a',
         locationCount: null,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1025,
         listName: 'Recent test a2',
         locationCount: null,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1027,
         listName: 'southest asia test',
         locationCount: 1,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1029,
         listName: 'Recent Investments',
         locationCount: 1,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1043,
         listName: 'testbeef',
         locationCount: 1,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1046,
         listName: 'Recent Cocoa Generic Gust123',
         locationCount: 999,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1050,
         listName: 'Recent Cocoa Generic gust 20230829',
         locationCount: null,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1052,
         listName: 'Recent Cocoa Generic gust 202308290052',
         locationCount: null,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1003,
         listName: 'Recent Cocoa Generic 2023008290059',
         locationCount: null,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1004,
         listName: 'Recent Cocoa Generic 2023008290156',
         locationCount: null,
-        analysisTypes: [],
+        analysisIDs: '',
       },
     ];
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -694,13 +694,13 @@ describe('ListService', () => {
         listId: 1027,
         listName: 'southest asia test',
         locationCount: 1,
-        analysisTypes: [],
+        analysisIDs: '',
       },
       {
         listId: 1029,
         listName: 'Recent Investments',
         locationCount: 1,
-        analysisTypes: [],
+        analysisIDs: '',
       },
     ];
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
@@ -722,9 +722,9 @@ describe('ListService', () => {
     expect(paginatedInfoLists).toEqual(expectedPaginatedInfoLists);
   });
 
-  // GPV-5185: Tests for analysisTypes field
-  describe('getListInfo with analysisTypes', () => {
-    it('Should return list info with analysis types (no Weekly)', async () => {
+  // GPV-5185: Tests for analysisIDs field
+  describe('getListInfo with analysisIDs', () => {
+    it('Should return list info with comma-separated analysis IDs', async () => {
       const organizationId = 1;
       const mockListData = {
         id: listId,
@@ -760,11 +760,11 @@ describe('ListService', () => {
         listId: listId,
         listName: 'Test List',
         locationCount: 100,
-        analysisTypes: ['FCD', 'GHG', 'AFI'],
+        analysisIDs: 'FCD,GHG,DefReport',
       });
     });
 
-    it('Should return list info with ALERTS and Weekly option', async () => {
+    it('Should return Alerts-Weekly when ALERTS has Weekly option', async () => {
       const organizationId = 1;
       const mockListData = {
         id: listId,
@@ -799,11 +799,11 @@ describe('ListService', () => {
         listId: listId,
         listName: 'Test List with Weekly Alerts',
         locationCount: 50,
-        analysisTypes: ['ALERTS', 'Weekly', 'FCD'],
+        analysisIDs: 'Alerts-Weekly,FCD',
       });
     });
 
-    it('Should return list info with empty analysisTypes when no analysis records exist', async () => {
+    it('Should return empty analysisIDs when no analysis records exist', async () => {
       const organizationId = 1;
       const mockListData = {
         id: listId,
@@ -834,13 +834,13 @@ describe('ListService', () => {
         listId: listId,
         listName: 'List without Analysis',
         locationCount: 25,
-        analysisTypes: [],
+        analysisIDs: '',
       });
     });
   });
 
-  describe('getPaginatedListInfo with analysisTypes', () => {
-    it('Should return paginated lists with their respective analysisTypes', async () => {
+  describe('getPaginatedListInfo with analysisIDs', () => {
+    it('Should return paginated lists with comma-separated analysisIDs', async () => {
       const organizationId = 1;
       const mockPaginatedLists = [
         { id: 100, listName: 'List 1', listLocationsCount: 10 },
@@ -879,24 +879,24 @@ describe('ListService', () => {
           listId: 100,
           listName: 'List 1',
           locationCount: 10,
-          analysisTypes: ['FCD', 'GHG'],
+          analysisIDs: 'FCD,GHG',
         },
         {
           listId: 101,
           listName: 'List 2',
           locationCount: 20,
-          analysisTypes: ['ALERTS', 'Weekly', 'AFI'],
+          analysisIDs: 'Alerts-Weekly,DefReport',
         },
         {
           listId: 102,
           listName: 'List 3',
           locationCount: 30,
-          analysisTypes: ['FCD'],
+          analysisIDs: 'FCD',
         },
       ]);
     });
 
-    it('Should return paginated lists with empty analysisTypes for lists without analysis', async () => {
+    it('Should return empty analysisIDs for lists without analysis', async () => {
       const organizationId = 1;
       const mockPaginatedLists = [
         { id: 200, listName: 'Empty List 1', listLocationsCount: 5 },
@@ -927,13 +927,13 @@ describe('ListService', () => {
           listId: 200,
           listName: 'Empty List 1',
           locationCount: 5,
-          analysisTypes: [],
+          analysisIDs: '',
         },
         {
           listId: 201,
           listName: 'Empty List 2',
           locationCount: 15,
-          analysisTypes: [],
+          analysisIDs: '',
         },
       ]);
     });

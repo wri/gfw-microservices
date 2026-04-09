@@ -110,15 +110,24 @@ export class ListService {
         throw new NotFoundException(`List ${listId} not found.`);
       }
 
-      const analysisTypes: string[] = [];
+      // Reverse mapping: DB format -> API format (to match upload_new format)
+      const dbToApiFormat: Record<string, string> = {
+        ALERTS: 'Alerts',
+        FCD: 'FCD',
+        AFI: 'DefReport',
+        GHG: 'GHG',
+      };
+
+      const analysisIds: string[] = [];
 
       allListAnalysis.forEach((analysis) => {
-        analysisTypes.push(analysis.analysisId);
-        const isWeeklyAlertAnalysis =
-          analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
+        const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
 
-        if (isWeeklyAlertAnalysis) {
-          analysisTypes.push('Weekly');
+        // Handle Weekly Alerts: add "Alerts-Weekly" instead of "Alerts"
+        if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
+          analysisIds.push('Alerts-Weekly');
+        } else {
+          analysisIds.push(apiFormat);
         }
       });
 
@@ -126,7 +135,7 @@ export class ListService {
         listId: listFound.id,
         listName: listFound.listName,
         locationCount: listFound.listLocationsCount,
-        analysisTypes,
+        analysisIDs: analysisIds.join(','),
       };
       return listResponse;
     } catch (error) {
@@ -168,31 +177,35 @@ export class ListService {
         where: { listId: In(listIds) },
       });
 
-      const analysisTypesByListId = new Map<number, string[]>();
+      // Reverse mapping: DB format -> API format (to match upload_new format)
+      const dbToApiFormat: Record<string, string> = {
+        ALERTS: 'Alerts',
+        FCD: 'FCD',
+        AFI: 'DefReport',
+        GHG: 'GHG',
+      };
+
+      const analysisIdsByListId = new Map<number, string[]>();
 
       allListAnalysis.forEach((analysis) => {
-        // Get existing array for this listId, or initialize empty array
-        const existingTypes = analysisTypesByListId.get(analysis.listId) || [];
+        const existingIds = analysisIdsByListId.get(analysis.listId) || [];
+        const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
 
-        // Add the analysis ID
-        existingTypes.push(analysis.analysisId);
-
-        // If ALERTS with Weekly, add "Weekly" as separate entry
-        const isWeeklyAlertAnalysis =
-          analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
-        if (isWeeklyAlertAnalysis) {
-          existingTypes.push('Weekly');
+        // Handle Weekly Alerts: add "Alerts-Weekly" instead of "Alerts"
+        if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
+          existingIds.push('Alerts-Weekly');
+        } else {
+          existingIds.push(apiFormat);
         }
 
-        // Update the map with the updated array
-        analysisTypesByListId.set(analysis.listId, existingTypes);
+        analysisIdsByListId.set(analysis.listId, existingIds);
       });
 
       const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => ({
         listId: list.id,
         listName: list.listName,
         locationCount: list.listLocationsCount,
-        analysisTypes: analysisTypesByListId.get(list.id) || [], // Get from map or empty array
+        analysisIDs: (analysisIdsByListId.get(list.id) || []).join(','),
       }));
 
       return paginatedListInfo;

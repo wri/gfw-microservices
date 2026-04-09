@@ -764,7 +764,7 @@ describe('ListService', () => {
       });
     });
 
-    it('Should return Alerts-Weekly when ALERTS has Weekly option', async () => {
+    it('Should return Alerts-Weekly in options when ALERTS has Weekly option', async () => {
       const organizationId = 1;
       const mockListData = {
         id: listId,
@@ -799,7 +799,8 @@ describe('ListService', () => {
         listId: listId,
         listName: 'Test List with Weekly Alerts',
         locationCount: 50,
-        analysisIDs: 'Alerts-Weekly,FCD',
+        analysisIDs: 'Alerts,FCD',
+        options: 'Alerts-Weekly',
       });
     });
 
@@ -840,7 +841,7 @@ describe('ListService', () => {
   });
 
   describe('getPaginatedListInfo with analysisIDs', () => {
-    it('Should return paginated lists with comma-separated analysisIDs', async () => {
+    it('Should return paginated lists with comma-separated analysisIDs and options', async () => {
       const organizationId = 1;
       const mockPaginatedLists = [
         { id: 100, listName: 'List 1', listLocationsCount: 10 },
@@ -885,7 +886,8 @@ describe('ListService', () => {
           listId: 101,
           listName: 'List 2',
           locationCount: 20,
-          analysisIDs: 'Alerts-Weekly,DefReport',
+          analysisIDs: 'Alerts,DefReport',
+          options: 'Alerts-Weekly',
         },
         {
           listId: 102,

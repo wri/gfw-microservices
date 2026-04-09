@@ -65,4 +65,6 @@ export class ListInfoResponse {
   locationCount: number;
   @ApiProperty()
   analysisIDs: string;
+  @ApiProperty({ required: false })
+  options?: string;
 }

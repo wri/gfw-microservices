@@ -119,15 +119,15 @@ export class ListService {
       };
 
       const analysisIds: string[] = [];
+      let optionsString = '';
 
       allListAnalysis.forEach((analysis) => {
         const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
+        analysisIds.push(apiFormat);
 
-        // Handle Weekly Alerts: add "Alerts-Weekly" instead of "Alerts"
+        // Collect options separately
         if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
-          analysisIds.push('Alerts-Weekly');
-        } else {
-          analysisIds.push(apiFormat);
+          optionsString = 'Alerts-Weekly';
         }
       });
 
@@ -137,6 +137,12 @@ export class ListService {
         locationCount: listFound.listLocationsCount,
         analysisIDs: analysisIds.join(','),
       };
+
+      // Only include options if there are any
+      if (optionsString) {
+        listResponse.options = optionsString;
+      }
+
       return listResponse;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -186,27 +192,38 @@ export class ListService {
       };
 
       const analysisIdsByListId = new Map<number, string[]>();
+      const optionsByListId = new Map<number, string>();
 
       allListAnalysis.forEach((analysis) => {
         const existingIds = analysisIdsByListId.get(analysis.listId) || [];
         const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
-
-        // Handle Weekly Alerts: add "Alerts-Weekly" instead of "Alerts"
-        if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
-          existingIds.push('Alerts-Weekly');
-        } else {
-          existingIds.push(apiFormat);
-        }
-
+        existingIds.push(apiFormat);
         analysisIdsByListId.set(analysis.listId, existingIds);
+
+        // Collect options separately
+        if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
+          optionsByListId.set(analysis.listId, 'Alerts-Weekly');
+        }
       });
 
-      const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => ({
-        listId: list.id,
-        listName: list.listName,
-        locationCount: list.listLocationsCount,
-        analysisIDs: (analysisIdsByListId.get(list.id) || []).join(','),
-      }));
+      const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => {
+        const analysisIds = analysisIdsByListId.get(list.id) || [];
+        const options = optionsByListId.get(list.id);
+
+        const response: ListInfoResponse = {
+          listId: list.id,
+          listName: list.listName,
+          locationCount: list.listLocationsCount,
+          analysisIDs: analysisIds.join(','),
+        };
+
+        // Only include options if there are any
+        if (options) {
+          response.options = options;
+        }
+
+        return response;
+      });
 
       return paginatedListInfo;
     } catch (error) {

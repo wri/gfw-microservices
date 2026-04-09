@@ -1,7 +1,4 @@
-import {
-  AnalysisLimit,
-  OrganizationAnalysisUsage
-} from '@wri-monorepos/sql';
+import { AnalysisLimit, OrganizationAnalysisUsage } from '@wri-monorepos/sql';
 export interface CalculateListProcessingLimitParams {
   accountLimits: AnalysisLimit;
   accountUsage: OrganizationAnalysisUsage;

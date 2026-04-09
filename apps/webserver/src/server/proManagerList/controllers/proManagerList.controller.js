@@ -112,15 +112,15 @@ export const proManagerListAccountDetailData = async (req, res) => {
           selectedAccount.subscription_status_id,
           selectedAccount.renewal_time
         );
-        const currentSubscriptionLimits = getLatestLimits(subscribedPerYear);
         const extended = await getAccountExtraLimits(selectedAccount.organization_id);
         const rollover = await getAccountRolloverLimits(
           selectedAccount.organization_id,
-          currentSubscriptionLimits,
+          subscribedPerYear,
           extended,
           selectedAccount.renewal_time
         );
 
+        const currentSubscriptionLimits = getLatestLimits(subscribedPerYear);
         const limits = combineOrganizationLimits(currentSubscriptionLimits, rollover);
 
         selectedAccount.analysis_limits = {

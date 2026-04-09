@@ -291,15 +291,15 @@ export const getMyOrganizationAnalysisLimit = async (req, res) => {
       subscription_status_id,
       renewalDate
     );
-    const currentSubscriptionLimits = getLatestLimits(subscribedPerYear);
     const extended = await getAccountExtraLimits(organization_id);
     const rollover = await getAccountRolloverLimits(
       organization_id,
-      currentSubscriptionLimits,
+      subscribedPerYear,
       extended,
       renewalDate
     );
 
+    const currentSubscriptionLimits = getLatestLimits(subscribedPerYear);
     const limits = combineOrganizationLimits(currentSubscriptionLimits, rollover);
 
     res.status(200).send({

@@ -28,16 +28,14 @@ export async function getAccountLimits(organizationId: number, organizationType:
     renewalDate
   );
 
-  // Use the latest year's limits as the current subscription limits
-  const currentSubscriptionLimits = getLatestLimits(organizationSubscriptionLimits);
-
   const organizationRolloverLimits = await getAccountRolloverLimits(
     organizationId,
-    currentSubscriptionLimits,
+    organizationSubscriptionLimits,
     organizationExtraLimits,
     renewalDate
   );
 
+  const currentSubscriptionLimits = getLatestLimits(organizationSubscriptionLimits);
   return combineOrganizationLimits(currentSubscriptionLimits, organizationRolloverLimits);
 }
 

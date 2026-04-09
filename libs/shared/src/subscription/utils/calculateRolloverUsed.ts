@@ -8,7 +8,7 @@ export interface RolloverAnalysisAmounts {
 }
 export function calculateRolloverUsed(
   yearlyUsageSinceActivation: OrganizationYearlyUsageSinceOrgActivation[],
-  subscriptionLimits: AnalysisLimit,
+  subscriptionLimits: AnalysisLimit[],
   accountRenewalMoment: Date
 ): RolloverAnalysisAmounts {
   let rolloverAnalysisAreaUsed = 0;
@@ -23,24 +23,29 @@ export function calculateRolloverUsed(
     if (yearlyData.years_since_activation === currentYear) {
       return;
     }
+
+    const applicableLimits = subscriptionLimits
+      .filter((limit) => limit.year <= yearlyData.years_since_activation)
+      .sort((a, b) => b.year - a.year)[0];
+
     // rollover for area
     const areaRollover = Math.max(
       0,
-      yearlyData.totalAreaPerLocationsAnalyzedYearly - subscriptionLimits.MaxAreaAnalyzeablePerYear
+      yearlyData.totalAreaPerLocationsAnalyzedYearly - applicableLimits.MaxAreaAnalyzeablePerYear
     );
     rolloverAnalysisAreaUsed += areaRollover;
 
     // rollover for locations
     const locationsRollover = Math.max(
       0,
-      yearlyData.totalLocationsYearly - (subscriptionLimits.max_locations_per_year || 0)
+      yearlyData.totalLocationsYearly - (applicableLimits.max_locations_per_year || 0)
     );
     rolloverLocationsUsed += locationsRollover;
 
     // rollover for tokens
     const tokensRollover = Math.max(
       0,
-      (yearlyData.totalTokensYearly || 0) - (subscriptionLimits.tokens_per_year || 0)
+      (yearlyData.totalTokensYearly || 0) - (applicableLimits.tokens_per_year || 0)
     );
     rolloverTokensUsed += tokensRollover;
   });

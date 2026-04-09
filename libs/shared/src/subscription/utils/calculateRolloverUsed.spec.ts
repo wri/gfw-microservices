@@ -27,11 +27,14 @@ describe('calculateRolloverUsed', () => {
       },
     ];
 
-    const subscriptionLimits = {
-      MaxAreaAnalyzeablePerYear: 200000000,
-      max_locations_per_year: 1000,
-      tokens_per_year: 5000,
-    };
+    const subscriptionLimits = [
+      {
+        MaxAreaAnalyzeablePerYear: 200000000,
+        max_locations_per_year: 1000,
+        tokens_per_year: 5000,
+        year: 0,
+      },
+    ];
 
     const result: RolloverAnalysisAmounts = calculateRolloverUsed(
       yearlyUsageSinceActivation,

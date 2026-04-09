@@ -66,7 +66,6 @@ describe('getListProcessingLimits', () => {
         total_area_analyzed: 100,
         organization_id: 1,
       }),
-      organizationId: 1,
     });
     expect(result).toBe(500);
   });

@@ -5,7 +5,7 @@ import { formatNumber } from '../../../../common/js/utils/format';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 const getProgressColor = (usagePercentage = 0) => {
-  if (usagePercentage === 100) {
+  if (usagePercentage >= 100) {
     return 'rgba(242, 78, 30, 0.73)';
   }
 
@@ -44,7 +44,7 @@ const LinearProgressBar = styled(LinearProgress, {
 }));
 
 export default function AccountUsage({ label, usedValue = 0, maxValue = 0, InfoBubbleContent }) {
-  const usagePercentage = maxValue > 0 ? (usedValue / maxValue) * 100 : 0;
+  const usagePercentage = maxValue > 0 ? Math.min((usedValue / maxValue) * 100, 100) : 0;
 
   return (
     <Card>

@@ -4,7 +4,7 @@ import { format as formatDate } from 'date-fns';
 
 export async function getAccountRolloverLimits(
   organizationId: number,
-  subscriptionLimits: AnalysisLimit,
+  subscriptionLimits: AnalysisLimit[],
   extendedLimits: AnalysisLimit,
   renewalDate: Date
 ) {
@@ -21,7 +21,7 @@ export async function getAccountRolloverLimits(
   );
 
   // RolloverRemaining = extendedLimits - RolloverUsed
-  return {
+  const rolloverRemaining = {
     MaxAreaAnalyzeablePerYear:
       extendedLimits.MaxAreaAnalyzeablePerYear - rolloverUsed.rolloverAnalysisAreaUsed,
     MaxAreaPerList: extendedLimits.MaxAreaPerList,
@@ -29,4 +29,6 @@ export async function getAccountRolloverLimits(
       (extendedLimits.max_locations_per_year || 0) - rolloverUsed.rolloverLocationsUsed,
     tokens_per_year: (extendedLimits.tokens_per_year || 0) - rolloverUsed.rolloverTokensUsed,
   };
+
+  return rolloverRemaining;
 }

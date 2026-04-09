@@ -18,6 +18,5 @@ export async function getListProcessingLimits({
   return calculateListProcessingLimit({
     accountLimits,
     accountUsage,
-    organizationId,
   });
 }

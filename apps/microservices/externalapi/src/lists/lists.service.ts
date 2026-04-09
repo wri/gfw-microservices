@@ -110,15 +110,24 @@ export class ListService {
         throw new NotFoundException(`List ${listId} not found.`);
       }
 
-      const analysisTypes: string[] = [];
+      // Reverse mapping: DB format -> API format (to match upload_new format)
+      const dbToApiFormat: Record<string, string> = {
+        ALERTS: 'Alerts',
+        FCD: 'FCD',
+        AFI: 'DefReport',
+        GHG: 'GHG',
+      };
+
+      const analysisIds: string[] = [];
+      let optionsString = '';
 
       allListAnalysis.forEach((analysis) => {
-        analysisTypes.push(analysis.analysisId);
-        const isWeeklyAlertAnalysis =
-          analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
+        const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
+        analysisIds.push(apiFormat);
 
-        if (isWeeklyAlertAnalysis) {
-          analysisTypes.push('Weekly');
+        // Collect options separately
+        if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
+          optionsString = 'Alerts-Weekly';
         }
       });
 
@@ -126,8 +135,14 @@ export class ListService {
         listId: listFound.id,
         listName: listFound.listName,
         locationCount: listFound.listLocationsCount,
-        analysisTypes,
+        analysisIDs: analysisIds.join(','),
       };
+
+      // Only include options if there are any
+      if (optionsString) {
+        listResponse.options = optionsString;
+      }
+
       return listResponse;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -168,32 +183,47 @@ export class ListService {
         where: { listId: In(listIds) },
       });
 
-      const analysisTypesByListId = new Map<number, string[]>();
+      // Reverse mapping: DB format -> API format (to match upload_new format)
+      const dbToApiFormat: Record<string, string> = {
+        ALERTS: 'Alerts',
+        FCD: 'FCD',
+        AFI: 'DefReport',
+        GHG: 'GHG',
+      };
+
+      const analysisIdsByListId = new Map<number, string[]>();
+      const optionsByListId = new Map<number, string>();
 
       allListAnalysis.forEach((analysis) => {
-        // Get existing array for this listId, or initialize empty array
-        const existingTypes = analysisTypesByListId.get(analysis.listId) || [];
+        const existingIds = analysisIdsByListId.get(analysis.listId) || [];
+        const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
+        existingIds.push(apiFormat);
+        analysisIdsByListId.set(analysis.listId, existingIds);
 
-        // Add the analysis ID
-        existingTypes.push(analysis.analysisId);
-
-        // If ALERTS with Weekly, add "Weekly" as separate entry
-        const isWeeklyAlertAnalysis =
-          analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly';
-        if (isWeeklyAlertAnalysis) {
-          existingTypes.push('Weekly');
+        // Collect options separately
+        if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
+          optionsByListId.set(analysis.listId, 'Alerts-Weekly');
         }
-
-        // Update the map with the updated array
-        analysisTypesByListId.set(analysis.listId, existingTypes);
       });
 
-      const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => ({
-        listId: list.id,
-        listName: list.listName,
-        locationCount: list.listLocationsCount,
-        analysisTypes: analysisTypesByListId.get(list.id) || [], // Get from map or empty array
-      }));
+      const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => {
+        const analysisIds = analysisIdsByListId.get(list.id) || [];
+        const options = optionsByListId.get(list.id);
+
+        const response: ListInfoResponse = {
+          listId: list.id,
+          listName: list.listName,
+          locationCount: list.listLocationsCount,
+          analysisIDs: analysisIds.join(','),
+        };
+
+        // Only include options if there are any
+        if (options) {
+          response.options = options;
+        }
+
+        return response;
+      });
 
       return paginatedListInfo;
     } catch (error) {

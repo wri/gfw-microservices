@@ -21,7 +21,6 @@ export interface CalculateListProcessingLimitParams {
 export async function calculateListProcessingLimit({
   accountLimits,
   accountUsage,
-  organizationId,
 }: CalculateListProcessingLimitParams): Promise<number> {
   const maxAreaAnalyzeablePerYear = accountLimits.MaxAreaAnalyzeablePerYear;
 

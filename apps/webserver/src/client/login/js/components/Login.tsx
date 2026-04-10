@@ -25,18 +25,6 @@ import iconArrowRight from '../../images/shape-arrow-right.svg';
 // These imports ensure webpack includes these assets in the build output
 /* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import gfwHeroPoster from '../../images/gfw_pro_hero_poster.jpg';
-import iconCompliance from '../../images/icon-lg-compliance.svg';
-import iconMonitor from '../../images/icon-lg-monitor.svg';
-import iconShare from '../../images/icon-lg-share.svg';
-import photoAlexandra from '../../images/headshot_alexandra_experton.jpg';
-import photoBanker from '../../images/banker.jpg';
-import photoConsumerGoods from '../../images/consumer-goods.jpg';
-import photoKarimah from '../../images/headshot_karimah_hudda.jpg';
-import photoLuiz from '../../images/headshot_luiz_gabriel_todt_de_azevedo.jpg';
-import photoMoray from '../../images/headshot_moray_mcleish.jpg';
-import photoPlaceholder from '../../images/testimonial-placeholder.svg';
-import photoProducer from '../../images/producer.jpg';
-import photoTrader from '../../images/trader.jpg';
 /* eslint-enable no-unused-vars, @typescript-eslint/no-unused-vars */
 
 // Configuration constants

@@ -91,7 +91,7 @@ class ListDetailsPage {
 
   moveList(list: string, location: number[]) {
     const minRows = Math.max(...location);
-    cy.get('div.rt-table')
+    cy.get('div.rt-table', { timeout: 60000 })
       .find('[data-cy^="select-location-"]', { timeout: 60000 })
       .should('have.length.at.least', minRows);
     this.selectCheckBoxes(location);

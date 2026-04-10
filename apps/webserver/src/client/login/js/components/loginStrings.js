@@ -1,3 +1,16 @@
+// Image imports
+import iconCompliance from '../../images/icon-lg-compliance.svg';
+import iconMonitor from '../../images/icon-lg-monitor.svg';
+import iconShare from '../../images/icon-lg-share.svg';
+import photoAlexandra from '../../images/headshot_alexandra_experton.jpg';
+import photoBanker from '../../images/banker.jpg';
+import photoConsumerGoods from '../../images/consumer-goods.jpg';
+import photoKarimah from '../../images/headshot_karimah_hudda.jpg';
+import photoLuiz from '../../images/headshot_luiz_gabriel_todt_de_azevedo.jpg';
+import photoMoray from '../../images/headshot_moray_mcleish.jpg';
+import photoProducer from '../../images/producer.jpg';
+import photoTrader from '../../images/trader.jpg';
+
 const loginStrings = {
   appTitleText: 'Achieve supply chain sustainability with analytics that drive impact.',
   appRequestAccount: 'Request an Account',
@@ -39,15 +52,15 @@ const loginStrings = {
     features: [
       {
         text: 'Monitor conditions at farms, supply sheds or jurisdictions and track changes over time',
-        image: 'icon-lg-share.svg',
+        image: iconShare,
       },
       {
-        text: 'Verify and demonstrate compliance with commitments and regulations like the European Union’s deforestation regulation (EUDR).',
-        image: 'icon-lg-monitor.svg',
+        text: "Verify and demonstrate compliance with commitments and regulations like the European Union's deforestation regulation (EUDR).",
+        image: iconMonitor,
       },
       {
         text: 'Share data and analyses across teams and the broader organization via secure workflows.',
-        image: 'icon-lg-compliance.svg',
+        image: iconCompliance,
       },
     ],
   },
@@ -74,28 +87,28 @@ const loginStrings = {
       name: 'Luiz Gabriel Todt de Azevedo',
       organization: 'IDB Invest',
       title: 'Chief, Environmental, Social & Governance Division',
-      image: 'headshot_luiz_gabriel_todt_de_azevedo.jpg',
+      image: photoLuiz,
     },
     {
       text: '“GFW Pro allows us to upload all our production areas, monitor them for deforestation on a day-to-day basis, and prioritize engagement accurately and efficiently. It’s a win-win.”',
       name: 'Moray McLeish',
       organization: 'Asia, Olam',
       title: 'Vice President, Corporate Responsibility and Sustainability',
-      image: 'headshot_moray_mcleish.jpg',
+      image: photoMoray,
     },
     {
       text: '“We’ve worked extensively with WRI’s advisory services to analyze forest impacts in our supply chains. GFW Pro will make these forest analyses easily accessible, allowing us to manage deforestation risks in our supply chains more efficiently. We are also excited to see WRI’s methods become more widely used.”',
       name: 'Alexandra Experton',
       organization: 'Cargill Agricultural Supply Chain - Asia Pacific',
       title: 'Supply Chain Sustainability Manager',
-      image: 'headshot_alexandra_experton.jpg',
+      image: photoAlexandra,
     },
     {
       text: '“Mondelēz International is committed to addressing deforestation in our key raw materials, by engaging suppliers and influencing sector wide change. It’s time for all of us in the industry to stop duplicating efforts and start collaborating on one tool that can help us all meet our commitments in a harmonized, consistent manner. GFW Pro is that tool.”',
       name: 'Karimah Hudda',
       organization: 'Mondelez International',
       title: 'Global Sustainability Lead',
-      image: 'headshot_karimah_hudda.jpg',
+      image: photoKarimah,
     },
   ],
   monitorSectionTitle: 'What can Global Forest Watch Pro do for you?',
@@ -110,7 +123,7 @@ const loginStrings = {
           'local legislation, negatively affect financial performance, and present reputational risk to all parties. GFW Pro is on the leading ' +
           'edge of technology and data applications that will help us work with our clients to better identify and manage deforestation risk. ' +
           'That’s delivering positive impact for our clients, for the countries in our region, and for future generations.”',
-        image: 'banker.jpg',
+        image: photoBanker,
         quoteRef:
           'Luiz Gabriel Todt de Azevedo, Chief, Environmental, Social & Governance Division - IDB Invest',
         descriptions: [
@@ -140,7 +153,7 @@ const loginStrings = {
         title: 'Producer',
         quote:
           '“GFW Pro allows us to upload all our production areas, monitor them for deforestation on a day-to-day basis, and prioritize engagement accurately and efficiently. It’s a win-win.”',
-        image: 'producer.jpg',
+        image: photoProducer,
         quoteRef:
           'Moray McLeish, Vice President, Corporate Responsibility and Sustainability for Asia, Olam',
         descriptions: [
@@ -172,7 +185,7 @@ const loginStrings = {
           '“We’ve worked extensively with WRI’s advisory services to analyze forest impacts in our supply chains. GFW Pro will make ' +
           'these forest analyses easily accessible, allowing us to manage deforestation risks in our supply chains more efficiently. We are ' +
           'also excited to see WRI’s methods become more widely used.”',
-        image: 'trader.jpg',
+        image: photoTrader,
         quoteRef:
           'Alexandra Experton, Supply Chain Sustainability Manager, Cargill Agricultural Supply Chain - Asia Pacific',
         descriptions: [
@@ -205,7 +218,7 @@ const loginStrings = {
           'Mondelēz International is committed to addressing deforestation in our key raw materials, by engaging suppliers and ' +
           'influencing sector wide change. It’s time for all of us in the industry to stop duplicating efforts and start collaborating on ' +
           'one tool that can help us all meet our commitments in a harmonized, consistent manner. GFW Pro is that tool.',
-        image: 'consumer-goods.jpg',
+        image: photoConsumerGoods,
         quoteRef: 'Karimah Hudda, Global Sustainability Lead, Procurement, Mondelez International',
         descriptions: [
           {

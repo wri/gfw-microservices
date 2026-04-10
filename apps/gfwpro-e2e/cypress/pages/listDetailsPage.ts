@@ -39,7 +39,10 @@ class ListDetailsPage {
     moreOptionsBtn: () => cy.get('[data-cy="row-more-options-button"]').eq(0),
     moreOptionsTableColumnBtn: () => cy.get('[data-testid="MoreVertIcon"]'),
     allColumnsCheckbox: () => cy.get('[data-cy="select-deselect-all-columns"]'),
-    columnAttributes: () => cy.get('[data-testid="CheckBoxIcon"]'),
+    columnAttributes: () =>
+      cy.get(
+        '[data-cy^="column-selector-"]:not([data-cy="column-selector-button"]), [data-cy="select-deselect-all-columns"]'
+      ),
     columnHeaders: () => cy.get('.title-text'),
     listActionDialog: () => cy.get('.list-diagnostics-dialog'),
     tableRow: () => cy.get('.rt-tbody').find('[data-testid="custom-row"]'),
@@ -66,8 +69,9 @@ class ListDetailsPage {
     if (locations && locations.length > 0) {
       locations.forEach((location) => {
         cy.get('div.rt-table')
-          .find('input.column-checkbox.column-checkbox-single:visible')
+          .find('[data-cy^="select-location-"]:visible')
           .eq(location - 1)
+          .find('input[type="checkbox"]')
           .click({ force: true });
       });
     }
@@ -86,6 +90,10 @@ class ListDetailsPage {
   }
 
   moveList(list: string, location: number[]) {
+    const minRows = Math.max(...location);
+    cy.get('div.rt-table')
+      .find('[data-cy^="select-location-"]', { timeout: 60000 })
+      .should('have.length.at.least', minRows);
     this.selectCheckBoxes(location);
     this.clickOnCopyMoveBtn();
     this.clickOnMoveSectionRadioBtn();
@@ -117,9 +125,10 @@ class ListDetailsPage {
       if (locations && locations.length > 0) {
         locations.forEach((location) => {
           cy.get('div.rt-table')
-            .find('label.column-checkbox.column-checkbox-single:visible')
+            .find('[data-cy^="select-location-"]:visible')
             .eq(location - 1)
-            .click();
+            .find('input[type="checkbox"]')
+            .click({ force: true });
         });
       } else {
         this.checkOnCheckBoxSelectAll();

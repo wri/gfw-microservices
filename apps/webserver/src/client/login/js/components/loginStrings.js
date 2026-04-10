@@ -56,11 +56,11 @@ const loginStrings = {
       },
       {
         text: "Verify and demonstrate compliance with commitments and regulations like the European Union's deforestation regulation (EUDR).",
-        image: iconMonitor,
+        image: iconCompliance,
       },
       {
         text: 'Share data and analyses across teams and the broader organization via secure workflows.',
-        image: iconCompliance,
+        image: iconMonitor,
       },
     ],
   },

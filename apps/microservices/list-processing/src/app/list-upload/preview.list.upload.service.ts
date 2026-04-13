@@ -67,7 +67,8 @@ export class PreviewListUploadService {
       (error) =>
         typeof error === 'string' &&
         !error.startsWith('UML LookUp:') &&
-        !error.startsWith('CAR LookUp: did not found lat/long for')
+        !error.startsWith('CAR LookUp: did not found lat/long for') &&
+        !error.startsWith('ERROR in gadm request')
     );
 
     if (significantErrors.length > 0) {

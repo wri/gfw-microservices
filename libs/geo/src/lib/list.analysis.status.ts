@@ -334,6 +334,12 @@ export const handleCreateAnalysis = async (
       if (hasOnlyGHGAnalysis) {
         throw error;
       } else {
+        await updateListsAnalysisStatus(organizationDb, {
+          listId,
+          errorInfo: error?.message || 'GHG commodity validation failed',
+          status: listStatus.Inactive,
+          analysisIds: ['GHG'],
+        });
         delete analysisTypes['GHG'];
       }
     }

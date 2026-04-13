@@ -5,7 +5,16 @@ import {
   weeklyAlertsAnalysis,
 } from '../../../../../../config/env/analysisTypes.constants';
 
-export const VALID_UPLOAD_FILE_FORMATS = ['csv', 'xls', 'xlsx', 'zip', 'kml', 'kmz', 'geojson'];
+export const VALID_UPLOAD_FILE_FORMATS = [
+  'csv',
+  'xls',
+  'xlsx',
+  'zip',
+  'kml',
+  'kmz',
+  'geojson',
+  'json',
+];
 export const VALID_FILE_FORMATS_BY_ID = ['csv', 'xls', 'xlsx'];
 
 export const typeOfAnalysisMap = analysisTypesForUI.flatMap<{

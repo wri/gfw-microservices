@@ -55,6 +55,30 @@ const removePool = (connectConfig) => {
 };
 
 /**
+ * @function closeAllPools
+ * @summary Close every cached SQL connection pool. Intended to be called from a graceful
+ *          shutdown handler (SIGINT/SIGTERM) so mssql connections are released cleanly.
+ */
+export const closeAllPools = async () => {
+  const entries = Object.entries(cachedPools);
+  await Promise.all(
+    entries.map(async ([key, pool]) => {
+      try {
+        if (key === 'sqliteDB') {
+          await pool.close();
+        } else if (pool && typeof pool.close === 'function') {
+          await pool.close();
+        }
+      } catch (err) {
+        logger.error('Error closing SQL pool', key, err);
+      } finally {
+        delete cachedPools[key];
+      }
+    })
+  );
+};
+
+/**
  * Get cached database connection pool for given database configuration
  * @param {Object} connectConfig - configuration for sql connection
  * @returns {Promise<Object>} Promise for a cached pool

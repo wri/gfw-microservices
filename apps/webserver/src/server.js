@@ -19,14 +19,22 @@ const logger = winston.createLogger({ transports: [new winston.transports.Consol
 
 logger.info('Starting the application');
 
-process.on('SIGINT', () => {
-  console.log('Stopping container for SIGINT');
-  exit(0);
-});
-process.on('SIGTERM', () => {
-  console.log('Stopping container for SIGTERM');
-  exit(0);
-});
+const gracefulShutdown = async (signal) => {
+  console.log(`Stopping container for ${signal}`);
+  try {
+    const sqlUtils = require('./config/privateutils/sql.utils');
+    if (sqlUtils && typeof sqlUtils.closeAllPools === 'function') {
+      await sqlUtils.closeAllPools();
+    }
+  } catch (err) {
+    console.error('Error during graceful shutdown', err?.stack || err);
+  } finally {
+    exit(0);
+  }
+};
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err?.stack || err);

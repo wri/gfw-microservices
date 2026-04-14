@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { getFormattedDateTime } from '../../../../common/js/utils/dateTime';
 import ShareListDialog from './ShareListDialog';
 import {
+  fetchOrganizationUsersService,
   updateSharedListUsersService,
   addUserToSharedListService,
   removeUserFromSharedListService,
@@ -11,6 +12,8 @@ import {
 import './ShareList.scss';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
 import { PillButton } from '../../../../components';
+import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
+import { Alert } from '@mui/material';
 
 const ADMIN_ACCESS_LEVEL = 1;
 
@@ -37,8 +40,37 @@ class ShareList extends Component {
     super(props);
     const selectedList = props.selectedList;
 
+    this.state = {
+      AdminsOwner: [],
+      NotAdminsOwner: [],
+      currentUser: props.currentUser,
+      listTimestamp: getFormattedDateTime(),
+      selectedList: selectedList,
+      selectedUser: undefined,
+      SharedListUsers: undefined,
+      userToRemove: undefined,
+      addUserToSharedListDialog__isOpen: false,
+      removeUserFromSharedListDialog__isOpen: false,
+      stopSharingWithAllDialog__isOpen: false,
+      usersList: null,
+      isLoadingUsers: true,
+      usersLoadError: null,
+    };
+  }
+
+  /**
+   * Process fetched organization users and categorize them
+   * @private
+   */
+  _processOrganizationUsers = () => {
+    const { usersList, selectedList } = this.state;
+
+    if (!usersList) {
+      return;
+    }
+
     const AdminsOwner = [];
-    const NotAdminsOwner = props.usersList
+    const NotAdminsOwner = usersList
       .map((user) => {
         // Adding disabled, value and label object properties for each user
         // in order to match `React Select` library default settings
@@ -67,23 +99,22 @@ class ShareList extends Component {
         }
       });
 
-    this.state = {
+    this.setState({
       AdminsOwner: AdminsOwner,
       NotAdminsOwner: NotAdminsOwner,
-      currentUser: props.currentUser,
-      listTimestamp: getFormattedDateTime(),
-      selectedList: selectedList,
-      selectedUser: undefined,
-      SharedListUsers: undefined,
-      userToRemove: undefined,
-      addUserToSharedListDialog__isOpen: false,
-      removeUserFromSharedListDialog__isOpen: false,
-      stopSharingWithAllDialog__isOpen: false,
-    };
-  }
+    });
+  };
 
   componentDidMount() {
-    updateSharedListUsersService(this);
+    fetchOrganizationUsersService(this);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // After users are loaded, process them and fetch shared list users
+    if (prevState.isLoadingUsers && !this.state.isLoadingUsers && this.state.usersList) {
+      this._processOrganizationUsers();
+      updateSharedListUsersService(this);
+    }
   }
 
   render() {
@@ -98,7 +129,25 @@ class ShareList extends Component {
       addUserToSharedListDialog__isOpen,
       removeUserFromSharedListDialog__isOpen,
       stopSharingWithAllDialog__isOpen,
+      isLoadingUsers,
+      usersLoadError,
     } = this.state;
+
+    // Show loading state while fetching users
+    if (isLoadingUsers) {
+      return <ModalLoader open={true} />;
+    }
+
+    // Show error if users failed to load
+    if (usersLoadError) {
+      return (
+        <div style={{ padding: '1rem' }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {usersLoadError}
+          </Alert>
+        </div>
+      );
+    }
 
     const selectedUserInSharedList = selectedUser
       ? SharedListUsers.filter((user) => user.user_id === selectedUser.user_id)

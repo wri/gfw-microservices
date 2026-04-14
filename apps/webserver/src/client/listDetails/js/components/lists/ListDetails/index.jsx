@@ -1914,7 +1914,6 @@ export default class ListDetails extends Component {
       selectedLocations,
       shareView,
       userSharedLists,
-      usersList,
       showShareList,
     } = this.props;
 
@@ -2343,7 +2342,6 @@ export default class ListDetails extends Component {
                       <div className="section-container">
                         <ShareList
                           key={selectedList.id}
-                          usersList={usersList}
                           currentUser={currentUser}
                           selectedList={selectedList}
                         />

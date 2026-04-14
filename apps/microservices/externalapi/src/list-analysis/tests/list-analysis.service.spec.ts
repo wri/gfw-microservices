@@ -11,7 +11,7 @@ import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-s
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { S3Service } from '@wri-monorepos/aws';
-import { NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { NotFoundException, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
@@ -685,13 +685,15 @@ describe('ListAnalysisService', () => {
         const mockList = {
           listId: 123,
           analysisId: 'ALERTS',
-          status: listStatus.Pending,
+          status: listStatus.Active, // Changed to Active so enrollment works
         };
+
+        const mockUpdate = jest.fn().mockResolvedValue(true);
 
         clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
           getRepository: () => ({
             findOne: () => mockList,
-            update: () => true,
+            update: mockUpdate,
             save: () => true,
           }),
           options: {
@@ -699,21 +701,22 @@ describe('ListAnalysisService', () => {
           },
         });
 
-        const mockResponseHandleCreateAnalysis = { statusText: 'OK' };
-        (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockResponseHandleCreateAnalysis);
-
         const result = await service.createAnalysis(
           analysisId,
           listId,
           organizationId,
           USER_EMAIL,
           organization_user_id,
-          'Weekly' // Non-empty string - normal flow
+          'Weekly' // Non-empty string - should enroll in Weekly
         );
 
-        // Should proceed with normal analysis
-        expect(result).toBe(mockResponseHandleCreateAnalysis);
-        expect(handleCreateAnalysis).toHaveBeenCalled();
+        // Should enroll in Weekly without reprocessing
+        expect(result).toEqual({ message: 'Weekly alerts enrollment successful' });
+        expect(mockUpdate).toHaveBeenCalledWith(
+          { listId: 123, analysisId: 'ALERTS' },
+          { options: 'Weekly' }
+        );
+        expect(handleCreateAnalysis).not.toHaveBeenCalled();
 
         (clientStoreConnection.getConnection as jest.Mock).mockReset();
       });
@@ -838,6 +841,200 @@ describe('ListAnalysisService', () => {
 
         // Should still work with lowercase
         expect(result).toEqual({ message: 'Weekly alerts option removed successfully' });
+        expect(mockUpdate).toHaveBeenCalled();
+        expect(handleCreateAnalysis).not.toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+    });
+
+    // Add Weekly Alerts enrollment without triggering reprocessing
+    describe('Add Weekly Alerts enrollment', () => {
+      beforeEach(() => {
+        // Clear the mock before each test in this describe block
+        (handleCreateAnalysis as jest.Mock).mockClear();
+      });
+
+      it('should enroll Active ALERTS analysis in Weekly without reprocessing', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 789;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockActiveAlertsAnalysis = {
+          listId: 789,
+          analysisId: 'ALERTS',
+          options: null, // Not enrolled in Weekly yet
+          status: listStatus.Active, // Already processed
+        };
+
+        const mockUpdate = jest.fn().mockResolvedValue(true);
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: jest.fn().mockResolvedValue(mockActiveAlertsAnalysis),
+            update: mockUpdate,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          'Weekly' // Add Weekly enrollment
+        );
+
+        // Should return success message
+        expect(result).toEqual({ message: 'Weekly alerts enrollment successful' });
+
+        // Should have called update with 'Weekly' options
+        expect(mockUpdate).toHaveBeenCalledWith(
+          { listId: 789, analysisId: 'ALERTS' },
+          { options: 'Weekly' }
+        );
+
+        // Should NOT have called handleCreateAnalysis (no reprocessing)
+        expect(handleCreateAnalysis).not.toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should throw BadRequestException when trying to enroll non-Active analysis', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 999;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockPendingAlertsAnalysis = {
+          listId: 999,
+          analysisId: 'ALERTS',
+          options: null,
+          status: listStatus.Pending, // Still processing
+        };
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: jest.fn().mockResolvedValue(mockPendingAlertsAnalysis),
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        await expect(
+          service.createAnalysis(
+            analysisId,
+            listId,
+            organizationId,
+            USER_EMAIL,
+            organization_user_id,
+            'Weekly'
+          )
+        ).rejects.toThrow(BadRequestException);
+
+        // Should NOT have called handleCreateAnalysis
+        expect(handleCreateAnalysis).not.toHaveBeenCalled();
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should trigger reprocessing when ALERTS analysis does not exist', async () => {
+        const analysisId = 'ALERTS';
+        const listId = 888;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        // Mock for addWeeklyAlertsOption call - no analysis found
+        // Mock for saveActivityLogEndpoint call - need proper repository
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: (entity) => {
+            // For activity log repository
+            if (entity.name === 'ActivityLog') {
+              return {
+                findOne: jest.fn().mockResolvedValue({ id: 1 }),
+                save: jest.fn().mockResolvedValue(true),
+              };
+            }
+            // For list analysis status repository
+            return {
+              findOne: jest.fn().mockResolvedValue(null), // No analysis found
+            };
+          },
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const mockResponseHandleCreateAnalysis = { statusText: 'OK' };
+        (handleCreateAnalysis as jest.Mock).mockResolvedValue(mockResponseHandleCreateAnalysis);
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          'Weekly'
+        );
+
+        // Should fall through to handleCreateAnalysis
+        expect(result).toBe(mockResponseHandleCreateAnalysis);
+        expect(handleCreateAnalysis).toHaveBeenCalledWith(
+          'ALERTS',
+          listId,
+          organizationId,
+          expect.anything(), // Database name from infrastructure
+          true,
+          organization_user_id,
+          expect.anything(),
+          true,
+          'Weekly'
+        );
+
+        (clientStoreConnection.getConnection as jest.Mock).mockReset();
+      });
+
+      it('should handle case-insensitive ALERTS analysis id for enrollment', async () => {
+        const analysisId = 'alerts'; // lowercase
+        const listId = 789;
+        const organizationId = 1;
+        const organization_user_id = 1;
+
+        const mockActiveAlertsAnalysis = {
+          listId: 789,
+          analysisId: 'ALERTS',
+          options: null,
+          status: listStatus.Active,
+        };
+
+        const mockUpdate = jest.fn().mockResolvedValue(true);
+
+        clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+          getRepository: () => ({
+            findOne: jest.fn().mockResolvedValue(mockActiveAlertsAnalysis),
+            update: mockUpdate,
+          }),
+          options: {
+            database: 'mock_db',
+          },
+        });
+
+        const result = await service.createAnalysis(
+          analysisId,
+          listId,
+          organizationId,
+          USER_EMAIL,
+          organization_user_id,
+          'Weekly'
+        );
+
+        // Should still work with lowercase
+        expect(result).toEqual({ message: 'Weekly alerts enrollment successful' });
         expect(mockUpdate).toHaveBeenCalled();
         expect(handleCreateAnalysis).not.toHaveBeenCalled();
 

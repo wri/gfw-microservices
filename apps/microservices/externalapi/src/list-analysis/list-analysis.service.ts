@@ -740,9 +740,26 @@ export class ListAnalysisService {
   ) {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
+    // Handle Weekly Alerts removal (empty string)
     if (options === '' && analysisId.toUpperCase() === 'ALERTS') {
       await this.removeWeeklyAlertsOption(organizationDetails.organizationDb, listId);
       return { message: 'Weekly alerts option removed successfully' };
+    }
+
+    // Handle Weekly Alerts enrollment for already-Active lists
+    if (options === 'Weekly' && analysisId.toUpperCase() === 'ALERTS') {
+      try {
+        await this.addWeeklyAlertsOption(organizationDetails.organizationDb, listId);
+        return { message: 'Weekly alerts enrollment successful' };
+      } catch (error) {
+        // If the analysis doesn't exist, fall through to normal processing to create it
+        if (error instanceof NotFoundException) {
+          // Continue to handleCreateAnalysis below to create the analysis
+        } else {
+          // For other errors (like BadRequestException when status isn't Active), throw them
+          throw error;
+        }
+      }
     }
 
     await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
@@ -792,6 +809,39 @@ export class ListAnalysisService {
 
     // Update only the options field to NULL
     await listAnalysisStatusRepository.update({ listId, analysisId: 'ALERTS' }, { options: null });
+  }
+
+  private async addWeeklyAlertsOption(organizationDatabase: string, listId: number): Promise<void> {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+    // Check if the ALERTS analysis exists for this list
+    const alertsAnalysis = await listAnalysisStatusRepository.findOne({
+      where: {
+        listId: listId,
+        analysisId: 'ALERTS',
+      },
+    });
+
+    if (!alertsAnalysis) {
+      throw new NotFoundException(`No ALERTS analysis found for list ${listId}`);
+    }
+
+    // Only update the options field for Active lists (already processed)
+    // If not Active, we should trigger full reprocessing instead
+    if (alertsAnalysis.status !== listStatus.Active) {
+      throw new BadRequestException(
+        `Cannot enroll list ${listId} in Weekly Alerts. Analysis is not complete (status: ${getListStatusString(
+          alertsAnalysis.status
+        )})`
+      );
+    }
+
+    // Update only the options field to 'Weekly', keep status as Active
+    await listAnalysisStatusRepository.update(
+      { listId, analysisId: 'ALERTS' },
+      { options: 'Weekly' }
+    );
   }
 
   async getGhgLocationErrors(

@@ -33,13 +33,19 @@ jest.mock('../../../config/privateutils/logger.utils', () => ({
   warn: jest.fn(),
 }));
 
-const { describe, it, expect, jest, beforeEach } = require('@jest/globals');
+const { describe, it, expect, jest, beforeEach, afterAll } = require('@jest/globals');
 const { Consumer } = require('sqs-consumer');
 const logger = require('../../../config/privateutils/logger.utils');
 const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');
 
 describe('vectorTileSQS.utils', () => {
   let mockConsumer;
+
+  // These tests mutate `process.env.NODE_ENV` to exercise the env-specific
+  // SQS URL branches. Restore it so other specs in the same jest worker
+  // (e.g. basic-login.spec.js, which routes through the sqlite branch of
+  // sql.utils only when NODE_ENV === 'test') don't inherit 'qa'/'staging'.
+  const ORIGINAL_NODE_ENV = process.env.NODE_ENV;
 
   beforeEach(() => {
     mockConsumer = {
@@ -50,6 +56,10 @@ describe('vectorTileSQS.utils', () => {
 
     Consumer.create.mockReturnValue(mockConsumer);
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = ORIGINAL_NODE_ENV;
   });
 
   describe('initialize', () => {

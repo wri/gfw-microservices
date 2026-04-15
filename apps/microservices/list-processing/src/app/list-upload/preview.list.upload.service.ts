@@ -78,6 +78,15 @@ export class PreviewListUploadService {
       });
     }
 
-    return response.geojson;
+    // Filter out features with empty/invalid geometries (e.g., from GADM errors)
+    // to ensure preview only returns renderable features
+    const validFeatures = response.geojson.features.filter(
+      (feature) => feature.geometry && Object.keys(feature.geometry).length > 0
+    );
+
+    return {
+      ...response.geojson,
+      features: validFeatures,
+    };
   }
 }

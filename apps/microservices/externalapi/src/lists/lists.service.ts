@@ -125,9 +125,9 @@ export class ListService {
         const apiFormat = dbToApiFormat[analysis.analysisId] || analysis.analysisId;
         analysisIds.push(apiFormat);
 
-        // Collect options separately - return DB format directly for consistency with POST
+        // Collect options separately
         if (analysis.analysisId === 'ALERTS' && analysis.options === 'Weekly') {
-          optionsString = 'Weekly';
+          optionsString = 'Alerts-Weekly';
         }
       });
 

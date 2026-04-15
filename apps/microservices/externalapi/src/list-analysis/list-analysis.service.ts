@@ -740,6 +740,17 @@ export class ListAnalysisService {
   ) {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
+    // Log activity before any early returns to ensure all analyze endpoint calls are tracked
+    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organizationDetails,
+      organization_user_id,
+      LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
+      ListActivityTypesEnum.ListAnalyzing
+    );
+
+    // Normalize options for case-insensitive comparison and handle different formats
+    const normalizedOptions = options?.trim().toLowerCase();
+
     // Handle Weekly Alerts removal (empty string)
     if (options === '' && analysisId.toUpperCase() === 'ALERTS') {
       await this.removeWeeklyAlertsOption(organizationDetails.organizationDb, listId);
@@ -747,7 +758,11 @@ export class ListAnalysisService {
     }
 
     // Handle Weekly Alerts enrollment for already-Active lists
-    if (options === 'Weekly' && analysisId.toUpperCase() === 'ALERTS') {
+    // Accept both 'Weekly' and 'Alerts-Weekly' formats (case-insensitive)
+    const isWeeklyEnrollment =
+      normalizedOptions === 'weekly' || normalizedOptions === 'alerts-weekly';
+
+    if (isWeeklyEnrollment && analysisId.toUpperCase() === 'ALERTS') {
       try {
         await this.addWeeklyAlertsOption(organizationDetails.organizationDb, listId);
         return { message: 'Weekly alerts enrollment successful' };
@@ -761,13 +776,6 @@ export class ListAnalysisService {
         }
       }
     }
-
-    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
-      organizationDetails,
-      organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS],
-      ListActivityTypesEnum.ListAnalyzing
-    );
     try {
       const response = await handleCreateAnalysis(
         analysisId.toUpperCase(),

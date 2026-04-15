@@ -197,6 +197,82 @@ describe('ListUploadService', () => {
     expect(result).toEqual(mockFeatureCollection);
   });
 
+  it('should not throw exception when errors contain only GADM request errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: 'ERROR in gadm request (ETIMEDOUT): read ETIMEDOUT',
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    const result = await service.previewData(path);
+
+    expect(result).toEqual(mockFeatureCollection);
+  });
+
+  it('should not throw exception when errors contain mix of lookup and GADM errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: [
+              'UML LookUp: did not found lat/long for location1',
+              'CAR LookUp: did not found lat/long for location2',
+            ],
+          },
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [1, 1] },
+          properties: {
+            errorDetails: 'ERROR in gadm request (504): Gateway Timeout',
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    const result = await service.previewData(path);
+
+    expect(result).toEqual(mockFeatureCollection);
+  });
+
   it('should throw BadRequestException when errors contain significant validation errors', async () => {
     const path = 'test/path';
     const mockFeatureCollection: FeatureCollection = {
@@ -261,5 +337,96 @@ describe('ListUploadService', () => {
     }));
 
     await expect(service.previewData(path)).rejects.toThrow('Validation errors found in the data');
+  });
+
+  it('should throw BadRequestException when GADM errors are present with significant validation errors', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            errorDetails: ['Invalid coordinate format'],
+          },
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [1, 1] },
+          properties: {
+            errorDetails: 'ERROR in gadm request (ETIMEDOUT): read ETIMEDOUT',
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    // Should throw because 'Invalid coordinate format' is a significant error
+    // even though GADM error is also present (which should be filtered out)
+    await expect(service.previewData(path)).rejects.toThrow('Validation errors found in the data');
+  });
+
+  it('should filter out features with empty geometries from preview', async () => {
+    const path = 'test/path';
+    const mockFeatureCollection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [0, 0] },
+          properties: {
+            locationName: 'Valid Location',
+          },
+        },
+        {
+          type: 'Feature',
+          geometry: {} as any, // Empty geometry from GADM error
+          properties: {
+            locationName: 'Location with GADM error',
+            errorDetails: 'ERROR in gadm request (ETIMEDOUT): read ETIMEDOUT',
+          },
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [1, 1] },
+          properties: {
+            locationName: 'Another Valid Location',
+          },
+        },
+      ],
+    };
+
+    const mockChainType = {
+      request: {
+        path,
+        preview: true,
+      },
+      geojson: mockFeatureCollection,
+    };
+
+    (DownloadS3File as unknown as jest.Mock).mockImplementation(() => ({
+      setNext: jest.fn().mockReturnThis(),
+      handle: jest.fn().mockResolvedValue(mockChainType),
+    }));
+
+    const result = await service.previewData(path);
+
+    // Should only return features with valid geometries
+    expect(result.features).toHaveLength(2);
+    expect(result.features[0].properties.locationName).toBe('Valid Location');
+    expect(result.features[1].properties.locationName).toBe('Another Valid Location');
   });
 });

@@ -308,11 +308,12 @@ describe('list.analysis.status.ts', () => {
       );
 
       // ALERTS must be re-upserted so its options field gets cleared (no Weekly)
+      // AND status should be preserved as Active (not changed to Pending)
       expect(setListAnalysisStatus).toHaveBeenCalledWith(
         fakeClientDatabase,
         fakeListId,
         expect.arrayContaining([analysisTypes.ALERTS]),
-        fakeAnalysisStatus,
+        listStatus.Active, // Status preserved!
         fakeOrgId,
         undefined
       );
@@ -353,6 +354,80 @@ describe('list.analysis.status.ts', () => {
         fakeAnalysisStatus,
         fakeOrgId,
         undefined
+      );
+    });
+
+    it('should preserve Active status when enrolling Weekly on Active ALERTS', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.ALERTS,
+          status: listStatus.Active, // Already Active
+          options: null,
+        },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.ALERTS, AlertsAnalysisFrequency.WEEKLY], // Adding Weekly
+        listStatus.Pending, // UI would normally pass Pending
+        fakeOrgId
+      );
+
+      // Should preserve Active status, not set to Pending
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.ALERTS]),
+        listStatus.Active, // ← Preserved!
+        fakeOrgId,
+        AlertsAnalysisFrequency.WEEKLY
+      );
+    });
+
+    it('should preserve Active status when removing Weekly from Active ALERTS', async () => {
+      const mockExistingStatusData = [
+        {
+          analysisId: analysisTypes.ALERTS,
+          status: listStatus.Active, // Already Active
+          options: AlertsAnalysisFrequency.WEEKLY, // Currently enrolled
+        },
+      ];
+      const fakeOrgId = 42;
+
+      jest
+        .spyOn(jest.requireActual('./list.analysis.status'), 'getListAnalysisStatusByListId')
+        .mockResolvedValueOnce(mockExistingStatusData);
+
+      const setListAnalysisStatus = jest
+        .spyOn(LU, 'setListAnalysisStatus')
+        .mockResolvedValueOnce(undefined);
+
+      await setSelectedAnalyses(
+        fakeClientDatabase,
+        fakeListId,
+        [analysisTypes.ALERTS], // Removing Weekly
+        listStatus.Pending, // UI would normally pass Pending
+        fakeOrgId
+      );
+
+      // Should preserve Active status, not set to Pending
+      expect(setListAnalysisStatus).toHaveBeenCalledWith(
+        fakeClientDatabase,
+        fakeListId,
+        expect.arrayContaining([analysisTypes.ALERTS]),
+        listStatus.Active, // ← Preserved!
+        fakeOrgId,
+        undefined // Weekly removed
       );
     });
   });

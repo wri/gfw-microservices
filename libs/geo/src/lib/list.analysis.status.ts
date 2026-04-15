@@ -162,11 +162,34 @@ export const setSelectedAnalyses = async (
     const weeklyOptions = selectedAnalysisIds.includes(AlertsAnalysisFrequency.WEEKLY)
       ? AlertsAnalysisFrequency.WEEKLY
       : undefined;
+
+    // When only enrolling OR removing Weekly on an existing Active ALERTS analysis,
+    // preserve Active status instead of setting to Pending (no reprocessing needed)
+    // Note: analysesToAdd can contain both Weekly and ALERTS when enrolling
+    const isOnlyAlertsInList = analysesToAdd.every(
+      (id) => id === analysisTypes.ALERTS || id === AlertsAnalysisFrequency.WEEKLY
+    );
+
+    const isOnlyWeeklyEnrollment =
+      isOnlyAlertsInList &&
+      weeklyOptions === AlertsAnalysisFrequency.WEEKLY &&
+      alertsRow?.status === listStatus.Active;
+
+    const isOnlyWeeklyRemoval =
+      analysesToAdd.length === 1 &&
+      analysesToAdd[0] === analysisTypes.ALERTS &&
+      alertsRow?.options === AlertsAnalysisFrequency.WEEKLY &&
+      !weeklyOptions &&
+      alertsRow?.status === listStatus.Active;
+
+    const isOnlyWeeklyOptionChange = isOnlyWeeklyEnrollment || isOnlyWeeklyRemoval;
+    const statusForUpdate = isOnlyWeeklyOptionChange ? listStatus.Active : statusToApply;
+
     await setListAnalysisStatus(
       clientDatabase,
       listId,
       analysesToAdd,
-      statusToApply,
+      statusForUpdate,
       organizationId,
       weeklyOptions
     );

@@ -67,7 +67,8 @@ export class PreviewListUploadService {
       (error) =>
         typeof error === 'string' &&
         !error.startsWith('UML LookUp:') &&
-        !error.startsWith('CAR LookUp: did not found lat/long for')
+        !error.startsWith('CAR LookUp: did not found lat/long for') &&
+        !error.startsWith('ERROR in gadm request')
     );
 
     if (significantErrors.length > 0) {
@@ -77,6 +78,15 @@ export class PreviewListUploadService {
       });
     }
 
-    return response.geojson;
+    // Filter out features with empty/invalid geometries (e.g., from GADM errors)
+    // to ensure preview only returns renderable features
+    const validFeatures = response.geojson.features.filter(
+      (feature) => feature.geometry && Object.keys(feature.geometry).length > 0
+    );
+
+    return {
+      ...response.geojson,
+      features: validFeatures,
+    };
   }
 }

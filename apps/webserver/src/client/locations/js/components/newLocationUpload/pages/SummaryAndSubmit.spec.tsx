@@ -4,6 +4,7 @@ import axios from 'axios';
 import { SummaryAndSubmit } from './SummaryAndSubmit';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
+import featureFlags from '../../../../../../utils/general.utils';
 
 jest.mock('../contexts');
 
@@ -88,6 +89,37 @@ jest.mock('../../landing/uploadProcess', () => ({
 beforeEach(() => {
   jest.clearAllMocks();
   mockAxios.post.mockResolvedValue({ data: { success: true } });
+
+  // Reset feature flag to default
+  (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = false;
+
+  // Reset to default mock
+  jest.mocked(useUploadLocation).mockReturnValue({
+    clearUploadType: mockClearUploadType,
+    uploadLocationState: {
+      newListName: 'Random list name 123',
+      existingList: null,
+      commodity: 'palm-oil',
+      typeOfAnalysis: {
+        AFI: true,
+        ALERTS: true,
+        FCD: true,
+        PalmRisk: true,
+        Weekly: false,
+      },
+      area: { measurementUnit: 'hectares', size: 0 },
+      coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+      locationName: 'location name',
+      uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+      uploadType: UploadType.ByPoint,
+    },
+    setUploadLocationByPoint: jest.fn(),
+    setUploadLocationByPolygon: jest.fn(),
+    setUploadLocationConfigureList: jest.fn(),
+    addFile: jest.fn(),
+    updateSaveMode: jest.fn(),
+    selectUploadType: jest.fn(),
+  });
 });
 
 describe('SummaryAndSubmit', () => {
@@ -241,10 +273,9 @@ describe('SummaryAndSubmit', () => {
     const user = userEvent.setup();
 
     // Enable weekly alerts feature flag
-    const featureFlags = require('../../../../../../utils/general.utils').default;
-    featureFlags.isWeeklyAlertsAvailable = true;
+    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = true;
 
-    jest.mocked(useUploadLocation).mockReturnValueOnce({
+    jest.mocked(useUploadLocation).mockReturnValue({
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: 'Test List with Weekly',
@@ -358,10 +389,9 @@ describe('SummaryAndSubmit', () => {
     const user = userEvent.setup();
 
     // Enable weekly alerts feature flag
-    const featureFlags = require('../../../../../../utils/general.utils').default;
-    featureFlags.isWeeklyAlertsAvailable = true;
+    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = true;
 
-    jest.mocked(useUploadLocation).mockReturnValueOnce({
+    jest.mocked(useUploadLocation).mockReturnValue({
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: 'Test List with Weekly but no ALERTS',
@@ -413,6 +443,6 @@ describe('SummaryAndSubmit', () => {
     });
 
     // Reset feature flag
-    featureFlags.isWeeklyAlertsAvailable = false;
+    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = false;
   });
 });

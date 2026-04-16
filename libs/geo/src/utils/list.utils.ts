@@ -451,6 +451,11 @@ export async function setListAnalysisStatus(
 
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
 
+  // GPV-5400: Capture if Weekly was requested before filtering it out
+  const isWeeklyRequested =
+    analysisIds.includes(AlertsAnalysisFrequency.WEEKLY) ||
+    options?.toLowerCase() === AlertsAnalysisFrequency.WEEKLY.toLowerCase();
+
   // Check feature flag for weekly alerts
   let weeklyAlertsOptIn = false;
   if (organizationId) {
@@ -500,22 +505,37 @@ export async function setListAnalysisStatus(
 
         // GPV-5141 default options=Weekly for ALERTS analysis
         // GPV-5181: Handle Weekly Alerts options based on feature flag
+        // GPV-5400: Check isWeeklyRequested to handle both upload (analysisIds) and enrollment (options)
+        // Allow removing Weekly even when feature flag is OFF
+        const existingRecord = await listAnalysisStatusRepository.findOne({
+          where: { listId, analysisId: normalizedAnalysisId },
+        });
+
         if (normalizedAnalysisId === analysisTypes.ALERTS) {
           if (weeklyAlertsOptIn) {
-            // Feature flag is ON: only set Weekly if explicitly provided in options
-            if (options === AlertsAnalysisFrequency.WEEKLY) {
+            // Feature flag is ON: only set Weekly if explicitly requested
+            if (isWeeklyRequested) {
               value.options = AlertsAnalysisFrequency.WEEKLY;
             }
             // Otherwise, leave options as null (not setting Weekly)
           } else {
-            // Feature flag is OFF: always set Weekly (backward compatibility)
-            value.options = AlertsAnalysisFrequency.WEEKLY;
+            // Feature flag is OFF: apply backward compatibility logic
+            // BUT respect explicit removal of Weekly on existing records (GPV-5180 fix)
+            if (existingRecord && !isWeeklyRequested) {
+              // Updating existing record - check if user is explicitly removing Weekly
+              if (existingRecord.options === AlertsAnalysisFrequency.WEEKLY) {
+                // User is explicitly removing Weekly - clear the options field
+                value.options = null;
+              } else {
+                // Preserve existing options (might be null already)
+                value.options = existingRecord.options;
+              }
+            } else {
+              // Creating new ALERTS record OR explicitly adding Weekly - default to Weekly
+              value.options = AlertsAnalysisFrequency.WEEKLY;
+            }
           }
         }
-
-        const existingRecord = await listAnalysisStatusRepository.findOne({
-          where: { listId, analysisId: normalizedAnalysisId },
-        });
 
         // Save or update for ALL analysis types
         if (existingRecord) {

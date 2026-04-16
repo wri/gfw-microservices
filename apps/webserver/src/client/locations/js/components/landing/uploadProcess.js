@@ -98,10 +98,11 @@ const processListStep = async (param) => {
     commodity,
     analysisIds,
     saveAsDraft = false,
+    options,
   } = param;
 
   try {
-    const { data } = await axios.post('/locations/process-list', {
+    const requestBody = {
       list_id: listID,
       path: fileS3Route,
       template_type: 'cocoa_generic',
@@ -110,7 +111,10 @@ const processListStep = async (param) => {
       saveAsDraft,
       commodity,
       analysisTypesParam: Object.fromEntries(analysisIds.map((key) => [key, true])),
-    });
+      ...(options ? { options } : {}),
+    };
+
+    const { data } = await axios.post('/locations/process-list', requestBody);
     return { ...param, ...data };
   } catch (error) {
     throw new Error(error);
@@ -162,6 +166,7 @@ export function uploadProcessByPrevUploadedFile({
   fileS3Route,
   saveAsDraft,
   commodity,
+  options,
 }) {
   const processPipeline = existingList?.id
     ? promiseCompose(processListStep)
@@ -174,6 +179,7 @@ export function uploadProcessByPrevUploadedFile({
     fileS3Route,
     saveAsDraft,
     commodity,
+    options,
     list_id: existingList?.id,
     existingListAnalysisIds: existingList?.analysisIds,
   });

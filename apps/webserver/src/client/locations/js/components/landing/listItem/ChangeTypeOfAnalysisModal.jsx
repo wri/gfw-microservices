@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardActions, Modal, IconButton, Icon } from '@mui/material';
 import isEqual from 'lodash/isEqual';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
@@ -43,36 +43,89 @@ function ChangeTypeOfAnalysisModal({
   listId,
   setIsChangeTypeOfAnalysisModalOpen,
   isChangeTypeOfAnalysisModalOpen,
-  listAnalysesStatus,
+  listAnalysesStatus: rawListAnalysesStatus,
   commodity,
   isPalmRiskActive,
 }) {
   const { isWeeklyAlertsAvailable } = featureFlags;
-  const initialAnalysisSelection = [
-    ...new Set(
-      listAnalysesStatus.flatMap(({ analysisId, options }) => {
-        if (
-          isWeeklyAlertsAvailable &&
-          analysisId === analysisTypes.ALERTS &&
-          options === AlertsAnalysisFrequency.WEEKLY
-        ) {
-          return [analysisId, AlertsAnalysisFrequency.WEEKLY];
+
+  // Transform listAnalysesStatus to expand child options (Weekly, PalmRisk) into separate entries
+  // This ensures consistent behavior whether the modal is opened from home page or list details page
+  const listAnalysesStatus = useMemo(() => {
+    if (!rawListAnalysesStatus) {
+      return [];
+    }
+
+    const expandedAnalyses = [...rawListAnalysesStatus];
+
+    // Add synthetic Weekly entry if ALERTS has options='Weekly'
+    if (isWeeklyAlertsAvailable) {
+      const hasWeeklyEntry = expandedAnalyses.some(
+        (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+      );
+      if (!hasWeeklyEntry) {
+        const alertsWithWeekly = expandedAnalyses.find(
+          ({ analysisId, options }) =>
+            analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
+        );
+        if (alertsWithWeekly) {
+          expandedAnalyses.push({
+            analysisId: AlertsAnalysisFrequency.WEEKLY,
+            status: alertsWithWeekly.status,
+          });
         }
-        return [analysisId];
-      })
-    ),
-  ];
+      }
+    }
+
+    // Add synthetic PalmRisk entry if FCD has options='PalmRisk'
+    const hasPalmRiskEntry = expandedAnalyses.some((a) => a.analysisId === analysisTypes.PALM_RISK);
+    if (!hasPalmRiskEntry) {
+      const fcdWithPalmRisk = expandedAnalyses.find(
+        ({ analysisId, options }) =>
+          analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS &&
+          options === analysisTypes.PALM_RISK
+      );
+      if (fcdWithPalmRisk) {
+        expandedAnalyses.push({
+          analysisId: analysisTypes.PALM_RISK,
+          status: fcdWithPalmRisk.status,
+        });
+      }
+    }
+
+    return expandedAnalyses;
+  }, [rawListAnalysesStatus, isWeeklyAlertsAvailable]);
+
+  const initialAnalysisSelection = useMemo(
+    () => [
+      ...new Set(
+        listAnalysesStatus.flatMap(({ analysisId }) => {
+          // No need to check options here anymore - already expanded above
+          return [analysisId];
+        })
+      ),
+    ],
+    [listAnalysesStatus]
+  );
+
   const [selectedAnalysis, setSelectedAnalysis] = useState(initialAnalysisSelection);
   const [isAddingAnalysis, setIsAddingAnalysis] = useState(false);
   const [newAnalysesToRun, setNewAnalysesToRun] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Reset selected analyses when modal opens or when the list's analyses change
+  useEffect(() => {
+    if (isChangeTypeOfAnalysisModalOpen) {
+      setSelectedAnalysis(initialAnalysisSelection);
+    }
+  }, [isChangeTypeOfAnalysisModalOpen, initialAnalysisSelection]);
 
   useEffect(() => {
     const newlyAdded = selectedAnalysis.filter((id) => !initialAnalysisSelection.includes(id));
 
     setNewAnalysesToRun(newlyAdded);
     setIsAddingAnalysis(newlyAdded.length > 0);
-  }, [selectedAnalysis]);
+  }, [selectedAnalysis, initialAnalysisSelection]);
 
   const saveAnalysisSelection = useCallback(
     async (saveAsDraft = false) => {

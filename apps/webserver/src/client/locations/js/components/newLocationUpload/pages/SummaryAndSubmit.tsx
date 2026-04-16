@@ -135,7 +135,7 @@ export function SummaryAndSubmit() {
         uploadLocationState.typeOfAnalysis.Weekly &&
         uploadLocationState.typeOfAnalysis.ALERTS
           ? AlertsAnalysisFrequency.WEEKLY
-          : null;
+          : undefined;
 
       await uploadProcessByPrevUploadedFile({
         listName,
@@ -145,7 +145,7 @@ export function SummaryAndSubmit() {
         existingList: uploadLocationState.existingList,
         saveAsDraft: isDraftUpload.current,
         commodity: uploadLocationState.commodity,
-        options,
+        ...(options && { options }), // Only include if truthy
       });
       updateSaveMode(isDraftUpload.current);
 

@@ -111,7 +111,7 @@ const processListStep = async (param) => {
       saveAsDraft,
       commodity,
       analysisTypesParam: Object.fromEntries(analysisIds.map((key) => [key, true])),
-      options,
+      ...(options && { options }), // Only include if truthy
     });
     return { ...param, ...data };
   } catch (error) {

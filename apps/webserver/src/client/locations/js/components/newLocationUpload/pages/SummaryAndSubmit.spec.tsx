@@ -330,7 +330,7 @@ describe('SummaryAndSubmit', () => {
     featureFlags.isWeeklyAlertsAvailable = false;
   });
 
-  it('should pass options=null when Weekly Alerts is not selected', async () => {
+  it('should omit options when Weekly Alerts is not selected', async () => {
     const user = userEvent.setup();
 
     jest.mocked(useUploadLocation).mockReturnValue({
@@ -377,15 +377,12 @@ describe('SummaryAndSubmit', () => {
     await user.click(okButtons[0]);
 
     await waitFor(() => {
-      expect(mockUploadProcessByPrevUploadedFile).toHaveBeenCalledWith(
-        expect.objectContaining({
-          options: null,
-        })
-      );
+      const callArgs = mockUploadProcessByPrevUploadedFile.mock.calls[0][0];
+      expect(callArgs).not.toHaveProperty('options');
     });
   });
 
-  it('should pass options=null when Weekly is selected but ALERTS is not selected', async () => {
+  it('should omit options when Weekly is selected but ALERTS is not selected', async () => {
     const user = userEvent.setup();
 
     // Enable weekly alerts feature flag
@@ -435,11 +432,8 @@ describe('SummaryAndSubmit', () => {
     await user.click(okButtons[0]);
 
     await waitFor(() => {
-      expect(mockUploadProcessByPrevUploadedFile).toHaveBeenCalledWith(
-        expect.objectContaining({
-          options: null, // Should be null because ALERTS is not selected
-        })
-      );
+      const callArgs = mockUploadProcessByPrevUploadedFile.mock.calls[0][0];
+      expect(callArgs).not.toHaveProperty('options'); // Should be omitted because ALERTS is not selected
     });
 
     // Reset feature flag

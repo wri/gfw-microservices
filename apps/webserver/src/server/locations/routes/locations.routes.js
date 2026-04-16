@@ -1002,7 +1002,11 @@ module.exports = (app, limiter) => {
 
       // Validate that options='Weekly' can only be used when ALERTS analysis is included
       if (options && options.toLowerCase() === 'weekly') {
-        const hasAlerts = Object.keys(analysisTypes).some((id) => id.toUpperCase() === 'ALERTS');
+        const hasAlerts =
+          analysisTypes.ALERTS === true ||
+          Object.keys(analysisTypes).some(
+            (id) => id.toUpperCase() === 'ALERTS' && analysisTypes[id] === true
+          );
         if (!hasAlerts) {
           return res.status(400).send({
             error: 'Weekly alerts option can only be used when ALERTS analysis is selected',

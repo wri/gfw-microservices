@@ -451,6 +451,11 @@ export async function setListAnalysisStatus(
 
   const isPalmRiskIncluded = analysisIds.includes(analysisTypes.PALM_RISK);
 
+  // GPV-5400: Capture if Weekly was requested before filtering it out
+  const isWeeklyRequested =
+    analysisIds.includes(AlertsAnalysisFrequency.WEEKLY) ||
+    options?.toLowerCase() === AlertsAnalysisFrequency.WEEKLY.toLowerCase();
+
   // Check feature flag for weekly alerts
   let weeklyAlertsOptIn = false;
   if (organizationId) {
@@ -500,10 +505,11 @@ export async function setListAnalysisStatus(
 
         // GPV-5141 default options=Weekly for ALERTS analysis
         // GPV-5181: Handle Weekly Alerts options based on feature flag
+        // GPV-5400: Check isWeeklyRequested to handle both upload (analysisIds) and enrollment (options)
         if (normalizedAnalysisId === analysisTypes.ALERTS) {
           if (weeklyAlertsOptIn) {
-            // Feature flag is ON: only set Weekly if explicitly provided in options
-            if (options === AlertsAnalysisFrequency.WEEKLY) {
+            // Feature flag is ON: only set Weekly if explicitly requested
+            if (isWeeklyRequested) {
               value.options = AlertsAnalysisFrequency.WEEKLY;
             }
             // Otherwise, leave options as null (not setting Weekly)

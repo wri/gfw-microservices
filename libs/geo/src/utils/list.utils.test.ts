@@ -689,5 +689,103 @@ describe('List Utils', () => {
         })
       );
     });
+
+    it('GPV-5400: should set options=Weekly when Weekly is in analysisIds during upload with feature flag enabled', async () => {
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue([]),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null), // No existing record
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      // Mock feature flag service to return WeeklyAlerts enabled
+      jest.mock('@wri-monorepos/shared', () => ({
+        featureFlagsService: jest.fn().mockResolvedValue({
+          getFeatureFlagsForCurrentOrg: jest
+            .fn()
+            .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
+        }),
+      }));
+
+      // Simulate upload with ['Alerts', 'Weekly'] in analysisIds (options undefined)
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['Alerts', 'Weekly'],
+        listStatus.Pending,
+        123 // organizationId for feature flag lookup
+      );
+
+      // Should create ALERTS record with options='Weekly'
+      expect(mockRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          listId: 1,
+          analysisId: 'ALERTS',
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: 'Weekly', // ← Should be set because Weekly was in analysisIds
+        })
+      );
+    });
+
+    it('GPV-5400: should set options=Weekly when options parameter contains Weekly', async () => {
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue([]),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null), // No existing record
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      // Simulate enrollment with options='Weekly' parameter
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['Alerts'],
+        listStatus.Active,
+        123, // organizationId for feature flag lookup
+        'Weekly' // options parameter
+      );
+
+      // Should create ALERTS record with options='Weekly'
+      expect(mockRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          listId: 1,
+          analysisId: 'ALERTS',
+          status: listStatus.Active,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: 'Weekly', // ← Should be set from options parameter
+        })
+      );
+    });
   });
 });

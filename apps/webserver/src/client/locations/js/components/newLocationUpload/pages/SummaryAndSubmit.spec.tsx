@@ -6,6 +6,15 @@ import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
 
 jest.mock('../contexts');
+
+// Mock feature flags - must be defined before component renders
+jest.mock('../../../../../../utils/general.utils', () => ({
+  __esModule: true,
+  default: {
+    isWeeklyAlertsAvailable: false, // Default to false, tests will override
+  },
+}));
+
 const mockClearUploadType = jest.fn();
 jest.mocked(useUploadLocation).mockReturnValue({
   clearUploadType: mockClearUploadType,
@@ -231,11 +240,11 @@ describe('SummaryAndSubmit', () => {
   it('should pass options="Weekly" when Weekly Alerts and ALERTS are both selected', async () => {
     const user = userEvent.setup();
 
-    // Mock feature flag
-    const originalFeatureFlags = (global as any).featureFlags;
-    (global as any).featureFlags = { isWeeklyAlertsAvailable: true };
+    // Enable weekly alerts feature flag
+    const featureFlags = require('../../../../../../utils/general.utils').default;
+    featureFlags.isWeeklyAlertsAvailable = true;
 
-    jest.mocked(useUploadLocation).mockReturnValue({
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: 'Test List with Weekly',
@@ -286,8 +295,8 @@ describe('SummaryAndSubmit', () => {
       );
     });
 
-    // Restore feature flags
-    (global as any).featureFlags = originalFeatureFlags;
+    // Reset feature flag
+    featureFlags.isWeeklyAlertsAvailable = false;
   });
 
   it('should pass options=null when Weekly Alerts is not selected', async () => {
@@ -348,11 +357,11 @@ describe('SummaryAndSubmit', () => {
   it('should pass options=null when Weekly is selected but ALERTS is not selected', async () => {
     const user = userEvent.setup();
 
-    // Mock feature flag
-    const originalFeatureFlags = (global as any).featureFlags;
-    (global as any).featureFlags = { isWeeklyAlertsAvailable: true };
+    // Enable weekly alerts feature flag
+    const featureFlags = require('../../../../../../utils/general.utils').default;
+    featureFlags.isWeeklyAlertsAvailable = true;
 
-    jest.mocked(useUploadLocation).mockReturnValue({
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
         newListName: 'Test List with Weekly but no ALERTS',
@@ -403,7 +412,7 @@ describe('SummaryAndSubmit', () => {
       );
     });
 
-    // Restore feature flags
-    (global as any).featureFlags = originalFeatureFlags;
+    // Reset feature flag
+    featureFlags.isWeeklyAlertsAvailable = false;
   });
 });

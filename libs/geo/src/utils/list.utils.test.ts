@@ -35,6 +35,14 @@ jest.mock('../lib/list.analysis.status', () => ({
   deleteListAnalyses: jest.fn(),
 }));
 
+jest.mock('@wri-monorepos/shared', () => ({
+  featureFlagsService: jest.fn().mockResolvedValue({
+    getFeatureFlagsForCurrentOrg: jest
+      .fn()
+      .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
+  }),
+}));
+
 describe('List Utils', () => {
   describe('getListStatusId', () => {
     it('should return draft status when isSaveAsDraft is true', () => {
@@ -708,15 +716,6 @@ describe('List Utils', () => {
       (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
         () => mockClientStoreConnection
       );
-
-      // Mock feature flag service to return WeeklyAlerts enabled
-      jest.mock('@wri-monorepos/shared', () => ({
-        featureFlagsService: jest.fn().mockResolvedValue({
-          getFeatureFlagsForCurrentOrg: jest
-            .fn()
-            .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
-        }),
-      }));
 
       // Simulate upload with ['Alerts', 'Weekly'] in analysisIds (options undefined)
       await setListAnalysisStatus(

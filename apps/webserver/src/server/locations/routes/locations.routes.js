@@ -984,6 +984,7 @@ module.exports = (app, limiter) => {
         saveAsDraft,
         commodity,
         analysisTypesParam,
+        options,
       } = req.body;
 
       const {
@@ -999,6 +1000,20 @@ module.exports = (app, limiter) => {
         analysisTypesParam ||
         extractAnalysisTypes(await getListAnalysisStatusByListId(organization_database, list_id));
 
+      const selectedAnalysisIds = Object.entries(analysisTypes)
+        .filter(([, isEnabled]) => isEnabled === true)
+        .map(([id]) => id);
+
+      // Validate that options='Weekly' can only be used when ALERTS analysis is included
+      if (options && options.toLowerCase() === 'weekly') {
+        const hasAlerts = selectedAnalysisIds.some((id) => id.toUpperCase() === 'ALERTS');
+        if (!hasAlerts) {
+          return res.status(400).send({
+            error: 'Weekly alerts option can only be used when ALERTS analysis is selected',
+          });
+        }
+      }
+
       // Remove the existing vector tile from S3 so it will be regenerated with the updated locations
       await removeExistingVectorTileFromS3(req, list_id);
 
@@ -1013,9 +1028,10 @@ module.exports = (app, limiter) => {
         template_id: 13,
         user_id: organization_user_id,
         startAnalysis,
-        analysisIds: Object.keys(analysisTypes),
+        analysisIds: selectedAnalysisIds,
         saveAsDraft,
         commodity,
+        options,
       };
 
       const response = await axios.post(`${LISTS_MICROSERVICE_URL}/process-list`, payload);

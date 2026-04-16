@@ -4,8 +4,18 @@ import axios from 'axios';
 import { SummaryAndSubmit } from './SummaryAndSubmit';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
+import featureFlags from '../../../../../../utils/general.utils';
 
 jest.mock('../contexts');
+
+// Mock feature flags - must be defined before component renders
+jest.mock('../../../../../../utils/general.utils', () => ({
+  __esModule: true,
+  default: {
+    isWeeklyAlertsAvailable: false, // Default to false, tests will override
+  },
+}));
+
 const mockClearUploadType = jest.fn();
 jest.mocked(useUploadLocation).mockReturnValue({
   clearUploadType: mockClearUploadType,
@@ -46,10 +56,6 @@ jest.mock('../components', () => ({
 jest.mock('axios');
 const mockAxios = jest.mocked(axios);
 
-jest.mock('../utils/upload', () => ({
-  uploadFileToS3: jest.fn(),
-}));
-
 const mockGtag = jest.fn();
 global.gtag = mockGtag;
 
@@ -70,12 +76,46 @@ const mockUploadProcessByPrevUploadedFile = jest.fn().mockResolvedValue({});
 
 jest.mock('../utils/upload', () => ({
   uploadFileToS3: () => mockUploadFileToS3(),
-  uploadProcessByPrevUploadedFile: () => mockUploadProcessByPrevUploadedFile(),
+}));
+
+jest.mock('../../landing/uploadProcess', () => ({
+  uploadProcessByPrevUploadedFile: (args: any) => mockUploadProcessByPrevUploadedFile(args),
 }));
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockAxios.post.mockResolvedValue({ data: { success: true } });
+
+  // Reset feature flag to default
+  (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = false;
+
+  // Reset to default mock
+  jest.mocked(useUploadLocation).mockReturnValue({
+    clearUploadType: mockClearUploadType,
+    uploadLocationState: {
+      newListName: 'Random list name 123',
+      existingList: null,
+      commodity: 'palm-oil',
+      typeOfAnalysis: {
+        AFI: true,
+        ALERTS: true,
+        FCD: true,
+        PalmRisk: true,
+        Weekly: false,
+      },
+      area: { measurementUnit: 'hectares', size: 0 },
+      coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+      locationName: 'location name',
+      uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+      uploadType: UploadType.ByPoint,
+    },
+    setUploadLocationByPoint: jest.fn(),
+    setUploadLocationByPolygon: jest.fn(),
+    setUploadLocationConfigureList: jest.fn(),
+    addFile: jest.fn(),
+    updateSaveMode: jest.fn(),
+    selectUploadType: jest.fn(),
+  });
 });
 
 describe('SummaryAndSubmit', () => {
@@ -223,5 +263,176 @@ describe('SummaryAndSubmit', () => {
         listID: 123,
       });
     });
+  });
+
+  it('should pass options="Weekly" when Weekly Alerts and ALERTS are both selected', async () => {
+    const user = userEvent.setup();
+
+    // Enable weekly alerts feature flag
+    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = true;
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Test List with Weekly',
+        existingList: null,
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: true,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: true, // Weekly is selected
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 's3://bucket/file',
+          keyFile: 'file.csv',
+          url: 'https://example.com',
+        },
+        uploadType: UploadType.ByFile,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      expect(mockUploadProcessByPrevUploadedFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: 'Weekly',
+        })
+      );
+    });
+
+    // Reset feature flag
+    featureFlags.isWeeklyAlertsAvailable = false;
+  });
+
+  it('should omit options when Weekly Alerts is not selected', async () => {
+    const user = userEvent.setup();
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Test List without Weekly',
+        existingList: null,
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: true,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false, // Weekly is NOT selected
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 's3://bucket/file',
+          keyFile: 'file.csv',
+          url: 'https://example.com',
+        },
+        uploadType: UploadType.ByFile,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      const callArgs = mockUploadProcessByPrevUploadedFile.mock.calls[0][0];
+      expect(callArgs).not.toHaveProperty('options');
+    });
+  });
+
+  it('should omit options when Weekly is selected but ALERTS is not selected', async () => {
+    const user = userEvent.setup();
+
+    // Enable weekly alerts feature flag
+    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = true;
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Test List with Weekly but no ALERTS',
+        existingList: null,
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: true,
+          ALERTS: false, // ALERTS is NOT selected
+          FCD: true,
+          PalmRisk: false,
+          Weekly: true, // Weekly is selected (but shouldn't be applied)
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 's3://bucket/file',
+          keyFile: 'file.csv',
+          url: 'https://example.com',
+        },
+        uploadType: UploadType.ByFile,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      const callArgs = mockUploadProcessByPrevUploadedFile.mock.calls[0][0];
+      expect(callArgs).not.toHaveProperty('options'); // Should be omitted because ALERTS is not selected
+    });
+
+    // Reset feature flag
+    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = false;
   });
 });

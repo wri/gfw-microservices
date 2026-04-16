@@ -70,7 +70,10 @@ const mockUploadProcessByPrevUploadedFile = jest.fn().mockResolvedValue({});
 
 jest.mock('../utils/upload', () => ({
   uploadFileToS3: () => mockUploadFileToS3(),
-  uploadProcessByPrevUploadedFile: () => mockUploadProcessByPrevUploadedFile(),
+}));
+
+jest.mock('../../landing/uploadProcess', () => ({
+  uploadProcessByPrevUploadedFile: (args: any) => mockUploadProcessByPrevUploadedFile(args),
 }));
 
 beforeEach(() => {
@@ -223,5 +226,184 @@ describe('SummaryAndSubmit', () => {
         listID: 123,
       });
     });
+  });
+
+  it('should pass options="Weekly" when Weekly Alerts and ALERTS are both selected', async () => {
+    const user = userEvent.setup();
+
+    // Mock feature flag
+    const originalFeatureFlags = (global as any).featureFlags;
+    (global as any).featureFlags = { isWeeklyAlertsAvailable: true };
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Test List with Weekly',
+        existingList: null,
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: true,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: true, // Weekly is selected
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 's3://bucket/file',
+          keyFile: 'file.csv',
+          url: 'https://example.com',
+        },
+        uploadType: UploadType.ByFile,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      expect(mockUploadProcessByPrevUploadedFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: 'Weekly',
+        })
+      );
+    });
+
+    // Restore feature flags
+    (global as any).featureFlags = originalFeatureFlags;
+  });
+
+  it('should pass options=null when Weekly Alerts is not selected', async () => {
+    const user = userEvent.setup();
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Test List without Weekly',
+        existingList: null,
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: true,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false, // Weekly is NOT selected
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 's3://bucket/file',
+          keyFile: 'file.csv',
+          url: 'https://example.com',
+        },
+        uploadType: UploadType.ByFile,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      expect(mockUploadProcessByPrevUploadedFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: null,
+        })
+      );
+    });
+  });
+
+  it('should pass options=null when Weekly is selected but ALERTS is not selected', async () => {
+    const user = userEvent.setup();
+
+    // Mock feature flag
+    const originalFeatureFlags = (global as any).featureFlags;
+    (global as any).featureFlags = { isWeeklyAlertsAvailable: true };
+
+    jest.mocked(useUploadLocation).mockReturnValue({
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Test List with Weekly but no ALERTS',
+        existingList: null,
+        commodity: 'palm-oil',
+        typeOfAnalysis: {
+          AFI: true,
+          ALERTS: false, // ALERTS is NOT selected
+          FCD: true,
+          PalmRisk: false,
+          Weekly: true, // Weekly is selected (but shouldn't be applied)
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: {
+          fileS3Route: 's3://bucket/file',
+          keyFile: 'file.csv',
+          url: 'https://example.com',
+        },
+        uploadType: UploadType.ByFile,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      setUploadLocationConfigureList: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+    });
+
+    render(<SummaryAndSubmit />);
+
+    const submitButton = screen.getByRole('button', { name: /submit for analysis/i });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Are you sure?')).toBeInTheDocument();
+    });
+
+    const okButtons = screen.getAllByRole('button', { name: /ok/i });
+    await user.click(okButtons[0]);
+
+    await waitFor(() => {
+      expect(mockUploadProcessByPrevUploadedFile).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: null, // Should be null because ALERTS is not selected
+        })
+      );
+    });
+
+    // Restore feature flags
+    (global as any).featureFlags = originalFeatureFlags;
   });
 });

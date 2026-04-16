@@ -128,6 +128,15 @@ export function SummaryAndSubmit() {
           uploadLocationState.typeOfAnalysis[key as keyof typeof uploadLocationState.typeOfAnalysis]
       );
 
+      // Pass options='Weekly' if Weekly Alerts is selected AND ALERTS is selected
+      // Weekly is a child option of ALERTS and cannot exist without it
+      const options =
+        isWeeklyAlertsAvailable &&
+        uploadLocationState.typeOfAnalysis.Weekly &&
+        uploadLocationState.typeOfAnalysis.ALERTS
+          ? AlertsAnalysisFrequency.WEEKLY
+          : null;
+
       await uploadProcessByPrevUploadedFile({
         listName,
         analysisIds,
@@ -136,6 +145,7 @@ export function SummaryAndSubmit() {
         existingList: uploadLocationState.existingList,
         saveAsDraft: isDraftUpload.current,
         commodity: uploadLocationState.commodity,
+        options,
       });
       updateSaveMode(isDraftUpload.current);
 

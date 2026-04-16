@@ -98,6 +98,7 @@ const processListStep = async (param) => {
     commodity,
     analysisIds,
     saveAsDraft = false,
+    options,
   } = param;
 
   try {
@@ -110,6 +111,7 @@ const processListStep = async (param) => {
       saveAsDraft,
       commodity,
       analysisTypesParam: Object.fromEntries(analysisIds.map((key) => [key, true])),
+      options,
     });
     return { ...param, ...data };
   } catch (error) {
@@ -162,6 +164,7 @@ export function uploadProcessByPrevUploadedFile({
   fileS3Route,
   saveAsDraft,
   commodity,
+  options,
 }) {
   const processPipeline = existingList?.id
     ? promiseCompose(processListStep)
@@ -174,6 +177,7 @@ export function uploadProcessByPrevUploadedFile({
     fileS3Route,
     saveAsDraft,
     commodity,
+    options,
     list_id: existingList?.id,
     existingListAnalysisIds: existingList?.analysisIds,
   });

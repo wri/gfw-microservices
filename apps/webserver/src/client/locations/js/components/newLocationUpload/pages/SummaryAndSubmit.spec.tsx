@@ -56,10 +56,6 @@ jest.mock('../components', () => ({
 jest.mock('axios');
 const mockAxios = jest.mocked(axios);
 
-jest.mock('../utils/upload', () => ({
-  uploadFileToS3: jest.fn(),
-}));
-
 const mockGtag = jest.fn();
 global.gtag = mockGtag;
 

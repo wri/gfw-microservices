@@ -513,8 +513,8 @@ export async function setListAnalysisStatus(
 
         if (normalizedAnalysisId === analysisTypes.ALERTS) {
           if (weeklyAlertsOptIn) {
-            // Feature flag is ON: only set Weekly if explicitly provided in options
-            if (options === AlertsAnalysisFrequency.WEEKLY) {
+            // Feature flag is ON: only set Weekly if explicitly requested
+            if (isWeeklyRequested) {
               value.options = AlertsAnalysisFrequency.WEEKLY;
             }
             // Otherwise, leave options as null (not setting Weekly)

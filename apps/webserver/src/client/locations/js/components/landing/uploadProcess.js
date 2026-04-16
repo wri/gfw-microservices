@@ -102,7 +102,7 @@ const processListStep = async (param) => {
   } = param;
 
   try {
-    const { data } = await axios.post('/locations/process-list', {
+    const requestBody = {
       list_id: listID,
       path: fileS3Route,
       template_type: 'cocoa_generic',
@@ -112,7 +112,9 @@ const processListStep = async (param) => {
       commodity,
       analysisTypesParam: Object.fromEntries(analysisIds.map((key) => [key, true])),
       ...(options ? { options } : {}),
-    });
+    };
+
+    const { data } = await axios.post('/locations/process-list', requestBody);
     return { ...param, ...data };
   } catch (error) {
     throw new Error(error);

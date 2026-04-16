@@ -78,9 +78,7 @@ function ChangeTypeOfAnalysisModal({
     }
 
     // Add synthetic PalmRisk entry if FCD has options='PalmRisk'
-    const hasPalmRiskEntry = expandedAnalyses.some(
-      (a) => a.analysisId === analysisTypes.PALM_RISK
-    );
+    const hasPalmRiskEntry = expandedAnalyses.some((a) => a.analysisId === analysisTypes.PALM_RISK);
     if (!hasPalmRiskEntry) {
       const fcdWithPalmRisk = expandedAnalyses.find(
         ({ analysisId, options }) =>

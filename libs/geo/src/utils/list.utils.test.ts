@@ -743,7 +743,7 @@ describe('List Utils', () => {
       );
     });
 
-    it('GPV-5400: should set options=Weekly when options parameter contains Weekly', async () => {
+    it('should set options=Weekly when options parameter contains Weekly', async () => {
       const mockRepository = {
         findBy: jest.fn().mockResolvedValue([]),
         save: jest.fn(),
@@ -784,6 +784,50 @@ describe('List Utils', () => {
           expirationTime: null,
           bundleCreationTime: null,
           options: 'Weekly', // ← Should be set from options parameter
+        })
+      );
+    });
+
+    it('should NOT set options=Weekly when feature flag is enabled but Weekly is not requested', async () => {
+      const mockRepository = {
+        findBy: jest.fn().mockResolvedValue([]),
+        save: jest.fn(),
+        update: jest.fn(),
+        findOne: jest.fn().mockResolvedValue(null), // No existing record
+      };
+
+      const mockConnection = {
+        getRepository: jest.fn().mockReturnValue(mockRepository),
+      };
+
+      const mockClientStoreConnection = {
+        getConnection: jest.fn().mockResolvedValue(mockConnection),
+      };
+      (ClientStoreConnection as unknown as jest.Mock).mockImplementation(
+        () => mockClientStoreConnection
+      );
+
+      // Simulate upload with only 'Alerts' (no Weekly) when feature flag is enabled
+      await setListAnalysisStatus(
+        'clientDatabase',
+        1,
+        ['Alerts'], // Only Alerts, no Weekly
+        listStatus.Pending,
+        123 // organizationId for feature flag lookup
+      );
+
+      // Should create ALERTS record with options=null (not 'Weekly')
+      expect(mockRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          listId: 1,
+          analysisId: 'ALERTS',
+          status: listStatus.Pending,
+          errorInfo: null,
+          updateTime: expect.any(String),
+          s3URL: null,
+          expirationTime: null,
+          bundleCreationTime: null,
+          options: null, // ← Should be null because Weekly was not requested (feature flag ON = opt-in)
         })
       );
     });

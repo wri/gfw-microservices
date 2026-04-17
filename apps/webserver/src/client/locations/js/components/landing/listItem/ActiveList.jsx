@@ -70,6 +70,12 @@ function ActiveList({
   const hasErrorFile = !!error_file_storage_path;
   const isEmptyList = locations === 0;
   const showDiagnosticOpt = !is_shared && !isEmptyList && getActiveAnalysisType(listAnalysesStatus);
+  // Show "Change analysis type" for any list with analyses (not just FCD/AFI)
+  const showChangeAnalysisOpt =
+    !is_shared &&
+    !isEmptyList &&
+    Array.isArray(listAnalysesStatus) &&
+    listAnalysesStatus.length > 0;
 
   const getAnalysisLastUpdatedDate = () => {
     const analysisUpdateTime =
@@ -262,7 +268,7 @@ function ActiveList({
                 </ListItemText>
               </MenuItem>
 
-              {showDiagnosticOpt && (
+              {showChangeAnalysisOpt && (
                 <MenuItem
                   onClick={() => {
                     setIsChangeTypeOfAnalysisModalOpen(true);

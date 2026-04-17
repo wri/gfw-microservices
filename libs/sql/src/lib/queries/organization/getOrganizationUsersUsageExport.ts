@@ -9,7 +9,10 @@ SELECT
     u.email AS 'Username',
     lp.list_id as 'List ID',
     lp.analysis_type AS 'Analysis Type',
-    ISNULL(lp.area_analyzed_locations_ha, 0) AS 'Hectares',
+    CASE
+      WHEN lp.analysis_type = 'ALERTS-BATCH' THEN 0
+      ELSE ISNULL(lp.area_analyzed_locations_ha, 0)
+    END AS 'Hectares',
     ISNULL(lp.locations_analyzed, 0) AS 'Locations',
     CAST(ISNULL(cr.location_rate, 0) AS DECIMAL(18, 4)) AS 'Per Location Cost',
     CASE
@@ -23,17 +26,7 @@ SELECT
     FORMAT(lp.analysis_end_time, 'dd MMM yyyy HH:mm:ss') + ' GMT' AS 'Date/Timestamp',
     CASE WHEN eu.id IS NOT NULL THEN 'API' ELSE 'UI' END AS 'UI/API'
 FROM dbo.ListsProcessing lp
-LEFT JOIN dbo.Lists l ON lp.list_id = l.id
-OUTER APPLY (
-    -- Get the last user who ran one-time ALERTS on this specific list
-    SELECT TOP 1 user_id
-    FROM dbo.ListsProcessing
-    WHERE list_id = lp.list_id
-      AND analysis_type = 'ALERTS'
-      AND user_id IS NOT NULL
-    ORDER BY analysis_end_time DESC
-) last_alerts_user
-JOIN dbo.Users u ON COALESCE(lp.user_id, last_alerts_user.user_id, l.user_id) = u.id
+JOIN dbo.Users u ON lp.user_id = u.id
 LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id
 LEFT JOIN dbo.ExternalUploads eu ON ll.s3_filename = eu.uploadKeyFile
 OUTER APPLY (
@@ -43,7 +36,8 @@ OUTER APPLY (
       AND cr.effective_date <= lp.analysis_end_time
     ORDER BY cr.effective_date DESC
 ) cr
-WHERE lp.analysis_end_time >= @startDate
+WHERE lp.user_id IS NOT NULL
+  AND lp.analysis_end_time >= @startDate
   AND lp.analysis_end_time < DATEADD(day, 1, @endDate)
   AND (lp.analysis_type <> 'GHG' OR lp.analysis_end_time >= '2025-11-22');
 `;

@@ -516,18 +516,23 @@ export async function setListAnalysisStatus(
             // Feature flag is ON: only set Weekly if explicitly requested
             if (isWeeklyRequested) {
               value.options = AlertsAnalysisFrequency.WEEKLY;
+            } else if (options === '') {
+              // Explicit removal of Weekly (empty string signals removal)
+              value.options = null;
+            } else if (existingRecord) {
+              // Preserve existing options when not explicitly changing them
+              value.options = existingRecord.options;
             }
-            // Otherwise, leave options as null (not setting Weekly)
+            // Otherwise, leave options as null for new records without Weekly
           } else {
             // Feature flag is OFF: apply backward compatibility logic
             // BUT respect explicit removal of Weekly on existing records (GPV-5180 fix)
             if (existingRecord && !isWeeklyRequested) {
-              // Updating existing record - check if user is explicitly removing Weekly
-              if (existingRecord.options === AlertsAnalysisFrequency.WEEKLY) {
-                // User is explicitly removing Weekly - clear the options field
+              if (options === '') {
+                // Explicit removal of Weekly (empty string signals removal)
                 value.options = null;
               } else {
-                // Preserve existing options (might be null already)
+                // Preserve existing options (might be null or 'Weekly')
                 value.options = existingRecord.options;
               }
             } else {

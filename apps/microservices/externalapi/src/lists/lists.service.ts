@@ -14,6 +14,7 @@ import {
   Organization,
 } from '@wri-monorepos/sql';
 import { In } from 'typeorm';
+import { dbToApiFormat } from '../types/analysis-id';
 
 @Injectable()
 export class ListService {
@@ -110,14 +111,6 @@ export class ListService {
         throw new NotFoundException(`List ${listId} not found.`);
       }
 
-      // Reverse mapping: DB format -> API format (to match upload_new format)
-      const dbToApiFormat: Record<string, string> = {
-        ALERTS: 'Alerts',
-        FCD: 'FCD',
-        AFI: 'DefReport',
-        GHG: 'GHG',
-      };
-
       const analysisIds: string[] = [];
       let optionsString = '';
 
@@ -182,14 +175,6 @@ export class ListService {
       const allListAnalysis = await listAnalysisStatusRepository.find({
         where: { listId: In(listIds) },
       });
-
-      // Reverse mapping: DB format -> API format (to match upload_new format)
-      const dbToApiFormat: Record<string, string> = {
-        ALERTS: 'Alerts',
-        FCD: 'FCD',
-        AFI: 'DefReport',
-        GHG: 'GHG',
-      };
 
       const analysisIdsByListId = new Map<number, string[]>();
       const optionsByListId = new Map<number, string>();

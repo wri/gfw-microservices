@@ -163,9 +163,12 @@ const CSP_SCRIPT_SOURCES = [
   'https://cdn.transifex.com', // Transifex translations
   'https://static.zdassets.com', // Zendesk support widget
   'https://static.hotjar.com', // Hotjar analytics
+  'https://script.hotjar.com', // Hotjar scripts
   'https://plausible.io', // Plausible analytics
   'https://snap.licdn.com', // LinkedIn Insights
   'https://www.clarity.ms', // Microsoft Clarity
+  'https://scripts.clarity.ms', // Microsoft Clarity scripts
+  'https://engage.globalforestwatch.org', // Ortto engagement platform
   'https://js.arcgis.com', // ArcGIS maps
   'https://code.jquery.com', // jQuery CDN
   'https://dpptfqp76xood.cloudfront.net', // CloudFront assets (ionRange.js)

@@ -5,13 +5,13 @@
  * @ErrorInfo VARCHAR(2000)
  */
 export const updateListAnalysisStatus = `
-UPDATE 
-  ListsAnalysisStatus 
-SET 
-  Status = @Status, 
+UPDATE
+  ListsAnalysisStatus
+SET
+  Status = @Status,
   ErrorInfo = @ErrorInfo,
   UpdateTime = GETDATE(),
-  [options] = @options
-WHERE 
+  [options] = COALESCE(@options, [options])
+WHERE
   ListID = @ListID;
 `;

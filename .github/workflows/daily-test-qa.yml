@@ -65,7 +65,7 @@ jobs:
           }' $SLACK_E2E_TEST_WEBHOOK_URL
 
       - name: Upload videos of tests failed
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: cypress-videos

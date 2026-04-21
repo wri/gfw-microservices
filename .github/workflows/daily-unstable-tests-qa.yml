@@ -54,7 +54,7 @@ jobs:
           npx nx e2e gfwpro-e2e --configuration=qa --spec $UNSTABLE
 
       - name: Upload videos of tests failed
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: cypress-videos

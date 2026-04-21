@@ -160,9 +160,24 @@ html
 		script.
 			var lo = document.getElementById('page-loading-indicator');
 			if (lo) {
-				var mo = new MutationObserver(function() { lo.style.display = 'none'; mo.disconnect(); });
-				document.querySelectorAll('[id$="-mount"]').forEach(function(el) {
-					mo.observe(el, { childList: true });
-				});
-				setTimeout(function() { lo.style.display = 'none'; }, 5000);
+				var hideLoadingIndicator = function() {
+					lo.style.display = 'none';
+				};
+				var mountNodes = document.querySelectorAll('[id$="-mount"]');
+
+				setTimeout(hideLoadingIndicator, 5000);
+
+				if (window.MutationObserver) {
+					var mo = new MutationObserver(function() {
+						hideLoadingIndicator();
+						mo.disconnect();
+					});
+					mountNodes.forEach(function(el) {
+						mo.observe(el, { childList: true });
+					});
+				} else if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', hideLoadingIndicator);
+				} else {
+					hideLoadingIndicator();
+				}
 			}

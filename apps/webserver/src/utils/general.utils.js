@@ -11,6 +11,7 @@ const featureFlags = new Proxy(
         const flags = JSON.parse(localStorage.getItem('featureFlags')) || {};
         return flags[prop];
       } catch (e) {
+        console.warn('Failed to parse featureFlags from localStorage', e);
         return undefined;
       }
     },

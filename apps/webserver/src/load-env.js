@@ -58,23 +58,25 @@ const loadEnvironmentVars = (nodeEnvironment) => {
  */
 const getDataFromS3 = (node_environment) => {
   return new Promise((resolve, reject) => {
-    try {
-      // Download file containing data.
-      const params = {
-        Bucket: `${ENV_BUCKET}`,
-        Key: `${node_environment}.env`,
-      };
+    const params = {
+      Bucket: `${ENV_BUCKET}`,
+      Key: `${node_environment}.env`,
+    };
 
-      s3.getObject(params, async (err, data) => {
-        if (err) {
-          console.log(err, err.stack);
-          reject(err);
-        } else {
-          const s3Data = await data.Body.transformToString();
-          resolve(s3Data);
-        }
-      });
-    } catch (e) {}
+    s3.getObject(params, async (err, data) => {
+      if (err) {
+        console.error('Failed to load env from S3', err.stack || err);
+        reject(err);
+        return;
+      }
+      try {
+        const s3Data = await data.Body.transformToString();
+        resolve(s3Data);
+      } catch (e) {
+        console.error('Failed to read S3 env body', e.stack || e);
+        reject(e);
+      }
+    });
   });
 };
 

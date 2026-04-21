@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { traceContext } from './trace.context';
 import { OrganizationLookupService } from './organization-lookup.service';
@@ -14,6 +14,8 @@ declare module 'express-serve-static-core' {
 
 @Injectable()
 export class TraceIdMiddleware implements NestMiddleware {
+  private readonly logger = new Logger(TraceIdMiddleware.name);
+
   async use(req: Request, res: Response, next: NextFunction) {
     // Get trace ID from header or generate a new one if not present
     let traceId = req.headers[TRACE_ID_HEADER] as string;
@@ -48,7 +50,9 @@ export class TraceIdMiddleware implements NestMiddleware {
           }
         } catch (error) {
           // Log error but don't fail the request if lookup fails
-          console.warn('Failed to lookup organization_id from database:', error);
+          this.logger.warn(
+            `Failed to lookup organization_id from database: ${error?.message || error}`
+          );
         }
       }
     }
@@ -66,7 +70,11 @@ export class TraceIdMiddleware implements NestMiddleware {
       );
     } catch (error) {
       // Fallback: if AsyncLocalStorage fails, continue with request-based tracing
-      console.warn('AsyncLocalStorage failed, falling back to request-based tracing:', error);
+      this.logger.warn(
+        `AsyncLocalStorage failed, falling back to request-based tracing: ${
+          error?.message || error
+        }`
+      );
       next();
     }
   }

@@ -63,7 +63,9 @@ module.exports = (app, limiter) => {
           response: error.response ? error.response.data?.toString() : null,
           error: error.stack || error,
         });
-        res.send({ message: '/map/getPlanetTilesInfo failed' });
+        res
+          .status(error.response?.status || 502)
+          .send({ message: '/map/getPlanetTilesInfo failed' });
       });
   });
 
@@ -89,7 +91,7 @@ module.exports = (app, limiter) => {
           response: error.response ? error.response.data?.toString() : null,
           error: error.stack || error,
         });
-        res.send({ message: '/map/getPlanetTile failed' });
+        res.status(error.response?.status || 502).send({ message: '/map/getPlanetTile failed' });
       });
   });
 
@@ -106,7 +108,7 @@ module.exports = (app, limiter) => {
       })
       .catch((error) => {
         logger.error('POST /map/getUserListLocationData-map', error.stack || error);
-        res.send({
+        res.status(500).send({
           errorCode: error.errorCode,
           message: 'Getting list data failed!',
         });
@@ -188,7 +190,7 @@ module.exports = (app, limiter) => {
       const data = await response.json();
       res.json(data);
     } catch (error) {
-      console.error('Error:', error);
+      logger.error('GFW data-api query failed', error.stack || error);
       res.status(500).json({ error: 'An error occurred while processing your request' });
     }
   });
@@ -225,7 +227,7 @@ module.exports = (app, limiter) => {
       const data = await response.json();
       res.json(data);
     } catch (error) {
-      console.error('Error:', error);
+      logger.error('GFW data-api query failed', error.stack || error);
       res.status(500).json({ error: 'An error occurred while processing your request' });
     }
   });
@@ -259,7 +261,7 @@ module.exports = (app, limiter) => {
       const data = await response.json();
       res.json(data);
     } catch (error) {
-      console.error('Error:', error);
+      logger.error('GFW data-api query failed', error.stack || error);
       res.status(500).json({ error: 'An error occurred while processing your request' });
     }
   });
@@ -295,7 +297,7 @@ module.exports = (app, limiter) => {
       const data = await response.json();
       res.json(data);
     } catch (error) {
-      console.error('Error:', error);
+      logger.error('GFW data-api query failed', error.stack || error);
       res.status(500).json({ error: 'An error occurred while processing your request' });
     }
   });

@@ -3,6 +3,18 @@ const FolderManager = require(path.resolve('./config/publicutils/folderManager.u
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const langResources = require(path.resolve('./config/langResources'));
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
+
+// Known/validation errors expose `userMessage` — return 422.
+// Everything else is unexpected — log and return 500.
+const sendFolderError = (res, route, error) => {
+  if (error && error.userMessage) {
+    res.status(422).send({ error: error.userMessage });
+    return;
+  }
+  logger.error(route, error?.stack || error);
+  res.status(500).send({ error: 'Internal server error' });
+};
 
 module.exports = (app, limiter) => {
   // All methods must under /dashboard must pass through middleware
@@ -25,7 +37,7 @@ module.exports = (app, limiter) => {
       const response = await FolderManager.getAllFolders(req);
       res.send(response);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
+      sendFolderError(res, 'GET /folder', error);
     }
   });
 
@@ -45,8 +57,7 @@ module.exports = (app, limiter) => {
         res.status(422).send({ error: 'Unkown error creating folder' });
       }
     } catch (error) {
-      console.log(error);
-      res.status(422).send({ error: error.userMessage });
+      sendFolderError(res, 'POST /folder', error);
     }
   });
 
@@ -63,7 +74,7 @@ module.exports = (app, limiter) => {
       const response = await FolderManager.getFolderDetails(req, folder_id);
       res.send(response);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
+      sendFolderError(res, 'GET /folder/:folder_id', error);
     }
   });
 
@@ -85,7 +96,7 @@ module.exports = (app, limiter) => {
       const folderDetails = await FolderManager.addListToFolder(req, folder_id, list_ids);
       res.send(folderDetails);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
+      sendFolderError(res, 'POST /folder/:folder_id/add_lists', error);
     }
   });
 
@@ -117,7 +128,8 @@ module.exports = (app, limiter) => {
         return;
       }
     } catch (error) {
-      res.status(422).send({
+      logger.error('POST /folder/:folder_id/remove_lists', error?.stack || error);
+      res.status(500).send({
         error: `Error while trying to remove lists ${req.body.list_ids} from folder id ${folder_id}`,
       });
     }
@@ -151,7 +163,7 @@ module.exports = (app, limiter) => {
       );
       res.send(results);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
+      sendFolderError(res, 'POST /folder/move_lists', error);
     }
   });
 
@@ -174,8 +186,7 @@ module.exports = (app, limiter) => {
       const response = await FolderManager.getAllFolders(req);
       res.send(response);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
-      return;
+      sendFolderError(res, 'POST /folder/:folder_id/rename_folder', error);
     }
   });
 
@@ -192,8 +203,7 @@ module.exports = (app, limiter) => {
       const response = await FolderManager.updateFolderAccessTime(req, folder_id);
       res.send(response);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
-      return;
+      sendFolderError(res, 'POST /folder/:folder_id/update_access_time', error);
     }
   });
 
@@ -210,7 +220,7 @@ module.exports = (app, limiter) => {
       const response = await FolderManager.deleteFolder(req, folder_id);
       res.send(response);
     } catch (error) {
-      res.status(422).send({ error: error.userMessage });
+      sendFolderError(res, 'DELETE /folder/:folder_id/delete_folder', error);
     }
   });
 };

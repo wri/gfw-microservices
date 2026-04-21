@@ -40,10 +40,11 @@ if (!unitTestMode) {
     };
   }
   redisClient = createClient(redisOptions);
-  redisClient.connect().then(() => {
-    redisClient.on('error', (info: any) => {
-      console.log('Express redis error', info);
-    });
+  redisClient.on('error', (info: any) => {
+    logger.error('Express redis error', info);
+  });
+  redisClient.connect().catch((err) => {
+    logger.error('Redis client failed to connect', err?.stack || err);
   });
 }
 

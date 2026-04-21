@@ -45,12 +45,19 @@ BEGIN
   )
   WHERE analysis_end_time >= ''{START_DATE}''
     AND analysis_end_time <= ''{END_DATE}''
-    AND (lp.analysis_type <> ''GHG'' OR lp.analysis_end_time >= ''2025-11-22'') ';
+    AND (lp.analysis_type <> ''GHG'' OR lp.analysis_end_time >= ''2025-11-22'')
+    AND (lp.analysis_type <> ''ALERTS-BATCH'' OR lp.analysis_end_time >= ''2026-04-18'') ';
   SET @TABLE = '#TotArea_org';
-  SET @PARAM = 'ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as total_area_analyzed,
-  ISNULL(MAX(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.area_analyzed_locations_ha END), 0) as max_area_analyzed,
+  SET @PARAM = 'ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0
+              WHEN lp.analysis_type = ''ALERTS-BATCH'' AND lp.analysis_end_time < ''2026-04-18'' THEN 0
+              ELSE lp.area_analyzed_locations_ha END), 0) as total_area_analyzed,
+  ISNULL(MAX(CASE WHEN lp.analysis_type = ''GHG'' AND lp.analysis_end_time < ''2025-11-22'' THEN 0
+              WHEN lp.analysis_type = ''ALERTS-BATCH'' AND lp.analysis_end_time < ''2026-04-18'' THEN 0
+              ELSE lp.area_analyzed_locations_ha END), 0) as max_area_analyzed,
   COUNT(lp.list_id) as number_of_lists_analyzed,
-  ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG''  AND lp.analysis_end_time < ''2025-11-22'' THEN 0 ELSE lp.locations_analyzed END), 0) as locations_analyzed,
+  ISNULL(SUM(CASE WHEN lp.analysis_type = ''GHG''  AND lp.analysis_end_time < ''2025-11-22'' THEN 0
+              WHEN lp.analysis_type = ''ALERTS-BATCH'' AND lp.analysis_end_time < ''2026-04-18'' THEN 0
+              ELSE lp.locations_analyzed END), 0) as locations_analyzed,
   ISNULL(SUM((ISNULL(lp.locations_analyzed, 0) * ISNULL(cr.location_rate, 0)) + ISNULL(cr.list_rate, 0)), 0) as total_tokens,
   {organization} as organization_id';
 

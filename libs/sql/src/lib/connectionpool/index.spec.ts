@@ -1,5 +1,4 @@
-import * as mssql from 'mssql';
-
+/* eslint-disable @typescript-eslint/no-var-requires */
 jest.mock('mssql');
 
 const mockConfig = {
@@ -9,17 +8,20 @@ const mockConfig = {
   database: 'testdb',
 };
 
+type MssqlMock = {
+  ConnectionPool: jest.Mock;
+};
+
 const getModules = () => {
   // Re-require both so the index module uses the same mssql mock reference
-  const mssql = require('mssql');
-  const { get } = require('./index');
+  const mssql = require('mssql') as MssqlMock;
+  const { get } = require('./index') as {
+    get: (name: string, config: unknown) => Promise<unknown>;
+  };
   return { mssql, get };
 };
 
-const createMockPoolInstance = (
-  mssql: any,
-  connectBehavior: () => Promise<unknown>
-) => {
+const createMockPoolInstance = (mssql: MssqlMock, connectBehavior: () => Promise<unknown>) => {
   const pool: Record<string, unknown> = {
     close: jest.fn().mockResolvedValue(undefined),
   };
@@ -56,7 +58,9 @@ describe('connectionpool get()', () => {
         close: jest.fn().mockResolvedValue(undefined),
       };
       pool.connect = jest.fn().mockImplementation(() => {
-        if (callCount < 2) return Promise.reject(new Error('Transient failure'));
+        if (callCount < 2) {
+          return Promise.reject(new Error('Transient failure'));
+        }
         return Promise.resolve(pool);
       });
       return pool;
@@ -89,7 +93,7 @@ describe('connectionpool get()', () => {
 
     const error = await resultPromise;
     expect(error).toBeInstanceOf(Error);
-    expect(error.message).toBe('Connection refused');
+    expect((error as Error).message).toBe('Connection refused');
     expect(mssql.ConnectionPool).toHaveBeenCalledTimes(3);
   });
 
@@ -103,7 +107,9 @@ describe('connectionpool get()', () => {
       closeMocks.push(closeMock);
       const pool: Record<string, unknown> = { close: closeMock };
       pool.connect = jest.fn().mockImplementation(() => {
-        if (callCount < 2) return Promise.reject(new Error('fail'));
+        if (callCount < 2) {
+          return Promise.reject(new Error('fail'));
+        }
         return Promise.resolve(pool);
       });
       return pool;

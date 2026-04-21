@@ -25,16 +25,26 @@ export const get = async (name, config): Promise<mssql.ConnectionPool> => {
 
     let connectedConnection: mssql.ConnectionPool;
     for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      let sqlConnection: mssql.ConnectionPool | undefined;
       try {
-        const sqlConnection = new mssql.ConnectionPool(config);
+        sqlConnection = new mssql.ConnectionPool(config);
         connectedConnection = await sqlConnection.connect();
         break;
       } catch (err) {
+        // Best-effort close to avoid leaking sockets/event listeners
+        if (sqlConnection) {
+          try {
+            await sqlConnection.close();
+          } catch {
+            // ignore close errors
+          }
+        }
         if (attempt === MAX_RETRIES) {
           throw err;
         }
+        const errorMessage = err instanceof Error ? err.message : String(err);
         console.warn(
-          `Connection attempt ${attempt}/${MAX_RETRIES} failed for pool "${name}": ${err.message}. Retrying in ${RETRY_DELAY_MS}ms...`
+          `Connection attempt ${attempt}/${MAX_RETRIES} failed for pool "${name}": ${errorMessage}. Retrying in ${RETRY_DELAY_MS}ms...`
         );
         await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
       }

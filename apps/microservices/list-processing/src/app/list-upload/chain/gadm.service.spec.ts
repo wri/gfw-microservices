@@ -47,16 +47,30 @@ describe('GADMService', () => {
       );
     });
 
-    // Skipping this test for now since it relies on retry logic that causes the test to take a long time.
-    // Will revisit retry logic and potentially refactor to make it more testable in the future.
-    xit('should throw error on fetch error', async () => {
-      const feature: Feature = {
-        type: 'Feature',
-        properties: { longitude: 0, latitude: 0 },
-        geometry: { type: 'Point', coordinates: [0, 0] },
-      };
-      (axios.post as jest.Mock).mockRejectedValue(new Error('Network error'));
-      await expect(service.getGadmData(feature)).rejects.toThrow('Network error');
+    it('retries retryable errors through the breaker and surfaces the last error', async () => {
+      const realSetTimeout = global.setTimeout;
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation((cb: any) => {
+        cb();
+        return 0 as any;
+      });
+
+      try {
+        const feature: Feature = {
+          type: 'Feature',
+          properties: { longitude: 0, latitude: 0 },
+          geometry: { type: 'Point', coordinates: [0, 0] },
+        };
+        const err = Object.assign(new Error('gateway timeout'), {
+          response: { status: 504 },
+        });
+        (axios.post as jest.Mock).mockRejectedValue(err);
+
+        await expect(service.getGadmData(feature)).rejects.toThrow('gateway timeout');
+        expect(axios.post).toHaveBeenCalledTimes(3);
+      } finally {
+        setTimeoutSpy.mockRestore();
+        global.setTimeout = realSetTimeout;
+      }
     });
 
     it('should return data on successful fetch', async () => {

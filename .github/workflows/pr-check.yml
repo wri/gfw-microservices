@@ -190,12 +190,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Full audit — informational, never fails the build. Surfaces drift in PRs.
+      # Informational audit — critical severity in prod deps only. Never fails the build.
       - name: npm audit (report all)
         run: |
           attempts=3
           for i in $(seq 1 $attempts); do
-            npm audit --audit-level=low
+            npm audit --audit-level=critical --omit=dev
             status=$?
             # 0 = no advisories; 1 = advisories found (expected/informational) — not a transient error.
             if [ "$status" = "0" ] || [ "$status" = "1" ]; then exit 0; fi

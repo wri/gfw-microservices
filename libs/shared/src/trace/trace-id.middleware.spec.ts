@@ -1,6 +1,7 @@
 import { TraceIdMiddleware, TRACE_ID_HEADER } from './trace-id.middleware';
 import { traceContext } from './trace.context';
 import { OrganizationLookupService } from './organization-lookup.service';
+import { Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
 // Mock the OrganizationLookupService
@@ -238,7 +239,9 @@ describe('TraceIdMiddleware', () => {
         userEmail: testUserEmail,
       };
 
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const loggerWarnSpy = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
       (OrganizationLookupService.extractUserEmail as jest.Mock).mockReturnValue(testUserEmail);
       (OrganizationLookupService.lookupOrganizationIdByEmail as jest.Mock).mockRejectedValue(
         new Error('Database error')
@@ -246,13 +249,12 @@ describe('TraceIdMiddleware', () => {
 
       await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Failed to lookup organization_id from database:',
-        expect.any(Error)
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to lookup organization_id from database')
       );
       expect(mockNext).toHaveBeenCalled(); // Request should continue even if lookup fails
 
-      consoleWarnSpy.mockRestore();
+      loggerWarnSpy.mockRestore();
     });
 
     it('should not lookup when user_email is missing', async () => {
@@ -329,16 +331,20 @@ describe('TraceIdMiddleware', () => {
         throw new Error('AsyncLocalStorage failed');
       });
 
-      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+      const loggerWarnSpy = jest
+        .spyOn(Logger.prototype, 'warn')
+        .mockImplementation(() => undefined);
 
       await middleware.use(mockRequest as Request, mockResponse as Response, mockNext);
 
-      expect(consoleWarnSpy).toHaveBeenCalled();
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('AsyncLocalStorage failed')
+      );
       expect(mockNext).toHaveBeenCalled();
 
       // Restore original implementation
       jest.spyOn(traceContext, 'run').mockImplementation(originalRun);
-      consoleWarnSpy.mockRestore();
+      loggerWarnSpy.mockRestore();
     });
   });
 });

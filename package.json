@@ -58,7 +58,7 @@
     "@nestjs/typeorm": "^11.0.0",
     "@portabletext/react": "^3.0.11",
     "@sanity/client": "^3.3.0",
-    "@sanity/image-url": "^1.0.1",
+    "@sanity/image-url": "^2.1.1",
     "@slack/bolt": "^3.13.2",
     "@smithy/node-http-handler": "^2.1.8",
     "@ssut/nestjs-sqs": "^2.2.0",

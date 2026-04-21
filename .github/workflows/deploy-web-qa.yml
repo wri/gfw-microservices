@@ -52,7 +52,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: AWS
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3

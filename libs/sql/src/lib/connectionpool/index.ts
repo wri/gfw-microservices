@@ -1,6 +1,9 @@
 import * as mssql from 'mssql';
 const pools = {};
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+
 /**
  * Get or create a pool. If a pool doesn't exist the config must be provided.
  * If the pool does exist the config is ignored (even if it was different to the one provided
@@ -19,8 +22,34 @@ export const get = async (name, config): Promise<mssql.ConnectionPool> => {
     if (!config) {
       throw new Error('Pool does not exist');
     }
-    const sqlConnection = new mssql.ConnectionPool(config);
-    const connectedConnection = await sqlConnection.connect();
+
+    let connectedConnection: mssql.ConnectionPool;
+    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+      let sqlConnection: mssql.ConnectionPool | undefined;
+      try {
+        sqlConnection = new mssql.ConnectionPool(config);
+        connectedConnection = await sqlConnection.connect();
+        break;
+      } catch (err) {
+        // Best-effort close to avoid leaking sockets/event listeners
+        if (sqlConnection) {
+          try {
+            await sqlConnection.close();
+          } catch {
+            // ignore close errors
+          }
+        }
+        if (attempt === MAX_RETRIES) {
+          throw err;
+        }
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.warn(
+          `Connection attempt ${attempt}/${MAX_RETRIES} failed for pool "${name}": ${errorMessage}. Retrying in ${RETRY_DELAY_MS}ms...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+      }
+    }
+
     const pool = {
       useCount: 0,
       connectedConnection: connectedConnection,

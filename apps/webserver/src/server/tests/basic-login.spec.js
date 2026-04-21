@@ -12,6 +12,11 @@ describe('Basic smoke with REST APIs', () => {
   const username = 'dt_user0@jestco.co';
   // setupDB and wait for app to be ready
   beforeAll(async () => {
+    // sql.utils routes through in-memory sqlite only when NODE_ENV === 'test'.
+    // If another spec in the same jest worker leaked a different NODE_ENV
+    // (e.g. 'qa'), setupTestDb would try to run MSSQL CREATE TABLE against
+    // a real database and fail with "already exists". Force it back here.
+    process.env.NODE_ENV = 'test';
     // first setup DB, then start app because app depends on initial DB contents
     await setupTestDb.initDb();
     app = require('../../server');

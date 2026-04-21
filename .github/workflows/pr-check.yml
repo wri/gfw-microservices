@@ -118,6 +118,30 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192'
         run: npx nx run-many --target=build --all --parallel=3
 
+  NPM-Audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        node-version: [20.11.1]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Full audit — informational, never fails the build. Surfaces drift in PRs.
+      - name: npm audit (report all)
+        run: npm audit --audit-level=low || true
+
+      # Hard gate: fail the build only on critical-severity advisories.
+      - name: npm audit (fail on critical)
+        run: npm audit --audit-level=critical --omit=dev
+
   # Disabled the fitness test github action because the underlying test is already disabled
   # but not deleting this in case we need to re-enable it in the future
   # Run-Webserver-Fitness-Test:

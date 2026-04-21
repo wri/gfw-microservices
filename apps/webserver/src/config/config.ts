@@ -232,12 +232,6 @@ const make = (): Config => {
     }
   }
 
-  // TODO: For initial testing, remove when done testing - Start
-  logger.info('===================');
-  logger.info('environmentConfig', JSON.stringify(environmentConfig));
-  logger.info('===================');
-  // TODO: For initial testing, remove when done testing - End
-
   //return Object.assign({}, defaultConfig, environmentConfig, filesConfig, clientConfig);
   return Object.assign({}, common, environmentConfig, filesConfig, clientConfig, compiledAssets);
 };

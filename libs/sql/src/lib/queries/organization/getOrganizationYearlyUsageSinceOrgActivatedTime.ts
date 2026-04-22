@@ -18,6 +18,7 @@ FROM (
         [dbo].[ListsProcessing] lp
     WHERE
         lp.analysis_end_time >= @orgActivatedTime
+        AND lp.user_id IS NOT NULL
 ) AS YearlyAnalysis
     GROUP BY years_since_activation
 `;
@@ -54,6 +55,7 @@ FROM (
         )
     WHERE
         lp.analysis_end_time >= @orgActivatedTime
+        AND lp.user_id IS NOT NULL
 ) AS YearlyAnalysis
 GROUP BY years_since_activation
 `;

@@ -12,13 +12,10 @@ SELECT
     ISNULL(lp.area_analyzed_locations_ha, 0) AS 'Hectares',
     ISNULL(lp.locations_analyzed, 0) AS 'Locations',
     CAST(ISNULL(cr.location_rate, 0) AS DECIMAL(18, 4)) AS 'Per Location Cost',
-    CASE
-      WHEN lp.analysis_type = 'ALERTS-BATCH' THEN 0
-      ELSE CAST(ISNULL(cr.list_rate, 0) AS DECIMAL(18, 4))
-    END AS 'Processing Cost',
+    CAST(ISNULL(cr.list_rate, 0) AS DECIMAL(18, 4)) AS 'Processing Cost',
     CAST(
       ISNULL(lp.locations_analyzed, 0) * ISNULL(cr.location_rate, 0)
-      + CASE WHEN lp.analysis_type = 'ALERTS-BATCH' THEN 0 ELSE ISNULL(cr.list_rate, 0) END
+      + ISNULL(cr.list_rate, 0)
     AS DECIMAL(18, 4)) AS 'Total Cost',
     FORMAT(lp.analysis_end_time, 'dd MMM yyyy HH:mm:ss') + ' GMT' AS 'Date/Timestamp',
     CASE WHEN eu.id IS NOT NULL THEN 'API' ELSE 'UI' END AS 'UI/API'

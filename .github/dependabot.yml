@@ -5,52 +5,19 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 1
     labels:
       - 'dependencies'
     commit-message:
       prefix: 'chore(deps)'
       include: 'scope'
-    # Group minor and patch bumps to keep noise down. Majors are still individual PRs.
     groups:
-      aws-sdk:
+      all-minor-patch:
         patterns:
-          - '@aws-sdk/*'
-      nestjs:
-        patterns:
-          - '@nestjs/*'
-      nx:
-        patterns:
-          - 'nx'
-          - '@nx/*'
-          - '@nrwl/*'
-      babel:
-        patterns:
-          - '@babel/*'
-          - 'babel-*'
-      eslint:
-        patterns:
-          - 'eslint'
-          - 'eslint-*'
-          - '@typescript-eslint/*'
-      typeorm:
-        patterns:
-          - 'typeorm'
-          - '@nestjs/typeorm'
-      types:
-        patterns:
-          - '@types/*'
+          - '*'
+        update-types: ['minor', 'patch']
     ignore:
-      # These require coordinated breaking-change upgrades; handle manually.
-      - dependency-name: 'nx'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@nx/*'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@nrwl/*'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@nestjs/*'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@arcgis/core'
+      - dependency-name: '*'
         update-types: ['version-update:semver-major']
 
   - package-ecosystem: 'github-actions'
@@ -58,7 +25,16 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
+    open-pull-requests-limit: 1
     labels:
       - 'dependencies'
     commit-message:
       prefix: 'chore(ci)'
+    groups:
+      all-minor-patch:
+        patterns:
+          - '*'
+        update-types: ['minor', 'patch']
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']

@@ -157,6 +157,8 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     expect(mockQueryBuilder.setParameters).toHaveBeenCalledWith({
       ghgAnalysisType: 'GHG',
       ghgChargingStartDate: new Date('2025-11-22T00:00:00.000Z'),
+      alertsBatchAnalysisType: 'ALERTS-BATCH',
+      alertsBatchChargingStartDate: new Date('2026-04-18T00:00:00.000Z'),
     });
     expect(mockQueryBuilder.getRawMany).toHaveBeenCalledTimes(1); // Basic query only; tokenization uses connection.query
 
@@ -235,8 +237,10 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
     const firstAndWhereParams = firstAndWhere[1] as { endDateTime: Date };
     expect(firstAndWhereParams.endDateTime).toEqual(new Date('2025-01-31T23:59:59.997Z'));
 
-    // Second andWhere is 'lp.userId IS NOT NULL', third is the Brackets condition
-    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBe('lp.userId IS NOT NULL');
+    // Second andWhere is the Brackets condition for GHG (user_id filter removed to include ALERTS-BATCH)
+    expect(mockQueryBuilder.andWhere.mock.calls[1][0]).toBeInstanceOf(Brackets);
+
+    // Third andWhere is the Brackets condition for ALERTS-BATCH
     expect(mockQueryBuilder.andWhere.mock.calls[2][0]).toBeInstanceOf(Brackets);
 
     const result = await getAccountAnalysisUsageByAnalysisType({
@@ -602,6 +606,69 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
         new Date('2025-12-01T00:00:00.000Z'),
         new Date('2025-12-31T23:59:59.997Z'),
       ]);
+    });
+  });
+
+  // ALERTS-BATCH hectare charging tests (GPV-5336)
+  describe('ALERTS-BATCH hectare charging start date (2026-04-18)', () => {
+    it('excludes ALERTS-BATCH from WHERE clause before 2026-04-18 via andWhere bracket', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+      mockQuery.mockResolvedValue([]);
+
+      await getAccountAnalysisUsageByAnalysisType({
+        startDate: '2026-03-01',
+        endDate: '2026-03-31',
+        orgDbName: 'org_db',
+      });
+
+      // Third andWhere (index 2) should be the ALERTS-BATCH bracket
+      const alertsBatchBracket = mockQueryBuilder.andWhere.mock.calls[2][0];
+      expect(alertsBatchBracket).toBeInstanceOf(Brackets);
+    });
+
+    it('passes ALERTS-BATCH charging start date in setParameters', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([]);
+      mockQuery.mockResolvedValue([]);
+
+      await getAccountAnalysisUsageByAnalysisType({
+        startDate: '2026-04-01',
+        endDate: '2026-04-30',
+        orgDbName: 'org_db',
+      });
+
+      expect(mockQueryBuilder.setParameters).toHaveBeenCalledWith(
+        expect.objectContaining({
+          alertsBatchAnalysisType: 'ALERTS-BATCH',
+          alertsBatchChargingStartDate: new Date('2026-04-18T00:00:00.000Z'),
+        })
+      );
+    });
+
+    it('includes ALERTS-BATCH hectares after 2026-04-18 in CASE expression', async () => {
+      mockQueryBuilder.getRawMany.mockResolvedValue([
+        {
+          total_area_analyzed: '500.0',
+          max_area_analyzed: '500.0',
+          total_lists_analyzed: '2',
+          total_locations_analyzed: '10',
+          analysis_type: 'ALERTS-BATCH',
+        },
+      ]);
+      mockQuery.mockResolvedValue([]);
+
+      const result = await getAccountAnalysisUsageByAnalysisType({
+        startDate: '2026-04-18',
+        endDate: '2026-04-30',
+        orgDbName: 'org_db',
+      });
+
+      const alertsBatchResult = result.find((r) => r.analysis_type === 'ALERTS-BATCH');
+      expect(alertsBatchResult?.hectares_analyzed).toBe(500);
+
+      // Verify the CASE expression for ALERTS-BATCH is in the SELECT
+      expect(mockQueryBuilder.select.mock.calls[0][0]).toContain(
+        'lp.analysisType = :alertsBatchAnalysisType'
+      );
     });
   });
 });

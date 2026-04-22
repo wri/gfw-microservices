@@ -53,7 +53,7 @@ RUN npm config set fetch-retries 5 \
   && npm config set fetch-retry-mintimeout 20000 \
   && npm config set fetch-retry-maxtimeout 120000 \
   && npm config set fetch-timeout 600000 \
-  && for i in 1 2 3; do npm --legacy-peer-deps --include=dev ci && break || (echo "npm ci failed (attempt $i), retrying..." && sleep 15); done
+  && for i in 1 2 3; do npm --legacy-peer-deps --include=dev ci && break || { echo "npm ci failed (attempt $i), retrying..."; [ "$i" -lt 3 ] && sleep 15 || exit 1; }; done
 
 # Run script to build webpack client bundles
 WORKDIR /srv/apps/webserver/src

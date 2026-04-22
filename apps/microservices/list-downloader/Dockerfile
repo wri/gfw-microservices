@@ -7,7 +7,7 @@ RUN npm config set fetch-retries 5 \
  && npm config set fetch-retry-mintimeout 20000 \
  && npm config set fetch-retry-maxtimeout 120000 \
  && npm config set fetch-timeout 600000 \
- && for i in 1 2 3; do npm ci --legacy-peer-deps && break || (echo "npm ci failed (attempt $i), retrying..." && sleep 15); done
+ && for i in 1 2 3; do npm ci --legacy-peer-deps && break || { echo "npm ci failed (attempt $i), retrying..."; [ "$i" -lt 3 ] && sleep 15 || exit 1; }; done
 
 FROM amd64/node:20.11.1 as appbuilder
 WORKDIR /appbuilder
@@ -38,7 +38,7 @@ RUN npm config set fetch-retries 5 \
  && npm config set fetch-retry-mintimeout 20000 \
  && npm config set fetch-retry-maxtimeout 120000 \
  && npm config set fetch-timeout 600000 \
- && for i in 1 2 3; do npm ci --legacy-peer-deps && break || (echo "npm ci failed (attempt $i), retrying..." && sleep 15); done
+ && for i in 1 2 3; do npm ci --legacy-peer-deps && break || { echo "npm ci failed (attempt $i), retrying..."; [ "$i" -lt 3 ] && sleep 15 || exit 1; }; done
 # RUN export NODE_OPTIONS="--max-old-space-size=8192"
 
 CMD [ "node", "main.js" ]

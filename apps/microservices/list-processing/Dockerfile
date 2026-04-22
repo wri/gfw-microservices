@@ -3,7 +3,11 @@ WORKDIR /build
 COPY package.json .
 COPY package-lock.json .
 
-RUN npm ci --legacy-peer-deps
+RUN npm config set fetch-retries 5 \
+ && npm config set fetch-retry-mintimeout 20000 \
+ && npm config set fetch-retry-maxtimeout 120000 \
+ && npm config set fetch-timeout 600000 \
+ && for i in 1 2 3; do npm ci --legacy-peer-deps && break || (echo "npm ci failed (attempt $i), retrying..." && sleep 15); done
 
 FROM amd64/node:20.11.1 as appbuilder
 WORKDIR /appbuilder
@@ -30,7 +34,11 @@ COPY --from=appbuilder /appbuilder/dist/apps/microservices/list-processing/ /app
 COPY package.json .
 COPY package-lock.json .
 COPY ./apps/microservices/list-processing/.env .
-RUN npm ci --legacy-peer-deps
+RUN npm config set fetch-retries 5 \
+ && npm config set fetch-retry-mintimeout 20000 \
+ && npm config set fetch-retry-maxtimeout 120000 \
+ && npm config set fetch-timeout 600000 \
+ && for i in 1 2 3; do npm ci --legacy-peer-deps && break || (echo "npm ci failed (attempt $i), retrying..." && sleep 15); done
 # RUN export NODE_OPTIONS="--max-old-space-size=8192"
 
 CMD [ "node", "main.js" ]

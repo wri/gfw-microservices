@@ -42,7 +42,8 @@ OUTER APPLY (
 ) cr
 WHERE lp.analysis_end_time >= @startDate
   AND lp.analysis_end_time < DATEADD(day, 1, @endDate)
-  AND (lp.analysis_type <> 'GHG' OR lp.analysis_end_time >= '2025-11-22');
+  AND (lp.analysis_type <> 'GHG' OR lp.analysis_end_time >= '2025-11-22')
+  AND (lp.analysis_type <> 'ALERTS-BATCH' OR lp.analysis_end_time >= '2026-04-18');
 `;
 
 export interface OrganizationUsersAnalysisUsageExport {

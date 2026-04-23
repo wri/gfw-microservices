@@ -28,6 +28,8 @@ LEFT JOIN Users U ON COALESCE(LP.user_id, last_alerts.user_id, L.user_id) = U.id
 WHERE
   LP.analysis_end_time >= @startDate
   AND LP.analysis_end_time <= @endDate
+  AND COALESCE(LP.user_id, last_alerts.user_id, L.user_id) IS NOT NULL
+  AND (LP.analysis_type <> 'ALERTS-BATCH' OR LP.analysis_end_time >= '2026-04-18')
 GROUP BY
   COALESCE(LP.user_id, last_alerts.user_id, L.user_id), U.first_name, U.last_name;
 `;

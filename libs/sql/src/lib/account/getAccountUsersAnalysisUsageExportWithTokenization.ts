@@ -73,6 +73,10 @@ export async function getAccountUsersAnalysisUsageExportWithTokenization(
       )
     WHERE lp.analysis_end_time >= @0
       AND lp.analysis_end_time <= @1
+      AND (
+        lp.analysis_type <> 'ALERTS-BATCH'
+        OR lp.analysis_end_time >= '2026-04-18T00:00:00.000Z'
+      )
     GROUP BY
       u.email,
       lp.list_id,

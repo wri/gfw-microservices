@@ -39,6 +39,9 @@ const ALL_ANALYSIS_TYPES = [
 // Tokenization effective date - no token charges before this date (GPV-5226)
 const TOKENIZATION_EFFECTIVE_DATE = new Date('2025-11-22T00:00:00.000Z');
 
+// Alerts-batch charging start date - no hectare charges before this date (GPV-5336)
+export const ALERTS_BATCH_CHARGING_START_DATE = new Date('2026-04-18T00:00:00.000Z');
+
 /**
  * Interface for tokenization data returned from the raw SQL query
  */
@@ -145,6 +148,14 @@ async function calculateTokenUsage(
         )
       WHERE lp.analysis_end_time >= @0
         AND lp.analysis_end_time <= @1
+        AND (
+          lp.analysis_type <> '${ListAnalysisIds.GHG}'
+          OR lp.analysis_end_time >= '2025-11-22T00:00:00.000Z'
+        )
+        AND (
+          lp.analysis_type <> '${ListAnalysisIds.ALERTS_BATCH}'
+          OR lp.analysis_end_time >= '2026-04-18T00:00:00.000Z'
+        )
     ) q0
     GROUP BY q0.analysis_type
   `;
@@ -177,7 +188,6 @@ export async function getAccountAnalysisUsageByAnalysisType({
   const GHG_ANALYSIS_TYPE = 'GHG';
   const GHG_CHARGING_START_DATE = new Date('2025-11-22T00:00:00.000Z');
   const ALERTS_BATCH_ANALYSIS_TYPE = 'ALERTS-BATCH';
-  const ALERTS_BATCH_CHARGING_START_DATE = new Date('2026-04-18T00:00:00.000Z');
 
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(orgDbName);
@@ -287,9 +297,6 @@ export async function getAccountAnalysisUsageByAnalysisType({
     return orderA - orderB;
   });
 }
-
-// Alerts-batch charging start date - no hectare charges before this date (GPV-5336)
-export const ALERTS_BATCH_CHARGING_START_DATE = new Date('2026-04-18T00:00:00.000Z');
 
 // Export helper functions for testing
 export { getChargeRates, findApplicableRate, calculateTokenUsage, TOKENIZATION_EFFECTIVE_DATE };

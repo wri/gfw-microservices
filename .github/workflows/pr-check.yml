@@ -33,14 +33,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          for i in 1 2 3; do
+          attempts=3
+          for i in $(seq 1 $attempts); do
             npm ci --legacy-peer-deps \
               --fetch-retries=5 \
               --fetch-retry-mintimeout=20000 \
-              --fetch-retry-maxtimeout=120000 && break
-            echo "npm ci failed (attempt $i). Retrying in 15s..."
-            sleep 15
+              --fetch-retry-maxtimeout=120000 && exit 0
+            echo "npm ci failed (attempt $i/$attempts)."
+            if [ "$i" -lt "$attempts" ]; then
+              echo "Retrying in 15s..."
+              sleep 15
+            fi
           done
+          echo "npm ci failed after $attempts attempts"
+          exit 1
 
       - name: Check code format
         run: npx nx format:check --base origin/develop
@@ -67,14 +73,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          for i in 1 2 3; do
+          attempts=3
+          for i in $(seq 1 $attempts); do
             npm ci --legacy-peer-deps \
               --fetch-retries=5 \
               --fetch-retry-mintimeout=20000 \
-              --fetch-retry-maxtimeout=120000 && break
-            echo "npm ci failed (attempt $i). Retrying in 15s..."
-            sleep 15
+              --fetch-retry-maxtimeout=120000 && exit 0
+            echo "npm ci failed (attempt $i/$attempts)."
+            if [ "$i" -lt "$attempts" ]; then
+              echo "Retrying in 15s..."
+              sleep 15
+            fi
           done
+          echo "npm ci failed after $attempts attempts"
+          exit 1
 
       - name: Run Lint
         run: npx nx affected --target=lint --parallel=3
@@ -101,14 +113,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          for i in 1 2 3; do
+          attempts=3
+          for i in $(seq 1 $attempts); do
             npm ci --legacy-peer-deps \
               --fetch-retries=5 \
               --fetch-retry-mintimeout=20000 \
-              --fetch-retry-maxtimeout=120000 && break
-            echo "npm ci failed (attempt $i). Retrying in 15s..."
-            sleep 15
+              --fetch-retry-maxtimeout=120000 && exit 0
+            echo "npm ci failed (attempt $i/$attempts)."
+            if [ "$i" -lt "$attempts" ]; then
+              echo "Retrying in 15s..."
+              sleep 15
+            fi
           done
+          echo "npm ci failed after $attempts attempts"
+          exit 1
 
       - name: Run Test
         run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
@@ -136,14 +154,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          for i in 1 2 3; do
+          attempts=3
+          for i in $(seq 1 $attempts); do
             npm ci --legacy-peer-deps \
               --fetch-retries=5 \
               --fetch-retry-mintimeout=20000 \
-              --fetch-retry-maxtimeout=120000 && break
-            echo "npm ci failed (attempt $i). Retrying in 15s..."
-            sleep 15
+              --fetch-retry-maxtimeout=120000 && exit 0
+            echo "npm ci failed (attempt $i/$attempts)."
+            if [ "$i" -lt "$attempts" ]; then
+              echo "Retrying in 15s..."
+              sleep 15
+            fi
           done
+          echo "npm ci failed after $attempts attempts"
+          exit 1
 
       - name: Build all services
         env:
@@ -169,23 +193,38 @@ jobs:
       # Full audit — informational, never fails the build. Surfaces drift in PRs.
       - name: npm audit (report all)
         run: |
-          for i in 1 2 3; do
-            npm audit --audit-level=low && break
-            echo "npm audit failed (attempt $i). Retrying in 15s..."
-            sleep 15
-          done || true
+          attempts=3
+          for i in $(seq 1 $attempts); do
+            npm audit --audit-level=low
+            status=$?
+            # 0 = no advisories; 1 = advisories found (expected/informational) — not a transient error.
+            if [ "$status" = "0" ] || [ "$status" = "1" ]; then exit 0; fi
+            echo "npm audit errored (attempt $i/$attempts, status=$status)."
+            if [ "$i" -lt "$attempts" ]; then
+              echo "Retrying in 15s..."
+              sleep 15
+            fi
+          done
+          echo "npm audit could not complete after $attempts attempts; continuing."
+          exit 0
 
       # Hard gate: fail the build only on critical-severity advisories.
       - name: npm audit (fail on critical)
         run: |
-          for i in 1 2 3; do
-            npm audit --audit-level=critical --omit=dev && exit 0
+          attempts=3
+          for i in $(seq 1 $attempts); do
+            npm audit --audit-level=critical --omit=dev
             status=$?
-            # Exit code 1 from npm audit means advisories were found — do not retry.
+            if [ "$status" = "0" ]; then exit 0; fi
+            # Exit code 1 from npm audit means advisories were found — hard fail, do not retry.
             if [ "$status" = "1" ]; then exit 1; fi
-            echo "npm audit errored (attempt $i, status=$status). Retrying in 15s..."
-            sleep 15
+            echo "npm audit errored (attempt $i/$attempts, status=$status)."
+            if [ "$i" -lt "$attempts" ]; then
+              echo "Retrying in 15s..."
+              sleep 15
+            fi
           done
+          echo "npm audit could not complete after $attempts attempts"
           exit 1
 
   # Disabled the fitness test github action because the underlying test is already disabled

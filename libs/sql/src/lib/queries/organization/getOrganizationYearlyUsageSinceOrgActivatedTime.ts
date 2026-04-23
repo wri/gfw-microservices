@@ -54,6 +54,7 @@ FROM (
         )
     WHERE
         lp.analysis_end_time >= @orgActivatedTime
+        AND (lp.analysis_type <> 'ALERTS-BATCH' OR lp.analysis_end_time >= '2026-04-18')
 ) AS YearlyAnalysis
 GROUP BY years_since_activation
 `;

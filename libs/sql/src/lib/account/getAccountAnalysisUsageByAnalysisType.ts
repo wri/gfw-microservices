@@ -39,6 +39,9 @@ const ALL_ANALYSIS_TYPES = [
 // Tokenization effective date - no token charges before this date (GPV-5226)
 const TOKENIZATION_EFFECTIVE_DATE = new Date('2025-11-22T00:00:00.000Z');
 
+// Alerts-batch charging start date - no hectare charges before this date (GPV-5336)
+export const ALERTS_BATCH_CHARGING_START_DATE = new Date('2026-04-18T00:00:00.000Z');
+
 /**
  * Interface for tokenization data returned from the raw SQL query
  */
@@ -145,7 +148,14 @@ async function calculateTokenUsage(
         )
       WHERE lp.analysis_end_time >= @0
         AND lp.analysis_end_time <= @1
-        AND lp.user_id IS NOT NULL
+        AND (
+          lp.analysis_type <> '${ListAnalysisIds.GHG}'
+          OR lp.analysis_end_time >= '2025-11-22T00:00:00.000Z'
+        )
+        AND (
+          lp.analysis_type <> '${ListAnalysisIds.ALERTS_BATCH}'
+          OR lp.analysis_end_time >= '2026-04-18T00:00:00.000Z'
+        )
     ) q0
     GROUP BY q0.analysis_type
   `;
@@ -177,6 +187,7 @@ export async function getAccountAnalysisUsageByAnalysisType({
 > {
   const GHG_ANALYSIS_TYPE = 'GHG';
   const GHG_CHARGING_START_DATE = new Date('2025-11-22T00:00:00.000Z');
+  const ALERTS_BATCH_ANALYSIS_TYPE = 'ALERTS-BATCH';
 
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(orgDbName);
@@ -192,22 +203,21 @@ export async function getAccountAnalysisUsageByAnalysisType({
     listsProcessingRepository
       .createQueryBuilder('lp')
       .select(
-        `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
+        `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 WHEN lp.analysisType = :alertsBatchAnalysisType AND lp.analysisEndTime < :alertsBatchChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
         'total_area_analyzed'
       )
       .addSelect(
-        `ISNULL(MAX(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
+        `ISNULL(MAX(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 WHEN lp.analysisType = :alertsBatchAnalysisType AND lp.analysisEndTime < :alertsBatchChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
         'max_area_analyzed'
       )
       .addSelect('COUNT(DISTINCT lp.listId)', 'total_lists_analyzed')
       .addSelect(
-        `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 ELSE lp.locationsAnalyzed END), 0)`,
+        `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 WHEN lp.analysisType = :alertsBatchAnalysisType AND lp.analysisEndTime < :alertsBatchChargingStartDate THEN 0 ELSE lp.locationsAnalyzed END), 0)`,
         'total_locations_analyzed'
       )
       .addSelect('lp.analysisType', 'analysis_type')
       .where('lp.analysisEndTime >= :startDateTime', { startDateTime })
       .andWhere('lp.analysisEndTime <= :endDateTime', { endDateTime })
-      .andWhere('lp.userId IS NOT NULL')
       .andWhere(
         new Brackets((qb) =>
           qb
@@ -215,9 +225,18 @@ export async function getAccountAnalysisUsageByAnalysisType({
             .orWhere('lp.analysisEndTime >= :ghgChargingStartDate')
         )
       )
+      .andWhere(
+        new Brackets((qb) =>
+          qb
+            .where('lp.analysisType <> :alertsBatchAnalysisType')
+            .orWhere('lp.analysisEndTime >= :alertsBatchChargingStartDate')
+        )
+      )
       .setParameters({
         ghgAnalysisType: GHG_ANALYSIS_TYPE,
         ghgChargingStartDate: GHG_CHARGING_START_DATE,
+        alertsBatchAnalysisType: ALERTS_BATCH_ANALYSIS_TYPE,
+        alertsBatchChargingStartDate: ALERTS_BATCH_CHARGING_START_DATE,
       })
       .groupBy('lp.analysisType')
       .getRawMany(),

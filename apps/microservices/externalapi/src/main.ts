@@ -37,11 +37,26 @@ async function bootstrap() {
 
   const config = app.get<ConfigService<ServerConfigType, true>>(ConfigService);
   const port = config.get('PORT', { infer: true });
+  const nodeEnv = config.get('NODE_ENV', { infer: true });
+
+  const swaggerServer: { url: string; description: string } = (() => {
+    switch (nodeEnv) {
+      case 'ProdV2':
+        return { url: 'https://pro.globalforestwatch.org', description: 'Production' };
+      case 'staging':
+        return { url: 'https://pro-staging.globalforestwatch.org', description: 'Staging' };
+      case 'qa':
+        return { url: 'https://pro-qa.globalforestwatch.org', description: 'QA' };
+      default:
+        return { url: `http://localhost:${port}`, description: 'Local' };
+    }
+  })();
 
   const configSwagger = new DocumentBuilder()
     .setTitle('GFW Pro API')
     .setDescription('V1 for GFW Pro API')
     .setVersion('1.0')
+    .addServer(swaggerServer.url, swaggerServer.description)
     .addApiKey(
       {
         type: 'apiKey',

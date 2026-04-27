@@ -2,7 +2,7 @@ import { isValidElement } from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
-const transifex = Transifex.live.translateText;
+import { useTransifexTranslation } from '../../../../../hooks';
 
 export default function ConfirmDialog({
   open,
@@ -13,12 +13,15 @@ export default function ConfirmDialog({
   const DOWNLOAD_MESSAGE =
     "You have selected a list file for download. Please check your email for your data's download link.";
 
+  const translatedTitle = useTransifexTranslation(DOWNLOAD_TITLE);
+  const translatedMessage = useTransifexTranslation(DOWNLOAD_MESSAGE);
+
   const isValidCustomConfirmationMessage =
     CustomDownloadConfirmationMessage && isValidElement(CustomDownloadConfirmationMessage());
 
   return (
     <Dialog open={open} onClose={() => setDialogOpen(false)}>
-      <DialogTitle data-cy="download-dialog">{transifex(DOWNLOAD_TITLE)}</DialogTitle>
+      <DialogTitle data-cy="download-dialog">{translatedTitle}</DialogTitle>
       <IconButton
         aria-label="close"
         sx={{
@@ -34,7 +37,7 @@ export default function ConfirmDialog({
         {isValidCustomConfirmationMessage ? (
           <CustomDownloadConfirmationMessage />
         ) : (
-          <div className="dialog__prompt">{transifex(DOWNLOAD_MESSAGE)}</div>
+          <div className="dialog__prompt">{translatedMessage}</div>
         )}
       </DialogContent>
     </Dialog>

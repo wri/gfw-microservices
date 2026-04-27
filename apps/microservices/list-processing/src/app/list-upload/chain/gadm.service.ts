@@ -7,6 +7,15 @@ import { AbstractHandler, ChainType, PreviewListRequest, RequestNewList } from '
 import { yieldIfLong } from './shared';
 import { Feature, FeatureCollection, Polygon } from '@wri-monorepos/geo';
 import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
+import { createCircuitBreaker } from '@wri-monorepos/shared/utils/circuit-breaker';
+
+function isClientHttpError(err: unknown): boolean {
+  if (!axios.isAxiosError(err)) {
+    return false;
+  }
+  const status = err.response?.status;
+  return typeof status === 'number' && status >= 400 && status < 500 && status !== 429;
+}
 
 export class GADMService extends AbstractHandler<ChainType> {
   logger = new Logger(GADMService.name);
@@ -15,55 +24,59 @@ export class GADMService extends AbstractHandler<ChainType> {
   // https://gfwlcl.slack.com/archives/C07SQUKR74M/p1775236865828449?thread_ts=1775162611.795819&cid=C07SQUKR74M
   private readonly BATCH_SIZE = 25;
 
-  private async retryDataAPI(
-    retriesLeft: number,
-    requestData: Record<string, unknown>
-  ): Promise<any> {
-    return retryWithDelay(
-      async () => {
-        const response = await axios.post(
-          'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
-          requestData,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'x-api-key': process.env.GFW_DATA_API_KEY,
-            },
-            timeout: 60000, // 60 second timeout
-          }
-        );
-
-        if (response.status !== 200) {
-          throw new Error(`Failed to fetch data: ${response.statusText}`);
-        }
-        // Check if response looks like HTML (common error response format)
-        if (
-          typeof response.data === 'string' &&
-          (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
-        ) {
-          throw new Error(
-            `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
-          );
-        }
-
-        // Check if the response has the expected structure
-        const data = response.data?.data;
-        if (!data || !Array.isArray(data) || !data.length || !data[0]) {
-          throw new Error(
-            `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(
-              response.data
-            )}`
-          );
-        }
-        return data;
-      },
-      {
-        retries: retriesLeft,
-        delayMs: 60 * 1000, // 1 minute delay between retries to attempt to avoid 504 errors
+  private readonly dataApiBreaker = createCircuitBreaker(
+    (requestData: Record<string, unknown>) =>
+      retryWithDelay(() => this.callDataAPI(requestData), {
+        retries: 3,
+        delayMs: 1000,
         isRetryable: isRetryableError,
         logger: this.logger,
+      }),
+    {
+      name: 'gadm-data-api',
+      errorThresholdPercentage: 50,
+      volumeThreshold: 5,
+      resetTimeout: 30_000,
+      rollingCountTimeout: 30_000,
+      isNonFailure: isClientHttpError,
+      logger: this.logger,
+    }
+  );
+
+  private async callDataAPI(requestData: Record<string, unknown>): Promise<any> {
+    const response = await axios.post(
+      'https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.85/query/json',
+      requestData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.GFW_DATA_API_KEY,
+        },
+        timeout: 60000, // 60 second timeout
       }
     );
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to fetch data: ${response.statusText}`);
+    }
+    // Check if response looks like HTML (common error response format)
+    if (
+      typeof response.data === 'string' &&
+      (response.data.trim().startsWith('<html') || response.data.trim().startsWith('<!DOCTYPE'))
+    ) {
+      throw new Error(
+        `Received HTML response instead of JSON (HTTP ${response.status}): ${response.data}`
+      );
+    }
+
+    // Check if the response has the expected structure
+    const data = response.data?.data;
+    if (!data || !Array.isArray(data) || !data.length || !data[0]) {
+      throw new Error(
+        `Unexpected response structure (HTTP ${response.status}): ${JSON.stringify(response.data)}`
+      );
+    }
+    return data;
   }
 
   /**
@@ -106,7 +119,7 @@ export class GADMService extends AbstractHandler<ChainType> {
       sql: sql,
     };
 
-    return await this.retryDataAPI(3, requestData);
+    return await this.dataApiBreaker.fire(requestData);
   };
 
   // remove very tiny polygons that sometimes appear due to GADM level

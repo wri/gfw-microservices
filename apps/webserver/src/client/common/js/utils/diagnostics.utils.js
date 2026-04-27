@@ -71,7 +71,7 @@ const formatDecimals = (chunk, decimals = 2) => {
 };
 
 function getFormattedTooltipForDiagnosticsChart() {
-  const transifex = Transifex.live.translateText;
+  const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
   const { color: optionsColor, label, type } = this.options;
   const { color: seriesColor, userOptions } = this.series;

@@ -8,3 +8,4 @@ export * from './trace/enhanced-logger';
 export * from './trace/console.log.logger';
 export * from './trace/global-axios.config';
 export * from './utils/retry';
+export * from './utils/circuit-breaker';

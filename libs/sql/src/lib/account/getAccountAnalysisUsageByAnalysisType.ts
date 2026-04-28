@@ -210,7 +210,7 @@ export async function getAccountAnalysisUsageByAnalysisType({
         `ISNULL(MAX(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 WHEN lp.analysisType = :alertsBatchAnalysisType AND lp.analysisEndTime < :alertsBatchChargingStartDate THEN 0 ELSE lp.areaAnalyzedLocationsHa END), 0)`,
         'max_area_analyzed'
       )
-      .addSelect('COUNT(DISTINCT lp.listId)', 'total_lists_analyzed')
+      .addSelect('COUNT(lp.listId)', 'total_lists_analyzed')
       .addSelect(
         `ISNULL(SUM(CASE WHEN lp.analysisType = :ghgAnalysisType AND lp.analysisEndTime < :ghgChargingStartDate THEN 0 WHEN lp.analysisType = :alertsBatchAnalysisType AND lp.analysisEndTime < :alertsBatchChargingStartDate THEN 0 ELSE lp.locationsAnalyzed END), 0)`,
         'total_locations_analyzed'

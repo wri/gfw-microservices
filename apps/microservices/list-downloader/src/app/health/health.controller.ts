@@ -1,19 +1,13 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import {
-  HealthCheck,
-  HealthCheckService,
-  HttpHealthIndicator,
-  TypeOrmHealthIndicator,
-} from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
 import { ServerConfigType } from '../../validators/server-config';
 
 @Controller('HealthCheck')
 export class HealthController {
   constructor(
     private health: HealthCheckService,
-    private db: TypeOrmHealthIndicator,
     private http: HttpHealthIndicator,
     private readonly configService: ConfigService<ServerConfigType, true>
   ) {}
@@ -22,7 +16,6 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      async () => this.db.pingCheck('database', { timeout: 10000 }),
       async () =>
         this.http.pingCheck(
           'LP',

@@ -154,6 +154,15 @@ describe('getAccountAnalysisUsageByAnalysisType', () => {
       'CASE WHEN lp.analysisType = :ghgAnalysisType'
     );
     expect(mockQueryBuilder.select.mock.calls[0][1]).toBe('total_area_analyzed');
+    // Each list should be charged separately, so the count must NOT use DISTINCT
+    expect(mockQueryBuilder.addSelect).toHaveBeenCalledWith(
+      'COUNT(lp.listId)',
+      'total_lists_analyzed'
+    );
+    expect(mockQueryBuilder.addSelect).not.toHaveBeenCalledWith(
+      'COUNT(DISTINCT lp.listId)',
+      'total_lists_analyzed'
+    );
     expect(mockQueryBuilder.setParameters).toHaveBeenCalledWith({
       ghgAnalysisType: 'GHG',
       ghgChargingStartDate: new Date('2025-11-22T00:00:00.000Z'),

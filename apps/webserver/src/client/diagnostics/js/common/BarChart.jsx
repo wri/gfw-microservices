@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { renderToString } from 'react-dom/server';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 import Highcharts from 'highcharts';
 import useHookWithRefCallback from './useHookWithRefCallback';

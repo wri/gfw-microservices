@@ -10,11 +10,11 @@ import { ALERTS } from './listViews.constants';
 import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
 
 const transifex = (text) => {
-  const raw = Transifex.live.translateText(text);
-  if (raw !== text) {
+  const raw = window.Transifex?.live?.translateText?.(text);
+  if (raw && raw !== text) {
     return raw;
   }
-  const lang = Transifex.live.getSelectedLanguageCode?.() || 'en';
+  const lang = window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
   return getManualTranslation(text, lang);
 };
 

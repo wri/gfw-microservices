@@ -10,7 +10,7 @@ import {
 } from '../../../common/js/config';
 import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 export default class DeforestationTrends extends Component {
   componentDidMount() {

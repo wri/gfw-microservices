@@ -3,8 +3,6 @@ import IconSearch from '../../../../common/js/components/icon/IconSearch';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 import IconButton from '../../../../common/js/components/IconButton';
 
-const transifex = Transifex.live.translateText;
-
 /** Semi-generic search component that presents a text input used to filter items in a list
  *
  * @param className: CSS class name to attach to the container div of the component
@@ -14,7 +12,9 @@ const transifex = Transifex.live.translateText;
  */
 function ListsFilter({ className, value, onChange, onkeydown }) {
   const wrapperClass = className || 'input-search';
-  const placeholder = transifex(locationsPage.lists.searchStringInputPlaceholder);
+  const placeholder =
+    window.Transifex?.live?.translateText?.(locationsPage.lists.searchStringInputPlaceholder) ??
+    locationsPage.lists.searchStringInputPlaceholder;
 
   return (
     <div className={wrapperClass}>

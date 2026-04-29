@@ -23,9 +23,12 @@ This project uses a strict Content Security Policy (CSP) to protect against XSS 
 - https://cdn.transifex.com
 - https://static.zdassets.com
 - https://static.hotjar.com
+- https://script.hotjar.com
 - https://plausible.io
 - https://snap.licdn.com
 - https://www.clarity.ms
+- https://scripts.clarity.ms
+- https://engage.globalforestwatch.org
 - https://js.arcgis.com
 - 'unsafe-inline', 'unsafe-eval' (required for some legacy or dynamic scripts)
 

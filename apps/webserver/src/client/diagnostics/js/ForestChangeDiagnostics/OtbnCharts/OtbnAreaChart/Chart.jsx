@@ -2,7 +2,7 @@ import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../../../common/useHookWithRefCallback';
 import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions-constants';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 function Chart({ data }) {
   const renderChart = (divRef) => {

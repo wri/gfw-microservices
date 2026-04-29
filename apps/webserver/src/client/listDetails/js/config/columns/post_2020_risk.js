@@ -14,7 +14,8 @@ import {
   DISPLAY_FORMAT_PERCENTAGE,
 } from '../../components/lists/ListDetails/deforestationDisplayFormat.constants';
 
-const sizeLabel = Transifex.live.translateText(columnHeaders.sizeInHa);
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
+const sizeLabel = () => transifex(columnHeaders.sizeInHa);
 
 // Function that creates columns array with getter properties for show
 const getColumnsWithCurrentState = () => {
@@ -26,7 +27,7 @@ const getColumnsWithCurrentState = () => {
       Cell: ({ original }) => <span>{original?.locationName}</span>,
     },
     {
-      Header: () => <ColumnsHeader label={sizeLabel} />,
+      Header: () => <ColumnsHeader label={sizeLabel()} />,
       className: 'default-cell td-num',
       id: 'total_area_ha',
       Cell: ({ original }) => renderCell(formatDigit(original?.totalAreaHa)),

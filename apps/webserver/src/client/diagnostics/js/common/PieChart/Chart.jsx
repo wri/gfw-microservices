@@ -1,7 +1,7 @@
 import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../useHookWithRefCallback';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 function Chart({ data, chartLabels, hasSecondarySubLayers }) {
   const subLayersData = [];

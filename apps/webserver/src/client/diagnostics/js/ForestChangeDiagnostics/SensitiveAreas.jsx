@@ -20,7 +20,7 @@ import '../../../common/css/_irsStyle.scss';
 const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearForTclDataInAnalyses; // Assembla ticket: 2057 - Update FC Diagnostic Charts and CSVs to show 2019 data
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 export default class SensitiveAreas extends Component {
   constructor(props) {

@@ -7,7 +7,7 @@ import columns from '../../../config/columns';
 import CustomRow from './CustomRow';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 const WrappedReactTable = ({
   listId,

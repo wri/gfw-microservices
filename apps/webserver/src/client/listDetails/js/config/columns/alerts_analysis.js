@@ -7,12 +7,9 @@ const FIELDS_SUBTITLE = 'since last TCL data update';
 
 const roundToTwoDecimals = (num) => (typeof num === 'number' ? num.toFixed(2) : '0');
 
-const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
-const sizeLabel = () => transifex(columnHeaders.sizeInHa);
-
 const alerts_analysis = [
   {
-    Header: () => <ColumnsHeader label={sizeLabel()} />,
+    Header: () => <ColumnsHeader label={columnHeaders.sizeInHa} />,
     className: 'default-cell td-num',
     id: 'total_ha',
     show: true,

@@ -1823,8 +1823,9 @@ export default class ListDetails extends Component {
       (item) => item.analysisId === analysisIdOfCurrentTab
     );
     const updateTime = currentAnalysis?.updateTime;
-    const rawAnalysisUpdated = Transifex.live.translateText('Analysis updated');
-    const languageCode = Transifex.live.getSelectedLanguageCode?.() || 'en';
+    const rawAnalysisUpdated =
+      window.Transifex?.live?.translateText?.('Analysis updated') ?? 'Analysis updated';
+    const languageCode = window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
     const analysisUpdatedString =
       rawAnalysisUpdated !== 'Analysis updated'
         ? rawAnalysisUpdated
@@ -2101,8 +2102,9 @@ export default class ListDetails extends Component {
       ? 'Location Diagnostic'
       : 'List diagnostic';
 
-    const rawDiagnosticLabel = Transifex.live.translateText(diagnosticButtonLabel);
-    const diagnosticLang = Transifex.live.getSelectedLanguageCode?.() || 'en';
+    const rawDiagnosticLabel =
+      window.Transifex?.live?.translateText?.(diagnosticButtonLabel) ?? diagnosticButtonLabel;
+    const diagnosticLang = window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
     const translatedDiagnosticButtonLabel =
       rawDiagnosticLabel !== diagnosticButtonLabel
         ? rawDiagnosticLabel
@@ -2471,8 +2473,11 @@ export default class ListDetails extends Component {
                                   onClick={() => this.handleDownloadReport(listID, listView)}
                                 >
                                   {(() => {
-                                    const raw = Transifex.live.translateText('Download Report');
-                                    const lang = Transifex.live.getSelectedLanguageCode?.() || 'en';
+                                    const raw =
+                                      window.Transifex?.live?.translateText?.('Download Report') ??
+                                      'Download Report';
+                                    const lang =
+                                      window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
                                     return raw !== 'Download Report'
                                       ? raw
                                       : getManualTranslation('Download Report', lang);

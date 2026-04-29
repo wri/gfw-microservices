@@ -29,7 +29,7 @@ const END_YEAR = latestTreeCoverLossYearForTclDataInMap;
 const END_YEAR_SOY_PLANTED = 2023; // This is a workaround for soy planted data end year to be different from the others; revert the code that uses this constant once this validation is no longer needed.
 const HARVEST_YEAR = END_YEAR - 1;
 let isMounted = false;
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 export default class SouthAmericaRegionsWithoutArgentina extends Component {
   constructor(props) {
     super(props);

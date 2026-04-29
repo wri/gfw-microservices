@@ -2,7 +2,7 @@ import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../../common/useHookWithRefCallback';
 import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 function AfiDiagnosticsChart({ data }) {
   const formattedData = Array.isArray(data)

@@ -8,7 +8,7 @@ import { getCommodityName } from '../../../../../utils/list-utils';
 import { useTransifexTranslation } from '../../../../../hooks';
 import './LocationsSummary.scss';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 const MAX_VISIBLE_COUNTRIES = 3;
 

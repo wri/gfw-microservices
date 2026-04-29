@@ -7,7 +7,7 @@ import {
 } from '../../../../locations/js/utils/locationsTableUtils';
 import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 const commodity_analysis = [
   {

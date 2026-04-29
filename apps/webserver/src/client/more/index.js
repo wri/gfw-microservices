@@ -9,9 +9,9 @@ const App = () => {
   const [languageCode, setLanguageCode] = useState('en');
   const [userGuideLink, setUserGuideLink] = useState(GFW_PRO_HELP_CENTER__LINK);
   useEffect(() => {
-    if (Transifex) {
-      Transifex.live.onReady(() => {
-        const selectedLanguageCode = Transifex.live.getSelectedLanguageCode();
+    if (window.Transifex?.live?.onReady) {
+      window.Transifex.live.onReady(() => {
+        const selectedLanguageCode = window.Transifex?.live?.getSelectedLanguageCode?.() || 'en';
         setLanguageCode(selectedLanguageCode);
         setUserGuideLink(GFW_PRO_HELP_CENTER__LINK);
       });

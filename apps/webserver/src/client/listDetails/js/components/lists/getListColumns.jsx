@@ -10,7 +10,7 @@ import {
 } from '../../../../locations/js/utils/lists.utils';
 import id_type_columns from '../../config/columns/id_type_columns';
 
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
 // Set columns that can be added/removed
 export const getListColumns = (locationData, customAttributes, selectedLists) => {

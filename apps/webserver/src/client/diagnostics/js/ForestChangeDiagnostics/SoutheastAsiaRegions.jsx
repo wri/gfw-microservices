@@ -17,7 +17,7 @@ import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
 let isMounted = false;
-const transifex = Transifex.live.translateText;
+const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 export default class SoutheastAsiaRegions extends Component {
   constructor(props) {
     super(props);

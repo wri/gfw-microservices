@@ -8,7 +8,7 @@ export function BarCharTooltip({
   rawBarChartData,
   isDataWithTwoLevelsOfCategory,
 }) {
-  const transifex = Transifex.live.translateText;
+  const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 
   const { color: optionsColor, label, type, x: year } = options;
   const { color: seriesColor, userOptions } = series;

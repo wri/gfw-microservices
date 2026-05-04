@@ -93,6 +93,12 @@ export default class Diagnostics extends Component {
 
     this.mapView = undefined;
 
+    const availableDiagnostics = getAvailableDiagnostics(this.props.selectedList);
+    const isPalmRiskAvailable = availableDiagnostics.some(
+      ({ value }) => value === 'commodity_risk'
+    );
+    const initialListView = isPalmRiskAvailable ? 'commodity_risk' : 'forest_change';
+
     this.state = {
       isSingleLocation,
       mapLoaded: false,
@@ -121,7 +127,7 @@ export default class Diagnostics extends Component {
         ...highchartColorsIndonesiaLegalClassification2020,
       },
       isLoading: true,
-      listView: 'forest_change',
+      listView: initialListView,
       openDownloadDialog: false,
       anchorEl: null,
     };

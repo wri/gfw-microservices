@@ -356,30 +356,88 @@ describe('ConfigureList', () => {
   }, 10100);
 
   it('should toggle dependent checkboxes fcd and palm risk', async () => {
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Random list name 123',
+        existingList: null,
+        commodity: 'Palm oil',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
-
-    const commodityDropdown = screen.getAllByRole('combobox')[0];
-
-    await user.click(commodityDropdown);
-    await user.click(screen.getByRole('option', { name: /palm oil/i }));
 
     const fcdCheckbox = screen.getByRole('checkbox', {
       name: /post-2000 forest change annual tree cover loss since 2001 \+ additional contextual and regional datasets/i,
     });
     const palmRiskCheckbox = screen.getByRole('checkbox', { name: /palm risk assessment/i });
 
-    await user.click(palmRiskCheckbox);
+    // Palm Risk is disabled until FCD is selected
+    expect(palmRiskCheckbox).toBeDisabled();
 
-    expect(palmRiskCheckbox).toBeChecked();
+    await user.click(fcdCheckbox);
     expect(fcdCheckbox).toBeChecked();
+    expect(palmRiskCheckbox).not.toBeDisabled();
 
+    await user.click(palmRiskCheckbox);
+    expect(palmRiskCheckbox).toBeChecked();
+
+    // Unchecking FCD should also uncheck and disable Palm Risk
     await user.click(fcdCheckbox);
 
     expect(fcdCheckbox).not.toBeChecked();
     expect(palmRiskCheckbox).not.toBeChecked();
+    expect(palmRiskCheckbox).toBeDisabled();
   }, 15100);
 
   it('should toggle dependent checkboxes alerts and weekly alerts', async () => {
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: 'Random list name 123',
+        existingList: null,
+        commodity: 'Palm oil',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [{ latitude: 1.1, longitude: 1.1 }],
+        locationName: 'location name',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const alertsCheckbox = screen.getByRole('checkbox', {
@@ -387,17 +445,22 @@ describe('ConfigureList', () => {
     });
     const weeklyCheckbox = screen.getByRole('checkbox', { name: /weekly alerts/i });
 
-    // Checking Weekly should auto-check ALERTS
-    await user.click(weeklyCheckbox);
+    // Weekly is disabled until ALERTS is selected
+    expect(weeklyCheckbox).toBeDisabled();
 
-    expect(weeklyCheckbox).toBeChecked();
+    await user.click(alertsCheckbox);
     expect(alertsCheckbox).toBeChecked();
+    expect(weeklyCheckbox).not.toBeDisabled();
 
-    // Unchecking ALERTS should also uncheck Weekly
+    await user.click(weeklyCheckbox);
+    expect(weeklyCheckbox).toBeChecked();
+
+    // Unchecking ALERTS should also uncheck and disable Weekly
     await user.click(alertsCheckbox);
 
     expect(alertsCheckbox).not.toBeChecked();
     expect(weeklyCheckbox).not.toBeChecked();
+    expect(weeklyCheckbox).toBeDisabled();
   }, 15100);
 
   it('should go back to the previous page', async () => {

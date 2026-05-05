@@ -3,6 +3,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  GetObjectCommandInput,
   DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -37,12 +38,20 @@ export class S3Service {
     await this.s3Client.send(command);
   }
 
-  async getFileSignedUrl(key: string, fileExtension: string, bucket: string) {
-    const params = {
+  async getFileSignedUrl(
+    key: string,
+    fileExtension: string,
+    bucket: string,
+    downloadFilename?: string
+  ) {
+    const params: GetObjectCommandInput = {
       Bucket: bucket,
       Key: `${process.env.NODE_ENV}/${key}.${fileExtension}`,
-      Expires: 86400,
     };
+
+    if (downloadFilename) {
+      params.ResponseContentDisposition = buildContentDisposition(downloadFilename);
+    }
 
     const command = new GetObjectCommand(params);
     const url = await getSignedUrl(this.s3Client, command, { expiresIn: 86400 });
@@ -182,4 +191,10 @@ export class S3Service {
       });
     });
   }
+}
+
+export function buildContentDisposition(filename: string): string {
+  const asciiFallback = filename.replace(/[^\x20-\x7E]/g, '_').replace(/["\\]/g, '_');
+  const utf8Encoded = encodeURIComponent(filename);
+  return `attachment; filename="${asciiFallback}"; filename*=UTF-8''${utf8Encoded}`;
 }

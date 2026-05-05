@@ -62,7 +62,7 @@ class ShareList extends Component {
    * Process fetched organization users and categorize them
    * @private
    */
-  _processOrganizationUsers = () => {
+  _processOrganizationUsers = (callback) => {
     const { usersList, selectedList } = this.state;
 
     if (!usersList) {
@@ -99,10 +99,13 @@ class ShareList extends Component {
         }
       });
 
-    this.setState({
-      AdminsOwner: AdminsOwner,
-      NotAdminsOwner: NotAdminsOwner,
-    });
+    this.setState(
+      {
+        AdminsOwner: AdminsOwner,
+        NotAdminsOwner: NotAdminsOwner,
+      },
+      callback
+    );
   };
 
   componentDidMount() {
@@ -112,8 +115,9 @@ class ShareList extends Component {
   componentDidUpdate(prevProps, prevState) {
     // After users are loaded, process them and fetch shared list users
     if (prevState.isLoadingUsers && !this.state.isLoadingUsers && this.state.usersList) {
-      this._processOrganizationUsers();
-      updateSharedListUsersService(this);
+      this._processOrganizationUsers(() => {
+        updateSharedListUsersService(this);
+      });
     }
   }
 

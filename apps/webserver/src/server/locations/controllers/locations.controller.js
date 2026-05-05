@@ -82,7 +82,7 @@ export const locationsData = async (req, res) => {
       ListManager.getAllListsWithAnalysisId(req),
       GFWlistManager.getGFWLists(req),
       isAdministrator
-        ? () => Promise.resolve([])
+        ? Promise.resolve([])
         : ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
     ];
 

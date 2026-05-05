@@ -187,6 +187,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
   }, [isUmlFile, setValue, commodity]);
 
   const selectedCommodity = watch('commodity') as CommoditiesType;
+  const alertsSelected = watch('ALERTS');
+  const fcdSelected = watch('FCD');
   useEffect(() => {
     if (!selectedCommodity || selectedCommodity === 'Other') {
       return;
@@ -520,6 +522,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
               const isWeeklyAlerts = id === AlertsAnalysisFrequency.WEEKLY;
               const isChildOption = isPalmRisk || isWeeklyAlerts;
               const isAfi = id === analysisTypes.DEFORESTATION_KPIS;
+              const isDisabled =
+                (isPalmRisk && !fcdSelected) || (isWeeklyAlerts && !alertsSelected);
 
               return (
                 <Controller
@@ -534,6 +538,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                           onChange={(e) => handleAnalysisChange(e, field, id)}
                           inputRef={field.ref}
                           data-testid={`checkbox-${id.toLowerCase()}`}
+                          disabled={isDisabled}
                         />
                       }
                       sx={{
@@ -589,7 +594,10 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                               )}
                             </Box>
 
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant="caption"
+                              color={isDisabled ? 'text.disabled' : 'text.secondary'}
+                            >
                               {childOptionDescriptions[id] || description}
                             </Typography>
                           </Box>

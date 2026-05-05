@@ -12,6 +12,7 @@ import {
 import { SQLUtils } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
+import { getDownloadFilename } from '../shared/download-filename';
 
 export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
@@ -89,7 +90,8 @@ export abstract class IPipeService {
     return await this.s3Service.getFileSignedUrl(
       key,
       'zip',
-      this.configService.get('AWS_TMP_BUCKET', { infer: true })
+      s3Bucket,
+      getDownloadFilename(filters)
     );
   }
 

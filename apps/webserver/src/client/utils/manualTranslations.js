@@ -164,6 +164,10 @@ export const manualTranslations = {
     es: 'Guardar como borrador',
     pt: 'Salvar como rascunho',
   },
+  'Save Changes': {
+    es: 'Guardar cambios',
+    pt: 'Salvar alterações',
+  },
   "Select which type(s) of data analysis you'd like to be available for this list. Note that analysis processing counts towards your account usage limits. See more information":
     {
       es: 'Seleccione qué tipo(s) de análisis de datos desea tener disponibles para esta lista. Tenga en cuenta que el procesamiento de análisis cuenta para los límites de uso de su cuenta. Ver más información',

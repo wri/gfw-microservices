@@ -9,6 +9,11 @@ jest.mock('../../../utils/requestUtils', () => ({
   requestGeoTrellisAnalyzeList: jest.fn(() => Promise.resolve()),
 }));
 
+jest.mock('../../../../../../utils/general.utils', () => ({
+  __esModule: true,
+  default: { isWeeklyAlertsAvailable: true },
+}));
+
 jest.mock('../../../../../common/js/components/Loaders/InlineLoader', () => () => (
   <div data-testid="inline-loader">Loading...</div>
 ));
@@ -164,6 +169,78 @@ describe('ChangeTypeOfAnalysisModal', () => {
       })
     );
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+  });
+
+  it('shows "Save Changes" (not "Submit Analysis") when only Weekly is added on top of existing ALERTS', async () => {
+    renderComponent({
+      listAnalysesStatus: [
+        { analysisId: 'ALERTS', status: 1, updateTime: '2025-01-30T12:17:05.5910000' },
+      ],
+    });
+
+    await userEvent.click(screen.getByRole('checkbox', { name: /weekly alerts/i }));
+
+    expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Submit Analysis' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/You have added a new analysis to your list/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows "Save Changes" when only Weekly is removed from an ALERTS+Weekly list', async () => {
+    renderComponent({
+      listAnalysesStatus: [
+        {
+          analysisId: 'ALERTS',
+          options: 'Weekly',
+          status: 1,
+          updateTime: '2025-01-30T12:17:05.5910000',
+        },
+      ],
+    });
+
+    await userEvent.click(screen.getByRole('checkbox', { name: /weekly alerts/i }));
+
+    expect(screen.getByRole('button', { name: 'Save Changes' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Submit Analysis' })).not.toBeInTheDocument();
+  });
+
+  it('clicking "Save Changes" POSTs to /api/list/:id/selectedAnalyses with saveAsDraft:false and reloads', async () => {
+    renderComponent({
+      listAnalysesStatus: [
+        { analysisId: 'ALERTS', status: 1, updateTime: '2025-01-30T12:17:05.5910000' },
+      ],
+    });
+
+    await userEvent.click(screen.getByRole('checkbox', { name: /weekly alerts/i }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+    expect(fetch).toHaveBeenCalledWith('/api/list/123/selectedAnalyses', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: expect.stringContaining('"saveAsDraft":false'),
+    });
+    expect(requestGeoTrellisAnalyzeList).not.toHaveBeenCalled();
+    await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
+  });
+
+  it('shows "Submit Analysis" with confirmation prompt when Weekly is toggled together with another analysis', async () => {
+    renderComponent();
+
+    await userEvent.click(
+      screen.getByRole('checkbox', {
+        name: /recent disturbance alerts recent global integrated disturbance alerts for one time analysis/i,
+      })
+    );
+    await userEvent.click(screen.getByRole('checkbox', { name: /weekly alerts/i }));
+
+    expect(screen.getByRole('button', { name: /Submit Analysis/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save Changes' })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Submit Analysis/i }));
+    expect(screen.getByText(/You have added a new analysis to your list/i)).toBeInTheDocument();
   });
 
   it('does not reload when save fails with server error', async () => {

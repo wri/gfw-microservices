@@ -197,8 +197,18 @@ function ChangeTypeOfAnalysisModal({
     return match?.status === listStatus.Draft;
   });
 
+  const isOnlyWeeklyToggle = useMemo(() => {
+    const initial = new Set(initialAnalysisSelection);
+    const current = new Set(selectedAnalysis);
+    const added = [...current].filter((id) => !initial.has(id));
+    const removed = [...initial].filter((id) => !current.has(id));
+    const diff = [...added, ...removed];
+    return diff.length === 1 && diff[0] === AlertsAnalysisFrequency.WEEKLY;
+  }, [selectedAnalysis, initialAnalysisSelection]);
+
   const tSubmitAnalysis = useTransifexTranslation('Submit Analysis');
   const tSaveAsDraft = useTransifexTranslation('Save as Draft');
+  const tSaveChanges = useTransifexTranslation('Save Changes');
   return (
     <>
       <Modal
@@ -228,7 +238,11 @@ function ChangeTypeOfAnalysisModal({
               <InlineLoader />
             ) : (
               <>
-                {isAddingAnalysis ? (
+                {isOnlyWeeklyToggle ? (
+                  <PillButton variant="contained" size="small" onClick={submitSelectedAnalysis}>
+                    {tSaveChanges}
+                  </PillButton>
+                ) : isAddingAnalysis ? (
                   <ButtonWithConfirmationPrompt
                     buttonLabel={tSubmitAnalysis}
                     confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
@@ -239,18 +253,16 @@ function ChangeTypeOfAnalysisModal({
                     onCancel={revertChanges}
                   />
                 ) : (
-                  <>
-                    <PillButton
-                      variant="contained"
-                      size="small"
-                      disabled={
-                        !selectedAnalysis.length || (isSelectionUnchanged && !hasDraftInSelection)
-                      }
-                      onClick={submitSelectedAnalysis}
-                    >
-                      {tSubmitAnalysis}
-                    </PillButton>
-                  </>
+                  <PillButton
+                    variant="contained"
+                    size="small"
+                    disabled={
+                      !selectedAnalysis.length || (isSelectionUnchanged && !hasDraftInSelection)
+                    }
+                    onClick={submitSelectedAnalysis}
+                  >
+                    {tSubmitAnalysis}
+                  </PillButton>
                 )}
                 <PillButton
                   variant="contained"

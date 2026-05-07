@@ -1,4 +1,4 @@
-/* global userLists, userSharedLists, userInfo, usersList, locationCount, gfwLists, listStatuses */
+/* global userLists, userSharedLists, userInfo, locationCount, gfwLists, listStatuses */
 
 import { render } from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -20,7 +20,6 @@ const App = () => {
               userSharedLists={userSharedLists}
               locationCount={locationCount}
               userInfo={userInfo}
-              usersList={usersList} //Contains all users
               gfwLists={gfwLists}
               listStatuses={listStatuses}
             />

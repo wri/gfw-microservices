@@ -71,7 +71,6 @@ describe('ListDetails', () => {
     userSharedLists: [],
     userInfo: { id: 1, access_level_id: 1 },
     currentUser: { id: 1, access_level_id: 1 },
-    usersList: [],
     organizationId: 1,
     gfwLists: [],
     listData: [],

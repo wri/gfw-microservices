@@ -9,7 +9,6 @@ const { renderToString } = require('react-dom/server');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const GFWlistManager = require('../../../config/publicutils/gfwListManager.utils');
 const AuthManager = require('../../../config/publicutils/authenticationManager.utils');
-const AccountManager = require('../../../config/publicutils/accountManager.utils');
 const UserManager = require('../../../config/publicutils/userManager.utils');
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
 const { findSharedListsInsideOrganization } = ShareManager;
@@ -82,13 +81,12 @@ export const locationsData = async (req, res) => {
       ListManager.getLocationsCount(req),
       ListManager.getAllListsWithAnalysisId(req),
       GFWlistManager.getGFWLists(req),
-      isAdministrator ? AccountManager.getUsersList(req) : () => Promise.resolve([]),
       isAdministrator
-        ? () => Promise.resolve([])
+        ? Promise.resolve([])
         : ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
     ];
 
-    const [userLists, userInfo, locationCount, orgLists, gfwLists, usersList, sharedListsRecords] =
+    const [userLists, userInfo, locationCount, orgLists, gfwLists, sharedListsRecords] =
       await Promise.all(promises);
 
     const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
@@ -99,7 +97,7 @@ export const locationsData = async (req, res) => {
       locationCount,
       gfwLists,
       userSharedLists,
-      usersList,
+      usersList: [],
       CURRENT_ENVIRONMENT: process.env.NODE_ENV,
     });
   } catch (error) {

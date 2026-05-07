@@ -438,6 +438,12 @@ SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
         [ef_co2_by_year] NVARCHAR(MAX),
         [ef_ch4_by_year] NVARCHAR(MAX),
         [ef_n2o_by_year] NVARCHAR(MAX),
+        [emissions_co2_yearly] NVARCHAR(MAX) NULL,
+        [emissions_ch4_yearly] NVARCHAR(MAX) NULL,
+        [emissions_n2o_yearly] NVARCHAR(MAX) NULL,
+        [emissions_yearly] NVARCHAR(MAX) NULL,
+        [production] FLOAT NULL,
+        [weighted_avg_yield] FLOAT NULL,
         CONSTRAINT [PK_GHGAnalyses] PRIMARY KEY ([list_id], [location_id]),
 
         INDEX [IDX_GHGAnalyses_ListID] NONCLUSTERED ([list_id] ASC)

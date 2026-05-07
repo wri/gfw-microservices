@@ -79,7 +79,7 @@ jobs:
 
           for label in "${array[@]}"; do
 
-            LAST_TAG=$(git tag --sort=creatordate | grep -E "$label-V" | sort | tail -n 1 )
+            LAST_TAG=$(git tag --sort=version:refname | grep -E "$label-V" | tail -n 1 )
             echo "LAST TAG: $LAST_TAG"
 
             LAST_VERSION=$(echo "$LAST_TAG" | sed -e "s/$label-V//g")

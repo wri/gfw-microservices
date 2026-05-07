@@ -8,6 +8,7 @@ const controller = require('../controllers/locations.controller');
 const logger = require('../../../config/privateutils/logger.utils');
 
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
@@ -828,6 +829,20 @@ module.exports = (app, limiter) => {
       .catch((err) => {
         logger.error('Error /locations/shareList/getAllUsers', err);
         res.send(err);
+      });
+  });
+
+  /**
+   * @summary Get all organization users for ShareList component
+   */
+  app.post('/locations/shareList/getOrganizationUsers', (req, res) => {
+    AccountManager.getUsersList(req)
+      .then((usersList) => {
+        res.send(usersList);
+      })
+      .catch((err) => {
+        logger.error('Error /locations/shareList/getOrganizationUsers', err);
+        res.status(500).send({ error: 'Failed to fetch organization users' });
       });
   });
 

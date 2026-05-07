@@ -90,7 +90,6 @@ class Locations extends Component {
       history,
       userLists,
       userInfo,
-      usersList,
       userSharedLists,
       listView: listViewFromStore,
       addType,
@@ -169,7 +168,6 @@ class Locations extends Component {
             selectedLocations={selectedLocations}
             selectedAndVisibleLocations={selectedAndVisibleLocations}
             stopLoading={this.stopLoading}
-            usersList={usersList} // Contains all users
             userSharedLists={userSharedLists}
             shareView={shareView}
             showShareList={this.showShareList}

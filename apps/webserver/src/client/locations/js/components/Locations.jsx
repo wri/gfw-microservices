@@ -307,8 +307,7 @@ class Locations extends Component {
       fromList,
     } = this.state;
 
-    const { history, userLists, userInfo, locationCount, gfwLists, usersList, userSharedLists } =
-      this.props;
+    const { history, userLists, userInfo, locationCount, gfwLists, userSharedLists } = this.props;
 
     const allLists = userLists.concat(userSharedLists);
 
@@ -348,7 +347,6 @@ class Locations extends Component {
               userLists={userLists}
               locationCount={locationCount}
               userSharedLists={userSharedLists}
-              usersList={usersList} // Contains all users
             />
           </Route>
         </Switch>

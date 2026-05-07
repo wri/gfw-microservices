@@ -54,7 +54,7 @@ const LocationsPage = ({ userInfo }) => {
     fetchInitialData();
   }, []);
 
-  const { locationCount, gfwLists, accountUsers, userSharedLists, userLists } = locationsData;
+  const { locationCount, gfwLists, userSharedLists, userLists } = locationsData;
 
   return isLoading ? (
     <ModalLoader open={true} />
@@ -64,7 +64,6 @@ const LocationsPage = ({ userInfo }) => {
       userSharedLists={userSharedLists}
       locationCount={locationCount}
       userInfo={userInfo}
-      usersList={accountUsers} //Contains all users
       gfwLists={gfwLists}
     />
   );

@@ -6,6 +6,37 @@ const REQUEST_METHOD = 'POST';
 const REQUEST_HEADERS = { 'Content-type': 'application/json' };
 
 /**
+ * Fetch all organization users for ShareList component
+ * @param {Object} self - State of component `this`
+ */
+const fetchOrganizationUsersService = (self) => {
+  fetch({
+    url: '/locations/shareList/getOrganizationUsers',
+    method: REQUEST_METHOD,
+    headers: REQUEST_HEADERS,
+    body: {},
+  })
+    .then((usersList) => {
+      self.setState({
+        usersList: usersList,
+        isLoadingUsers: false,
+        usersLoadError: null,
+      });
+    })
+    .catch((err) => {
+      errorLogger.error('Error fetching organization users', {
+        component: 'ShareListServices',
+        action: 'fetchOrganizationUsersService',
+        error: err,
+      });
+      self.setState({
+        isLoadingUsers: false,
+        usersLoadError: 'Failed to load organization users. Please try again.',
+      });
+    });
+};
+
+/**
  * Updating component state based on selected list and data fetched from Database Service
  * @param {Object} self - State of component `this`
  */
@@ -202,6 +233,7 @@ const removeAllUsersFromSharedListService = (self) => {
 };
 
 export {
+  fetchOrganizationUsersService,
   updateSharedListUsersService,
   addUserToSharedListService,
   removeUserFromSharedListService,

@@ -745,9 +745,10 @@ const listOfPopoverHelperText: Record<string, ReactNode> = {
   ),
   ALERTS: (
     <Typography variant="caption">
-      This analysis collates recent deforestation and fire alerts on your locations. Updated on a
-      weekly basis, you can explore alerts from the VIIRS active fires satellite data as well as
-      GFW's integrated deforestation alerts.
+      This one-time analysis collates recent deforestation and fire alerts on your locations. You
+      can explore alerts from the VIIRS active fires satellite data as well as GFW's integrated
+      deforestation alerts. To receive automatic weekly updates to your analysis, please select
+      ‘Weekly Alerts’.
     </Typography>
   ),
   FCD: (
@@ -779,7 +780,8 @@ const listOfPopoverHelperText: Record<string, ReactNode> = {
   [AlertsAnalysisFrequency.WEEKLY]: (
     <Typography variant="caption">
       Weekly Alerts automatically updates your list's disturbance alerts on a weekly basis.
-      Selecting this option will deduct from your available usage each week the analysis runs.
+      Selecting this option will deduct from your available usage each week the analysis runs. You
+      may opt-out of Weekly Alerts at any time.
     </Typography>
   ),
 };

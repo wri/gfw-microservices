@@ -164,11 +164,14 @@ describe('Yearly Parser.', () => {
       dataRow,
       csvData,
     });
+    // Denominator = area1 (21736.9613) + area2 (19000) = 40736.9613, counted ONCE.
+    // Previously the inner loop re-iterated totalAttr and produced 2x (81473.92), making
+    // the sum of "% of TCL" per location ~50% with 2 categories (~33% with 3, etc.).
     expect(csvData.length).toEqual(4);
-    expect(csvData[0]).toEqual(['Tree Cover Loss', 12114.5364, '2018', 81473.92259999999, '14.87']);
-    expect(csvData[1]).toEqual(['Tree Cover Loss', 10570.2785, '2019', 81473.92259999999, '12.97']);
-    expect(csvData[2]).toEqual(['Tree Cover Loss', 8481.1971, '2020', 81473.92259999999, '10.41']);
-    expect(csvData[3]).toEqual(['Tree Cover Loss', 9570.9493, '2021', 81473.92259999999, '11.75']);
+    expect(csvData[0]).toEqual(['Tree Cover Loss', 12114.5364, '2018', 40736.9613, '29.74']);
+    expect(csvData[1]).toEqual(['Tree Cover Loss', 10570.2785, '2019', 40736.9613, '25.95']);
+    expect(csvData[2]).toEqual(['Tree Cover Loss', 8481.1971, '2020', 40736.9613, '20.82']);
+    expect(csvData[3]).toEqual(['Tree Cover Loss', 9570.9493, '2021', 40736.9613, '23.49']);
   });
 
   test('Parse attribute commodity_mill_priority_level.', () => {
@@ -394,4 +397,188 @@ describe('Yearly Parser.', () => {
   //   expect(csvData.find((row) => row[2] === '2025')).toEqual(['Protected Areas', 45, '2025']);
   //   expect(csvData.find((row) => row[2] === '2026')).toBeUndefined();
   // });
+
+  describe('totalStatValue denominator (% of TCL) — multi-category cases', () => {
+    test('Nested category structure with 3 classes: % sums to ~100 per location', () => {
+      const dataRow = [];
+      const csvData = [];
+
+      const yearly = {
+        Cerrado: { 2018: 100, 2019: 50 },
+        Amazonia: { 2018: 200, 2019: 150 },
+        Caatinga: { 2018: 100, 2019: 100 },
+      };
+      // Expected denominator = 100+50+200+150+100+100 = 700
+
+      yearlyParser({
+        operation: {
+          composites: [
+            {
+              attribute: 'tree_cover_loss_brazil_biomes_yearly',
+              label: 'Brazil Biomes',
+              following: {
+                attribute: 'tree_cover_loss_brazil_biomes_yearly_total',
+                parsed: 'total',
+              },
+            },
+          ],
+        },
+        data: {
+          tree_cover_loss_brazil_biomes_yearly: JSON.stringify(yearly),
+          tree_cover_loss_brazil_biomes_yearly_total: JSON.stringify(yearly),
+        },
+        dataRow,
+        csvData,
+      });
+
+      // 3 categories x 2 years = 6 rows
+      expect(csvData.length).toEqual(6);
+
+      // In the nested branch, row[3] is the per-category total (totalListLevelCount),
+      // and row[4] is the % using totalStatValue. The fix is validated by the sum of
+      // %-of-TCL across all rows being ~100 (was ~33 before fix with 3 categories).
+      const pctSum = csvData.reduce((acc, row) => acc + parseFloat(row[4]), 0);
+      expect(pctSum).toBeCloseTo(100, 1);
+
+      // Spot-check Cerrado 2018: 100 / 700 = 14.29%
+      const cerrado2018 = csvData.find(
+        (row) => row[0] === 'Brazil Biomes - Cerrado' && row[2] === '2018'
+      );
+      expect(parseFloat(cerrado2018[4])).toBeCloseTo(14.29, 1);
+    });
+
+    test('Nested category structure with 2 classes: % sums to ~100 (was ~50 before fix)', () => {
+      const dataRow = [];
+      const csvData = [];
+
+      const yearly = {
+        'Category II': { 2018: 60, 2019: 40 },
+        'Category III': { 2018: 30, 2019: 20 },
+      };
+      // Expected denominator = 60+40+30+20 = 150
+
+      yearlyParser({
+        operation: {
+          composites: [
+            {
+              attribute: 'tree_cover_loss_argentina_otbn_yearly',
+              label: 'Argentina OTBN',
+              following: {
+                attribute: 'tree_cover_loss_argentina_otbn_yearly_total',
+                parsed: 'total',
+              },
+            },
+          ],
+        },
+        data: {
+          tree_cover_loss_argentina_otbn_yearly: JSON.stringify(yearly),
+          tree_cover_loss_argentina_otbn_yearly_total: JSON.stringify(yearly),
+        },
+        dataRow,
+        csvData,
+      });
+
+      expect(csvData.length).toEqual(4);
+
+      // Sum of %-of-TCL must be ~100 (was ~50 before fix with 2 categories).
+      const pctSum = csvData.reduce((acc, row) => acc + parseFloat(row[4]), 0);
+      expect(pctSum).toBeCloseTo(100, 1);
+
+      // Spot-check Category II 2018: 60 / 150 = 40.00%
+      const catII2018 = csvData.find(
+        (row) => row[0] === 'Argentina OTBN - Category II' && row[2] === '2018'
+      );
+      expect(parseFloat(catII2018[4])).toBeCloseTo(40.0, 1);
+    });
+
+    test('Flat category-total structure: denominator equals sum of per-category numbers', () => {
+      const dataRow = [];
+      const csvData = [];
+
+      yearlyParser({
+        operation: {
+          composites: [
+            {
+              attribute: 'tree_cover_loss_total_yearly',
+              label: 'Tree Cover Loss',
+              following: {
+                attribute: 'tree_cover_loss_total_yearly_total',
+                parsed: 'total',
+              },
+            },
+          ],
+        },
+        data: {
+          tree_cover_loss_total_yearly: '{"2018":1000,"2019":500}',
+          tree_cover_loss_total_yearly_total: '{"Category II":4629.1739,"Category III":0.4241}',
+        },
+        dataRow,
+        csvData,
+      });
+
+      // Denominator = 4629.1739 + 0.4241 = 4629.598 (counted once per row)
+      expect(csvData.length).toEqual(2);
+      csvData.forEach((row) => expect(row[3]).toBeCloseTo(4629.598, 3));
+    });
+
+    test('Mixed flat + nested categories: each category contributes exactly once', () => {
+      const dataRow = [];
+      const csvData = [];
+
+      yearlyParser({
+        operation: {
+          composites: [
+            {
+              attribute: 'tree_cover_loss_total_yearly',
+              label: 'Tree Cover Loss',
+              following: {
+                attribute: 'tree_cover_loss_total_yearly_total',
+                parsed: 'total',
+              },
+            },
+          ],
+        },
+        data: {
+          tree_cover_loss_total_yearly: '{"2018":100}',
+          tree_cover_loss_total_yearly_total:
+            '{"Category II":4629.17,"Cerrado":{"2018":10,"2019":5}}',
+        },
+        dataRow,
+        csvData,
+      });
+
+      // Denominator = 4629.17 + (10 + 5) = 4644.17 (no double counting of the flat category)
+      expect(csvData.length).toEqual(1);
+      expect(csvData[0][3]).toBeCloseTo(4644.17, 2);
+    });
+
+    test('Array-of-numbers structure remains unaffected', () => {
+      const dataRow = [];
+      const csvData = [];
+
+      yearlyParser({
+        operation: {
+          composites: [
+            {
+              attribute: 'tree_cover_loss_total_yearly',
+              label: 'Tree Cover Loss',
+              following: {
+                attribute: 'tree_cover_loss_total_yearly_total',
+                parsed: 'total',
+              },
+            },
+          ],
+        },
+        data: {
+          tree_cover_loss_total_yearly: '{"2018":50,"2019":50}',
+          tree_cover_loss_total_yearly_total: '[10, 20, 30]',
+        },
+        dataRow,
+        csvData,
+      });
+
+      expect(csvData.length).toEqual(2);
+      csvData.forEach((row) => expect(row[3]).toEqual(60));
+    });
+  });
 });

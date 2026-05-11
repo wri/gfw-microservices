@@ -13,6 +13,7 @@ import { SQLUtils } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../../validators/server-config';
 import { getDownloadFilename } from '../shared/download-filename';
+import { getAnalysisTypeLabel } from '../shared/analysis-type-label';
 
 export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
@@ -50,6 +51,7 @@ export abstract class IPipeService {
       await this.emailService.sendEmail<{
         listName: string;
         location: string;
+        analysisType?: string;
       }>(
         this.configService.get('SES_SENDER_EMAIL', { infer: true }),
         [userEmail],
@@ -58,6 +60,7 @@ export abstract class IPipeService {
         {
           listName,
           location,
+          analysisType: getAnalysisTypeLabel(filters),
         }
       );
     }

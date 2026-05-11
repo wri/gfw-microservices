@@ -12,12 +12,13 @@ type Content = {
 interface DefaultEmailContentFilter {
   listName?: string;
   location?: string;
+  analysisType?: string;
 }
 export function createEmailContent<CustomFilter>(
   type: string,
   filter: DefaultEmailContentFilter | CustomFilter
 ): Content {
-  const { listName, location } = filter as DefaultEmailContentFilter;
+  const { listName, location, analysisType } = filter as DefaultEmailContentFilter;
 
   const emailMessage = {
     start: {
@@ -32,7 +33,9 @@ export function createEmailContent<CustomFilter>(
       icon: 'https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png',
       title: 'File generation completed successfully',
       body: [
-        `File for <span style="color: rgb(69,69,69);">${listName}</span> is ready to be downloaded.`,
+        `${
+          analysisType ? `${analysisType} analysis f` : 'F'
+        }ile for <span style="color: rgb(69,69,69);">${listName}</span> is ready to be downloaded.`,
       ],
       cta: {
         href: `${location}`,

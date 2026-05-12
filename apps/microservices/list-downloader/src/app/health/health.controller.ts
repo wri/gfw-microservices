@@ -1,28 +1,26 @@
-import { Controller, Get } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Get, Logger } from '@nestjs/common';
 
-import { HealthCheck, HealthCheckService, HttpHealthIndicator } from '@nestjs/terminus';
-import { ServerConfigType } from '../../validators/server-config';
+// Module-level counter to track across all instances
+let counter = 0;
+let firstTime = true;
 
 @Controller('HealthCheck')
 export class HealthController {
-  constructor(
-    private health: HealthCheckService,
-    private http: HttpHealthIndicator,
-    private readonly configService: ConfigService<ServerConfigType, true>
-  ) {}
+  private readonly logger = new Logger(HealthController.name);
 
   @Get()
-  @HealthCheck()
   check() {
-    return this.health.check([
-      async () =>
-        this.http.pingCheck(
-          'LP',
-          `${this.configService.get('LIST_PROCESSING_MICROSERVICE_URL', {
-            infer: true,
-          })}/HealthCheck`
-        ),
-    ]);
+    // Track Fargate health check calls
+    counter++;
+
+    if (firstTime) {
+      global.setInterval(() => {
+        this.logger.log(`Per minute health check counter: ${counter}`);
+        counter = 0;
+      }, 1000 * 60); // every minute
+      firstTime = false;
+    }
+
+    return { status: 'ok' };
   }
 }

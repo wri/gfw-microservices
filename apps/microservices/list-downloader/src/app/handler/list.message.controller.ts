@@ -62,7 +62,10 @@ export class ListMessageController {
       try {
         await this.pipeService.makeFile(body);
       } catch (error) {
-        this.logger.error(`File generation failed for list ${body.listId}`, error instanceof Error ? error.stack : String(error));
+        this.logger.error(
+          `File generation failed for list ${body.listId}`,
+          error instanceof Error ? error.stack : String(error)
+        );
       }
     })();
     return body;

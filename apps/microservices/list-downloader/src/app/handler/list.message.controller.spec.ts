@@ -18,7 +18,7 @@ describe('ListMessageController', () => {
         {
           provide: PipeService,
           useValue: {
-            makeFile: jest.fn(),
+            makeFile: jest.fn().mockResolvedValue(undefined),
           },
         },
       ],

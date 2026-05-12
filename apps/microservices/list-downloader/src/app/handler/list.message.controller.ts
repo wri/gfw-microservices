@@ -54,20 +54,15 @@ export class ListMessageController {
   @UsePipes(ZodValidationPipe)
   async download(@Body() body: BasicFieldsFileRequest) {
     this.logger.log('List message received', body);
-    // Fire-and-forget: respond immediately to the caller while file generation runs in the background.
-    // Wrapped in a separate async IIFE with try/catch so that any error thrown by makeFile is caught
-    // here rather than becoming an unhandled rejection, which would trigger process.exit(1) via
-    // registerProcessEventHandlers and kill the container.
-    (async () => {
-      try {
-        await this.pipeService.makeFile(body);
-      } catch (error) {
-        this.logger.error(
-          `File generation failed for list ${body.listId}`,
-          error instanceof Error ? error.stack : String(error)
-        );
-      }
-    })();
+    // Fire-and-forget: respond immediately while file generation runs in the background.
+    // .catch() prevents unhandled rejections from triggering process.exit(1) via
+    // registerProcessEventHandlers and killing the container.
+    this.pipeService.makeFile(body).catch((error: unknown) => {
+      this.logger.error(
+        `File generation failed for list ${body.listId}`,
+        error instanceof Error ? error.stack : String(error)
+      );
+    });
     return body;
   }
 }

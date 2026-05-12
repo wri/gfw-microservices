@@ -73,7 +73,7 @@ export class InputService extends IPipeService {
     this.inputStream.on('end', async () => {
       const output = fs.createWriteStream(`/tmp/${key}.zip`);
       const archive = archiver('zip', {
-        zlib: { level: 9 }, // Sets the compression level.
+        zlib: { level: 1 }, // Lower compression level to reduce CPU usage during zip.
       });
       archive.append(fs.createReadStream(`/tmp/wri-${key}/${listName}_input.csv`), {
         name: `${listName}_input.csv`,

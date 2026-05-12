@@ -51,7 +51,7 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
         });
       }).then((filesToAppend: string[]) => {
         const archive = archiver('zip', {
-          zlib: { level: 9 }, // Sets the compression level.
+          zlib: { level: 1 }, // Lower compression level to reduce CPU usage during zip.
         });
         filesToAppend.forEach((file) => {
           archive.append(fs.createReadStream(`/tmp/wri-${key}/${file}`), {

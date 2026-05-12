@@ -92,7 +92,7 @@ const getAllColumnNames = (
 
     columnNames.combinedColumns = [
       ...defaultShownColumns,
-      ...(isGlobalForestWatchList ? gfwListsSizeColumn(listId) : []),
+      ...gfwListsSizeColumn(listId, true),
       ...analysis,
       ...gfwColumns,
       ...columnNames.list,

@@ -98,7 +98,7 @@ function FailedList({
               label={locationsPage.lists.failed}
               tooltipMessage={
                 isFailedByUsageLimits
-                  ? `This list failed due to usage limits.`
+                  ? `This list was not processed because it would have exceeded your organization's current usage limits. Contact our team to increase limits. After limits have been increased, click "submit for analysis" to retry.`
                   : 'This list has failed analysis. To receive results, resubmit this list for analysis.'
               }
             />

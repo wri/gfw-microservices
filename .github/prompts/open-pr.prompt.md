@@ -4,7 +4,7 @@ Orchestrates pull request creation using specialized sub-agents (skills) for max
 
 ## Execution Policy
 
-**Run all `git` commands and `gh` CLI commands directly without asking for user confirmation.** This includes `git fetch`, `git rebase`, `git push`, `git push --force-with-lease`, `gh pr create`, `gh pr comment`, and any other git or GitHub CLI operations required by the workflow.
+**Run non-destructive `git` commands and `gh` CLI commands directly without asking for user confirmation.** This includes commands such as `git fetch`, `git push`, `gh pr create`, `gh pr comment`, and other non-destructive git or GitHub CLI operations required by the workflow. **Before running any destructive or history-rewriting command, require explicit user confirmation.** This includes `git rebase`, `git push --force-with-lease`, and any equivalent operation that rewrites local or remote history.
 
 ## How to Use
 

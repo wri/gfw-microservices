@@ -85,8 +85,9 @@ export default function AnalysisStatusBanners(props) {
       icon: <Error fontSize="inherit" />,
       message: (
         <>
-          This list failed due to usage limits.
-          <br /> To continue parsing your lists, you need to increase the usage limit.
+          This list was not processed because it would have exceeded your organization&apos;s
+          current usage limits. Contact our team to increase limits. After limits have been
+          increased, click &quot;submit for analysis&quot; to retry.
         </>
       ),
       buttonText: 'Increase limit',

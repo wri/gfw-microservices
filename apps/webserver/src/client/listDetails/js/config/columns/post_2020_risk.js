@@ -120,7 +120,7 @@ const getColumnsWithCurrentState = () => {
     {
       Header: () => (
         <ColumnsHeader
-          label="Indigenous Territories Overlap"
+          label="Ind. territories Overlap"
           infoBubbleId={infoBubbleConfig.post2020ItOverlap}
         />
       ),
@@ -138,7 +138,7 @@ const getColumnsWithCurrentState = () => {
     {
       Header: () => (
         <ColumnsHeader
-          label="Indigenous Territories Overlap"
+          label="Ind. territories Overlap"
           infoBubbleId={infoBubbleConfig.post2020ItOverlap}
         />
       ),

@@ -17,8 +17,8 @@ const sizeCell = (row) => {
   return isValidArea ? formatDigit(row.original.total_area) : 0;
 };
 
-const gfwListsSizeColumn = (listId) => {
-  if (gfwListsTypesIdNumericValues.has(listId)) {
+const gfwListsSizeColumn = (listId, forceShow = false) => {
+  if (forceShow || gfwListsTypesIdNumericValues.has(listId)) {
     return [
       {
         id: 'Size',

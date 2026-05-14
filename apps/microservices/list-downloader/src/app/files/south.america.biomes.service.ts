@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
-import { formatPct, validatePct } from '../shared/functions';
+import { formatPct, isObjInCountryFormat, validatePct } from '../shared/functions';
 import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -39,9 +39,10 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
         return;
       }
 
-      const analysisData = JSON.parse(
+      const parsed = JSON.parse(
         listLevelAnalysis[key.name] == null ? '{}' : listLevelAnalysis[key.name]
       );
+      const analysisData = isObjInCountryFormat(parsed) ? parsed?.ARG || {} : parsed;
       const dataLayer = DATA_LAYER[key.name];
 
       let total = 0;

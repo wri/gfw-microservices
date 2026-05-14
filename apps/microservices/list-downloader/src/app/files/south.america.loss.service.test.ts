@@ -25,6 +25,72 @@ describe('South America Loss Service', () => {
     ]);
   });
 
+  describe('Argentina OTBN (tree_cover_loss_arg_otbn_yearly)', () => {
+    test('canonical {Category: {year: number}} shape produces per-category rows', () => {
+      const returnData = southAmericaLossService.generateAggregate(
+        'sAmericaLossAggregate',
+        'south_america_loss_of_forests_aggregate',
+        {
+          tree_cover_loss_arg_otbn_yearly:
+            '{"Category I":{"2008":1,"2009":2},"Category II":{"2008":0.5,"2009":0.5}}',
+        }
+      );
+
+      expect(returnData).toContainEqual([
+        'south_america_loss_of_forests_aggregate',
+        'Argentina OTBN - Category I',
+        1,
+        '2008',
+        '3.00',
+      ]);
+      expect(returnData).toContainEqual([
+        'south_america_loss_of_forests_aggregate',
+        'Argentina OTBN - Category I',
+        2,
+        '2009',
+        '3.00',
+      ]);
+      expect(returnData).toContainEqual([
+        'south_america_loss_of_forests_aggregate',
+        'Argentina OTBN - Category II',
+        0.5,
+        '2008',
+        '1.00',
+      ]);
+      expect(returnData).toContainEqual([
+        'south_america_loss_of_forests_aggregate',
+        'Argentina OTBN - Category II',
+        0.5,
+        '2009',
+        '1.00',
+      ]);
+    });
+
+    test('empty payload produces no OTBN rows and does not throw', () => {
+      const run = () =>
+        southAmericaLossService.generateAggregate(
+          'sAmericaLossAggregate',
+          'south_america_loss_of_forests_aggregate',
+          { tree_cover_loss_arg_otbn_yearly: '{}' }
+        );
+
+      expect(run).not.toThrow();
+      expect(run().some((row) => String(row[1]).startsWith('Argentina OTBN'))).toBe(false);
+    });
+
+    test('missing payload produces no OTBN rows and does not throw', () => {
+      const run = () =>
+        southAmericaLossService.generateAggregate(
+          'sAmericaLossAggregate',
+          'south_america_loss_of_forests_aggregate',
+          {}
+        );
+
+      expect(run).not.toThrow();
+      expect(run().some((row) => String(row[1]).startsWith('Argentina OTBN'))).toBe(false);
+    });
+  });
+
   // test('Receive an input with just one year', () => {
   //   const returnData = southAmericaLossService.generateAggregate(
   //     'sAmericaLossAggregate',

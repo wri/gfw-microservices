@@ -18,10 +18,10 @@ export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 
 // IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH libs/constants/src/lib/diagnostic-constants.ts
-export const latestTreeCoverLossYearForTclDataInMap = 2024;
-export const latestTreeCoverLossYearCommodityRisk = 2024;
+export const latestTreeCoverLossYearForTclDataInMap = 2025;
+export const latestTreeCoverLossYearCommodityRisk = 2025;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
-export const latestTreeCoverLossYearForTclDataInAnalyses = 2024;
+export const latestTreeCoverLossYearForTclDataInAnalyses = 2025;
 
 const todayIso = new Date().toISOString().split('T')[0];
 const defaultStartYear = latestTreeCoverLossYearForTclDataInMap + 1;

@@ -19,7 +19,7 @@ export const oversizedUploadText =
 
 // IF YOU ARE CHANGING THE YEAR, CONSIDER SYNCING WITH libs/constants/src/lib/diagnostic-constants.ts
 export const latestTreeCoverLossYearForTclDataInMap = 2025;
-export const latestTreeCoverLossYearCommodityRisk = 2025;
+export const latestTreeCoverLossYearCommodityRisk = 2024;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2025;
 

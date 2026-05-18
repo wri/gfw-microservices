@@ -1,9 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   DashboardDataType,
   SQLUtils,
-  ClientStoreConnection,
-  ListsAnalysisStatus,
   getDashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
@@ -16,33 +14,7 @@ import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
 export class AlertsRepository {
-  private readonly logger = new Logger(AlertsRepository.name);
-
-  constructor(
-    private readonly clientStoreConnection: ClientStoreConnection,
-    private readonly config: ConfigService<ServerConfigType, true>
-  ) {}
-
-  // Log how long ago the list was last analyzed for alerts.
-  // This will help determine how often alerts are used and freshness/staleness of lists.
-  private async logAlertsList(listID: number, clientDatabase: string, paginated = false) {
-    try {
-      const connection = await this.createOrganizationConnection(clientDatabase);
-      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
-        where: { listId: listID, analysisId: 'Alerts' },
-      });
-      const lastAnalysisTime = listAnalysisStatus?.updateTime?.getTime() || -Infinity;
-      const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
-      const daysAgo = Math.floor((Date.now() - lastAnalysisTime) / MILLISECONDS_PER_DAY);
-      this.logger.log(
-        `Fetch alerts for list ${clientDatabase} ${listID} analyzed ${daysAgo} days ago.  LD: ${paginated}`
-      );
-    } catch (error) {
-      // log the error but do not fail the main query
-      this.logger.error(`Error logging alerts: ${error.stack || error.message || error}`);
-    }
-  }
+  constructor(private readonly config: ConfigService<ServerConfigType, true>) {}
 
   async countDashboardData(listID: number, clientDatabase: string) {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
@@ -54,18 +26,12 @@ export class AlertsRepository {
     );
   }
 
-  private async createOrganizationConnection(organizationDb: string) {
-    return await this.clientStoreConnection.getConnection(organizationDb);
-  }
-
   async findDashboardDataByListIdPaginated(
     listID: number,
     clientDatabase: string,
     pageNumber: number,
     rowsPerPage: number
   ) {
-    await this.logAlertsList(listID, clientDatabase, true);
-
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'pageNumber', type: sql.Int, value: pageNumber },
@@ -94,8 +60,6 @@ export class AlertsRepository {
     pageNumber: number,
     rowsPerPage: number
   ) {
-    await this.logAlertsList(listID, this.config.get('MSSQL_DATABASE', { infer: true }), true);
-
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'pageNumber', type: sql.Int, value: pageNumber },

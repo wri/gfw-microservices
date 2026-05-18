@@ -46,12 +46,18 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2023',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2024',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2025',
       '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,0,0,0,0,0,0,2023',
+      '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,0,0,0,0,0,0,2024',
+      '"kgTestCG3 927 all","location name 3",1256.4204,Soy,dLUC,0,0,0,0,0,0,2025',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2023',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2024',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2025',
       '',
     ];
     expect(lines).toStrictEqual(expectedResults);
@@ -97,9 +103,13 @@ describe('Green House Gas Emissions Service - [Location level]', () => {
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2023',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2024',
+      '"kgTestCG3 927 all","location name 2",1256.1647,Soy,dLUC,0,0,0,0,0,0,2025',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2021',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2022',
       '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2023',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2024',
+      '"kgTestCG3 927 all","location name 1",1256.2173,Soy,dLUC,0,0,0,0,0,0,2025',
       '',
     ]);
   });

@@ -73,23 +73,16 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
 
       if (totalAttr && typeof totalAttr === 'string') {
         totalAttr = JSON.parse(totalAttr);
+
         if (Array.isArray(totalAttr)) {
-          totalStatValue = totalAttr.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0
-          );
-        } else {
-          Object.keys(totalAttr).forEach((attr) => {
-            const yearData = totalAttr[attr];
+          totalStatValue = totalAttr.reduce((acc, v) => acc + (Number(v) || 0), 0);
+        } else if (totalAttr && typeof totalAttr === 'object') {
+          Object.values(totalAttr).forEach((yearData) => {
             if (typeof yearData === 'number') {
               totalStatValue += yearData;
-            } else if (typeof yearData === 'object') {
-              Object.keys(totalAttr).forEach((innerAttr) => {
-                if (typeof totalAttr[innerAttr] === 'object') {
-                  Object.keys(totalAttr[innerAttr]).forEach((biomeYear) => {
-                    totalStatValue += totalAttr[innerAttr][biomeYear];
-                  });
-                }
+            } else if (yearData && typeof yearData === 'object') {
+              Object.values(yearData).forEach((v) => {
+                totalStatValue += Number(v) || 0;
               });
             }
           });

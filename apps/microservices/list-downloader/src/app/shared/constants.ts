@@ -360,6 +360,14 @@ export const EXCEL_TEMPLATES = {
           },
         },
         {
+          attribute: 'tree_cover_loss_arg_otbn_yearly',
+          label: 'Argentina OTBN',
+          following: {
+            attribute: 'tree_cover_loss_arg_otbn_yearly',
+            parsed: 'total',
+          },
+        },
+        {
           attribute: 'tree_cover_loss_prodes_yearly',
           label: 'PRODES',
           following: {
@@ -410,6 +418,10 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_brazil_biomes_yearly',
           label: 'Brazil Biomes',
         },
+        {
+          attribute: 'tree_cover_loss_arg_otbn_yearly',
+          label: 'Argentina OTBN',
+        },
         { attribute: 'tree_cover_loss_prodes_yearly', label: 'PRODES' },
         {
           attribute: 'tree_cover_loss_prodes_primary_forest_yearly',
@@ -439,6 +451,10 @@ export const EXCEL_TEMPLATES = {
   sAmericaBiomesAggregate: [
     {
       name: 'brazil_biomes',
+      parsed: 'overhead',
+    },
+    {
+      name: 'classified_region_area',
       parsed: 'overhead',
     },
   ],
@@ -1461,7 +1477,7 @@ export const NESTED_JSON_ATTRIBUTES = [
 
 export const DATA_LAYER = {
   brazil_biomes: 'Brazil Biomes',
-  argentina_otbn: 'Argentina OTBN',
+  classified_region_area: 'Argentina OTBN',
 };
 
 export const DEFORESTATION_KPIS_HEADER_AGGREGATE = {

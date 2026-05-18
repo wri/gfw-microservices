@@ -75,4 +75,35 @@ describe('South America Biomes Service', () => {
       ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
     ]);
   });
+
+  test('Receive classified_region_area with ARG envelope and emit Argentina OTBN rows', () => {
+    const returnData = southAmericaBiomesService.generateAggregate(
+      'sAmericaBiomesAggregate',
+      'south_america_overlap_aggregate',
+      {
+        classified_region_area: '{"ARG":{"Category I":2488.1641,"Category II":315.7406}}',
+      }
+    );
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
+      ['south_america_overlap_aggregate', 'Argentina OTBN', 'Category I', '88.74'],
+      ['south_america_overlap_aggregate', 'Argentina OTBN', 'Category II', '11.26'],
+    ]);
+  });
+
+  test('Receive both brazil_biomes and classified_region_area and emit rows for each', () => {
+    const returnData = southAmericaBiomesService.generateAggregate(
+      'sAmericaBiomesAggregate',
+      'south_america_overlap_aggregate',
+      {
+        brazil_biomes: '{"Amazônia":100}',
+        classified_region_area: '{"ARG":{"Category I":50}}',
+      }
+    );
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
+      ['south_america_overlap_aggregate', 'Brazil Biomes', 'Amazônia', '100.00'],
+      ['south_america_overlap_aggregate', 'Argentina OTBN', 'Category I', '100.00'],
+    ]);
+  });
 });

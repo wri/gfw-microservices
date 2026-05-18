@@ -5,7 +5,6 @@ import { cloneRow, formatPct, validatePct, isObjInCountryFormat } from '../share
 const dataLayerParser = ({ data, dataRow, csvData }) => {
   const { brazil_biomes: brazilBiomes, classified_region_area: classifiedRegionArea } = data;
 
-  // Try Brazil biomes first
   const brazilParsed = JSON.parse(brazilBiomes ?? '{}');
   if (Object.keys(brazilParsed).length > 0) {
     dataLayerProcessor(
@@ -16,7 +15,6 @@ const dataLayerParser = ({ data, dataRow, csvData }) => {
     return;
   }
 
-  // Fallback to Argentina classified region (replaces deprecated arg_otbn_area)
   if (classifiedRegionArea) {
     try {
       const parsedClassifiedRegion = JSON.parse(classifiedRegionArea ?? '{}');
@@ -25,14 +23,14 @@ const dataLayerParser = ({ data, dataRow, csvData }) => {
         : parsedClassifiedRegion;
       if (Object.keys(argData).length > 0) {
         dataLayerProcessor(
-          { dataLayerName: 'Argentina Classified Region', data: argData },
+          { dataLayerName: DATA_LAYER.classified_region_area, data: argData },
           dataRow,
           csvData
         );
         return;
       }
     } catch (e) {
-      // If parsing fails, do nothing
+      // ignore malformed JSON
     }
   }
 };

@@ -28,6 +28,36 @@ describe('Brazil Biomes Parser', () => {
       ['Brazil Biomes', 'Cerrado', '23.05'],
     ]);
   });
+
+  test('Receive [classified_region_area] with ARG envelope and emit Argentina OTBN rows', () => {
+    const csvData = [];
+    const dataRow = [];
+    dataLayerParser({
+      data: {
+        classified_region_area: '{"ARG":{"Category I":2488.1641,"Category II":315.7406}}',
+      },
+      dataRow,
+      csvData,
+    });
+    expect(csvData).toEqual([
+      ['Argentina OTBN', 'Category I', '88.74'],
+      ['Argentina OTBN', 'Category II', '11.26'],
+    ]);
+  });
+
+  test('Prefer Brazil biomes when both are present', () => {
+    const csvData = [];
+    const dataRow = [];
+    dataLayerParser({
+      data: {
+        brazil_biomes: '{"Amazônia":100}',
+        classified_region_area: '{"ARG":{"Category I":50}}',
+      },
+      dataRow,
+      csvData,
+    });
+    expect(csvData).toEqual([['Brazil Biomes', 'Amazônia', '100.00']]);
+  });
 });
 
 describe('Brazil Biomes Yearly TCL Parser', () => {

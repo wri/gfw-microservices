@@ -14,7 +14,7 @@ export class ArgentinaOTBNStrategy implements SouthAmericaLossAggregateStrategy 
     totalSubCategory = 0
   ): void {
     const treeCoverLossAggregateStrategy = new TreeCoverLossAggregateStrategy({
-      dataLayer: DATA_LAYER.argentina_otbn,
+      dataLayer: DATA_LAYER.classified_region_area,
     });
     treeCoverLossAggregateStrategy.processLabel(
       field,

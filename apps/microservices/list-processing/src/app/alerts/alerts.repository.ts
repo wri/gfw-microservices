@@ -14,9 +14,7 @@ import { ServerConfigType } from '../../validators/server-config';
 
 @Injectable()
 export class AlertsRepository {
-  constructor(
-    private readonly config: ConfigService<ServerConfigType, true>
-  ) {}
+  constructor(private readonly config: ConfigService<ServerConfigType, true>) {}
 
   async countDashboardData(listID: number, clientDatabase: string) {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];

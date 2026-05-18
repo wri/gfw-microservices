@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AlertsRepository } from './alerts.repository';
-import { ClientStoreConnection } from '@wri-monorepos/sql';
 import { ConfigService } from '@nestjs/config';
 import { DashboardDataType, CountDashboardDataType } from '@wri-monorepos/sql';
 
@@ -48,12 +47,6 @@ describe('AlertsRepository', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AlertsRepository,
-        {
-          provide: ClientStoreConnection,
-          useValue: {
-            getConnection: jest.fn(),
-          },
-        },
         {
           provide: ConfigService,
           useValue: {

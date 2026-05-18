@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
   DashboardDataType,
   SQLUtils,
-  ClientStoreConnection,
   getDashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
@@ -16,7 +15,6 @@ import { ServerConfigType } from '../../validators/server-config';
 @Injectable()
 export class AlertsRepository {
   constructor(
-    private readonly clientStoreConnection: ClientStoreConnection,
     private readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
@@ -28,10 +26,6 @@ export class AlertsRepository {
       getCountDashboardData,
       parameters
     );
-  }
-
-  private async createOrganizationConnection(organizationDb: string) {
-    return await this.clientStoreConnection.getConnection(organizationDb);
   }
 
   async findDashboardDataByListIdPaginated(

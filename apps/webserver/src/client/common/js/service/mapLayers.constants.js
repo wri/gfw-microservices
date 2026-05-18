@@ -12,6 +12,7 @@ const DATASET_VERSIONS = {
   IDN_FOREST_AREA: 'v201709',
   IDN_LAND_COVER_2017: 'v201807',
   INPE_PRODES: 'v202507',
+  GFWPRO_NEGLIGIBLE_RISK: 'v20250514',
   NASA_VIIRS_FIRE_ALERTS: 'v202010',
   UMD_GLAD_DIST_ALERTS: 'v202412',
   WDPA_PROTECTED_AREAS: 'v202602',
@@ -34,6 +35,8 @@ const DATASET_URLS = {
   INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/default/root.json`,
   // INPE PRODES
   INPE_PRODES_TILES: `https://tiles.globalforestwatch.org/inpe_prodes/${DATASET_VERSIONS.INPE_PRODES}/default/root.json`,
+  // Negligible Risk Analysis
+  NEGLIGIBLE_RISK_TILES: `https://tiles.globalforestwatch.org/gfwpro_negligible_risk_analysis/${DATASET_VERSIONS.GFWPRO_NEGLIGIBLE_RISK}/default/root.json`,
   // NASA VIIRS Fire Alerts
   NASA_VIIRS_API: `https://data-api.globalforestwatch.org/dataset/nasa_viirs_fire_alerts/${DATASET_VERSIONS.NASA_VIIRS_FIRE_ALERTS}/features`,
   // UMD GLAD Dist Alerts
@@ -1145,7 +1148,7 @@ export const mapLayers = [
         type: 'Vector.Layer',
         body: {
           useCors: true,
-          url: 'https://tiles.globalforestwatch.org/gfwpro_negligible_risk_analysis/v20250514/default/root.json',
+          url: DATASET_URLS.NEGLIGIBLE_RISK_TILES,
           metadata: 'gfwpro_negligible_risk_analysis',
         },
       },

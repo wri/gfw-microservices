@@ -85,7 +85,6 @@ export * from './getDashboardInvestmentLocations';
 export * from './getFailedLocationNames';
 export * from './getFolder';
 export * from './getFolderItems';
-export * from './getListErrorFiles';
 export * from './getListGeometries';
 export * from './getListLocationsNoGeom';
 export * from './getListLockStatus';

@@ -1,3 +1,8 @@
+---
+name: code-reviewer
+description: Performs a thorough review of the local branch's diff against develop — checks Conventional Commits compliance, project conventions, test coverage, security (OWASP Top 10), performance, and readability — and appends findings to PR-MANIFEST.md. Supports delta mode (re-evaluates a prior CODE_REVIEW_REPORT.md) and standard full review.
+---
+
 # Skill: code-reviewer
 
 Conducts a thorough code review of the local branch and appends the report to `PR-MANIFEST.md`. Skipped when `/open-pr` is invoked with `--skipCodeReview`.

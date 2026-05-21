@@ -1,3 +1,8 @@
+---
+name: git-branch-validator
+description: Validates git state and prepares the local branch for PR creation — enforces branch naming (<JIRA-TICKET-ID>), formats and lints changed files via Nx, rebases against develop, enforces a single-commit policy (non-interactive squash), and pushes the branch. Use before creating a PR.
+---
+
 # Skill: git-branch-validator
 
 Validates git state and prepares the local branch for PR creation. Skipped when `/open-pr` is invoked with `--skipBranchValidation`.
@@ -6,7 +11,7 @@ Validates git state and prepares the local branch for PR creation. Skipped when 
 
 - Current working directory (must be a git repo)
 - Current branch name
-- Project standards from [standards.md](standards.md)
+- Project standards from [../standards/SKILL.md](../standards/SKILL.md)
 
 ## Responsibilities
 
@@ -27,10 +32,20 @@ Validates git state and prepares the local branch for PR creation. Skipped when 
    git rebase origin/develop
    ```
    On conflicts: stop and surface them to the user; do not auto-resolve.
-6. **Single-commit policy** — if the branch has multiple commits, run interactive squash:
+6. **Single-commit policy** — if the branch has multiple commits, squash **non-interactively** (no editor required):
+
    ```bash
-   git rebase -i origin/develop
+   # Preferred: soft-reset to base, re-commit as one
+   FIRST_SUBJECT=$(git log --reverse --format=%s origin/develop..HEAD | head -n1)
+   git reset --soft origin/develop
+   git commit -m "$FIRST_SUBJECT"
+
+   # Alternative when an interactive rebase is unavoidable
+   GIT_SEQUENCE_EDITOR=: git rebase -i origin/develop   # picks all commits as-is; pair with reword/fixup beforehand
    ```
+
+   Never use `git rebase -i` in automated contexts without `GIT_SEQUENCE_EDITOR=:` — it blocks waiting for an editor.
+
 7. **Push**:
    ```bash
    # First push

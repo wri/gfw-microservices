@@ -1,3 +1,8 @@
+---
+name: pr-manifest
+description: Manages PR-MANIFEST.md — the shared scratchpad that coordinates output across /open-pr sub-agents. Defines the lifecycle (reset, append, read) and the exact ## section headers each sub-agent must use so Phase 4 can extract the code review for posting.
+---
+
 # Skill: PR Manifest
 
 Manages the `PR-MANIFEST.md` file used to coordinate output across the `/open-pr` sub-agents.
@@ -34,9 +39,9 @@ The file is reset every run — **never accumulated** across runs — and **neve
    - **Branch**: <current-branch>
    ```
 
-3. Ensure `.gitignore` contains `PR-MANIFEST.md`:
+3. Ensure `.gitignore` contains the root-anchored entry `/PR-MANIFEST.md` (the leading slash matters on case-insensitive filesystems so it does not also mask `pr-manifest.md` skill docs):
    ```bash
-   grep -qxF 'PR-MANIFEST.md' .gitignore || echo 'PR-MANIFEST.md' >> .gitignore
+   grep -qxF '/PR-MANIFEST.md' .gitignore || echo '/PR-MANIFEST.md' >> .gitignore
    ```
 
 ## Section Marker Contract

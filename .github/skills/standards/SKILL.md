@@ -1,6 +1,11 @@
+---
+name: standards
+description: Single source of truth for git, commit, and PR conventions used by /open-pr and /address-pr-comments — defines branch naming (<JIRA-TICKET-ID>), Conventional Commits types and scopes for this Nx monorepo, PR title and body templates, and workflow rules (single commit per PR, rebase against develop, format + lint gates, Jira linking).
+---
+
 # Project Standards Reference
 
-The single source of truth for git, commit, and PR conventions used by `/open-pr`.
+The single source of truth for git, commit, and PR conventions used by `/open-pr` and `/address-pr-comments`.
 
 ## Branch Naming
 
@@ -19,7 +24,7 @@ Pattern: `<type>(<scope>): <description>`
 - `docs` — Documentation changes
 - `refactor` — Code refactoring
 - `test` — Adding or updating tests
-- `chore` — Maintenance tasks
+- `chore` — Maintenance tasks (tooling, config, CI, internal dev workflow docs)
 
 ### Scopes (based on where most changes live)
 
@@ -72,7 +77,7 @@ Example: `GPV-5286: fix(sql): change setGlobalAnalysisLimit to INSERT instead of
 
 ## Workflow Rules
 
-- **Single commit per PR** — squash before pushing
+- **Single commit per PR** — squash before pushing (see non-interactive squash in [../git-branch-validator/SKILL.md](../git-branch-validator/SKILL.md))
 - **Rebase, don't merge** — `git fetch origin develop && git rebase origin/develop`
 - **Format + lint must pass** before push:
   - `npx nx format:write --files="<changed-files>"`

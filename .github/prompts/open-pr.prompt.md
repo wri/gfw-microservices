@@ -26,7 +26,7 @@ Reference this prompt in Copilot Chat: "Open a PR for GPV-5286 #open-pr".
 - **PR body**: `## Summary`, `## Testing`, `## Related` (Jira)
 - **Quality gates**: format + lint must pass before push
 
-See [skills/standards.md](../skills/standards.md) for the full standards reference (types, scopes, examples).
+See [skills/standards/SKILL.md](../skills/standards/SKILL.md) for the full standards reference (types, scopes, examples).
 
 ## Usage
 
@@ -48,7 +48,7 @@ See [skills/standards.md](../skills/standards.md) for the full standards referen
 
 ### Phase 1 — Initialize PR Manifest
 
-See [skills/pr-manifest.md](../skills/pr-manifest.md).
+See [skills/pr-manifest/SKILL.md](../skills/pr-manifest/SKILL.md).
 
 1. Reset `PR-MANIFEST.md` at the repo root (delete if present, recreate with metadata header).
 2. Ensure `.gitignore` contains `PR-MANIFEST.md`.
@@ -58,15 +58,15 @@ See [skills/pr-manifest.md](../skills/pr-manifest.md).
 
 Parse options, then launch the required agents **in a single message** with multiple sub-agent calls so they run in parallel:
 
-- [skills/git-branch-validator.md](../skills/git-branch-validator.md) — unless `--skipBranchValidation`
-- [skills/jira-validator.md](../skills/jira-validator.md) — always runs (uses `-jira=` if provided, else extracts from branch)
-- [skills/code-reviewer.md](../skills/code-reviewer.md) — unless `--skipCodeReview`. Must receive `REVIEW_DEPTH="thorough"` and `INVOCATION_CONTEXT="PR_CREATION"`.
+- [skills/git-branch-validator/SKILL.md](../skills/git-branch-validator/SKILL.md) — unless `--skipBranchValidation`
+- [skills/jira-validator/SKILL.md](../skills/jira-validator/SKILL.md) — always runs (uses `-jira=` if provided, else extracts from branch)
+- [skills/code-reviewer/SKILL.md](../skills/code-reviewer/SKILL.md) — unless `--skipCodeReview`. Must receive `REVIEW_DEPTH="thorough"` and `INVOCATION_CONTEXT="PR_CREATION"`.
 
 Each agent appends its result to `PR-MANIFEST.md` under its fixed `##` header. Block on any non-skipped agent reporting failures before proceeding.
 
 ### Phase 3 — PR Creation
 
-See [skills/pr-creator.md](../skills/pr-creator.md).
+See [skills/pr-creator/SKILL.md](../skills/pr-creator/SKILL.md).
 
 Builds the title/body from validated Jira data and the squashed commit, then runs `gh pr create --base develop`. Does **not** post the review comment.
 

@@ -15,7 +15,6 @@
         "main": "apps/microservices/externalapi/src/main.ts",
         "tsConfig": "apps/microservices/externalapi/tsconfig.app.json",
         "assets": ["apps/microservices/externalapi/src/assets"],
-        "isolatedConfig": true,
         "webpackConfig": "apps/microservices/externalapi/webpack.config.js"
       },
       "configurations": {

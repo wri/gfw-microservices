@@ -63,7 +63,7 @@ graph TD;
 
 ### Install
 
-First, we have to install and use node version `20.11.1`
+First, we have to install and use node version `24.16.0`
 
 Second you have to install the `nx` as global:
 

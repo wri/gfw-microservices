@@ -10,7 +10,6 @@ import {
 import { ListBulkCopy } from './ListBulkCopy';
 import * as sql from 'mssql';
 import { listStatus, analysisTypes, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
-import { featureFlagsService } from '@wri-monorepos/shared';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -445,6 +444,7 @@ export async function setListAnalysisStatus(
   organizationId?: number,
   options?: string
 ) {
+  void organizationId;
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(clientDatabase);
   const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
@@ -455,19 +455,6 @@ export async function setListAnalysisStatus(
   const isWeeklyRequested =
     analysisIds.includes(AlertsAnalysisFrequency.WEEKLY) ||
     options?.toLowerCase() === AlertsAnalysisFrequency.WEEKLY.toLowerCase();
-
-  // Check feature flag for weekly alerts
-  let weeklyAlertsOptIn = false;
-  if (organizationId) {
-    try {
-      const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-      const flags = await getFeatureFlagsForCurrentOrg(organizationId!);
-      weeklyAlertsOptIn = flags.some((flag) => flag.flagId === 'WeeklyAlerts' && flag.flagState);
-    } catch (error) {
-      // If feature flag lookup fails, fall back to disabled (opt-in not required)
-      weeklyAlertsOptIn = false;
-    }
-  }
 
   await Promise.all(
     analysisIds
@@ -503,43 +490,22 @@ export async function setListAnalysisStatus(
           value.options = analysisTypes.PALM_RISK;
         }
 
-        // GPV-5141 default options=Weekly for ALERTS analysis
-        // GPV-5181: Handle Weekly Alerts options based on feature flag
         // GPV-5400: Check isWeeklyRequested to handle both upload (analysisIds) and enrollment (options)
-        // Allow removing Weekly even when feature flag is OFF
         const existingRecord = await listAnalysisStatusRepository.findOne({
           where: { listId, analysisId: normalizedAnalysisId },
         });
 
         if (normalizedAnalysisId === analysisTypes.ALERTS) {
-          if (weeklyAlertsOptIn) {
-            // Feature flag is ON: only set Weekly if explicitly requested
-            if (isWeeklyRequested) {
-              value.options = AlertsAnalysisFrequency.WEEKLY;
-            } else if (options === '') {
-              // Explicit removal of Weekly (empty string signals removal)
-              value.options = null;
-            } else if (existingRecord) {
-              // Preserve existing options when not explicitly changing them
-              value.options = existingRecord.options;
-            }
-            // Otherwise, leave options as null for new records without Weekly
-          } else {
-            // Feature flag is OFF: apply backward compatibility logic
-            // BUT respect explicit removal of Weekly on existing records (GPV-5180 fix)
-            if (existingRecord && !isWeeklyRequested) {
-              if (options === '') {
-                // Explicit removal of Weekly (empty string signals removal)
-                value.options = null;
-              } else {
-                // Preserve existing options (might be null or 'Weekly')
-                value.options = existingRecord.options;
-              }
-            } else {
-              // Creating new ALERTS record OR explicitly adding Weekly - default to Weekly
-              value.options = AlertsAnalysisFrequency.WEEKLY;
-            }
+          if (isWeeklyRequested) {
+            value.options = AlertsAnalysisFrequency.WEEKLY;
+          } else if (options === '') {
+            // Explicit removal of Weekly (empty string signals removal)
+            value.options = null;
+          } else if (existingRecord) {
+            // Preserve existing options when not explicitly changing them
+            value.options = existingRecord.options;
           }
+          // Otherwise, leave options as null for new records without Weekly
         }
 
         // Save or update for ALL analysis types

@@ -9,11 +9,6 @@ jest.mock('../../../utils/requestUtils', () => ({
   requestGeoTrellisAnalyzeList: jest.fn(() => Promise.resolve()),
 }));
 
-jest.mock('../../../../../../utils/general.utils', () => ({
-  __esModule: true,
-  default: { isWeeklyAlertsAvailable: true },
-}));
-
 jest.mock('../../../../../common/js/components/Loaders/InlineLoader', () => () => (
   <div data-testid="inline-loader">Loading...</div>
 ));

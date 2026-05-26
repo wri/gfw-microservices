@@ -10,7 +10,6 @@ import {
   analysisTypes,
   AlertsAnalysisFrequency,
 } from '../../../../../../config/env/analysisTypes.constants';
-import featureFlags from '../../../../../../utils/general.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 import './ChangeTypeOfAnalysisModal.scss';
@@ -47,8 +46,6 @@ function ChangeTypeOfAnalysisModal({
   commodity,
   isPalmRiskActive,
 }) {
-  const { isWeeklyAlertsAvailable } = featureFlags;
-
   // Transform listAnalysesStatus to expand child options (Weekly, PalmRisk) into separate entries
   // This ensures consistent behavior whether the modal is opened from home page or list details page
   const listAnalysesStatus = useMemo(() => {
@@ -59,21 +56,19 @@ function ChangeTypeOfAnalysisModal({
     const expandedAnalyses = [...rawListAnalysesStatus];
 
     // Add synthetic Weekly entry if ALERTS has options='Weekly'
-    if (isWeeklyAlertsAvailable) {
-      const hasWeeklyEntry = expandedAnalyses.some(
-        (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+    const hasWeeklyEntry = expandedAnalyses.some(
+      (a) => a.analysisId === AlertsAnalysisFrequency.WEEKLY
+    );
+    if (!hasWeeklyEntry) {
+      const alertsWithWeekly = expandedAnalyses.find(
+        ({ analysisId, options }) =>
+          analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
       );
-      if (!hasWeeklyEntry) {
-        const alertsWithWeekly = expandedAnalyses.find(
-          ({ analysisId, options }) =>
-            analysisId === analysisTypes.ALERTS && options === AlertsAnalysisFrequency.WEEKLY
-        );
-        if (alertsWithWeekly) {
-          expandedAnalyses.push({
-            analysisId: AlertsAnalysisFrequency.WEEKLY,
-            status: alertsWithWeekly.status,
-          });
-        }
+      if (alertsWithWeekly) {
+        expandedAnalyses.push({
+          analysisId: AlertsAnalysisFrequency.WEEKLY,
+          status: alertsWithWeekly.status,
+        });
       }
     }
 
@@ -94,7 +89,7 @@ function ChangeTypeOfAnalysisModal({
     }
 
     return expandedAnalyses;
-  }, [rawListAnalysesStatus, isWeeklyAlertsAvailable]);
+  }, [rawListAnalysesStatus]);
 
   const initialAnalysisSelection = useMemo(
     () => [

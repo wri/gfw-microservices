@@ -4,17 +4,8 @@ import axios from 'axios';
 import { SummaryAndSubmit } from './SummaryAndSubmit';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
-import featureFlags from '../../../../../../utils/general.utils';
 
 jest.mock('../contexts');
-
-// Mock feature flags - must be defined before component renders
-jest.mock('../../../../../../utils/general.utils', () => ({
-  __esModule: true,
-  default: {
-    isWeeklyAlertsAvailable: false, // Default to false, tests will override
-  },
-}));
 
 const mockClearUploadType = jest.fn();
 jest.mocked(useUploadLocation).mockReturnValue({
@@ -85,9 +76,6 @@ jest.mock('../../landing/uploadProcess', () => ({
 beforeEach(() => {
   jest.clearAllMocks();
   mockAxios.post.mockResolvedValue({ data: { success: true } });
-
-  // Reset feature flag to default
-  (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = false;
 
   // Reset to default mock
   jest.mocked(useUploadLocation).mockReturnValue({
@@ -268,9 +256,6 @@ describe('SummaryAndSubmit', () => {
   it('should pass options="Weekly" when Weekly Alerts and ALERTS are both selected', async () => {
     const user = userEvent.setup();
 
-    // Enable weekly alerts feature flag
-    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = true;
-
     jest.mocked(useUploadLocation).mockReturnValue({
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
@@ -322,8 +307,6 @@ describe('SummaryAndSubmit', () => {
       );
     });
 
-    // Reset feature flag
-    featureFlags.isWeeklyAlertsAvailable = false;
   });
 
   it('should omit options when Weekly Alerts is not selected', async () => {
@@ -381,9 +364,6 @@ describe('SummaryAndSubmit', () => {
   it('should omit options when Weekly is selected but ALERTS is not selected', async () => {
     const user = userEvent.setup();
 
-    // Enable weekly alerts feature flag
-    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = true;
-
     jest.mocked(useUploadLocation).mockReturnValue({
       clearUploadType: mockClearUploadType,
       uploadLocationState: {
@@ -432,7 +412,5 @@ describe('SummaryAndSubmit', () => {
       expect(callArgs).not.toHaveProperty('options'); // Should be omitted because ALERTS is not selected
     });
 
-    // Reset feature flag
-    (featureFlags as { isWeeklyAlertsAvailable: boolean }).isWeeklyAlertsAvailable = false;
   });
 });

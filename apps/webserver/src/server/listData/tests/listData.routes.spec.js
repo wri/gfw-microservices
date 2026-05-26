@@ -60,17 +60,6 @@ jest.mock('@wri-monorepos/geo', () => ({
   setSelectedAnalyses: jest.fn(),
 }));
 
-jest.mock('@wri-monorepos/shared', () => ({
-  featureFlagsService: jest.fn().mockResolvedValue({
-    getClientIdByClientStoreDatabaseName: jest.fn().mockResolvedValue(1),
-    getFeatureFlagsForCurrentOrg: jest
-      .fn()
-      .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
-  }),
-  retryWithDelay: (fn) => fn(),
-  isRetryableError: jest.fn().mockReturnValue(false),
-}));
-
 const axios = require('axios');
 jest.mock('axios');
 

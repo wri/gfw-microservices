@@ -40,3 +40,5 @@ cypress.env.json
 
 # eapi-e2e environment variables containing login credentials
 **/externalapi-e2e/jest.set.env.ts
+
+/PR-MANIFEST.md

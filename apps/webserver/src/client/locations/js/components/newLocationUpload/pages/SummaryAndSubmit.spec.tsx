@@ -306,7 +306,6 @@ describe('SummaryAndSubmit', () => {
         })
       );
     });
-
   });
 
   it('should omit options when Weekly Alerts is not selected', async () => {
@@ -411,6 +410,5 @@ describe('SummaryAndSubmit', () => {
       const callArgs = mockUploadProcessByPrevUploadedFile.mock.calls[0][0];
       expect(callArgs).not.toHaveProperty('options'); // Should be omitted because ALERTS is not selected
     });
-
   });
 });

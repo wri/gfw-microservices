@@ -185,12 +185,7 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     }
 
     const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;
-    await setSelectedAnalyses(
-      organization_database,
-      listId,
-      selectedAnalysis,
-      statusToApply
-    );
+    await setSelectedAnalyses(organization_database, listId, selectedAnalysis, statusToApply);
 
     if (isAddingAnalysis && !saveAsDraft) {
       // Because GHG analysis is only valid via EAPI

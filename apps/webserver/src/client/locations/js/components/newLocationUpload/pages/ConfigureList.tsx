@@ -238,7 +238,8 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
         // not as separate rows. Match PalmRisk/Weekly from parent options when no direct row found.
         if (!found && typeOfAnalysis.id === AlertsAnalysisFrequency.WEEKLY) {
           found = template.listAnalysesStatus.find(
-            (x) => x.analysisId === analysisTypes.ALERTS && x.options === AlertsAnalysisFrequency.WEEKLY
+            (x) =>
+              x.analysisId === analysisTypes.ALERTS && x.options === AlertsAnalysisFrequency.WEEKLY
           );
         }
         if (!found && typeOfAnalysis.id === analysisTypes.PALM_RISK) {

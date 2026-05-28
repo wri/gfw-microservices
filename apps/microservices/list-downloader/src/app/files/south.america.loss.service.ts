@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
-import { cloneRow, filterProdesYearlyData } from '../shared/functions';
+import { cloneRow, filterProdesYearlyData, isObjInCountryFormat } from '../shared/functions';
 import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -80,7 +80,11 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
         }
 
         if (!yearlyData) {
-          yearlyData = JSON.parse(listLevelAnalysis[attribute] || '{}');
+          const parsed = JSON.parse(listLevelAnalysis[attribute] || '{}');
+          yearlyData =
+            attribute === 'tree_cover_loss_arg_otbn_yearly' && isObjInCountryFormat(parsed)
+              ? parsed.ARG ?? {}
+              : parsed;
         }
 
         if (attribute === 'tree_cover_loss_soy_yearly') {

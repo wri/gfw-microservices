@@ -1,4 +1,11 @@
 import { yearlyParser } from './yearly.parser';
+import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+
+const otbnOperation = {
+  composites: EXCEL_TEMPLATES.sAmericaLoss
+    .find((op) => op.parsed === 'yearly')
+    .composites.filter((c) => c.attribute === 'tree_cover_loss_arg_otbn_yearly'),
+};
 
 describe('Yearly Parser.', () => {
   test('Receive empty and get an empty array', () => {
@@ -579,6 +586,97 @@ describe('Yearly Parser.', () => {
 
       expect(csvData.length).toEqual(2);
       csvData.forEach((row) => expect(row[3]).toEqual(60));
+    });
+  });
+
+  describe('Argentina OTBN (tree_cover_loss_arg_otbn_yearly) — location-level', () => {
+    const sAmericaLossHeaderLength = EXCEL_TEMPLATE_HEADERS.sAmericaLoss.length;
+    const overheadRow = ['List X', 'Loc Y'];
+
+    test('country-enveloped {"ARG":{...}} produces one row per (category, year) with correct labels', () => {
+      const dataRow = [...overheadRow];
+      const csvData = [];
+
+      yearlyParser({
+        operation: otbnOperation,
+        data: {
+          tree_cover_loss_arg_otbn_yearly:
+            '{"ARG":{"Category I":{"2008":1,"2009":2},"Category II":{"2008":0.5}}}',
+        },
+        dataRow,
+        csvData,
+      });
+
+      expect(csvData).toHaveLength(3);
+      csvData.forEach((row) => expect(row).toHaveLength(sAmericaLossHeaderLength));
+
+      const labels = csvData.map((row) => row[2]).sort();
+      expect(labels).toEqual([
+        'Argentina OTBN - Category I',
+        'Argentina OTBN - Category I',
+        'Argentina OTBN - Category II',
+      ]);
+
+      const catI2008 = csvData.find(
+        (row) => row[2] === 'Argentina OTBN - Category I' && row[4] === '2008'
+      );
+      expect(catI2008[3]).toBe(1);
+      const catII2008 = csvData.find(
+        (row) => row[2] === 'Argentina OTBN - Category II' && row[4] === '2008'
+      );
+      expect(catII2008[3]).toBe(0.5);
+    });
+
+    test('canonical {"Category":{...}} (no envelope) produces the same shape — unwrap is a no-op', () => {
+      const dataRow = [...overheadRow];
+      const csvData = [];
+
+      yearlyParser({
+        operation: otbnOperation,
+        data: {
+          tree_cover_loss_arg_otbn_yearly:
+            '{"Category I":{"2008":1,"2009":2},"Category II":{"2008":0.5}}',
+        },
+        dataRow,
+        csvData,
+      });
+
+      expect(csvData).toHaveLength(3);
+      csvData.forEach((row) => expect(row).toHaveLength(sAmericaLossHeaderLength));
+      const labels = csvData.map((row) => row[2]);
+      expect(labels.every((l) => l.startsWith('Argentina OTBN - Category'))).toBe(true);
+    });
+
+    test('empty envelope {"ARG":{}} produces no rows and does not throw', () => {
+      const dataRow = [...overheadRow];
+      const csvData = [];
+
+      expect(() =>
+        yearlyParser({
+          operation: otbnOperation,
+          data: { tree_cover_loss_arg_otbn_yearly: '{"ARG":{}}' },
+          dataRow,
+          csvData,
+        })
+      ).not.toThrow();
+
+      expect(csvData).toHaveLength(0);
+    });
+
+    test('missing attribute produces no rows and does not throw', () => {
+      const dataRow = [...overheadRow];
+      const csvData = [];
+
+      expect(() =>
+        yearlyParser({
+          operation: otbnOperation,
+          data: {},
+          dataRow,
+          csvData,
+        })
+      ).not.toThrow();
+
+      expect(csvData).toHaveLength(0);
     });
   });
 });

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Typography, TextField, Grid } from '@mui/material';
 import errorLogger from '../../../../common/js/utils/errorLogger';
-import featureFlags from '../../../../../utils/general.utils';
 
 import { PillButton } from '../../../../components';
 import {
@@ -47,11 +46,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
   const [globalLimitsFormData, setGlobalLimitsFormData] = useState(globalLimitsFormDataObject);
   const [formHasChanges, setFormHasChanges] = useState(false);
   const isProManager = window.location.pathname.startsWith('/pro-manager');
-  const { isTokenizationAvailable } = featureFlags;
-  const locationsLabel =
-    isProManager || isTokenizationAvailable
-      ? accountLimitsStrings.tokensPerYear
-      : accountLimitsStrings.locationsPerYear;
+  const locationsLabel = accountLimitsStrings.tokensPerYear;
 
   const onChangeUpdateField = (orgType, fieldName, value) => {
     setGlobalLimitsFormData((prevData) => {
@@ -237,7 +232,7 @@ function AccountLimitsGlobal({ setIsLoading }) {
             >
               Update Limits
             </PillButton>
-            {(isProManager || isTokenizationAvailable) && (
+            {isProManager && (
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Updating the limits will affect all organizations at time of account renewal. Limits
                 are visible to both internal and external users.

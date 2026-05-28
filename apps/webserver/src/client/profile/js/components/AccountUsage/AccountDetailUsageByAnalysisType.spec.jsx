@@ -90,21 +90,9 @@ describe('AccountDetailUsageByAnalysisType', () => {
     expect(screen.getByText('Lists analyzed')).toBeInTheDocument();
   });
 
-  describe('Tokens used column visibility', () => {
-    it('does not render when showTokens is false and no organizationId', () => {
+  describe('Tokens used column', () => {
+    it('always renders the Tokens used column', () => {
       render(<AccountDetailUsageByAnalysisType {...defaultProps} />);
-
-      expect(screen.queryByText('Tokens used')).not.toBeInTheDocument();
-    });
-
-    it('renders when organizationId is provided (pro-manager)', () => {
-      render(<AccountDetailUsageByAnalysisType {...defaultProps} organizationId="123" />);
-
-      expect(screen.getByText('Tokens used')).toBeInTheDocument();
-    });
-
-    it('renders when showTokens is true (org-admin)', () => {
-      render(<AccountDetailUsageByAnalysisType {...defaultProps} showTokens={true} />);
 
       expect(screen.getByText('Tokens used')).toBeInTheDocument();
     });
@@ -126,7 +114,6 @@ describe('AccountDetailUsageByAnalysisType', () => {
         <AccountDetailUsageByAnalysisType
           {...defaultProps}
           analysisUsageByType={dataWithNullTokens}
-          showTokens={true}
         />
       );
 
@@ -147,7 +134,6 @@ describe('AccountDetailUsageByAnalysisType', () => {
         <AccountDetailUsageByAnalysisType
           {...defaultProps}
           analysisUsageByType={dataWithUndefinedTokens}
-          showTokens={true}
         />
       );
 
@@ -166,11 +152,7 @@ describe('AccountDetailUsageByAnalysisType', () => {
       ];
 
       render(
-        <AccountDetailUsageByAnalysisType
-          {...defaultProps}
-          analysisUsageByType={dataWithTokens}
-          showTokens={true}
-        />
+        <AccountDetailUsageByAnalysisType {...defaultProps} analysisUsageByType={dataWithTokens} />
       );
 
       expect(screen.queryByText('N/A')).not.toBeInTheDocument();
@@ -231,7 +213,7 @@ describe('AccountDetailUsageByAnalysisType', () => {
     });
 
     it('includes all rows in tokens total', () => {
-      render(<AccountDetailUsageByAnalysisType {...defaultProps} showTokens={true} />);
+      render(<AccountDetailUsageByAnalysisType {...defaultProps} />);
 
       const totalRow = screen.getByText('Total').closest('tr');
       // 10+10+10+10+10 = 50

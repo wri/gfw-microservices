@@ -81,7 +81,6 @@ function AccountDetailUsageByAnalysisType({
   endDateAnalysis,
   children,
   organizationId,
-  showTokens = false,
 }) {
   const { sortedData, orderBy, order, handleSort } = useSortableData(analysisUsageByType, {
     defaultOrderBy: 'analysis_type',
@@ -92,7 +91,6 @@ function AccountDetailUsageByAnalysisType({
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
 
-  const showTokensColumn = showTokens || !!organizationId;
   const isWeeklyAlerts = (analysisType) => analysisType === WEEKLY_ALERTS_TYPE;
 
   // Calculate totals
@@ -227,21 +225,17 @@ function AccountDetailUsageByAnalysisType({
                     order={order}
                     onSort={handleSort}
                   />
-                  {showTokensColumn && (
-                    <SortableHeader
-                      label={accountProfileStrings.accountUsageLabels.tokensUsed}
-                      column="total_tokens"
-                      orderBy={orderBy}
-                      order={order}
-                      onSort={handleSort}
-                    >
-                      <InfoBubble>
-                        <p>
-                          This usage may reflect the token price across one or more price sheets.
-                        </p>
-                      </InfoBubble>
-                    </SortableHeader>
-                  )}
+                  <SortableHeader
+                    label={accountProfileStrings.accountUsageLabels.tokensUsed}
+                    column="total_tokens"
+                    orderBy={orderBy}
+                    order={order}
+                    onSort={handleSort}
+                  >
+                    <InfoBubble>
+                      <p>This usage may reflect the token price across one or more price sheets.</p>
+                    </InfoBubble>
+                  </SortableHeader>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -278,11 +272,9 @@ function AccountDetailUsageByAnalysisType({
                         {formatDigit(element.lists_analyzed || 0)}
                       </TableCell>
                     )}
-                    {showTokensColumn && (
-                      <TableCell align="right">
-                        {element.total_tokens == null ? 'N/A' : formatDigit(element.total_tokens)}
-                      </TableCell>
-                    )}
+                    <TableCell align="right">
+                      {element.total_tokens == null ? 'N/A' : formatDigit(element.total_tokens)}
+                    </TableCell>
                   </TableRow>
                 ))}
                 {totals && (
@@ -300,16 +292,14 @@ function AccountDetailUsageByAnalysisType({
                         <p>This sum excludes the &apos;Weeks of analysis&apos; value.</p>
                       </InfoBubble>
                     </TableCell>
-                    {showTokensColumn && (
-                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
-                        {formatDigit(totals.total_tokens)}
-                      </TableCell>
-                    )}
+                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                      {formatDigit(totals.total_tokens)}
+                    </TableCell>
                   </TableRow>
                 )}
                 {sortedData.length === 0 && (!startDateAnalysis || !endDateAnalysis) ? (
                   <TableRow key="no-data">
-                    <TableCell colSpan={showTokensColumn ? 5 : 4}>
+                    <TableCell colSpan={5}>
                       <div
                         style={{
                           display: 'flex',

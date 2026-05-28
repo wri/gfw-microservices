@@ -8,8 +8,8 @@ import * as path from 'path';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
 import {
   AccountUsersUsageRequest,
-  OrganizationUsersAnalysisUsageExport,
-  getAccountUsersAnalysisUsageExport,
+  OrganizationUsersAnalysisUsageExportWithTokenization,
+  getAccountUsersAnalysisUsageExportWithTokenization,
 } from '@wri-monorepos/sql';
 import { IFileGenerator } from './i.file.generator';
 import { ACCOUNT_USERS_USAGE_CSV_HEADER } from '../shared/constants';
@@ -110,25 +110,33 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
     endDate: string;
   }): Promise<string[][]> {
     try {
-      const accountUsersUsageData = await getAccountUsersAnalysisUsageExport(organizationDatabase, {
-        startDate,
-        endDate,
-      });
+      const accountUsersUsageData = await getAccountUsersAnalysisUsageExportWithTokenization(
+        organizationDatabase,
+        {
+          startDate,
+          endDate,
+        }
+      );
 
-      return accountUsersUsageData.map((dataRow: OrganizationUsersAnalysisUsageExport) => {
-        return [
-          dataRow['Username'],
-          dataRow['List ID'] as string,
-          this.getAnalysisTypeLabel(dataRow['Analysis Type']),
-          dataRow['Hectares'].toString(),
-          dataRow['Locations'].toString(),
-          (dataRow['Per Location Cost'] ?? 0).toString(),
-          (dataRow['Processing Cost'] ?? 0).toString(),
-          (dataRow['Total Cost'] ?? 0).toString(),
-          dataRow['Date/Timestamp'],
-          dataRow['UI/API'],
-        ];
-      });
+      return accountUsersUsageData.map(
+        (dataRow: OrganizationUsersAnalysisUsageExportWithTokenization) => {
+          return [
+            dataRow['Username'],
+            dataRow['List ID'],
+            this.getAnalysisTypesLabel(dataRow['Analysis Types']),
+            dataRow['Hectares'].toString(),
+            dataRow['Locations'].toString(),
+            this.formatTokenValue(dataRow['Location Rate']),
+            this.formatTokenValue(dataRow['List Rate']),
+            this.formatTokenValue(dataRow['Token Usage (Locations)']),
+            this.formatTokenValue(dataRow['Token Usage (Lists)']),
+            this.formatTokenValue(dataRow['Total Tokens']),
+            dataRow['Effective Rate Date'] ?? '',
+            dataRow['Date/Timestamp'],
+            dataRow['UI/API'],
+          ];
+        }
+      );
     } catch (error) {
       throw new Error(`[getFileContents] Failed to get file contents. ${error.message}`);
     }
@@ -206,5 +214,21 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
       (analysisOpt) => analysisOpt.id === analysisTypeId
     );
     return analysisType ? analysisType.label : analysisTypeId;
+  }
+
+  // The tokenized export aggregates the analysis types per list into a
+  // comma-separated string, so each type is labelled individually.
+  private getAnalysisTypesLabel(analysisTypes: string) {
+    if (!analysisTypes) {
+      return '';
+    }
+    return analysisTypes
+      .split(',')
+      .map((analysisTypeId) => this.getAnalysisTypeLabel(analysisTypeId.trim()))
+      .join(', ');
+  }
+
+  private formatTokenValue(value: number | null) {
+    return value == null ? '' : value.toString();
   }
 }

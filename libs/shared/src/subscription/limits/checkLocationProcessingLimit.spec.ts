@@ -7,7 +7,6 @@ import {
 import { checkLocationProcessingLimit } from './checkLocationProcessingLimit';
 import { getAccountSubscriptionData } from '../utils';
 import { calculateAccountSubscriptionDates } from '../utils/accountSubscriptionDates';
-import { featureFlagsService } from '../../lib/utils/feature.flag.service';
 
 jest.mock('@wri-monorepos/sql', () => ({
   getListLocationsCountById: jest.fn(),
@@ -22,10 +21,6 @@ jest.mock('../utils', () => ({
 
 jest.mock('../utils/accountSubscriptionDates', () => ({
   calculateAccountSubscriptionDates: jest.fn(),
-}));
-
-jest.mock('../../lib/utils/feature.flag.service', () => ({
-  featureFlagsService: jest.fn(),
 }));
 
 type MockedFunction<T extends (...args: any[]) => any> = jest.MockedFunction<T>;
@@ -46,7 +41,6 @@ describe('checkLocationProcessingLimit', () => {
   const mockCalculateAccountSubscriptionDates = calculateAccountSubscriptionDates as MockedFunction<
     typeof calculateAccountSubscriptionDates
   >;
-  const mockFeatureFlagsService = featureFlagsService as MockedFunction<typeof featureFlagsService>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -81,10 +75,6 @@ describe('checkLocationProcessingLimit', () => {
         (a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime()
       )[0];
     });
-
-    mockFeatureFlagsService.mockResolvedValue({
-      getFeatureFlagsForCurrentOrg: jest.fn().mockResolvedValue([]),
-    } as any);
   });
 
   it('returns false when only GHG analysis is requested', async () => {
@@ -139,10 +129,9 @@ describe('checkLocationProcessingLimit', () => {
     });
 
     expect(result).toBe(true);
-    expect(mockFeatureFlagsService).not.toHaveBeenCalled();
   });
 
-  it('returns true when token limit would be exceeded with tokenization enabled', async () => {
+  it('returns true when token limit would be exceeded', async () => {
     mockGetAccountSubscriptionData.mockResolvedValue({
       accountUsage: { locations_analyzed: 10 },
       accountLimits: { max_locations_per_year: 100, tokens_per_year: 100 },
@@ -150,11 +139,6 @@ describe('checkLocationProcessingLimit', () => {
     } as any);
 
     mockGetListLocationsCountById.mockResolvedValue(5);
-    mockFeatureFlagsService.mockResolvedValue({
-      getFeatureFlagsForCurrentOrg: jest
-        .fn()
-        .mockResolvedValue([{ flagId: 'Tokenization', flagState: true }]),
-    } as any);
 
     mockGetAccountAnalysisUsageByAnalysisType.mockResolvedValue([{ total_tokens: 90 }] as any);
 
@@ -174,7 +158,7 @@ describe('checkLocationProcessingLimit', () => {
     expect(result).toBe(true);
   });
 
-  it('returns false when token limit is not exceeded with tokenization enabled', async () => {
+  it('returns false when token limit is not exceeded', async () => {
     mockGetAccountSubscriptionData.mockResolvedValue({
       accountUsage: { locations_analyzed: 10 },
       accountLimits: { max_locations_per_year: 100, tokens_per_year: 120 },
@@ -182,11 +166,6 @@ describe('checkLocationProcessingLimit', () => {
     } as any);
 
     mockGetListLocationsCountById.mockResolvedValue(5);
-    mockFeatureFlagsService.mockResolvedValue({
-      getFeatureFlagsForCurrentOrg: jest
-        .fn()
-        .mockResolvedValue([{ flagId: 'Tokenization', flagState: true }]),
-    } as any);
 
     mockGetAccountAnalysisUsageByAnalysisType.mockResolvedValue([{ total_tokens: 90 }] as any);
 

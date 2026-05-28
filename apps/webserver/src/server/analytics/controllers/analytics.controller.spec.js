@@ -63,7 +63,7 @@ jest.mock('@wri-monorepos/sql', () => ({
       organizationDb: 'mock_organization_database',
     }),
   },
-  getAccountUsersAnalysisUsage: jest.fn().mockResolvedValue([]),
+  getAccountUsersAnalysisUsageWithTokenization: jest.fn().mockResolvedValue([]),
   getAccountRenewalTime: jest.fn().mockResolvedValue(new Date()),
   getAccountAnalysisLimits: jest.fn().mockResolvedValue({}),
   getAccountAnalysisUsage: jest.fn().mockResolvedValue({}),

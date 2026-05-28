@@ -11,6 +11,7 @@ import { DataSource } from 'typeorm';
 import { checkListSizeLimit } from '../common/check.listSizelimit';
 import { ListSizeLimitException } from '../common/listSizeLimit.exception';
 import { MAX_LOCATIONS_PER_LIST } from '../common/constants';
+import { EmptyDataFileException } from '../common/emptyDataFile.exception';
 import { ListTemplate, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { traceContext } from '@wri-monorepos/shared';
 import { ServerConfigType } from '../../validators/server-config';
@@ -514,6 +515,42 @@ describe('StartAnalysisService', () => {
     expect(runFullChainSpy).toHaveBeenCalled();
 
     expect(uploadStatusSpy).toHaveBeenCalled();
+  });
+
+  it('should update statuses and not throw when empty data file is detected', async () => {
+    const analysisIds = ['e-1', 'e-2'];
+    const request = {
+      organization_id: 1,
+      subscription_status_id: 1,
+      organization_database: 'test-database',
+      list_id: 12,
+      path: 's3://bucket/empty.csv',
+      user_id: 77,
+      startAnalysis: true,
+      saveAsDraft: false,
+      commodity: 'cocoa',
+      analysisIds,
+    } as unknown as RequestLargeListProcess;
+
+    (commodityService.checkIfListExistAndCommodityIsTheSame as sinon.SinonStub).resolves(true);
+
+    // Simulate the chain throwing an EmptyDataFileException
+    runFullChainSpy.mockRejectedValueOnce(new EmptyDataFileException());
+
+    await expect(service.run(request)).resolves.toBeDefined();
+    await new Promise((r) => setTimeout(r, 100));
+
+    expect(runFullChainSpy).toHaveBeenCalled();
+    expect(uploadStatusSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      'Empty data file',
+      expect.stringContaining('Validation errors found in the data')
+    );
+
+    expect(updateListsAnalysisStatus as unknown as jest.Mock).toHaveBeenCalled();
+    const calls = (updateListsAnalysisStatus as unknown as jest.Mock).mock.calls;
+    const lastArgs = calls[calls.length - 1][1];
+    expect(lastArgs.analysisIds).toEqual(analysisIds);
   });
 
   describe('Trace ID preservation', () => {

@@ -9,6 +9,7 @@ import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
 import AdmZip from 'adm-zip';
 import type * as fsType from 'fs';
+import { EmptyDataFileException } from '../../common/emptyDataFile.exception';
 
 jest.mock('fs', () => {
   const actualFs: typeof fsType = jest.requireActual('fs');
@@ -250,6 +251,24 @@ describe('ParserData', () => {
         ...request,
         geojson: mockFeatureCollection,
       });
+    });
+
+    it('should throw EmptyDataFileException when parsed file has no features', async () => {
+      const request = {
+        request: {
+          fileDownloadedPath: 'test.csv',
+          preview: false,
+          path: 'test/path',
+        },
+      };
+      const mockCsvContent = 'header1,header2\nvalue1,value2';
+      (fs.readFileSync as jest.Mock).mockReturnValue(mockCsvContent);
+      (csv2geojson as jest.Mock).mockResolvedValue({
+        type: 'FeatureCollection',
+        features: [],
+      });
+
+      await expect(parserData.handle(request)).rejects.toBeInstanceOf(EmptyDataFileException);
     });
 
     it('should throw error for unsupported file extension', async () => {

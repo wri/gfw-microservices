@@ -77,7 +77,7 @@ describe('connectionpool get()', () => {
 
   it('should share one in-flight connection for concurrent callers', async () => {
     const { mssql, get } = getModules();
-    let resolveConnect: () => void;
+    let resolveConnect!: () => void;
     const connectPromise = new Promise<void>((resolve) => {
       resolveConnect = resolve;
     });

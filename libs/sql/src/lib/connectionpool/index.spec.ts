@@ -75,6 +75,28 @@ describe('connectionpool get()', () => {
     expect(mssql.ConnectionPool).toHaveBeenCalledTimes(2);
   });
 
+  it('should share one in-flight connection for concurrent callers', async () => {
+    const { mssql, get } = getModules();
+    let resolveConnect: () => void;
+    const connectPromise = new Promise<void>((resolve) => {
+      resolveConnect = resolve;
+    });
+    const pool: Record<string, unknown> = {
+      close: jest.fn().mockResolvedValue(undefined),
+    };
+    pool.connect = jest.fn().mockImplementation(() => connectPromise.then(() => pool));
+    mssql.ConnectionPool.mockImplementation(() => pool);
+
+    const firstResult = get('concurrent-pool', mockConfig);
+    const secondResult = get('concurrent-pool', mockConfig);
+
+    resolveConnect();
+
+    const [firstPool, secondPool] = await Promise.all([firstResult, secondResult]);
+    expect(firstPool).toBe(secondPool);
+    expect(mssql.ConnectionPool).toHaveBeenCalledTimes(1);
+  });
+
   it('should throw after MAX_RETRIES exhausted', async () => {
     const { mssql, get } = getModules();
     mssql.ConnectionPool.mockImplementation(() => {

@@ -133,4 +133,34 @@ describe('VerifiableCredentialsService', () => {
       expect(baseUrl).toBe('https://localhost:8443');
     });
   });
+
+  describe('resolveDocumentLoaderUrl', () => {
+    const originalEnvironment = { ...process.env };
+
+    afterEach(() => {
+      process.env = { ...originalEnvironment };
+    });
+
+    it('should keep the public URL when no internal override is configured', () => {
+      process.env.NODE_ENV = 'ProdV2';
+      delete process.env.VC_CONTEXT_INTERNAL_BASE_URL;
+
+      const resolvedUrl = verifiableCredentialService['resolveDocumentLoaderUrl'](
+        'https://pro.globalforestwatch.org/geojson-defreport.jsonld'
+      );
+
+      expect(resolvedUrl).toBe('https://pro.globalforestwatch.org/geojson-defreport.jsonld');
+    });
+
+    it('should rewrite the geojson context URL to the internal base url when configured', () => {
+      process.env.NODE_ENV = 'ProdV2';
+      process.env.VC_CONTEXT_INTERNAL_BASE_URL = 'http://webserver:8080';
+
+      const resolvedUrl = verifiableCredentialService['resolveDocumentLoaderUrl'](
+        'https://pro.globalforestwatch.org/geojson-defreport.jsonld'
+      );
+
+      expect(resolvedUrl).toBe('http://webserver:8080/geojson-defreport.jsonld');
+    });
+  });
 });

@@ -1,9 +1,8 @@
-const path = require('path');
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { Consumer } from 'sqs-consumer';
 
 const logger = require('../../../config/privateutils/logger.utils');
-const tileSqsUrls = require(path.resolve('./server/vectorTiles/config/vectorTilesSqs.config'));
+const tileSqsUrls = require('../config/vectorTilesSqs.config');
 const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');
 
 const awsConfig = {
@@ -24,7 +23,7 @@ const setVectorTileQueueUrl = () => {
     case 'staging':
       return tileSqsUrls.VECTOR_TILE_SQS__STAGING;
     case 'production':
-      return tileSqsUrls.VECTOR_TILE_SQS__PRODUCTION;
+      return tileSqsUrls.VECTOR_TILE_SQS__PRODV2;
     default:
       return tileSqsUrls.VECTOR_TILE_SQS__LATEST;
   }

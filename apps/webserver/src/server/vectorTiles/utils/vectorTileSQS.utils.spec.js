@@ -7,7 +7,7 @@ jest.mock(
   () => ({
     VECTOR_TILE_SQS__QA: 'https://sqs.us-east-1.amazonaws.com/123456789/qa-vector-tiles',
     VECTOR_TILE_SQS__STAGING: 'https://sqs.us-east-1.amazonaws.com/123456789/staging-vector-tiles',
-    VECTOR_TILE_SQS__PRODUCTION: 'https://sqs.us-east-1.amazonaws.com/123456789/prod-vector-tiles',
+    VECTOR_TILE_SQS__PRODV2: 'https://sqs.us-east-1.amazonaws.com/123456789/prod-vector-tiles',
     VECTOR_TILE_SQS__LATEST: 'https://sqs.us-east-1.amazonaws.com/123456789/latest-vector-tiles',
   }),
   { virtual: true }

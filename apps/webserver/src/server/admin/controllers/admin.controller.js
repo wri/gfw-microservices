@@ -27,7 +27,7 @@ export const getCommitForSerivce = async (serviceUrl) => {
   }
   const latestUrl = `${serviceUrl}/latest_commit`;
   try {
-    const response = await axios.get(latestUrl, { timeout: 5000 });
+    const response = await axios.get(latestUrl);
     return response.data || 'N/A';
   } catch (error) {
     logger.error('Error in getCommitForSerivce', latestUrl, error.stack);

@@ -68,7 +68,7 @@ export class MetadataService {
   constructor(private readonly httpService: HttpService, private config: ConfigService) {}
 
   async getMetadata(): Promise<{ taskARN: string }> {
-    const env: string = this.config.get('MICROSERVICES_ENV', { infer: true });
+    const env = this.config.get<string>('MICROSERVICES_ENV');
 
     if (env == undefined || ['test', 'dev', 'development', 'latest'].includes(env.toLowerCase())) {
       return { taskARN: `arn:aws:ecs:us-east-1:123456789012:task/cluster-name/uuid-${env ?? ''}` };

@@ -74,6 +74,6 @@ const removeApproxStringAndSort = (obj): object => {
   return Object.fromEntries(
     Object.entries(obj)
       .map(([key, value]) => [Number(key.substring(0, 4)), value])
-      .sort((a: [], b: []) => a.at(0) - b.at(0))
+      .sort(([a], [b]) => Number(a) - Number(b))
   );
 };

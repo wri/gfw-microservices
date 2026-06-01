@@ -23,7 +23,7 @@ const setVectorTileQueueUrl = () => {
     case 'staging':
       return tileSqsUrls.VECTOR_TILE_SQS__STAGING;
     case 'production':
-      return tileSqsUrls.VECTOR_TILE_SQS__PRODUCTION;
+      return tileSqsUrls.VECTOR_TILE_SQS__PRODV2;
     default:
       return tileSqsUrls.VECTOR_TILE_SQS__LATEST;
   }

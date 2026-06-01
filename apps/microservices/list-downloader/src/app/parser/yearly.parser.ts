@@ -1,5 +1,11 @@
 import { NESTED_JSON_ATTRIBUTES } from '../shared/constants';
-import { cloneRow, formatPct, validatePct, filterProdesYearlyData } from '../shared/functions';
+import {
+  cloneRow,
+  formatPct,
+  validatePct,
+  filterProdesYearlyData,
+  isObjInCountryFormat,
+} from '../shared/functions';
 import { commodityMillPriorityLevelYearly } from './mill.priority.parser';
 import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 import { DIAGNOSTIC_ANALYSIS_PERIOD } from '@wri-monorepos/constants';
@@ -36,6 +42,9 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
         // Fallback to legacy attribute
         yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
       }
+    } else if (field.attribute === 'tree_cover_loss_arg_otbn_yearly') {
+      const parsed = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+      yearlyData = isObjInCountryFormat(parsed) ? parsed.ARG ?? {} : parsed;
     } else {
       yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
     }
@@ -73,6 +82,13 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
 
       if (totalAttr && typeof totalAttr === 'string') {
         totalAttr = JSON.parse(totalAttr);
+
+        if (
+          totalStat.attribute === 'tree_cover_loss_arg_otbn_yearly' &&
+          isObjInCountryFormat(totalAttr)
+        ) {
+          totalAttr = totalAttr.ARG ?? {};
+        }
 
         if (Array.isArray(totalAttr)) {
           totalStatValue = totalAttr.reduce((acc, v) => acc + (Number(v) || 0), 0);

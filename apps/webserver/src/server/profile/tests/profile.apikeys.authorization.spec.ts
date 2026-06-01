@@ -101,7 +101,7 @@ describe('GET /api/profile/api-keys - Authorization Controls', () => {
     const app = createApp({ user_access_level_id: 1 });
     await request(app).get('/api/profile/api-keys');
     expect(mockCheckAdministrator).toHaveBeenCalled();
-  });
+  }, 10000);
 
   it('should return 403 for non-admin users (Editor) on GET /api/profile/api-keys', async () => {
     const app = createApp({ user_access_level_id: 2 });

@@ -1,9 +1,8 @@
-const path = require('path');
 import { SQSClient } from '@aws-sdk/client-sqs';
 import { Consumer } from 'sqs-consumer';
 
 const logger = require('../../../config/privateutils/logger.utils');
-const tileSqsUrls = require(path.resolve('./server/vectorTiles/config/vectorTilesSqs.config'));
+const tileSqsUrls = require('../config/vectorTilesSqs.config');
 const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');
 
 const awsConfig = {

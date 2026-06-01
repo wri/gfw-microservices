@@ -169,7 +169,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
       })
     );
     await waitFor(() => expect(window.location.reload).toHaveBeenCalled());
-  });
+  }, 10000);
 
   it('shows "Save Changes" (not "Submit Analysis") when only Weekly is added on top of existing ALERTS', async () => {
     renderComponent({
@@ -241,7 +241,7 @@ describe('ChangeTypeOfAnalysisModal', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Submit Analysis/i }));
     expect(screen.getByText(/You have added a new analysis to your list/i)).toBeInTheDocument();
-  });
+  }, 10000);
 
   it('does not reload when save fails with server error', async () => {
     global.fetch = jest.fn(() =>

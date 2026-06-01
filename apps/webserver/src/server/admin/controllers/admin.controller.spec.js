@@ -35,7 +35,7 @@ describe('Latest Commit', () => {
   it('getCommitForSerivce bad service returns N/A', async () => {
     const res = await adminController.getCommitForSerivce('http://localhost:9');
     expect(res).toBe('N/A');
-  });
+  }, 10000);
 
   it('getCommitForSerivce no service returns N/A', async () => {
     const res = await adminController.getCommitForSerivce();

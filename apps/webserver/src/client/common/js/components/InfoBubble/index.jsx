@@ -6,7 +6,7 @@ import InfoBubbleBase from './InfoBubbleBase';
 import InfoBubbleContent from './InfoBubbleContent';
 import './infoBubble.scss';
 
-export default function InfoBubble({ children, infoBubbleId }) {
+export default function InfoBubble({ children, infoBubbleId, sx }) {
   const [showBubble, setShowBubble] = useState(false);
   const [anchorEl, setAnchorEl] = useState();
 
@@ -22,7 +22,7 @@ export default function InfoBubble({ children, infoBubbleId }) {
 
   return (
     <div style={{ display: 'inline-block' }}>
-      <IconButton onClick={handleOpen} id={infoBubbleId} size="small" sx={{ ml: 1 }}>
+      <IconButton onClick={handleOpen} id={infoBubbleId} size="small" sx={{ ml: 1, ...sx }}>
         <Info fontSize="inherit" />
       </IconButton>
       <Popover

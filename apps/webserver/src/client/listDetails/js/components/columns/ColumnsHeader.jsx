@@ -57,7 +57,7 @@ const ColumnsHeader = ({ label, infoBubbleId, subtitle }) => {
     <span className="title-text" data-cy={`column-header-${sanitizeLabel(label)}`}>
       <span>
         <span>{translatedLabel}</span>
-        {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
+        {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} sx={{ m: 0 }} />}
         {subtitle && (
           <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 'normal' }}>
             {translatedSubtitle}

@@ -17,6 +17,9 @@
   ],
   "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
   "testEnvironment": "jest-environment-jsdom",
+  "testEnvironmentOptions": {
+    "customExportConditions": ["node", "node-addons"]
+  },
   "testMatch": [
     "<rootDir>/server/**/*.{spec,test}.{js,ts}",
     "<rootDir>/config/**/*.{spec,test}.{js,ts}"

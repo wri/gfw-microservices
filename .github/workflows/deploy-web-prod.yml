@@ -36,7 +36,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.11.1]
+        node-version: [24.16.0]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -55,7 +55,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 

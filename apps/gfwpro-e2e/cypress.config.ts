@@ -1,6 +1,6 @@
 import { defineConfig } from 'cypress';
 import { nxE2EPreset } from '@nrwl/cypress/plugins/cypress-preset';
-import * as webpack from '@cypress/webpack-preprocessor';
+import webpack from '@cypress/webpack-preprocessor';
 import { addCucumberPreprocessorPlugin } from '@badeball/cypress-cucumber-preprocessor';
 
 async function setupNodeEvents(

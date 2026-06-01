@@ -14,7 +14,8 @@
         "outputPath": "dist/apps/microservices/list-processing",
         "main": "apps/microservices/list-processing/src/main.ts",
         "tsConfig": "apps/microservices/list-processing/tsconfig.app.json",
-        "assets": ["apps/microservices/list-processing/src/assets"]
+        "assets": ["apps/microservices/list-processing/src/assets"],
+        "webpackConfig": "apps/microservices/list-processing/webpack.config.js"
       },
       "configurations": {
         "production": {

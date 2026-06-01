@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import { ServiceException } from '@smithy/smithy-client';
+import { ServiceException } from '@smithy/core/client';
 import { APIGateway } from '@aws-sdk/client-api-gateway';
 import { TokenService } from '../token.service';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';

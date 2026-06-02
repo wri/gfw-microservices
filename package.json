@@ -176,7 +176,8 @@
     },
     "@badeball/cypress-cucumber-preprocessor": {
       "glob": "^10.5.0",
-      "minimatch": "^7.4.6"
+      "minimatch": "^7.4.6",
+      "uuid": "^9.0.0"
     },
     "typeorm": {
       "glob": "^10.5.0",

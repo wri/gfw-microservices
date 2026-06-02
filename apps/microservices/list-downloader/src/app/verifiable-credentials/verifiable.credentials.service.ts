@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as jsonld from 'jsonld';
 import { randomUUID } from 'crypto';
-import { URL } from 'url';
 import { GeoJson } from './types/verifiable-credential.model';
 import * as cache from 'memory-cache';
 let vc, Ed25519Signature2018, Ed25519VerificationKey2018;
@@ -51,13 +50,12 @@ export class VerifiableCredentialService {
           : jsonld.documentLoaders.node();
 
       const combinedDocumentLoader = async (url) => {
-        const resolvedUrl = this.resolveDocumentLoaderUrl(url);
-        const cachedDocument = cache.get(resolvedUrl);
+        const cachedDocument = cache.get(url);
         if (cachedDocument) {
           return cachedDocument;
         }
-        const nonCachedResult = await customLoader(resolvedUrl);
-        cache.put(resolvedUrl, nonCachedResult, 1000 * 60 * 60); // Cache about 1 hour
+        const nonCachedResult = await customLoader(url);
+        cache.put(url, nonCachedResult, 1000 * 60 * 60); // Cache about 1 hour
         return nonCachedResult;
       };
 
@@ -85,27 +83,5 @@ export class VerifiableCredentialService {
       baseUrl = 'https://localhost:8443';
     }
     return baseUrl;
-  }
-
-  private resolveDocumentLoaderUrl(url: string) {
-    const internalBaseUrl = process.env.VC_CONTEXT_INTERNAL_BASE_URL;
-    if (!internalBaseUrl) {
-      return url;
-    }
-
-    try {
-      const publicBaseUrl = this.getEnvironmentBaseUrl();
-      const parsedUrl = new URL(url);
-      if (
-        parsedUrl.origin === publicBaseUrl &&
-        parsedUrl.pathname === '/geojson-defreport.jsonld'
-      ) {
-        return new URL(parsedUrl.pathname, internalBaseUrl).toString();
-      }
-    } catch {
-      return url;
-    }
-
-    return url;
   }
 }

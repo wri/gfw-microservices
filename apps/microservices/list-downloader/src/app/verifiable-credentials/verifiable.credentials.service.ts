@@ -66,7 +66,9 @@ export class VerifiableCredentialService {
       });
       return signedVC;
     } catch (error) {
-      this.logger.error(error.message);
+      this.logger.error(
+        `VC signing failed message=${error.message} code=${error.details?.code} url=${error.details?.url} cause=${error.details?.cause?.message} causeCode=${error.details?.cause?.details?.code} causeStatus=${error.details?.cause?.details?.httpStatusCode}`
+      );
       throw error.message;
     }
   }

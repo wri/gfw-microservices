@@ -498,14 +498,11 @@ export async function setListAnalysisStatus(
         if (normalizedAnalysisId === analysisTypes.ALERTS) {
           if (isWeeklyRequested) {
             value.options = AlertsAnalysisFrequency.WEEKLY;
-          } else if (options === '') {
-            // Explicit removal of Weekly (empty string signals removal)
+          } else if (options === '' || options === undefined) {
+            // Clear Weekly when it is explicitly removed or no longer requested
             value.options = null;
-          } else if (existingRecord) {
-            // Preserve existing options when not explicitly changing them
-            value.options = existingRecord.options;
           }
-          // Otherwise, leave options as null for new records without Weekly
+          // Otherwise, leave options as null for ALERTS without Weekly
         }
 
         // Save or update for ALL analysis types

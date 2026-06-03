@@ -15,7 +15,6 @@ const {
 
 import { analysisTypes, listStatus, AlertsAnalysisFrequency } from '@wri-monorepos/constants';
 import { getListAnalysisStatusByListId, setSelectedAnalyses } from '@wri-monorepos/geo';
-import { featureFlagsService } from '@wri-monorepos/shared';
 import axios from 'axios';
 import { retryWithDelay, isRetryableError } from '@wri-monorepos/shared/utils/retry';
 
@@ -167,26 +166,10 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
   }
 
   try {
-    let isWeeklyAlertsEnabled = false; // default to disallowing Weekly (fail closed)
-    let orgId;
-    try {
-      const { getFeatureFlagsForCurrentOrg, getClientIdByClientStoreDatabaseName } =
-        await featureFlagsService();
-      orgId = await getClientIdByClientStoreDatabaseName(organization_database);
-      const orgFlags = await getFeatureFlagsForCurrentOrg(orgId);
-      isWeeklyAlertsEnabled = orgFlags.some(
-        (f) => f.flagId === 'WeeklyAlerts' && f.flagState === true
-      );
-    } catch (flagError) {
-      logger.warn(
-        `Failed to check WeeklyAlerts feature flag, defaulting to disabled: ${flagError}`
-      );
-    }
-
     if (selectedAnalysis && selectedAnalysis.length > 0) {
       const validAnalysisIds = new Set([
         ...Object.values(analysisTypes),
-        ...(isWeeklyAlertsEnabled ? [AlertsAnalysisFrequency.WEEKLY] : []),
+        AlertsAnalysisFrequency.WEEKLY,
       ]);
       if (selectedAnalysis.some((analysisId) => !validAnalysisIds.has(analysisId))) {
         return res.status(400).json({ message: 'analysisIds is not valid' });
@@ -202,13 +185,7 @@ export const setSelectedAnalysesCtrl = async (req, res) => {
     }
 
     const statusToApply = saveAsDraft ? listStatus.Draft : listStatus.Pending;
-    await setSelectedAnalyses(
-      organization_database,
-      listId,
-      selectedAnalysis,
-      statusToApply,
-      orgId
-    );
+    await setSelectedAnalyses(organization_database, listId, selectedAnalysis, statusToApply);
 
     if (isAddingAnalysis && !saveAsDraft) {
       // Because GHG analysis is only valid via EAPI

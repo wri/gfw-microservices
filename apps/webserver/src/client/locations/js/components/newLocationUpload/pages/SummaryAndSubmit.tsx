@@ -29,10 +29,8 @@ import { uploadFileToS3 } from '../utils/upload';
 import { uploadProcessByPrevUploadedFile } from '../../landing/uploadProcess';
 import { UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
-import featureFlags from '../../../../../../utils/general.utils';
 
 export function SummaryAndSubmit() {
-  const isWeeklyAlertsAvailable = (featureFlags as any).isWeeklyAlertsAvailable;
   const history = useHistory();
   const { clearUploadType, uploadLocationState, updateSaveMode } = useUploadLocation();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -131,9 +129,7 @@ export function SummaryAndSubmit() {
       // Pass options='Weekly' if Weekly Alerts is selected AND ALERTS is selected
       // Weekly is a child option of ALERTS and cannot exist without it
       const options =
-        isWeeklyAlertsAvailable &&
-        uploadLocationState.typeOfAnalysis.Weekly &&
-        uploadLocationState.typeOfAnalysis.ALERTS
+        uploadLocationState.typeOfAnalysis.Weekly && uploadLocationState.typeOfAnalysis.ALERTS
           ? AlertsAnalysisFrequency.WEEKLY
           : undefined;
 
@@ -249,9 +245,7 @@ export function SummaryAndSubmit() {
                     analysis?.id === 'FCD' && uploadLocationState.typeOfAnalysis.PalmRisk;
 
                   const isWeeklyAlertsIncluded =
-                    isWeeklyAlertsAvailable &&
-                    analysis?.id === 'ALERTS' &&
-                    uploadLocationState.typeOfAnalysis.Weekly;
+                    analysis?.id === 'ALERTS' && uploadLocationState.typeOfAnalysis.Weekly;
 
                   return (
                     <li key={key}>

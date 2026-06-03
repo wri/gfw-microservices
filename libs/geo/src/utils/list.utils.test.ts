@@ -35,14 +35,6 @@ jest.mock('../lib/list.analysis.status', () => ({
   deleteListAnalyses: jest.fn(),
 }));
 
-jest.mock('@wri-monorepos/shared', () => ({
-  featureFlagsService: jest.fn().mockResolvedValue({
-    getFeatureFlagsForCurrentOrg: jest
-      .fn()
-      .mockResolvedValue([{ flagId: 'WeeklyAlerts', flagState: true }]),
-  }),
-}));
-
 describe('List Utils', () => {
   describe('getListStatusId', () => {
     it('should return draft status when isSaveAsDraft is true', () => {

@@ -7,15 +7,10 @@ import {
   AlertsAnalysisFrequency,
 } from '../../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
-import featureFlags from '../../../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';
 
 function AnalysisListChips({ listAnalysesStatus = [] }) {
-  // Only include the Weekly label when the feature flag is enabled so that server-side
-  // Weekly entries are also hidden (not just the synthesized one) when the flag is off.
-  const allAnalysisLabels = featureFlags.isWeeklyAlertsAvailable
-    ? [...analysisTypesOptionsNewNames, weeklyAlertsAnalysis]
-    : [...analysisTypesOptionsNewNames];
+  const allAnalysisLabels = [...analysisTypesOptionsNewNames, weeklyAlertsAnalysis];
 
   const getShortLabel = (analysisId) => {
     return allAnalysisLabels.find((option) => option.id === analysisId)?.shortLabel;
@@ -30,7 +25,6 @@ function AnalysisListChips({ listAnalysesStatus = [] }) {
   const entries = listAnalysesStatus.flatMap((entry) => {
     const items = [entry];
     if (
-      featureFlags.isWeeklyAlertsAvailable &&
       !hasWeeklyEntry &&
       entry.analysisId === analysisTypes.ALERTS &&
       entry.options === AlertsAnalysisFrequency.WEEKLY

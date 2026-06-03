@@ -10,7 +10,6 @@ import {
 } from '../../../../../config/env/analysisTypes.constants';
 import { HelperTextWithPopover, Link } from '../../../../components';
 import { ExternalLinks, ReusableText } from '../../../../utils/constants';
-import featureFlags from '../../../../../utils/general.utils';
 import { useTransifexTranslation } from '../../../../hooks/useTransifexTranslation';
 import { getManualTranslation } from '../../../../listDetails/js/config/columns/columnHeaders.constants';
 
@@ -63,7 +62,7 @@ function AnalysisTypesSelector({
   };
 
   const baseOptions = analysisTypesForUI.flatMap((option) => {
-    if (option.id === analysisTypes.ALERTS && featureFlags.isWeeklyAlertsAvailable) {
+    if (option.id === analysisTypes.ALERTS) {
       return [option, weeklyAlertsAnalysis];
     }
     if (

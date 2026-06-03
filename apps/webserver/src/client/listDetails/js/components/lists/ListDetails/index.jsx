@@ -83,8 +83,6 @@ import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
 
-import featureFlags from '../../../../../../utils/general.utils';
-
 // STYLE
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
@@ -114,7 +112,6 @@ import {
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
 import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
-import featureFlagsUtil from '../../../../../../utils/general.utils';
 
 const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
 const ALERTS_UNSUBSCRIBE_BANNER_KEY = 'GFW-is-alerts-unsubscribe-banner-dismissed';
@@ -329,9 +326,6 @@ export default class ListDetails extends Component {
   }
 
   computeSyntheticWeeklyEntry(selectedList) {
-    if (!featureFlags.isWeeklyAlertsAvailable) {
-      return null;
-    }
     const listAnalysesStatus = selectedList?.listAnalysesStatus;
     if (!listAnalysesStatus) {
       return null;
@@ -2253,8 +2247,7 @@ export default class ListDetails extends Component {
               </Alert>
             )}
 
-            {featureFlagsUtil.isWeeklyAlertsAvailable &&
-              !isGfwList &&
+            {!isGfwList &&
               !this.state.isAlertsUnsubscribeBannerDismissed &&
               this.shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) && (
                 <Alert

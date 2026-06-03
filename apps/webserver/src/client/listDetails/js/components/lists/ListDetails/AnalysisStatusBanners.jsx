@@ -23,6 +23,7 @@ export default function AnalysisStatusBanners(props) {
     errorLight: theme.palette.error[100],
     errorBorder: theme.palette.error[500],
     errorContrastText: theme.palette.error[700],
+    textPrimary: theme.palette.text.primary,
     secondary: theme.palette.secondary.main,
     secondaryContrastText: theme.palette.secondary.contrastText,
     secondaryLight: theme.palette.secondary.light,
@@ -54,7 +55,7 @@ export default function AnalysisStatusBanners(props) {
     analysisFailed: {
       title: 'Analysis has failed',
       backgroundColor: COLORS.errorLight,
-      color: COLORS.errorContrastText,
+      color: COLORS.textPrimary,
       icon: <Report fontSize="inherit" />,
       message: (
         <>
@@ -64,7 +65,7 @@ export default function AnalysisStatusBanners(props) {
             target="_blank"
             style={{
               textDecoration: 'underline',
-              color: COLORS.errorContrastText,
+              color: COLORS.textPrimary,
             }}
           >
             here
@@ -116,7 +117,7 @@ export default function AnalysisStatusBanners(props) {
     draftWithErrors: {
       title: 'Draft - Location Errors Detected',
       backgroundColor: COLORS.secondaryLight,
-      color: COLORS.secondaryContrastText,
+      color: COLORS.secondaryDark,
       icon: <Warning sx={{ color: COLORS.secondary }} fontSize="inherit" />,
       message: (
         <>

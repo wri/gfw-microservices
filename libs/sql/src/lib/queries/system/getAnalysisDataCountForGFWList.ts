@@ -114,15 +114,7 @@ SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_a
 		SET @TEMPLATE = 'WITH Locations_CTE AS ( {LOCATION_CTE} )
 
 			SELECT ''Row Count'' AS statistic_type, COUNT(location_id) AS statistic
-			FROM Locations_CTE
-			UNION ALL
-			SELECT ''Max Area'', ISNULL(MAX(total_area),0)
-			FROM dbo.[{LIST_ANALYSIS_TABLE_NAME}]
-			WHERE {WHERE_CLAUSES}'
-
-		IF @where_clauses = ''
-			SET @where_clauses = '1=1'
-		SET @TEMPLATE = REPLACE(@TEMPLATE, '{WHERE_CLAUSES}', @where_clauses)
+			FROM Locations_CTE'
 
 		SET @SQL = REPLACE(@TEMPLATE, '{LOCATION_CTE}', @CTE)
 		SET @SQL = REPLACE(@SQL, '{LIST_ANALYSIS_TABLE_NAME}', @listAnalysisTableName)

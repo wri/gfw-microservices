@@ -90,7 +90,6 @@ import '../../../../../locations/css/react-table.scss';
 import './ListDetails.scss';
 
 // CONSTANTS
-import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import {
   GFW_LISTS_NUMBER_CONSTANTS,
@@ -211,7 +210,6 @@ export default class ListDetails extends Component {
       showSubmitModal: false,
       page: 0,
       numberOfPages: 1,
-      maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
       isEveryRowSelected: false,
       filterValues: [],
       parentCompanyOptionsForFilter: [],
@@ -798,8 +796,7 @@ export default class ListDetails extends Component {
             : moveToList.associated_gfwlist;
 
         const myFilters = {
-          analysisAreaMin: filters.selectedAreaMin || 0,
-          ...(filters.selectedAreaMax && { analysisAreaMax: filters.selectedAreaMax }),
+          analysisAreaMin: 0,
           ...(filters.selectedCountry && { country: filters.selectedCountry }),
           ...(filters.selectedState && { state: filters.selectedState }),
           ...(filters.selectedSubState && { subState: filters.selectedSubState }),
@@ -1356,13 +1353,7 @@ export default class ListDetails extends Component {
       this.areAllAnalysesDraft()
     )
       .then((response) => {
-        const {
-          list_analysis,
-          location_analyses,
-          numberOfPages,
-          maximumAnalysisAreaInTheList,
-          numberOfResults,
-        } = response;
+        const { list_analysis, location_analyses, numberOfPages, numberOfResults } = response;
         const listData = {
           list_analysis,
           location_analyses: [location_analyses, location_analyses],
@@ -1371,7 +1362,6 @@ export default class ListDetails extends Component {
         this.setState({
           numberOfPages,
           numberOfResults,
-          maximumAnalysisAreaInTheList,
         });
 
         this.processListData(listData);

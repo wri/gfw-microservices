@@ -182,30 +182,6 @@ describe('filterListData', () => {
     expect(store.dispatch).toHaveBeenCalledWith(updateFilteredData([1]));
   });
 
-  it('filters by selectedAreaMin correctly', () => {
-    filterListData(
-      mockListData,
-      { selectedAreaMin: 50 },
-      { list_name: 'Other', id: 1 },
-      jest.fn(),
-      jest.fn()
-    );
-
-    expect(store.dispatch).toHaveBeenCalledWith(updateFilteredData([1]));
-  });
-
-  it('filters by selectedAreaMax correctly', () => {
-    filterListData(
-      mockListData,
-      { selectedAreaMax: 150 },
-      { list_name: 'Other', id: 1 },
-      jest.fn(),
-      jest.fn()
-    );
-
-    expect(store.dispatch).toHaveBeenCalledWith(updateFilteredData([1]));
-  });
-
   it('filters by showTreeCoverLoss correctly', () => {
     filterListData(
       mockListData,
@@ -349,7 +325,6 @@ describe('filterListData', () => {
       {
         selectedCountry: 'Brazil',
         selectedState: 'Amazonas',
-        selectedAreaMin: 50,
       },
       { list_name: 'Other', id: 1 },
       jest.fn(),
@@ -366,18 +341,6 @@ describe('filterListData', () => {
         selectedCountry: 'Brazil',
         selectedState: 'WrongState',
       },
-      { list_name: 'Other', id: 1 },
-      jest.fn(),
-      jest.fn()
-    );
-
-    expect(store.dispatch).toHaveBeenCalledWith(updateFilteredData([]));
-  });
-
-  it('handles area filters with no matching items', () => {
-    filterListData(
-      mockListData,
-      { selectedAreaMin: 200 }, // Higher than any area in mock data
       { list_name: 'Other', id: 1 },
       jest.fn(),
       jest.fn()
@@ -443,7 +406,6 @@ describe('filterListData', () => {
       {
         selectedCountry: null,
         selectedState: undefined,
-        selectedAreaMin: null,
       },
       { list_name: 'Other', id: 1 },
       jest.fn(),

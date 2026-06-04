@@ -128,7 +128,6 @@ describe('ListController', () => {
   const mockPagesData = {
     numberOfPages: 5,
     numberOfResults: 100,
-    maximumAnalysisAreaInTheList: 1000,
   };
 
   beforeEach(async () => {
@@ -288,7 +287,6 @@ describe('ListController', () => {
       organizationDatabase: 'test-org-db',
       rowsPerPage: 1000,
       analysisAreaMin: 100,
-      analysisAreaMax: 1000,
     };
 
     it('should return number of pages data successfully', async () => {

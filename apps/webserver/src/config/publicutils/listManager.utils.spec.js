@@ -1591,10 +1591,7 @@ describe('Test getNumberPagesForAnalysisDataUserList function', () => {
       country: 'Brazil',
     };
 
-    const mockRecordsets = [
-      { statistic_type: 'Row Count', statistic: 50 },
-      { statistic_type: 'Max Area', statistic: 1000 },
-    ];
+    const mockRecordsets = [{ statistic_type: 'Row Count', statistic: 50 }];
 
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(mockRecordsets);
 
@@ -1608,7 +1605,6 @@ describe('Test getNumberPagesForAnalysisDataUserList function', () => {
     expect(result).toEqual({
       numberOfPages: 5,
       numberOfResults: 50,
-      maximumAnalysisAreaInTheList: 1000,
     });
   });
 
@@ -1616,10 +1612,7 @@ describe('Test getNumberPagesForAnalysisDataUserList function', () => {
     const listID = 2;
     const filters = {};
 
-    const mockRecordsets = [
-      { statistic_type: 'Row Count', statistic: 10 },
-      { statistic_type: 'Max Area', statistic: 500 },
-    ];
+    const mockRecordsets = [{ statistic_type: 'Row Count', statistic: 10 }];
 
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(mockRecordsets);
 
@@ -2237,10 +2230,7 @@ describe('Test getNumberPagesForAnalysisDataUserList function', () => {
       selectedSupplier: 'Supplier A',
       pageSize: 50,
     };
-    const mockResult = [
-      { statistic_type: 'Row Count', statistic: 250 },
-      { statistic_type: 'Max Area', statistic: 10000 },
-    ];
+    const mockResult = [{ statistic_type: 'Row Count', statistic: 250 }];
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue(mockResult);
 
     const result = await getNumberPagesForAnalysisDataUserList(mockReq, listId, filters);
@@ -2253,7 +2243,6 @@ describe('Test getNumberPagesForAnalysisDataUserList function', () => {
     expect(result).toEqual({
       numberOfPages: 5, // 250 / 50
       numberOfResults: 250,
-      maximumAnalysisAreaInTheList: 10000,
     });
   });
 

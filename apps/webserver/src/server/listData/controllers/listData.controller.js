@@ -95,7 +95,6 @@ export const listDataCustom = async (req, res) => {
     selectedState = '',
     selectedSubState = '',
     selectedAreaMin = 0,
-    selectedAreaMax = null,
   } = filters;
   const [listID] = listIDs;
 
@@ -107,7 +106,6 @@ export const listDataCustom = async (req, res) => {
     state: selectedState,
     subState: selectedSubState,
     analysisAreaMin: selectedAreaMin,
-    analysisAreaMax: selectedAreaMax,
     columnsToReturn,
   };
 

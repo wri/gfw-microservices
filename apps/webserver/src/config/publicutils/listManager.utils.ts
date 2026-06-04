@@ -432,7 +432,6 @@ export const getListLocationsNoGeom = async (req, listID, columnsToReturn = null
  * @param {number} page - Page number (e.g. 1)
  * @param {number} pageSize - Number of rows per page (e.g. 50)
  * @param {string} orderType - Sort order (e.g. 'asc' or 'desc')
- * @param {number} analysisAreaMax - Maximum analysis area (e.g. 1000)
  * @param {number} analysisAreaMin - Minimum analysis area (e.g. 0)
  * @param {string} columnsToReturn - Columns to return (e.g. 'Location Name,Commodity,State,Certification')
  * @param {string} LocationIds - Location ids to filter by (e.g. '1,2,3' or '1 AND 5, 6 AND 10' )
@@ -458,7 +457,6 @@ export const getPaginatedAnalysisDataForUserList = async (
     pageSize,
     orderType,
     sortByAttribute,
-    analysisAreaMax,
     analysisAreaMin,
     columnsToReturn = null,
     LocationIds = null,
@@ -493,7 +491,8 @@ export const getPaginatedAnalysisDataForUserList = async (
       { field: 'State', type: sql.NVarChar(255), value: state || null },
       { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
-      { field: 'analysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
+      // Calculated Sourcing Area filter removed (GPV-1274); proc param retained as no-op until DB cleanup.
+      { field: 'analysisAreaMax', type: sql.Int, value: null },
       { field: 'ColumnsToReturn', type: sql.NVarChar(255), value: columnsToReturn },
       { field: 'LocationIds', type: sql.NVarChar(255), value: LocationIds },
       { field: 'LocationLogic', type: sql.NVarChar(255), value: LocationLogic },
@@ -533,7 +532,7 @@ export const getPaginatedAnalysisDataForUserList = async (
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Number} list_id - Unique list id of the list.
  * @param {Object} filters - Filter criteria to determine page count
- * @returns {Promise<Object>} Returns promise with numberOfPages, numberOfResults, and maximumAnalysisAreaInTheList
+ * @returns {Promise<Object>} Returns promise with numberOfPages and numberOfResults
  */
 export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filters) => {
   try {
@@ -543,7 +542,6 @@ export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filter
       country,
       state,
       subState,
-      analysisAreaMax,
       analysisAreaMin,
       selectedSupplier,
       selectedSecondSupplier,
@@ -560,7 +558,8 @@ export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filter
       { field: 'State', type: sql.NVarChar(255), value: state || null },
       { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
-      { field: 'analysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
+      // Calculated Sourcing Area filter removed (GPV-1274); proc param retained as no-op until DB cleanup.
+      { field: 'analysisAreaMax', type: sql.Int, value: null },
       // commodity risk filters
       ...createCommodityRiskFilterParams(filters),
     ];
@@ -572,9 +571,6 @@ export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filter
     );
 
     const totalRows = recordsets.find((record) => record.statistic_type === 'Row Count').statistic;
-    const maximumAnalysisAreaInTheList = recordsets.find(
-      (record) => record.statistic_type === 'Max Area'
-    ).statistic;
     let numberOfPages = 2;
     if (totalRows) {
       numberOfPages = pageSize ? Math.ceil(totalRows / pageSize) : 1;
@@ -582,7 +578,6 @@ export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filter
     return {
       numberOfPages,
       numberOfResults: totalRows,
-      maximumAnalysisAreaInTheList,
     };
   } catch (errorMessage) {
     const errorObject = errorUtils.createErrorMessage(

@@ -73,7 +73,6 @@ export class ListCopyMoveService {
       state: filters.state,
       subState: filters.subState,
       analysisAreaMin: filters.analysisAreaMin,
-      analysisAreaMax: filters.analysisAreaMax,
       searchString: filters.searchString,
       locationLogic: null,
       columnsToReturn: null,

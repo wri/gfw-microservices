@@ -14,7 +14,6 @@ import { getListJsonAttributesColumnsSqlParam } from '../list-attributes';
 export class UspGetPaginatedAnalysisDataForUserList {
   async run(databaseName: string, filters: ListFieldsFileRequest) {
     const {
-      analysisAreaMax,
       analysisAreaMin,
       combinedColumns,
       country,
@@ -57,10 +56,11 @@ export class UspGetPaginatedAnalysisDataForUserList {
         type: sql.Int,
         value: analysisAreaMin || null,
       },
+      // Calculated Sourcing Area filter removed (GPV-1274); proc param retained as no-op until DB cleanup.
       {
         field: 'AnalysisAreaMax',
         type: sql.Int,
-        value: analysisAreaMax || null,
+        value: null,
       },
       {
         field: 'LocationLogic',

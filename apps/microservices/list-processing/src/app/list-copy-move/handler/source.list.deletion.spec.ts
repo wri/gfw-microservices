@@ -21,7 +21,6 @@ describe('handleSourceListDeletion', () => {
       state: 'California',
       subState: 'Los Angeles',
       analysisAreaMin: 100,
-      analysisAreaMax: 1000,
       searchString: 'test',
     },
     selectedLocations: ['loc1', 'loc2'],

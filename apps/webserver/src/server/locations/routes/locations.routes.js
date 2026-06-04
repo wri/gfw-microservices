@@ -288,7 +288,6 @@ module.exports = (app, limiter) => {
       subState,
       hasError: hasErrorParam,
       analysisAreaMin,
-      analysisAreaMax,
 
       // commodity risk filters:
       selectedSupplier,
@@ -326,7 +325,6 @@ module.exports = (app, limiter) => {
       subState,
       hasError,
       analysisAreaMin,
-      analysisAreaMax,
       // commodity risk filters:
       selectedSupplier,
       selectedSecondSupplier,
@@ -342,7 +340,6 @@ module.exports = (app, limiter) => {
       let locationAttributeArray = {};
       let numberOfPages = 0,
         numberOfResults = 0,
-        maximumAnalysisAreaInTheList = 0,
         locationAttributeList;
       let location_analyses = [];
 
@@ -424,7 +421,6 @@ module.exports = (app, limiter) => {
             );
             numberOfPages = listManagerResult.numberOfPages;
             numberOfResults = listManagerResult.numberOfResults;
-            maximumAnalysisAreaInTheList = listManagerResult.maximumAnalysisAreaInTheList;
 
             break;
           }
@@ -442,7 +438,6 @@ module.exports = (app, limiter) => {
           location_analyses: locationAttributeList,
           numberOfPages,
           numberOfResults,
-          maximumAnalysisAreaInTheList,
         });
       } else {
         res.send({
@@ -450,7 +445,6 @@ module.exports = (app, limiter) => {
           location_analyses,
           numberOfPages,
           numberOfResults,
-          maximumAnalysisAreaInTheList,
         });
       }
     } catch (err) {

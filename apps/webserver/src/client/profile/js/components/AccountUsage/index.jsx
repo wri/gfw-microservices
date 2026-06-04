@@ -39,7 +39,6 @@ export default function AccountUsageContainer() {
   const [usageData, setUsageData] = useState(null);
   const [usageLimitsData, setUsageLimitsData] = useState(null);
   const [usageDataPerUser, setUsageDataPerUser] = useState([]);
-  const [isTokenizationEnabled, setIsTokenizationEnabled] = useState(false);
 
   const oneMonthAgoDate = format(subMonths(new Date(), 1), 'yyyy-MM-dd');
   const endDayIncludingToday = format(new Date(), 'yyyy-MM-dd');
@@ -81,11 +80,8 @@ export default function AccountUsageContainer() {
     )
       .then((res) => res.json())
       .then((data) => {
-        const { organizationUsersAnalysisUsage = [], isTokenizationEnabled: tokenFlag } = data;
+        const { organizationUsersAnalysisUsage = [] } = data;
         setUsageDataPerUser(organizationUsersAnalysisUsage);
-        if (tokenFlag !== undefined) {
-          setIsTokenizationEnabled(tokenFlag);
-        }
       })
       .catch((error) => {
         console.log(error);
@@ -139,17 +135,6 @@ export default function AccountUsageContainer() {
     return totalAreaAnalyzed === 0 ? '0.00' : ((area / totalAreaAnalyzed) * 100).toFixed(2);
   };
 
-  const getAnalysesPercentage = (locations) => {
-    // the percentage denominator should be the sum of users analyses, not the max allowed
-    const totalLocationsAnalyzed = usageDataPerUser.reduce(
-      (acc, user) => acc + user.total_locations_analyzed,
-      0
-    );
-    return totalLocationsAnalyzed === 0
-      ? '0.00'
-      : ((locations / totalLocationsAnalyzed) * 100).toFixed(2);
-  };
-
   const totalTokens = usageDataPerUser.reduce((acc, user) => acc + user.total_tokens, 0);
 
   const getTokensPercentage = (tokens) => {
@@ -173,7 +158,6 @@ export default function AccountUsageContainer() {
         <AccountUsage
           {...usageData}
           maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
-          maxLocations={usageLimitsData?.max_locations_per_year}
           maxTokens={usageLimitsData?.tokens_per_year}
         />
       </Box>
@@ -184,7 +168,6 @@ export default function AccountUsageContainer() {
         setEndDateAnalysis={setEndDateAnalysis}
         startDateAnalysis={startDateAnalysis}
         endDateAnalysis={endDateAnalysis}
-        showTokens={isTokenizationEnabled}
       >
         <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
         <TableContainer component={Paper}>
@@ -192,11 +175,7 @@ export default function AccountUsageContainer() {
             <TableHead>
               <TableRow>
                 <HeaderTableCell>User</HeaderTableCell>
-                <HeaderTableCell align="right">
-                  {isTokenizationEnabled
-                    ? 'Tokens (% of Total used)'
-                    : '# Analyses (% of Total used)'}
-                </HeaderTableCell>
+                <HeaderTableCell align="right">Tokens (% of Total used)</HeaderTableCell>
                 <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
               </TableRow>
             </TableHead>
@@ -210,13 +189,9 @@ export default function AccountUsageContainer() {
                     {row.first_name} {row.last_name}
                   </TableCell>
                   <TableCell align="right">
-                    {isTokenizationEnabled
-                      ? `${formatNumber(row.total_tokens)} (${getTokensPercentage(
-                          row.total_tokens
-                        )}%)`
-                      : `${formatNumber(row.total_locations_analyzed)} (${getAnalysesPercentage(
-                          row.total_locations_analyzed
-                        )}%)`}
+                    {`${formatNumber(row.total_tokens)} (${getTokensPercentage(
+                      row.total_tokens
+                    )}%)`}
                   </TableCell>
                   <TableCell align="right">
                     {formatNumber(row.total_area_analyzed)} (

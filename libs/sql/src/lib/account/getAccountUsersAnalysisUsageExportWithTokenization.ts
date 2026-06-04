@@ -1,9 +1,30 @@
 import { ClientStoreConnection } from '../util';
-import { OrganizationUsersAnalysisUsageExport } from '../queries/organization/getOrganizationUsersUsageExport';
 
 interface GetAccountUsersAnalysisUsageParameters {
   startDate: string;
   endDate: string;
+}
+
+/**
+ * Shape of a tokenized detailed usage export row. Unlike the non-tokenized
+ * {@link OrganizationUsersAnalysisUsageExport}, this aggregates the analysis
+ * types per list (`Analysis Types`) and exposes token fields instead of the
+ * cost fields.
+ */
+export interface OrganizationUsersAnalysisUsageExportWithTokenization {
+  Username: string;
+  'List ID': string;
+  'Analysis Types': string;
+  Hectares: number;
+  Locations: number;
+  'Date/Timestamp': string;
+  'UI/API': string;
+  'Location Rate': number | null;
+  'List Rate': number | null;
+  'Token Usage (Locations)': number | null;
+  'Token Usage (Lists)': number | null;
+  'Total Tokens': number | null;
+  'Effective Rate Date': string | null;
 }
 
 /**
@@ -18,7 +39,7 @@ interface GetAccountUsersAnalysisUsageParameters {
 export async function getAccountUsersAnalysisUsageExportWithTokenization(
   orgDbName: string,
   { startDate, endDate }: GetAccountUsersAnalysisUsageParameters
-): Promise<OrganizationUsersAnalysisUsageExport[]> {
+): Promise<OrganizationUsersAnalysisUsageExportWithTokenization[]> {
   const clientStoreConnection = new ClientStoreConnection();
   const connection = await clientStoreConnection.getConnection(orgDbName);
   const systemDbName = process.env.MSSQL_DATABASE || 'gfwpro';

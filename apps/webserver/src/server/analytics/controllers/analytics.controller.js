@@ -11,10 +11,8 @@ import {
   combineOrganizationLimits,
   getAccountUsagePercentage,
   getAccountRolloverLimits,
-  featureFlagsService,
 } from '@wri-monorepos/shared';
 import {
-  getAccountUsersAnalysisUsage,
   getAccountUsersAnalysisUsageWithTokenization,
   getAccountRenewalTime,
   getAccountAnalysisLimits,
@@ -173,37 +171,15 @@ export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
         ? formatDate(todayAsEndDay, 'yyyy-MM-dd')
         : endDate;
 
-    let isTokenizationEnabled = false;
-    try {
-      const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
-      const orgFlags = await getFeatureFlagsForCurrentOrg(organization_id);
-      isTokenizationEnabled = orgFlags.some(
-        (f) => f.flagId === 'Tokenization' && Boolean(f.flagState)
-      );
-    } catch (flagError) {
-      logger.warn(
-        `Failed to check Tokenization feature flag, defaulting to disabled: ${
-          flagError && flagError.message ? flagError.message : flagError
-        }`,
-        flagError
-      );
-    }
-
-    const organizationUsersAnalysisUsage = isTokenizationEnabled
-      ? await getAccountUsersAnalysisUsageWithTokenization(orgDbName, {
-          startDate: userStartDate,
-          endDate: userEndDate,
-        })
-      : await getAccountUsersAnalysisUsage(orgDbName, {
-          startDate: userStartDate,
-          endDate: userEndDate,
-        });
+    const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsageWithTokenization(
+      orgDbName,
+      { startDate: userStartDate, endDate: userEndDate }
+    );
 
     res.status(200).send({
       startDate: userStartDate,
       endDate: userEndDate,
       organizationUsersAnalysisUsage,
-      isTokenizationEnabled,
     });
   } catch (err) {
     logger.error('Error in getMyOrganizationUsersAnalysisUsage', err);

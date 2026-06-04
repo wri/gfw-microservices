@@ -6,7 +6,7 @@ describe('calculateListProcessingLimit', () => {
     jest.clearAllMocks();
   });
 
-  describe('when tokenization is disabled', () => {
+  describe('area limit calculation', () => {
     it('should return the value of available area remaining when its smaller than MaxAreaPerList', async () => {
       const accountLimits: AnalysisLimit = {
         MaxAreaAnalyzeablePerYear: 1000,

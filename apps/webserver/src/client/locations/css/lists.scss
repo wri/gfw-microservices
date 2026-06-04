@@ -30,6 +30,10 @@
   margin-bottom: $space-normal;
 }
 
+.locations-body.list-detail-page {
+  max-width: 1440px;
+}
+
 @media screen and (max-width: 1023px) {
   .main-panel {
     max-width: 80%;

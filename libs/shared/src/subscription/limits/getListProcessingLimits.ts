@@ -14,7 +14,6 @@ export async function getListProcessingLimits({
     subscriptionStatusId: organizationType,
   });
 
-  // calculateListProcessingLimit handles tokenization internally
   return calculateListProcessingLimit({
     accountLimits,
     accountUsage,

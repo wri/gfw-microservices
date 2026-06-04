@@ -2250,6 +2250,15 @@ class Map extends Component {
             const filteredLocations = feats.filter((location) => {
               return selectedLocations.indexOf(location.properties.location_id) > -1;
             });
+
+            // When a single location is selected, surface its name in the breadcrumb
+            if (selectedLocations.length === 1 && filteredLocations.length === 1) {
+              const { properties } = filteredLocations[0];
+              this.setState({
+                locationName: properties['Location Name'] || properties['Investment Name'] || '',
+              });
+            }
+
             const selectedLocationsData = [
               {
                 type: 'FeatureCollection',
@@ -2767,6 +2776,7 @@ class Map extends Component {
               selectedListCallback={this.updateSelectedLists}
               userSharedLists={userSharedLists}
               currentUser={this.props.userInfo}
+              selectedLocationName={this.state.locationName}
             />
           </div>
         </div>

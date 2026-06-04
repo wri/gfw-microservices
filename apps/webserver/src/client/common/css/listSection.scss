@@ -16,10 +16,18 @@ $list-section-button__length: 250px;
     padding: 5px 0;
     margin-left: 20px;
     text-transform: capitalize;
-    &.link-to-list {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .link-to-list {
       color: white;
       text-decoration: underline;
       cursor: pointer;
+    }
+
+    .list-section-info__separator {
+      color: rgb(155, 155, 155);
     }
   }
 

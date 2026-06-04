@@ -60,7 +60,7 @@ jest.mock('@wri-monorepos/sql', () => ({
   SQLUtils: {
     queryDBFirstRow: jest.fn(),
   },
-  getAccountUsersAnalysisUsage: jest.fn(),
+  getAccountUsersAnalysisUsageWithTokenization: jest.fn(),
   getAccountRenewalTime: jest.fn().mockResolvedValue('2025-01-01'),
   getAccountAnalysisLimits: jest.fn(),
   getAccountAnalysisUsage: jest.fn(),

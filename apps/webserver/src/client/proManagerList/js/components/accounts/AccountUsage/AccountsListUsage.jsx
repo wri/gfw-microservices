@@ -17,11 +17,8 @@ import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 import { LoadingModal } from '../../../../../components';
-import featureFlags from '../../../../../../utils/general.utils';
 
 function AccountsListUsage({ setIsLoading }) {
-  const isProManager = window.location.pathname.startsWith('/pro-manager');
-  const { isTokenizationAvailable } = featureFlags;
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [usageData, setUsageData] = useState({});
@@ -88,9 +85,7 @@ function AccountsListUsage({ setIsLoading }) {
                     {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
                   </TableCell>
                   <TableCell align="right">
-                    {isProManager || isTokenizationAvailable
-                      ? accountProfileStrings.accountUsageLabels.tokens
-                      : accountProfileStrings.accountUsageLabels.locationsAnalyzed}
+                    {accountProfileStrings.accountUsageLabels.tokens}
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -108,13 +103,7 @@ function AccountsListUsage({ setIsLoading }) {
                     </TableCell>
                     <TableCell align="right">{numberWithCommas(row.max_area_analyzed)}</TableCell>
                     <TableCell align="right">{numberWithCommas(row.total_area_analyzed)}</TableCell>
-                    <TableCell align="right">
-                      {numberWithCommas(
-                        isProManager || isTokenizationAvailable
-                          ? row.total_tokens
-                          : row.locations_analyzed
-                      )}
-                    </TableCell>
+                    <TableCell align="right">{numberWithCommas(row.total_tokens)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

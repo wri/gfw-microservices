@@ -6,7 +6,7 @@ import * as sqlModule from '@wri-monorepos/sql';
 
 jest.mock('@wri-monorepos/sql', () => ({
   ...jest.requireActual('@wri-monorepos/sql'),
-  getAccountUsersAnalysisUsageExport: jest.fn(),
+  getAccountUsersAnalysisUsageExportWithTokenization: jest.fn(),
 }));
 
 jest.mock('csv-write-stream', () => {
@@ -57,7 +57,7 @@ describe('AccountUsersAnalysisUsageFileService', () => {
   };
 
   beforeEach(async () => {
-    mockGetExport = sqlModule.getAccountUsersAnalysisUsageExport as jest.Mock;
+    mockGetExport = sqlModule.getAccountUsersAnalysisUsageExportWithTokenization as jest.Mock;
     mockGetExport.mockReset();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -84,17 +84,20 @@ describe('AccountUsersAnalysisUsageFileService', () => {
       });
     };
 
-    it('maps Per Location Cost, Processing Cost, and Total Cost columns', async () => {
+    it('maps token columns (Location Rate, List Rate, Token Usage, Total Tokens, Effective Rate Date)', async () => {
       const rows = await callGetFileContents([
         {
           Username: 'user@example.com',
           'List ID': '42',
-          'Analysis Type': 'AFI',
+          'Analysis Types': 'AFI',
           Hectares: 100,
           Locations: 10,
-          'Per Location Cost': 0.32,
-          'Processing Cost': 5.0,
-          'Total Cost': 8.2,
+          'Location Rate': 0.32,
+          'List Rate': 1.0,
+          'Token Usage (Locations)': 3.2,
+          'Token Usage (Lists)': 1.0,
+          'Total Tokens': 4.2,
+          'Effective Rate Date': '24 Nov 2025',
           'Date/Timestamp': '24 Mar 2026 12:00:00 GMT',
           'UI/API': 'UI',
         },
@@ -108,32 +111,41 @@ describe('AccountUsersAnalysisUsageFileService', () => {
         '100',
         '10',
         '0.32',
-        '5',
-        '8.2',
+        '1',
+        '3.2',
+        '1',
+        '4.2',
+        '24 Nov 2025',
         '24 Mar 2026 12:00:00 GMT',
         'UI',
       ]);
     });
 
-    it('defaults null cost values to 0', async () => {
+    it('renders null token values as empty strings', async () => {
       const rows = await callGetFileContents([
         {
           Username: 'user@example.com',
           'List ID': '1',
-          'Analysis Type': 'ALERTS',
+          'Analysis Types': 'ALERTS',
           Hectares: 50,
           Locations: 5,
-          'Per Location Cost': null,
-          'Processing Cost': null,
-          'Total Cost': null,
+          'Location Rate': null,
+          'List Rate': null,
+          'Token Usage (Locations)': null,
+          'Token Usage (Lists)': null,
+          'Total Tokens': null,
+          'Effective Rate Date': null,
           'Date/Timestamp': '01 Jan 2026 00:00:00 GMT',
           'UI/API': 'API',
         },
       ]);
 
-      expect(rows[0][5]).toBe('0');
-      expect(rows[0][6]).toBe('0');
-      expect(rows[0][7]).toBe('0');
+      expect(rows[0][5]).toBe('');
+      expect(rows[0][6]).toBe('');
+      expect(rows[0][7]).toBe('');
+      expect(rows[0][8]).toBe('');
+      expect(rows[0][9]).toBe('');
+      expect(rows[0][10]).toBe('');
     });
 
     it('labels ALERTS-BATCH as Weekly Alerts', async () => {
@@ -141,12 +153,15 @@ describe('AccountUsersAnalysisUsageFileService', () => {
         {
           Username: 'user@example.com',
           'List ID': '1',
-          'Analysis Type': 'ALERTS-BATCH',
+          'Analysis Types': 'ALERTS-BATCH',
           Hectares: 0,
           Locations: 10,
-          'Per Location Cost': 0.1,
-          'Processing Cost': 0,
-          'Total Cost': 1.0,
+          'Location Rate': 0.1,
+          'List Rate': 0,
+          'Token Usage (Locations)': 1.0,
+          'Token Usage (Lists)': 0,
+          'Total Tokens': 1.0,
+          'Effective Rate Date': '24 Nov 2025',
           'Date/Timestamp': '01 Jan 2026 00:00:00 GMT',
           'UI/API': 'UI',
         },
@@ -160,12 +175,15 @@ describe('AccountUsersAnalysisUsageFileService', () => {
         {
           Username: 'user@example.com',
           'List ID': '1',
-          'Analysis Type': 'GHG',
+          'Analysis Types': 'GHG',
           Hectares: 100,
           Locations: 10,
-          'Per Location Cost': 0.5,
-          'Processing Cost': 2.0,
-          'Total Cost': 7.0,
+          'Location Rate': 0.5,
+          'List Rate': 2.0,
+          'Token Usage (Locations)': 5.0,
+          'Token Usage (Lists)': 2.0,
+          'Total Tokens': 7.0,
+          'Effective Rate Date': '24 Nov 2025',
           'Date/Timestamp': '01 Jan 2026 00:00:00 GMT',
           'UI/API': 'UI',
         },
@@ -174,29 +192,57 @@ describe('AccountUsersAnalysisUsageFileService', () => {
       expect(rows[0][2]).toBe('GHG Emissions');
     });
 
+    it('labels comma-separated analysis types individually', async () => {
+      const rows = await callGetFileContents([
+        {
+          Username: 'user@example.com',
+          'List ID': '1',
+          'Analysis Types': 'AFI,FCD',
+          Hectares: 100,
+          Locations: 10,
+          'Location Rate': 0.32,
+          'List Rate': 1.0,
+          'Token Usage (Locations)': 3.2,
+          'Token Usage (Lists)': 1.0,
+          'Total Tokens': 4.2,
+          'Effective Rate Date': '24 Nov 2025',
+          'Date/Timestamp': '01 Jan 2026 00:00:00 GMT',
+          'UI/API': 'UI',
+        },
+      ]);
+
+      expect(rows[0][2]).toBe('Post-2020 Risk Assessment, Post-2000 Forest Change');
+    });
+
     it('maps multiple rows correctly', async () => {
       const rows = await callGetFileContents([
         {
           Username: 'a@example.com',
           'List ID': '1',
-          'Analysis Type': 'AFI',
+          'Analysis Types': 'AFI',
           Hectares: 10,
           Locations: 5,
-          'Per Location Cost': 0.32,
-          'Processing Cost': 5.0,
-          'Total Cost': 6.6,
+          'Location Rate': 0.32,
+          'List Rate': 1.0,
+          'Token Usage (Locations)': 1.6,
+          'Token Usage (Lists)': 1.0,
+          'Total Tokens': 2.6,
+          'Effective Rate Date': '24 Nov 2025',
           'Date/Timestamp': '01 Jan 2026 00:00:00 GMT',
           'UI/API': 'UI',
         },
         {
           Username: 'b@example.com',
           'List ID': '2',
-          'Analysis Type': 'FCD',
+          'Analysis Types': 'FCD',
           Hectares: 20,
           Locations: 3,
-          'Per Location Cost': 0.25,
-          'Processing Cost': 4.0,
-          'Total Cost': 4.75,
+          'Location Rate': 0.25,
+          'List Rate': 1.0,
+          'Token Usage (Locations)': 0.75,
+          'Token Usage (Lists)': 1.0,
+          'Total Tokens': 1.75,
+          'Effective Rate Date': '24 Nov 2025',
           'Date/Timestamp': '02 Jan 2026 00:00:00 GMT',
           'UI/API': 'API',
         },

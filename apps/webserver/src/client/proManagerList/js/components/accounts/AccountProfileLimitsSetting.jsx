@@ -1,6 +1,5 @@
 import { Fragment, useState } from 'react';
 import { Grid, TextField, Typography, Divider } from '@mui/material';
-import featureFlags from '../../../../../utils/general.utils';
 
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
@@ -21,14 +20,10 @@ export default function AccountProfileLimitsSetting() {
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const isProManager = window.location.pathname.startsWith('/pro-manager');
-  const { isTokenizationAvailable } = featureFlags;
   const isAccountLimitsTab =
     new URLSearchParams(window.location.search).get('tab') === 'account-limits';
 
-  const locationsLabel =
-    isProManager || isTokenizationAvailable
-      ? accountProfileStrings.accountLimitsSetting.tokensPerYear
-      : accountProfileStrings.accountLimitsSetting.locationsPerYear;
+  const locationsLabel = accountProfileStrings.accountLimitsSetting.tokensPerYear;
 
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
     tokens_per_year: 0,
@@ -224,7 +219,7 @@ export default function AccountProfileLimitsSetting() {
           >
             Add Limits
           </PillButton>
-          {isAccountLimitsTab && (isProManager || isTokenizationAvailable) && (
+          {isAccountLimitsTab && isProManager && (
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               Updating the limits will affect all organizations at time of account renewal. Limits
               are visible to both internal and external users.

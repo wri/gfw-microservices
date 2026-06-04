@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { Grid } from '@mui/material';
 import { profilePage } from '../../../../common/js/config';
-import featureFlags from '../../../../../utils/general.utils';
 import AccountUsageContainer from './AccountUsageContent';
 
 /**
@@ -9,59 +8,29 @@ import AccountUsageContainer from './AccountUsageContent';
  * @param {Object} props
  * @returns ReactNode
  */
-export default function AccountUsage({
-  total_area_analyzed,
-  locations_analyzed,
-  total_tokens,
-  maxLocations,
-  maxArea,
-  maxTokens,
-}) {
-  const { isTokenizationAvailable } = featureFlags;
-  const isProManager = window.location.pathname.startsWith('/pro-manager');
-  const showTokens = isProManager || isTokenizationAvailable;
-
+export default function AccountUsage({ total_area_analyzed, total_tokens, maxArea, maxTokens }) {
   const InfoBubbleLocationsAnalyzed = () => {
-    if (showTokens) {
-      return (
-        <>
-          <h3 class="bubble-title">Tokens</h3>
-          <p>
-            Enterprises receive a free annual allotment of Usage Tokens and may purchase additional
-            quantities. Free quantities are consumed before paid quantities. Any remaining free
-            quantities expire as new quantities are granted at account renewal.
-          </p>
-          <h4>How consumption of Tokens is calculated</h4>
-          <p>
-            When a list is analyzed or updated, GFW Pro multiplies the number of locations within
-            that list by the Token Fee for each distinct analysis type applied to that list and sums
-            these values to calculate tokens required. There is an additional flat Token Fee charged
-            per analysis type when a list is analyzed or updated.
-          </p>
-          <p>
-            Read more about account usage{' '}
-            <a target="_blank" href="/about?section=Fees">
-              here
-            </a>
-            .
-          </p>
-        </>
-      );
-    }
-
     return (
       <>
-        <h3 class="bubble-title">Locations Analyzed</h3>
+        <h3 class="bubble-title">Tokens</h3>
         <p>
-          Enterprises receive a free annual allotment of analyses and may purchase additional
+          Enterprises receive a free annual allotment of Usage Tokens and may purchase additional
           quantities. Free quantities are consumed before paid quantities. Any remaining free
           quantities expire as new quantities are granted at account renewal.
         </p>
-        <h4>How # of Analyses is calculated</h4>
+        <h4>How consumption of Tokens is calculated</h4>
         <p>
-          Each time a list is updated, GFW Pro multiplies the number of analysis types (e.g., Forest
-          Change, Deforestation Reporting) by the number of locations within that list. These
-          quantities are tracked cumulatively during the account year.
+          When a list is analyzed or updated, GFW Pro multiplies the number of locations within that
+          list by the Token Fee for each distinct analysis type applied to that list and sums these
+          values to calculate tokens required. There is an additional flat Token Fee charged per
+          analysis type when a list is analyzed or updated.
+        </p>
+        <p>
+          Read more about account usage{' '}
+          <a target="_blank" href="/about?section=Fees">
+            here
+          </a>
+          .
         </p>
       </>
     );
@@ -91,13 +60,9 @@ export default function AccountUsage({
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6}>
           <AccountUsageContainer
-            label={
-              showTokens
-                ? profilePage.accountUsage.tokens
-                : profilePage.accountUsage.locationsAnalyzed
-            }
-            usedValue={showTokens ? total_tokens : locations_analyzed}
-            maxValue={showTokens ? maxTokens : maxLocations}
+            label={profilePage.accountUsage.tokens}
+            usedValue={total_tokens}
+            maxValue={maxTokens}
             InfoBubbleContent={InfoBubbleLocationsAnalyzed}
           />
         </Grid>

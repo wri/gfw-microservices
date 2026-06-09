@@ -11,6 +11,7 @@ function ListSection({
   selectedListCallback,
   userSharedLists,
   currentUser,
+  selectedLocationName,
 }) {
   return (
     <div className="list-section__subnavigation">
@@ -28,6 +29,7 @@ function ListSection({
         <SelectedListDescription
           totalNumberOfLocationsInAccount={locationCount?.TotalCount}
           userSharedLists={userSharedLists}
+          selectedLocationName={selectedLocationName}
         />
       </div>
     </div>

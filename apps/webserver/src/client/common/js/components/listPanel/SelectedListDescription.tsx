@@ -20,11 +20,13 @@ interface RootState {
 interface SelectedListDescriptionProps {
   totalNumberOfLocationsInAccount?: number;
   userSharedLists?: SharedList[];
+  selectedLocationName?: string;
 }
 
 const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
   totalNumberOfLocationsInAccount = 0,
   userSharedLists = [],
+  selectedLocationName = '',
 }) => {
   // This component is only used in the map
   // The selected list is stored as an array in map (selectedLists)
@@ -68,12 +70,31 @@ const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
     goToList();
   };
 
+  const showLocationName = Boolean(isListSelected && selectedLocationName);
+
+  const breadcrumbContent = (
+    <>
+      {`${numberOfLocations} - ${listName}`}
+      {showLocationName && (
+        <>
+          <span className="list-section-info__separator" aria-hidden="true">
+            {' > '}
+          </span>
+          {selectedLocationName}
+        </>
+      )}
+    </>
+  );
+
   return (
-    <div
-      className={`list-section-info ${isListSelected ? 'link-to-list' : ''}`}
-      onClick={handleBack}
-    >
-      <span>{`${numberOfLocations} - ${listName}`}</span>
+    <div className="list-section-info">
+      {isListSelected ? (
+        <button type="button" className="link-to-list" onClick={handleBack}>
+          {breadcrumbContent}
+        </button>
+      ) : (
+        <span>{breadcrumbContent}</span>
+      )}
     </div>
   );
 };

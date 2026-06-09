@@ -69,7 +69,7 @@ const { treeCoverLossID } = proLayers;
 
 const ArgentinaDownloadConfirmationMessage = () => (
   <div>
-    You are downloading results that include analysis based on the{' '}
+    This analysis includes data from the{' '}
     <a
       className="diagnostics-container__link"
       href="https://www.argentina.gob.ar/ambiente/bosques/monitoreo-bosques-nativos"
@@ -78,10 +78,9 @@ const ArgentinaDownloadConfirmationMessage = () => (
     >
       Argentinian National Monitoring System of Native Forests dataset
     </a>
-    . Please note that the years 2007-2013 of this dataset contain approximate data for annual
-    Argentinian deforestation values, due to how the original dataset is structured. For this
-    reason, interpretation of this data requires caution. For more information, see the info-bubbles
-    of the Argentina analysis panel.
+    . Please note that data for 2007–2013 are approximate due to how the original dataset is
+    structured. Interpretation of this data requires caution. See the Argentina analysis panel for
+    more details.
   </div>
 );
 export default class Diagnostics extends Component {

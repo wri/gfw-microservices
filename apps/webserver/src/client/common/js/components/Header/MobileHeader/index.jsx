@@ -20,8 +20,14 @@ function MobileHeader({ isLoggedIn }) {
         <nav className="header__container">
           <Logo isLoggedIn={isLoggedIn} />
           <LoginForm />
-          <IconButton size="large" edge="start" aria-label="menu" sx={{ mr: 2, color: 'white' }}>
-            <MenuIcon onClick={() => setDisplayMenu(true)} />
+          <IconButton
+            onClick={() => setDisplayMenu(true)}
+            size="large"
+            edge="start"
+            aria-label="menu"
+            sx={{ mr: 2, color: 'white' }}
+          >
+            <MenuIcon />
           </IconButton>
         </nav>
       </header>

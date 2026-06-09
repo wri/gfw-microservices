@@ -162,9 +162,10 @@ const CSP_SCRIPT_SOURCES = [
   'https://www.googletagmanager.com', // Google Tag Manager
   'https://cmp.osano.com', // Osano consent management
   'https://cdn.transifex.com', // Transifex translations
+  'https://zendesk.com', // Zendesk apex domain
+  'https://*.zendesk.com', // Zendesk subdomains
   'https://static.zdassets.com', // Zendesk support widget
-  'https://static.hotjar.com', // Hotjar analytics
-  'https://script.hotjar.com', // Hotjar scripts
+  'https://*.hotjar.com', // Hotjar subdomains
   'https://plausible.io', // Plausible analytics
   'https://snap.licdn.com', // LinkedIn Insights
   'https://www.clarity.ms', // Microsoft Clarity
@@ -216,7 +217,7 @@ const configureHelmetHeaders = (app: Application) => {
         workerSrc: ["'self'", 'blob:'], // Required for Osano and other web workers
         styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", 'https:'],
+        connectSrc: ["'self'", 'https:', 'wss://*.zendesk.com', 'wss://ws.hotjar.com'],
         fontSrc: ["'self'", 'https:', 'data:'],
         objectSrc: ["'none'"],
         frameAncestors: ["'self'"],

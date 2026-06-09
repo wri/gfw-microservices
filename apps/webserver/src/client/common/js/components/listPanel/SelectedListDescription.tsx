@@ -72,19 +72,29 @@ const SelectedListDescription: FC<SelectedListDescriptionProps> = ({
 
   const showLocationName = Boolean(isListSelected && selectedLocationName);
 
+  const breadcrumbContent = (
+    <>
+      {`${numberOfLocations} - ${listName}`}
+      {showLocationName && (
+        <>
+          <span className="list-section-info__separator" aria-hidden="true">
+            {' > '}
+          </span>
+          {selectedLocationName}
+        </>
+      )}
+    </>
+  );
+
   return (
     <div className="list-section-info">
-      <span className={isListSelected ? 'link-to-list' : ''} onClick={handleBack}>
-        {`${numberOfLocations} - ${listName}`}
-        {showLocationName && (
-          <>
-            <span className="list-section-info__separator" aria-hidden="true">
-              {' > '}
-            </span>
-            {selectedLocationName}
-          </>
-        )}
-      </span>
+      {isListSelected ? (
+        <button type="button" className="link-to-list" onClick={handleBack}>
+          {breadcrumbContent}
+        </button>
+      ) : (
+        <span>{breadcrumbContent}</span>
+      )}
     </div>
   );
 };

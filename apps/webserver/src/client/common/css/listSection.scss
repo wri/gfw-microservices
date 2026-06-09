@@ -21,6 +21,11 @@ $list-section-button__length: 250px;
     gap: 8px;
 
     .link-to-list {
+      padding: 0;
+      border: none;
+      background: none;
+      font: inherit;
+      text-transform: inherit;
       color: white;
       text-decoration: underline;
       cursor: pointer;

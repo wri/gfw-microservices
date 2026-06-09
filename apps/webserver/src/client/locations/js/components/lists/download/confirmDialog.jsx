@@ -1,4 +1,3 @@
-import { isValidElement } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -28,8 +27,13 @@ export default function ConfirmDialog({
 
   const closeDialog = () => setDialogOpen(false);
 
-  const hasDisclaimer =
-    CustomDownloadConfirmationMessage && isValidElement(CustomDownloadConfirmationMessage());
+  // Callers pass the disclaimer as a component type. Check the type instead of
+  // invoking it, so the component is only ever instantiated by React (avoids
+  // double-rendering and Rules of Hooks violations).
+  const DisclaimerMessage =
+    typeof CustomDownloadConfirmationMessage === 'function'
+      ? CustomDownloadConfirmationMessage
+      : null;
 
   return (
     <Dialog open={open} onClose={closeDialog}>
@@ -49,7 +53,7 @@ export default function ConfirmDialog({
       </IconButton>
       <DialogContent>
         <div className="dialog__prompt">{translatedMessage}</div>
-        {hasDisclaimer && (
+        {DisclaimerMessage && (
           <Box
             className="dialog__disclaimer"
             sx={{
@@ -59,7 +63,7 @@ export default function ConfirmDialog({
               backgroundColor: 'grey.100',
             }}
           >
-            <CustomDownloadConfirmationMessage />
+            <DisclaimerMessage />
           </Box>
         )}
       </DialogContent>

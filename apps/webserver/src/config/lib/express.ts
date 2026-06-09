@@ -217,7 +217,7 @@ const configureHelmetHeaders = (app: Application) => {
         workerSrc: ["'self'", 'blob:'], // Required for Osano and other web workers
         styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", 'https:', 'wss://*.zendesk.com'],
+        connectSrc: ["'self'", 'https:', 'wss://*.zendesk.com', 'wss://ws.hotjar.com'],
         fontSrc: ["'self'", 'https:', 'data:'],
         objectSrc: ["'none'"],
         frameAncestors: ["'self'"],

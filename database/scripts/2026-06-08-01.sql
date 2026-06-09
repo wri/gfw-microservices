@@ -81,30 +81,55 @@ IF COL_LENGTH(''dbo.Users'', ''language'') IS NULL
 ;WITH OrgCountry AS
 (
     SELECT TOP (1)
-        ParsedCountry =
+        LastSegment =
             CASE
-                WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N''''
-                    THEN NULL
-                WHEN CHARINDEX('','', ap.organization_address) > 0
-                    THEN LTRIM(RTRIM(RIGHT(ap.organization_address, CHARINDEX('','', REVERSE(ap.organization_address)) - 1)))
+                WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
+                WHEN CHARINDEX('','', ap.organization_address) > 0 THEN
+                    LTRIM(RTRIM(RIGHT(ap.organization_address, CHARINDEX('','', REVERSE(ap.organization_address)) - 1)))
                 ELSE LTRIM(RTRIM(ap.organization_address))
+            END,
+        PreviousSegment =
+            CASE
+                WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
+                WHEN CHARINDEX('','', ap.organization_address) = 0 THEN NULL
+                ELSE
+                    LTRIM(RTRIM(
+                        CASE
+                            WHEN CHARINDEX('','', REVERSE(LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))))) > 0
+                                THEN RIGHT(
+                                    LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))),
+                                    CHARINDEX('','', REVERSE(LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))))) - 1
+                                )
+                            ELSE LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address)))
+                        END
+                    ))
             END
     FROM dbo.AccountProfile ap
     ORDER BY ap.id DESC
 )
 UPDATE u
 SET
-    [country] = COALESCE(NULLIF(LTRIM(RTRIM(u.[country])), N''''), oc.ParsedCountry),
-    [language] = COALESCE(NULLIF(LTRIM(RTRIM(u.[language])), N''''), clm.LanguageCode),
+    [country] = COALESCE(NULLIF(LTRIM(RTRIM(u.[country])), N''''), resolved.CandidateCountry),
+    [language] = COALESCE(NULLIF(LTRIM(RTRIM(u.[language])), N''''), COALESCE(clm.LanguageCode, N''EN'')),
     [deactivation_date] = NULL
 FROM dbo.Users u
 CROSS JOIN OrgCountry oc
-LEFT JOIN #CountryLanguageMap clm ON clm.CountryName = oc.ParsedCountry
+LEFT JOIN #CountryLanguageMap clmLast ON clmLast.CountryName = oc.LastSegment
+CROSS APPLY
+(
+    SELECT CandidateCountry =
+        CASE
+            WHEN clmLast.CountryName IS NOT NULL THEN oc.LastSegment
+            WHEN oc.PreviousSegment IS NOT NULL AND oc.PreviousSegment <> N'''' THEN oc.PreviousSegment
+            ELSE oc.LastSegment
+        END
+) resolved
+LEFT JOIN #CountryLanguageMap clm ON clm.CountryName = resolved.CandidateCountry
 WHERE u.is_system_user = 0;
 ';
 
         EXEC sp_executesql @SQL;
-        PRINT N'Updated organization: ' + @OrgName + N' (' + @OrgDbName + N')';
+        PRINT N'Updated user table for org: ' + @OrgName + N' (' + @OrgDbName + N')';
     END TRY
     BEGIN CATCH
         PRINT N'ERROR updating organization: ' + @OrgName + N' (' + ISNULL(@OrgDbName, N'NULL') + N')';

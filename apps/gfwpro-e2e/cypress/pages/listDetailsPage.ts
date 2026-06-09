@@ -20,8 +20,8 @@ class ListDetailsPage {
     moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
     inputCreateNewList: () => cy.get('[id="new-list-name"]'),
     submitBtn: () => cy.contains('Submit Analysis'),
-    copyLocationsBtn: () => cy.contains('Copy Location(s)'),
-    moveLocationsBtn: () => cy.contains('Move Location(s)'),
+    copyLocationsBtn: () => cy.contains('button', /^Copy Location\(s\)$/),
+    moveLocationsBtn: () => cy.contains('button', /^Move Location\(s\)$/),
     confirmActionBtn: () => cy.contains('button', 'OK'),
     apply: () => cy.contains('Apply'),
     descriptionAlertDownloadList: () =>
@@ -183,12 +183,20 @@ class ListDetailsPage {
     cy.get('div.move-to-list-select select').select(list);
   }
   clickOnCopyLocationsBtn() {
-    // Wait for the button to be enabled before clicking
-    this.elements.copyLocationsBtn().should('be.visible').should('not.be.disabled').click();
+    this.elements
+      .copyLocationsBtn()
+      .should('be.visible')
+      .and('not.be.disabled')
+      .scrollIntoView()
+      .click();
   }
   clickOnMoveLocationsBtn() {
-    // Wait for the button to be enabled before clicking
-    this.elements.moveLocationsBtn().should('be.visible').should('not.be.disabled').click();
+    this.elements
+      .moveLocationsBtn()
+      .should('be.visible')
+      .and('not.be.disabled')
+      .scrollIntoView()
+      .click();
   }
   clickOnSubmitBtn() {
     this.elements.submitBtn().click();

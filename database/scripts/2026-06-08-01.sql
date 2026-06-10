@@ -34,7 +34,7 @@ WITH
 (
     FIRSTROW = 2,              -- Skip CSV header row: Country,Language
     FIELDTERMINATOR = '','',   -- Standard comma-separated fields
-    ROWTERMINATOR = ''0x0A'',  -- Unix LF row ending used by repo CSV files
+    ROWTERMINATOR = ''0x0D0A'',  -- Windows CRLF row ending (matches country-language-map.csv)
     CODEPAGE = ''65001'',      -- Read file as UTF-8 to preserve special characters
     TABLOCK
 );';
@@ -48,20 +48,19 @@ BEGIN
     RETURN;
 END;
 
-DECLARE @OrgId INT;
 DECLARE @OrgName NVARCHAR(200);
 DECLARE @OrgDbName NVARCHAR(200);
 DECLARE @SQL NVARCHAR(MAX);
 
 DECLARE org_cursor CURSOR FOR
-SELECT id, organization_name, organization_db
+SELECT organization_name, organization_db
 FROM gfwpro.dbo.Organizations
 WHERE organization_status_id = 2
   AND organization_db IS NOT NULL
   AND LTRIM(RTRIM(organization_db)) <> N'';
 
 OPEN org_cursor;
-FETCH NEXT FROM org_cursor INTO @OrgId, @OrgName, @OrgDbName;
+FETCH NEXT FROM org_cursor INTO @OrgName, @OrgDbName;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
@@ -85,8 +84,8 @@ IF COL_LENGTH(''dbo.Users'', ''language'') IS NULL
             CASE
                 WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
                 WHEN CHARINDEX('','', ap.organization_address) > 0 THEN
-                    LTRIM(RTRIM(RIGHT(ap.organization_address, CHARINDEX('','', REVERSE(ap.organization_address)) - 1)))
-                ELSE LTRIM(RTRIM(ap.organization_address))
+                    NULLIF(LTRIM(RTRIM(RIGHT(ap.organization_address, CHARINDEX('','', REVERSE(ap.organization_address)) - 1))), N'''')
+                ELSE NULLIF(LTRIM(RTRIM(ap.organization_address)), N'''')
             END,
         PreviousSegment =
             CASE
@@ -115,12 +114,13 @@ SET
 FROM dbo.Users u
 CROSS JOIN OrgCountry oc
 LEFT JOIN #CountryLanguageMap clmLast ON clmLast.CountryName = oc.LastSegment
+LEFT JOIN #CountryLanguageMap clmPrev ON clmPrev.CountryName = oc.PreviousSegment
 CROSS APPLY
 (
     SELECT CandidateCountry =
         CASE
             WHEN clmLast.CountryName IS NOT NULL THEN oc.LastSegment
-            WHEN oc.PreviousSegment IS NOT NULL AND oc.PreviousSegment <> N'''' THEN oc.PreviousSegment
+            WHEN clmPrev.CountryName IS NOT NULL THEN oc.PreviousSegment
             ELSE oc.LastSegment
         END
 ) resolved
@@ -136,7 +136,7 @@ WHERE u.is_system_user = 0;
         PRINT N'Error: ' + ERROR_MESSAGE();
     END CATCH;
 
-    FETCH NEXT FROM org_cursor INTO @OrgId, @OrgName, @OrgDbName;
+    FETCH NEXT FROM org_cursor INTO @OrgName, @OrgDbName;
 END
 
 CLOSE org_cursor;

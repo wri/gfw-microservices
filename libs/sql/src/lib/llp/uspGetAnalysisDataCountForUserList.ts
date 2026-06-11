@@ -47,12 +47,6 @@ export class UspGetAnalysisDataCountForUserList {
         type: sql.Int,
         value: analysisAreaMin || null,
       },
-      // Calculated Sourcing Area filter removed (GPV-1274); proc param retained as no-op until DB cleanup.
-      {
-        field: 'AnalysisAreaMax',
-        type: sql.Int,
-        value: null,
-      },
       { field: 'SearchString', type: sql.Float, value: searchString || null },
       { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
       {

@@ -491,8 +491,6 @@ export const getPaginatedAnalysisDataForUserList = async (
       { field: 'State', type: sql.NVarChar(255), value: state || null },
       { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
-      // Calculated Sourcing Area filter removed (GPV-1274); proc param retained as no-op until DB cleanup.
-      { field: 'analysisAreaMax', type: sql.Int, value: null },
       { field: 'ColumnsToReturn', type: sql.NVarChar(255), value: columnsToReturn },
       { field: 'LocationIds', type: sql.NVarChar(255), value: LocationIds },
       { field: 'LocationLogic', type: sql.NVarChar(255), value: LocationLogic },
@@ -558,8 +556,6 @@ export const getNumberPagesForAnalysisDataUserList = async (req, list_id, filter
       { field: 'State', type: sql.NVarChar(255), value: state || null },
       { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
-      // Calculated Sourcing Area filter removed (GPV-1274); proc param retained as no-op until DB cleanup.
-      { field: 'analysisAreaMax', type: sql.Int, value: null },
       // commodity risk filters
       ...createCommodityRiskFilterParams(filters),
     ];

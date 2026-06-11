@@ -53,25 +53,6 @@ SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_a
 			SET @Filters = CONCAT(@Filters,' AND ', @SearchLogic);
 		END
 
-		IF @AnalysisAreaMin IS NOT NULL AND @AnalysisAreaMax IS NOT NULL
-		BEGIN
-			IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
-				BEGIN
-					RAISERROR ('Invalid @AnalysisAreaMin', -1, 1);
-				END
-			IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
-				BEGIN
-					RAISERROR ('Invalid @AnalysisAreaMax', -1, 1);
-				END
-			SET @AnalysisFilters = ' INNER JOIN (
-				SELECT location_id FROM dbo.[{LIST_ANALYSIS_TABLE_NAME}]
-				WHERE total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}
-				) A ON A.location_id = L.location_id';
-			SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
-			SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);
-			SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{LIST_ANALYSIS_TABLE_NAME}', @listAnalysisTableName)
-		END
-
     IF @selectedOverallThreats IS NOT NULL
     BEGIN
         set @where_clauses = '(SELECT TOP 1 CAST(value AS INT) AS last_property
@@ -120,7 +101,7 @@ SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_a
 		SET @SQL = REPLACE(@SQL, '{LIST_ANALYSIS_TABLE_NAME}', @listAnalysisTableName)
 		PRINT @SQL
 		EXEC sp_executesql @SQL,
-				N'@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT,@selectedSupplier NVARCHAR(150),@selectedSecondSupplier NVARCHAR(150),@selectedParentCompany NVARCHAR(150),@showRSPOCertified BIT,@selectedOverallThreats NVARCHAR(150),@selectedOverallValues NVARCHAR(150),@selectedMillPriority NVARCHAR(150)',
-				@Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax, @selectedSupplier=@selectedSupplier,@selectedSecondSupplier=@selectedSecondSupplier,@selectedParentCompany=@selectedParentCompany,@showRSPOCertified=@showRSPOCertified,@selectedOverallThreats=@selectedOverallThreats,@selectedOverallValues=@selectedOverallValues,@selectedMillPriority=@selectedMillPriority;
+				N'@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT,@selectedSupplier NVARCHAR(150),@selectedSecondSupplier NVARCHAR(150),@selectedParentCompany NVARCHAR(150),@showRSPOCertified BIT,@selectedOverallThreats NVARCHAR(150),@selectedOverallValues NVARCHAR(150),@selectedMillPriority NVARCHAR(150)',
+				@Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @selectedSupplier=@selectedSupplier,@selectedSecondSupplier=@selectedSecondSupplier,@selectedParentCompany=@selectedParentCompany,@showRSPOCertified=@showRSPOCertified,@selectedOverallThreats=@selectedOverallThreats,@selectedOverallValues=@selectedOverallValues,@selectedMillPriority=@selectedMillPriority;
   END
 `;

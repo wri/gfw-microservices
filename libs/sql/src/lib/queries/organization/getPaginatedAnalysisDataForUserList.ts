@@ -180,24 +180,6 @@ BEGIN
 	END
 
 
-	IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
-	BEGIN
-		--PRINT 'Analysis Filter';
-		--PRINT 'TEST-' + CONVERT(VARCHAR(50), @AnalysisAreaMin) + ' TO ' + CONVERT(VARCHAR(50), @AnalysisAreaMax);
-		IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMin', -1, 1);
-			END
-		IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMax', -1, 1);
-			END
-		SET @AnalysisFilters = 'total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}';
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);
-		--PRINT @AnalysisFilters;
-	END
-
 	-- END Filters
 	-- CASE-SENSITIVE JSON FILTERS
 	IF @selectedOverallThreats IS NOT NULL
@@ -367,8 +349,8 @@ DEALLOCATE column_cursor;
 	SET @SQL = REPLACE(@SQL, '{ANALYSIS_TABLE}', @listAnalysisTableName);
 
 	EXEC sp_executesql @SQL,
-		N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT, @selectedSupplier NVARCHAR(150), @selectedSecondSupplier NVARCHAR(150), @selectedParentCompany NVARCHAR(150), @showRSPOCertified BIT, @selectedOverallThreats NVARCHAR(150), @selectedOverallValues NVARCHAR(150), @selectedMillPriority NVARCHAR(150), @jsonAttributeColumns NVARCHAR(MAX)',
-		@PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax, @selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @selectedOverallThreats=@selectedOverallThreats, @selectedOverallValues=@selectedOverallValues, @selectedMillPriority=@selectedMillPriority, @jsonAttributeColumns=@jsonAttributeColumns;
+		N'@PageNumber INT, @RowsOfPage INT, @OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @selectedSupplier NVARCHAR(150), @selectedSecondSupplier NVARCHAR(150), @selectedParentCompany NVARCHAR(150), @showRSPOCertified BIT, @selectedOverallThreats NVARCHAR(150), @selectedOverallValues NVARCHAR(150), @selectedMillPriority NVARCHAR(150), @jsonAttributeColumns NVARCHAR(MAX)',
+		@PageNumber=@PageNumber, @RowsOfPage=@RowsOfPage, @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @selectedSupplier=@selectedSupplier, @selectedSecondSupplier=@selectedSecondSupplier, @selectedParentCompany=@selectedParentCompany, @showRSPOCertified=@showRSPOCertified, @selectedOverallThreats=@selectedOverallThreats, @selectedOverallValues=@selectedOverallValues, @selectedMillPriority=@selectedMillPriority, @jsonAttributeColumns=@jsonAttributeColumns;
 
 END
 `;

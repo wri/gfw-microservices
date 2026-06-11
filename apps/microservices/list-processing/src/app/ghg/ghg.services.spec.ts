@@ -224,4 +224,18 @@ describe('GHG - service', () => {
     });
     expect(response).toEqual([]);
   });
+  it(`Should return empty data when the list has no list_table_name`, async () => {
+    const listId = 3;
+    const { getConnection, queryBuilder } = buildConnectionMock([], {
+      listTableName: null,
+    });
+    clientStoreConnection.getConnection = getConnection;
+    const response = await ghgService.getGHGDataPerPage(listId, {
+      clientDatabase: 'mockDatabase',
+      rowsPerPage: 2,
+      pageNumber: 0,
+    });
+    expect(response).toEqual([]);
+    expect(queryBuilder.getRawMany).not.toHaveBeenCalled();
+  });
 });

@@ -65,14 +65,22 @@ export class GHGService {
         where: { id: listId },
       });
 
+      if (!listTableName) {
+        this.logger.error(`listId: ${listId} has no list_table_name`);
+        return [];
+      }
+
       // The location-level columns live on a per-list table whose name is stored
       // in Lists.list_table_name, so it has to be joined by its raw table name.
       // Wrapping in a subquery avoids TypeORM misinterpreting "dbo" as an alias.
+      // Double any closing bracket so the value cannot break out of the quoted
+      // identifier (SQL injection guard for the interpolated table name).
+      const safeListTableName = listTableName.replace(/]/g, ']]');
       const data = await connection
         .getRepository(GHGAnalyses)
         .createQueryBuilder('ghg')
         .innerJoin(
-          `(SELECT * FROM dbo.[${listTableName}])`,
+          `(SELECT * FROM dbo.[${safeListTableName}])`,
           'lt',
           'lt.location_id = ghg.location_id'
         )

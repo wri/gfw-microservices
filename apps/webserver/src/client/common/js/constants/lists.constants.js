@@ -29,8 +29,6 @@ export const filterKeys = [
   'selectedCountry',
   'selectedState',
   'selectedSubState',
-  'selectedAreaMin',
-  'selectedAreaMax',
   'showTreeCoverExtent',
   'showTreeCoverLoss',
   'showTreeCoverLossPrimaryForest',
@@ -38,5 +36,3 @@ export const filterKeys = [
 ];
 
 export const EXCLUDED_COLUMNS = ['Latitude', 'Longitude'];
-
-export const defaultMaximumAreaSizeForLocationsFilter = 1000000;

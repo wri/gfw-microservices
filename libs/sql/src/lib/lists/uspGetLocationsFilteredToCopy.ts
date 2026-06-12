@@ -18,7 +18,6 @@ export class UspGetLocationsFilteredToCopy {
       state,
       subState,
       analysisAreaMin,
-      analysisAreaMax,
       searchString,
       locationLogic,
       columnsToReturn,
@@ -39,11 +38,6 @@ export class UspGetLocationsFilteredToCopy {
         field: 'AnalysisAreaMin',
         type: sql.Int,
         value: analysisAreaMin || null,
-      },
-      {
-        field: 'AnalysisAreaMax',
-        type: sql.Int,
-        value: analysisAreaMax || null,
       },
       {
         field: 'SearchString',

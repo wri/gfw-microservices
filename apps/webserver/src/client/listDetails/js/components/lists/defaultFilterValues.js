@@ -4,8 +4,6 @@ export const defaultFilterValues = {
   selectedSubState: '',
   hasError: false,
   selectedCompany: '',
-  selectedAreaMin: 0,
-  selectedAreaMax: null,
   selectedDesignationType: '',
   selectedDesignation: '',
   filterNames: '',

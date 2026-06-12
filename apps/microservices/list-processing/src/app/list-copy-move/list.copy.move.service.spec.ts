@@ -215,7 +215,6 @@ describe('ListCopyMoveService', () => {
       state: 'CA',
       subState: 'LA',
       analysisAreaMin: 0,
-      analysisAreaMax: 100,
       searchString: '',
     },
     srcListAnalysisTable: 'analysis_table',

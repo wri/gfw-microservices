@@ -47,7 +47,6 @@ describe('getUserLocationDataFromAPI', () => {
     axios.__instance.mockResolvedValueOnce({ data: { rows: [1, 2] } });
 
     const filters = {
-      selectedAreaMin: 0,
       selectedCountry: 'ID',
       selectedState: 'JK',
       selectedSubState: '01',
@@ -163,7 +162,7 @@ describe('getUserLocationDataFromAPI', () => {
 
     await getUserLocationDataFromAPI(
       'COMMODITY_RISK_VIEW',
-      { selectedAreaMax: 123 },
+      {},
       [99],
       'q',
       'id',
@@ -175,7 +174,8 @@ describe('getUserLocationDataFromAPI', () => {
     const cfg = axios.__instance.mock.calls[0][0];
     expect(cfg.params.analysisId).toBe('FCD');
     expect(cfg.params.order).toBe('asc');
-    expect(cfg.params.analysisAreaMax).toBe(123);
+    expect(cfg.params.analysisAreaMin).toBe(0);
+    expect(Object.prototype.hasOwnProperty.call(cfg.params, 'analysisAreaMax')).toBe(false);
   });
 
   it('omits optional commodity fields when not provided and defaults analysisAreaMin to 0', async () => {

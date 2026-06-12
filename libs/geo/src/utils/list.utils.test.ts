@@ -136,7 +136,6 @@ describe('List Utils', () => {
         state: null,
         subState: null,
         analysisAreaMin: null,
-        analysisAreaMax: null,
         searchString: null,
       };
       expect(ListHasFiltersApplies(filters)).toBe('USA');
@@ -148,7 +147,6 @@ describe('List Utils', () => {
         state: null,
         subState: null,
         analysisAreaMin: null,
-        analysisAreaMax: null,
         searchString: null,
       };
       expect(ListHasFiltersApplies(filters)).toBe(null);

@@ -14,7 +14,6 @@ import { getListJsonAttributesColumnsSqlParam } from '../list-attributes';
 export class UspGetPaginatedAnalysisDataForUserList {
   async run(databaseName: string, filters: ListFieldsFileRequest) {
     const {
-      analysisAreaMax,
       analysisAreaMin,
       combinedColumns,
       country,
@@ -56,11 +55,6 @@ export class UspGetPaginatedAnalysisDataForUserList {
         field: 'AnalysisAreaMin',
         type: sql.Int,
         value: analysisAreaMin || null,
-      },
-      {
-        field: 'AnalysisAreaMax',
-        type: sql.Int,
-        value: analysisAreaMax || null,
       },
       {
         field: 'LocationLogic',

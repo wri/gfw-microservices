@@ -81,7 +81,6 @@ export const copyOrMoveLargeListRequestSchema = z.object({
 export const getPaginatedListDataRequestSchema = z.object({
   listId: z.coerce.number(),
   organizationDatabase: z.string(),
-  analysisAreaMax: z.coerce.number().optional(),
   analysisAreaMin: z.coerce.number().optional(),
   country: z.string().optional(),
   geometry: z.coerce.number().optional(),
@@ -104,6 +103,5 @@ export const getNumberOfPagesPaginatedListDataRequestSchema = z.object({
   subState: z.string().optional(),
   rowsPerPage: z.coerce.number(),
   analysisAreaMin: z.coerce.number().optional(),
-  analysisAreaMax: z.coerce.number().optional(),
   searchString: z.string().optional(),
 });

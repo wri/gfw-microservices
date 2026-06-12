@@ -67,7 +67,6 @@ export const AlertFieldsFileRequestSchema = BasicFieldsFileRequestSchema.extend(
 export const ListFieldsFileRequestSchema = BasicFieldsFileRequestSchema.extend({
   aggregation: BooleanStringZod,
   analysisArea: z.string().trim().optional(),
-  analysisAreaMax: z.string().trim().optional(),
   analysisAreaMin: z.string().trim().optional(),
   analysisAreaOperator: z.string().trim().optional(),
   combinedColumns: z.string().trim().optional(),

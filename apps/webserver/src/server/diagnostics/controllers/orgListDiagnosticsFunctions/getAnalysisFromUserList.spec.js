@@ -96,7 +96,6 @@ describe('getAnalysisFromUserList', () => {
     const DEFAULT_SELECTED_STATE = '';
     const DEFAULT_SELECTED_SUB_STATE = '';
     const DEFAULT_SELECTED_AREA_MIN = 0;
-    const DEFAULT_SELECTED_AREA_MAX = null;
 
     const queryFilters = {
       listID: listId,
@@ -106,7 +105,6 @@ describe('getAnalysisFromUserList', () => {
       state: DEFAULT_SELECTED_STATE,
       subState: DEFAULT_SELECTED_SUB_STATE,
       analysisAreaMin: DEFAULT_SELECTED_AREA_MIN,
-      analysisAreaMax: DEFAULT_SELECTED_AREA_MAX,
       columnsToReturn: DEFAULT_COLUMNS_TO_RETURN,
       pageSize: rowsRequested,
     };

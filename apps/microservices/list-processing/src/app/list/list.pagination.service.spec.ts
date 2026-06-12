@@ -320,14 +320,12 @@ describe('ListPaginationService', () => {
       const mockPagesResult = {
         numberOfPages: 3,
         numberOfResults: 25,
-        maximumAnalysisAreaInTheList: 1500,
       };
       const queryParam = {
         listId: 1,
         organizationDatabase: 'test-db',
         rowsPerPage: 1000,
         analysisAreaMin: 100,
-        analysisAreaMax: 2000,
         searchString: 'test search',
       };
 
@@ -364,7 +362,6 @@ describe('ListPaginationService', () => {
       const mockPagesResult = {
         numberOfPages: 1,
         numberOfResults: 5,
-        maximumAnalysisAreaInTheList: 500,
       };
       const queryParam = {
         listId: 2,
@@ -387,7 +384,6 @@ describe('ListPaginationService', () => {
       const mockPagesResult = {
         numberOfPages: 2,
         numberOfResults: 15,
-        maximumAnalysisAreaInTheList: 800,
       };
       const queryParam = {
         listId: 3,
@@ -395,7 +391,6 @@ describe('ListPaginationService', () => {
         rowsPerPage: 1000,
         subState: 'test-substate',
         analysisAreaMin: 50,
-        analysisAreaMax: 1000,
         searchString: 'optional search',
       };
 
@@ -533,7 +528,6 @@ describe('ListPaginationService', () => {
       uspGetAnalysisDataCountForUserList.run.mockResolvedValue({
         numberOfPages: 1,
         numberOfResults: 1,
-        maximumAnalysisAreaInTheList: 100,
       });
 
       const result = await service.getPaginatedListDataWithPages(queryParam);
@@ -543,7 +537,6 @@ describe('ListPaginationService', () => {
         pages: {
           numberOfPages: 1,
           numberOfResults: 1,
-          maximumAnalysisAreaInTheList: 100,
         },
       });
       expect(uspGetPaginatedAnalysisDataForUserList.run).toHaveBeenCalledWith(
@@ -568,7 +561,6 @@ describe('ListPaginationService', () => {
       uspGetAnalysisDataCountForUserList.run.mockResolvedValue({
         numberOfPages: 0,
         numberOfResults: 0,
-        maximumAnalysisAreaInTheList: 0,
       });
 
       const result = await service.getPaginatedListDataWithPages(queryParam);
@@ -578,7 +570,6 @@ describe('ListPaginationService', () => {
         pages: {
           numberOfPages: 0,
           numberOfResults: 0,
-          maximumAnalysisAreaInTheList: 0,
         },
       });
     });

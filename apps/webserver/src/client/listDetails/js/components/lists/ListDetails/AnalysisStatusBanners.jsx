@@ -22,7 +22,8 @@ export default function AnalysisStatusBanners(props) {
     error: theme.palette.error.main,
     errorLight: theme.palette.error[100],
     errorBorder: theme.palette.error[500],
-    errorContrastText: theme.palette.error[700],
+    errorContrastText: theme.palette.error[500],
+    textPrimary: theme.palette.text.primary,
     secondary: theme.palette.secondary.main,
     secondaryContrastText: theme.palette.secondary.contrastText,
     secondaryLight: theme.palette.secondary.light,
@@ -30,7 +31,7 @@ export default function AnalysisStatusBanners(props) {
     warning: theme.palette.warning.main,
     warningLight: theme.palette.warning[100],
     warningBorder: theme.palette.warning[500],
-    warningContrastText: theme.palette.warning[700],
+    warningContrastText: theme.palette.warning[500],
   };
 
   const ALERT_DEFS = {
@@ -99,7 +100,7 @@ export default function AnalysisStatusBanners(props) {
     draft: {
       title: 'Draft',
       backgroundColor: COLORS.secondaryLight,
-      color: COLORS.secondaryContrastText,
+      color: COLORS.secondaryDark,
       icon: <EditNote fontSize="inherit" />,
       message: (
         <>
@@ -116,7 +117,7 @@ export default function AnalysisStatusBanners(props) {
     draftWithErrors: {
       title: 'Draft - Location Errors Detected',
       backgroundColor: COLORS.secondaryLight,
-      color: COLORS.secondaryContrastText,
+      color: COLORS.secondaryDark,
       icon: <Warning sx={{ color: COLORS.secondary }} fontSize="inherit" />,
       message: (
         <>

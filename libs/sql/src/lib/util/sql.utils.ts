@@ -131,7 +131,10 @@ export class SQLUtils {
         const canRetry = attempt < SQLUtils.MAX_RETRY_ATTEMPTS && isTransientError;
 
         console.log(
-          `Error in queryDB [attempt ${attempt}/${SQLUtils.MAX_RETRY_ATTEMPTS}] ${queryName.slice(0, 100)}:`,
+          `Error in queryDB [attempt ${attempt}/${SQLUtils.MAX_RETRY_ATTEMPTS}] ${queryName.slice(
+            0,
+            100
+          )}:`,
           errorMessage
         );
 

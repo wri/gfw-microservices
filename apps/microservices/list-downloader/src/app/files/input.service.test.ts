@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { createDirectory } from '../shared/file.utils';
 import { locationListData } from '../shared/mock.data';
 import { InputService } from './input.service';
@@ -55,6 +56,23 @@ describe('Input Service', () => {
 
   const dir = `/tmp/wri-${filters.key}`;
   const filePath = `${dir}/${filters.listName}_input.csv`;
+  const zipPath = `/tmp/${filters.key}.zip`;
+
+  const waitForExpectation = async (assertion: () => void) => {
+    let lastError: unknown = new Error('Expectation timed out');
+
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      try {
+        assertion();
+        return;
+      } catch (error) {
+        lastError = error;
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+    }
+
+    throw lastError;
+  };
 
   beforeAll(() => {
     inputService.startEmail = jest.fn();
@@ -70,7 +88,15 @@ describe('Input Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`${dir}/${filters.listName}_input.csv`);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    if (fs.existsSync(zipPath)) {
+      fs.unlinkSync(zipPath);
+    }
+
+    jest.restoreAllMocks();
   });
 
   test('when data has 3 locations', async () => {
@@ -157,5 +183,24 @@ describe('Input Service', () => {
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Commodity,Country,State,Sub State,Location Classification,Company ID,ID,Volume,Parent Company,Supplier Name,Refinery Name,Second Supplier Name,Second Refinery Name,Verified?,Oil Type,RSPO Model,Certification,Direct FFB,Other FFB,Associated Smallholder FFB,Independent Smallholder FFB,Start Date,End Date,Time Horizon,Accuracy Rating of Location Entered,Wind Barrier,Riparian Buffers,Buffer Zones,Alternative Mill Name,Group Name',
       '',
     ]);
+  });
+
+  test('when finishProcess rejects after zipping, it logs the failure without rejecting finish', async () => {
+    const finishError = new Error('finish failed');
+    const finishProcessMock = jest.fn().mockRejectedValue(finishError);
+    const loggerErrorSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(jest.fn());
+
+    inputService.finishProcess = finishProcessMock;
+    inputService.process(locationListData);
+
+    await expect(inputService.finish(filters)).resolves.toBeUndefined();
+
+    await waitForExpectation(() => {
+      expect(finishProcessMock).toHaveBeenCalledWith(filters);
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        `(${filters.listId}) - Failed while finishing download`,
+        finishError
+      );
+    });
   });
 });

@@ -100,7 +100,7 @@ export default function AnalysisStatusBanners(props) {
     draft: {
       title: 'Draft',
       backgroundColor: COLORS.secondaryLight,
-      color: COLORS.secondaryContrastText,
+      color: COLORS.secondaryDark,
       icon: <EditNote fontSize="inherit" />,
       message: (
         <>

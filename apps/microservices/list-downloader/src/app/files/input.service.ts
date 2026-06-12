@@ -82,8 +82,12 @@ export class InputService extends IPipeService {
       await archive.finalize();
 
       output.on('close', async () => {
-        this.logger.log(`(${listId}) - Data has been zipped`);
-        await this.finishProcess(filters);
+        try {
+          this.logger.log(`(${listId}) - Data has been zipped`);
+          await this.finishProcess(filters);
+        } catch (error) {
+          this.logger.error(`(${listId}) - Failed while finishing download`, error);
+        }
       });
     });
 

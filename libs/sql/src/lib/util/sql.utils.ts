@@ -15,6 +15,12 @@ export class SQLUtils {
   connection: sql.ConnectionPool;
   databaseName: string;
 
+  private static readonly TRANSIENT_CONNECTION_ERROR = /Failed to connect|connect timeout|ETIMEOUT|ECONNRESET|EHOSTUNREACH|ENETUNREACH/i;
+
+  private static async wait(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   constructor(config?: sql.config) {
     if (config) {
       this.config = config;
@@ -79,6 +85,10 @@ export class SQLUtils {
   }
 
   disconnect() {
+    if (!this.connection) {
+      return Promise.resolve();
+    }
+
     return this.connection.close();
   }
 
@@ -92,19 +102,34 @@ export class SQLUtils {
     queryName: string,
     parameters?: ParameterType[]
   ): Promise<T> {
-    const connection = new SQLUtils();
-    await connection.connect(databaseName);
-    try {
-      const isSystemQuery = databaseName === SQL_CONFIG.database;
-      const queryStr = getQueryStr(isSystemQuery, queryName);
-      const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
-      connection.disconnect();
-      return allRows as T;
-    } catch (error) {
-      connection.disconnect();
-      // can't use logger because libs is included in both webserver and microservices
-      console.log('Error in queryDB', queryName.slice(0, 100), error);
-      throw error;
+    const maxAttempts = 2;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      const connection = new SQLUtils();
+
+      try {
+        await connection.connect(databaseName);
+
+        const isSystemQuery = databaseName === SQL_CONFIG.database;
+        const queryStr = getQueryStr(isSystemQuery, queryName);
+        const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
+
+        return allRows as T;
+      } catch (error) {
+        // can't use logger because libs is included in both webserver and microservices
+        console.log('Error in queryDB', queryName.slice(0, 100), error);
+
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const canRetry = attempt < maxAttempts && SQLUtils.TRANSIENT_CONNECTION_ERROR.test(errorMessage);
+
+        if (!canRetry) {
+          throw error;
+        }
+
+        await SQLUtils.wait(250 * attempt);
+      } finally {
+        await connection.disconnect().catch(() => undefined);
+      }
     }
   }
 

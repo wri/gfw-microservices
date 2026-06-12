@@ -69,7 +69,6 @@ export class AnalysisDataService extends IInputData {
     const fields = [
       'listId',
       'organizationDatabase',
-      'analysisAreaMax',
       'analysisAreaMin',
       'country',
       'geometry',

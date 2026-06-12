@@ -170,8 +170,6 @@ export class getPaginatedListDataRequest {
   listId: number;
   @ApiProperty()
   organizationDatabase: string;
-  @ApiProperty({ required: false })
-  analysisAreaMax?: number;
   @ApiProperty()
   analysisAreaMin?: number;
   @ApiProperty({ required: false })
@@ -213,8 +211,6 @@ export class getNumberOfPagesPaginatedListDataRequest {
   rowsPerPage: number;
   @ApiProperty({ required: false })
   analysisAreaMin?: number;
-  @ApiProperty({ required: false })
-  analysisAreaMax?: number;
   @ApiProperty({ required: false })
   searchString?: string;
 }

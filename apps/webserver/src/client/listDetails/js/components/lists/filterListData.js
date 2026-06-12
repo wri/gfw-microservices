@@ -59,9 +59,6 @@ const filterHandlers = {
   selectedSupplier: (location, value) => value === location['Supplier Name'],
   selectedSecondSupplier: (location, value) => value === location['Second Supplier Name'],
 
-  selectedAreaMin: (location, value) => location.total_area >= value,
-  selectedAreaMax: (location, value) => location.total_area <= value,
-
   showTreeCoverExtent: (location, _value, filters) => {
     const percentageExtent = (location.tree_cover_extent_total / location['Analysis Area']) * 100;
     return (

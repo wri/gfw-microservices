@@ -126,7 +126,6 @@ const saveGfwListLocations = (
       state: null,
       subState: null,
       analysisAreaMin: null,
-      analysisAreaMax: null,
       searchString: null,
     };
 

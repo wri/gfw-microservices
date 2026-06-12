@@ -247,7 +247,6 @@ export type ListFilters = {
   state?: string;
   subState?: string;
   analysisAreaMin?: number;
-  analysisAreaMax?: number;
   searchString?: string;
 };
 
@@ -257,7 +256,6 @@ export const ListHasFiltersApplies = (filters: ListFilters) => {
     filters.state ||
     filters.subState ||
     filters.analysisAreaMin ||
-    filters.analysisAreaMax ||
     filters.searchString
   );
 };

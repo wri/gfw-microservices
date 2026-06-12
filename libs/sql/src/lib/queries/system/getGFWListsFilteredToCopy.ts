@@ -162,22 +162,6 @@ export const getGFWListsFilteredToCopy = `
     END
 
 
-	IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
-	BEGIN
-
-		IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMin', -1, 1);
-			END
-		IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
-			BEGIN
-				RAISERROR ('Invalid @AnalysisAreaMax', -1, 1);
-			END
-		SET @AnalysisFilters = 'total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}';
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
-		SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);
-	END
-
 	IF @SelectedLocations IS NOT NULL
     BEGIN
         SET @Filters = CONCAT(@Filters,' AND list_location_id IN(',@SelectedLocations ,')');
@@ -204,6 +188,6 @@ export const getGFWListsFilteredToCopy = `
 
 
     EXEC sp_executesql @SQL,
-			  N'@OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT',
-			  @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax;
+			  N'@OrderByColumn NVARCHAR(MAX), @Order NVARCHAR(5), @Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT',
+			  @OrderByColumn=@OrderByColumn, @Order=@Order, @Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin;
 `;

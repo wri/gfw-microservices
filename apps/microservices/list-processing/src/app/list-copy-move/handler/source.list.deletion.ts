@@ -16,7 +16,6 @@ type HandleSourceListDeletionParams = {
     state?: string;
     subState?: string;
     analysisAreaMin?: number;
-    analysisAreaMax?: number;
     searchString?: string;
   };
   selectedLocations: unknown[];

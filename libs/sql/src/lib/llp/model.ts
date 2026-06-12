@@ -19,7 +19,6 @@ export interface BasicFieldsFileRequest {
 export interface ListFieldsFileRequest extends BasicFieldsFileRequest {
   aggregation?: boolean;
   analysisArea?: number;
-  analysisAreaMax?: number;
   analysisAreaMin?: number;
   analysisAreaOperator?: string;
   combinedColumns?: string;
@@ -86,7 +85,6 @@ export type ListFilters = {
   state?: string;
   subState?: string;
   analysisAreaMin?: number;
-  analysisAreaMax?: number;
   searchString?: string;
 };
 

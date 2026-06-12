@@ -36,7 +36,6 @@ export const getAnalysisFromUserList = async (req, selectedList) => {
       const DEFAULT_SELECTED_STATE = '';
       const DEFAULT_SELECTED_SUB_STATE = '';
       const DEFAULT_SELECTED_AREA_MIN = 0;
-      const DEFAULT_SELECTED_AREA_MAX = null;
 
       const queryFilters = {
         listID: listId,
@@ -46,7 +45,6 @@ export const getAnalysisFromUserList = async (req, selectedList) => {
         state: DEFAULT_SELECTED_STATE,
         subState: DEFAULT_SELECTED_SUB_STATE,
         analysisAreaMin: DEFAULT_SELECTED_AREA_MIN,
-        analysisAreaMax: DEFAULT_SELECTED_AREA_MAX,
         columnsToReturn: DEFAULT_COLUMNS_TO_RETURN,
         page: 1,
         pageSize: Math.min(rowsRequested, 50),

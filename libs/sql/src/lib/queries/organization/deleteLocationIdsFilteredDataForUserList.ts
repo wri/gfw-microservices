@@ -48,22 +48,6 @@ BEGIN
 		END
 
 
-		IF ISNUMERIC( @AnalysisAreaMin ) = 1 AND ISNUMERIC( @AnalysisAreaMax ) = 1
-		BEGIN
-			
-			IF @AnalysisAreaMin < 0 AND @AnalysisAreaMin < @AnalysisAreaMax
-				BEGIN
-					RAISERROR ('Invalid @AnalysisAreaMin', -1, 1); 
-				END
-			IF @AnalysisAreaMax < 0 AND @AnalysisAreaMax > @AnalysisAreaMin
-				BEGIN
-					RAISERROR ('Invalid @AnalysisAreaMax', -1, 1); 
-				END
-			SET @AnalysisFilters = 'total_area BETWEEN {ANALYSIS_AREA_MIN} AND {ANALYSIS_AREA_MAX}';
-			SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MIN}', @AnalysisAreaMin);
-			SET @AnalysisFilters = REPLACE(@AnalysisFilters, '{ANALYSIS_AREA_MAX}', @AnalysisAreaMax);	
-		END
-
 		IF @SelectedLocations IS NOT NULL
 		BEGIN
 			SET @Filters = CONCAT(@Filters,' AND location_id IN(',@SelectedLocations ,')');
@@ -109,6 +93,6 @@ BEGIN
 	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName);
 
 	EXEC sp_executesql @SQL, 
-					N'@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT, @AnalysisAreaMax INT',
-					@Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax;
+					N'@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaMin INT',
+					@Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin;
 END`;

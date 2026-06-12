@@ -12,7 +12,6 @@ import {
 export interface AnalysisDataCountReturnType {
   numberOfPages: number;
   numberOfResults: number;
-  maximumAnalysisAreaInTheList: number;
 }
 
 @Injectable()
@@ -28,7 +27,6 @@ export class UspGetAnalysisDataCountForUserList {
       subState,
       rowsPerPage,
       analysisAreaMin,
-      analysisAreaMax,
       searchString,
       showRSPOCertified,
       selectedSupplier,
@@ -48,11 +46,6 @@ export class UspGetAnalysisDataCountForUserList {
         field: 'AnalysisAreaMin',
         type: sql.Int,
         value: analysisAreaMin || null,
-      },
-      {
-        field: 'AnalysisAreaMax',
-        type: sql.Int,
-        value: analysisAreaMax || null,
       },
       { field: 'SearchString', type: sql.Float, value: searchString || null },
       { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
@@ -95,9 +88,6 @@ export class UspGetAnalysisDataCountForUserList {
     );
 
     const totalRows = recordsets.find((record) => record.statistic_type === 'Row Count').statistic;
-    const maximumAnalysisAreaInTheList = recordsets.find(
-      (record) => record.statistic_type === 'Max Area'
-    ).statistic;
     let numberOfPages = 2;
     if (totalRows) {
       numberOfPages = rowsPerPage ? Math.ceil(totalRows / rowsPerPage) : 1;
@@ -105,7 +95,6 @@ export class UspGetAnalysisDataCountForUserList {
     return {
       numberOfPages,
       numberOfResults: totalRows,
-      maximumAnalysisAreaInTheList,
     };
   }
 }

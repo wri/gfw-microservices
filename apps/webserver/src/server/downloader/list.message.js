@@ -6,7 +6,6 @@ const buildSQSMessage = ({ request, file }) => {
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 
   const {
-    analysisAreaMax,
     analysisAreaMin,
     combinedColumns,
     country,
@@ -27,7 +26,6 @@ const buildSQSMessage = ({ request, file }) => {
   const fileName = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
   const filters = {
-    analysisAreaMax,
     analysisAreaMin,
     country,
     state,

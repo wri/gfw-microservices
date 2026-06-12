@@ -1,4 +1,5 @@
 import { Alert, AlertTitle, Typography, Link } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
 import { PillButton } from '../../../../../../components';
 import { ExternalLinks } from '../../../../../../utils/constants';
 
@@ -11,9 +12,11 @@ const LocationErrorsAlert = ({ locationsWithError, onAddLocationsAgain }) => {
     <Alert
       variant="filled"
       severity="error"
+      icon={<ErrorIcon data-testid="location-errors-filled-icon" fontSize="inherit" />}
       sx={{
         backgroundColor: (theme) => theme.palette.error[100],
-        color: (theme) => theme.palette.error[700],
+        color: (theme) => theme.palette.error[500],
+        border: (theme) => `1px solid ${theme.palette.error[500]}`,
       }}
       action={
         <PillButton
@@ -38,7 +41,7 @@ const LocationErrorsAlert = ({ locationsWithError, onAddLocationsAgain }) => {
         <Link
           href={ExternalLinks.UploadListHelpCenter}
           target="_blank"
-          sx={{ color: (theme) => theme.palette.error[700], textDecoration: 'underline' }}
+          sx={{ color: (theme) => theme.palette.error[500], textDecoration: 'underline' }}
         >
           More details
         </Link>

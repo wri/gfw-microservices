@@ -172,6 +172,7 @@ describe('ListDetails', () => {
       'href',
       'https://globalforestwatch.org/help/gfw-pro/guides/how-to-address-errors-in-your-uploads'
     );
+    expect(screen.getByTestId('location-errors-filled-icon')).toBeInTheDocument();
   });
 
   it('updates selected locations when checkbox is clicked', () => {

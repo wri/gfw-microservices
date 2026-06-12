@@ -15,7 +15,7 @@ const LocationErrorsAlert = ({ locationsWithError, onAddLocationsAgain }) => {
       icon={<ErrorIcon data-testid="location-errors-filled-icon" fontSize="inherit" />}
       sx={{
         backgroundColor: (theme) => theme.palette.error[100],
-        color: (theme) => theme.palette.error[700],
+        color: (theme) => theme.palette.error[500],
         border: (theme) => `1px solid ${theme.palette.error[500]}`,
       }}
       action={
@@ -41,7 +41,7 @@ const LocationErrorsAlert = ({ locationsWithError, onAddLocationsAgain }) => {
         <Link
           href={ExternalLinks.UploadListHelpCenter}
           target="_blank"
-          sx={{ color: (theme) => theme.palette.error[700], textDecoration: 'underline' }}
+          sx={{ color: (theme) => theme.palette.error[500], textDecoration: 'underline' }}
         >
           More details
         </Link>

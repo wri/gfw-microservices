@@ -79,7 +79,7 @@ describe('SQLUtils', () => {
   });
 
   it('throws after exhausting retries for transient failures', async () => {
-    const transientError = new Error('ETIMEOUT while connecting');
+    const transientError = new Error('ETIMEDOUT while connecting');
     jest.spyOn(SQLUtils.prototype, 'connect').mockResolvedValue(undefined);
     const runRawSingleQuerySpy = jest
       .spyOn(SQLUtils.prototype, 'runRawSingleQuery')

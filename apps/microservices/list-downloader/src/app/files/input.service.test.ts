@@ -198,8 +198,8 @@ describe('Input Service', () => {
     await waitForExpectation(() => {
       expect(finishProcessMock).toHaveBeenCalledWith(filters);
       expect(loggerErrorSpy).toHaveBeenCalledWith(
-        `(${filters.listId}) - Failed while finishing download`,
-        finishError
+        `(${filters.listId}) - Failed during post-processing: finish failed`,
+        finishError.stack
       );
     });
   });

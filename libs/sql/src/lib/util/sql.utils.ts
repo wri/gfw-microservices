@@ -15,7 +15,18 @@ export class SQLUtils {
   connection: sql.ConnectionPool;
   databaseName: string;
 
-  private static readonly TRANSIENT_CONNECTION_ERROR = /Failed to connect|connect timeout|ETIMEOUT|ECONNRESET|EHOSTUNREACH|ENETUNREACH/i;
+  // Retry strategy for transient connection failures
+  // Retries once on network/timeout errors with 250ms exponential backoff
+  private static readonly MAX_RETRY_ATTEMPTS = 2;
+  private static readonly RETRY_BACKOFF_MS = 250;
+
+  // Pattern matches transient MSSQL connection errors:
+  // - Connect failures (timeout, network unreachable, connection reset)
+  // - DNS resolution failures (ENOTFOUND)
+  // - Mid-connection drops (Connection lost, socket hang up)
+  // Does NOT match application/syntax errors, which should fail immediately
+  private static readonly TRANSIENT_CONNECTION_ERROR =
+    /Failed to connect|connect timeout|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|ENETUNREACH|ENOTFOUND|Connection lost|socket hang up/i;
 
   private static async wait(ms: number): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, ms));
@@ -102,9 +113,7 @@ export class SQLUtils {
     queryName: string,
     parameters?: ParameterType[]
   ): Promise<T> {
-    const maxAttempts = 2;
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    for (let attempt = 1; attempt <= SQLUtils.MAX_RETRY_ATTEMPTS; attempt += 1) {
       const connection = new SQLUtils();
 
       try {
@@ -117,16 +126,23 @@ export class SQLUtils {
         return allRows as T;
       } catch (error) {
         // can't use logger because libs is included in both webserver and microservices
-        console.log('Error in queryDB', queryName.slice(0, 100), error);
-
         const errorMessage = error instanceof Error ? error.message : String(error);
-        const canRetry = attempt < maxAttempts && SQLUtils.TRANSIENT_CONNECTION_ERROR.test(errorMessage);
+        const isTransientError = SQLUtils.TRANSIENT_CONNECTION_ERROR.test(errorMessage);
+        const canRetry = attempt < SQLUtils.MAX_RETRY_ATTEMPTS && isTransientError;
+
+        console.log(
+          `Error in queryDB [attempt ${attempt}/${SQLUtils.MAX_RETRY_ATTEMPTS}] ${queryName.slice(0, 100)}:`,
+          errorMessage
+        );
 
         if (!canRetry) {
+          console.log(`Exhausted retries or non-transient error; failing immediately`);
           throw error;
         }
 
-        await SQLUtils.wait(250 * attempt);
+        const backoffMs = SQLUtils.RETRY_BACKOFF_MS * attempt;
+        console.log(`Retrying after ${backoffMs}ms due to transient error`);
+        await SQLUtils.wait(backoffMs);
       } finally {
         await connection.disconnect().catch(() => undefined);
       }

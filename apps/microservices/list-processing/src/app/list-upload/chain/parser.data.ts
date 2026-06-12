@@ -9,6 +9,7 @@ import { xls2geojson } from '../parser/xls2GeoJSON.parser';
 import { kml2GeoJSON } from '../parser/kml2GeoJSON.parser';
 import AdmZip from 'adm-zip';
 import { convertProperties } from './validate.mandatory.fields';
+import { EmptyDataFileException } from '../../common/emptyDataFile.exception';
 
 export class ParserData extends AbstractHandler<ChainType> {
   private readonly logger = new Logger(ParserData.name);
@@ -142,12 +143,21 @@ export class ParserData extends AbstractHandler<ChainType> {
 
     try {
       const geoJson = await dataParser[fileExtension](fileDownloadedPath, preview);
-      const cleanedGeoJson = this.removeTemplateLines(geoJson);
+      const cleanGeoJson = this.removeTemplateLines(geoJson);
       this.logger.log('Data parsed successfully');
 
+      if (cleanGeoJson.features.length === 0) {
+        this.logger.warn('The uploaded file is empty after removing template lines.');
+        throw new EmptyDataFileException();
+      }
+
       this.deleteFile(fileDownloadedPath);
-      return { ...request, geojson: cleanedGeoJson };
+      return { ...request, geojson: cleanGeoJson };
     } catch (error) {
+      if (error instanceof EmptyDataFileException) {
+        throw error;
+      }
+
       this.logger.error(
         `Error while parsing the data from file: ${fileDownloadedPath}`,
         error.stack

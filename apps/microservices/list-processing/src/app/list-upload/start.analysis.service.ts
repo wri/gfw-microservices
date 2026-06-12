@@ -34,6 +34,7 @@ import { FileTooLargeException } from '../common/fileTooLarge.exception';
 import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { listStatus } from '@wri-monorepos/constants';
 import { traceContext } from '@wri-monorepos/shared';
+import { EmptyDataFileException } from '../common/emptyDataFile.exception';
 
 type WorkerType = {
   request: RequestLargeListProcess;
@@ -227,6 +228,24 @@ async function worker(input: WorkerType, cb: done) {
           // Using Promise.allSettled to ensure both operations complete even if one fails
           await Promise.allSettled([
             AbstractHandler.updateListsUploadStatus(chainType, 'File too large', error.message),
+            updateAnalysisStatusForSizeLimitError(
+              organizationDatabase,
+              listId,
+              input.request.analysisIds || [],
+              error.message
+            ),
+          ]);
+
+          cb(null);
+        } else if (error instanceof EmptyDataFileException) {
+          workerLogger.warn(
+            `List ${listId} in database ${organizationDatabase} has an empty data file. ${error.message}`
+          );
+
+          // Update both upload status and analysis status in parallel
+          // Using Promise.allSettled to ensure both operations complete even if one fails
+          await Promise.allSettled([
+            AbstractHandler.updateListsUploadStatus(chainType, 'Empty data file', error.message),
             updateAnalysisStatusForSizeLimitError(
               organizationDatabase,
               listId,

@@ -55,7 +55,7 @@ export default function AnalysisStatusBanners(props) {
     analysisFailed: {
       title: 'Analysis has failed',
       backgroundColor: COLORS.errorLight,
-      color: COLORS.textPrimary,
+      color: COLORS.errorContrastText,
       icon: <Report fontSize="inherit" />,
       message: (
         <>
@@ -65,7 +65,7 @@ export default function AnalysisStatusBanners(props) {
             target="_blank"
             style={{
               textDecoration: 'underline',
-              color: COLORS.textPrimary,
+              color: COLORS.errorContrastText,
             }}
           >
             here

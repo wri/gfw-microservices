@@ -82,8 +82,18 @@ export class InputService extends IPipeService {
       await archive.finalize();
 
       output.on('close', async () => {
-        this.logger.log(`(${listId}) - Data has been zipped`);
-        await this.finishProcess(filters);
+        try {
+          this.logger.log(`(${listId}) - Data has been zipped`);
+          await this.finishProcess(filters);
+        } catch (error) {
+          // Catch and log post-processing failures (S3 upload, database write, etc.)
+          // to prevent unhandled rejections from crashing the process
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          this.logger.error(
+            `(${listId}) - Failed during post-processing: ${errorMsg}`,
+            error instanceof Error ? error.stack : error
+          );
+        }
       });
     });
 

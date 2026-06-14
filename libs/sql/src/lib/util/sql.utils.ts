@@ -15,6 +15,23 @@ export class SQLUtils {
   connection: sql.ConnectionPool;
   databaseName: string;
 
+  // Retry strategy for transient connection failures
+  // Retries once on network/timeout errors with 250ms exponential backoff
+  private static readonly MAX_RETRY_ATTEMPTS = 2;
+  private static readonly RETRY_BACKOFF_MS = 250;
+
+  // Pattern matches transient MSSQL connection errors:
+  // - Connect failures (timeout, network unreachable, connection reset)
+  // - DNS resolution failures (ENOTFOUND)
+  // - Mid-connection drops (Connection lost, socket hang up)
+  // Does NOT match application/syntax errors, which should fail immediately
+  private static readonly TRANSIENT_CONNECTION_ERROR =
+    /Failed to connect|connect timeout|ETIMEDOUT|ECONNRESET|EHOSTUNREACH|ENETUNREACH|ENOTFOUND|Connection lost|socket hang up/i;
+
+  private static async wait(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   constructor(config?: sql.config) {
     if (config) {
       this.config = config;
@@ -79,6 +96,10 @@ export class SQLUtils {
   }
 
   disconnect() {
+    if (!this.connection) {
+      return Promise.resolve();
+    }
+
     return this.connection.close();
   }
 
@@ -92,19 +113,42 @@ export class SQLUtils {
     queryName: string,
     parameters?: ParameterType[]
   ): Promise<T> {
-    const connection = new SQLUtils();
-    await connection.connect(databaseName);
-    try {
-      const isSystemQuery = databaseName === SQL_CONFIG.database;
-      const queryStr = getQueryStr(isSystemQuery, queryName);
-      const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
-      connection.disconnect();
-      return allRows as T;
-    } catch (error) {
-      connection.disconnect();
-      // can't use logger because libs is included in both webserver and microservices
-      console.log('Error in queryDB', queryName.slice(0, 100), error);
-      throw error;
+    for (let attempt = 1; attempt <= SQLUtils.MAX_RETRY_ATTEMPTS; attempt += 1) {
+      const connection = new SQLUtils();
+
+      try {
+        await connection.connect(databaseName);
+
+        const isSystemQuery = databaseName === SQL_CONFIG.database;
+        const queryStr = getQueryStr(isSystemQuery, queryName);
+        const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
+
+        return allRows as T;
+      } catch (error) {
+        // can't use logger because libs is included in both webserver and microservices
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const isTransientError = SQLUtils.TRANSIENT_CONNECTION_ERROR.test(errorMessage);
+        const canRetry = attempt < SQLUtils.MAX_RETRY_ATTEMPTS && isTransientError;
+
+        console.log(
+          `Error in queryDB [attempt ${attempt}/${SQLUtils.MAX_RETRY_ATTEMPTS}] ${queryName.slice(
+            0,
+            100
+          )}:`,
+          errorMessage
+        );
+
+        if (!canRetry) {
+          console.log(`Exhausted retries or non-transient error; failing immediately`);
+          throw error;
+        }
+
+        const backoffMs = SQLUtils.RETRY_BACKOFF_MS * attempt;
+        console.log(`Retrying after ${backoffMs}ms due to transient error`);
+        await SQLUtils.wait(backoffMs);
+      } finally {
+        await connection.disconnect().catch(() => undefined);
+      }
     }
   }
 

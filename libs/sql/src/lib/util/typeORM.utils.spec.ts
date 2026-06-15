@@ -115,6 +115,7 @@ describe('createDatasourceConfig', () => {
     await expect(clientStoreConnection.getConnection('errorDB')).rejects.toThrow(
       'Connection failed'
     );
+    expect(initializeSpy).toHaveBeenCalledTimes(3);
     initializeSpy.mockRestore();
   });
 

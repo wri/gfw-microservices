@@ -133,6 +133,19 @@ const getRetryConfig = () => {
   };
 };
 
+const getErrorDetails = (error: unknown): { message: string; stack?: string } => {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      stack: error.stack,
+    };
+  }
+
+  return {
+    message: String(error),
+  };
+};
+
 @Injectable()
 export class ClientStoreConnection {
   private readonly logger = new Logger(ClientStoreConnection.name);
@@ -145,7 +158,11 @@ export class ClientStoreConnection {
     clearTimeout(cached.timeout);
     const timeout = setTimeout(() => {
       this.clearCache(connectionId, entityType).catch((error) => {
-        Logger.error(`Error clearing cache for ${connectionId}:`, error);
+        const errorDetails = getErrorDetails(error);
+        Logger.error(
+          `Error clearing cache for ${connectionId}: ${errorDetails.message}`,
+          errorDetails.stack
+        );
       });
     }, CLEAR_CONNECTION_TIMEOUT[entityType]);
     cached.timeout = timeout;
@@ -165,7 +182,8 @@ export class ClientStoreConnection {
       const release = await mutexWithTimeout.acquire();
       return [mapToUse, release];
     } catch (error) {
-      Logger.error('Error acquiring mutex:', error.message, error);
+      const errorDetails = getErrorDetails(error);
+      Logger.error(`Error acquiring mutex: ${errorDetails.message}`, errorDetails.stack);
       throw error;
     }
   }
@@ -271,9 +289,19 @@ export class ClientStoreConnection {
         }
       }
 
+      if (!dbConnection) {
+        throw new Error(
+          `Data Source ${database} could not be initialized after ${MAX_CONNECTION_RETRIES} attempts`
+        );
+      }
+
       const timeout = setTimeout(() => {
         this.clearCache(connectionId, entityType).catch((error) => {
-          Logger.error(`Error clearing cache for ${connectionId}:`, error);
+          const errorDetails = getErrorDetails(error);
+          Logger.error(
+            `Error clearing cache for ${connectionId}: ${errorDetails.message}`,
+            errorDetails.stack
+          );
         });
       }, CLEAR_CONNECTION_TIMEOUT[entityType]);
 
@@ -307,7 +335,11 @@ export class ClientStoreConnection {
         if (cached.connection.isInitialized) {
           // start destroying connection, but do not wait for it because it hangs sometimes
           cached.connection.destroy().catch((error) => {
-            Logger.error(`Error destroying connection ${connectionId}:`, error.message, error);
+            const errorDetails = getErrorDetails(error);
+            Logger.error(
+              `Error destroying connection ${connectionId}: ${errorDetails.message}`,
+              errorDetails.stack
+            );
           });
         }
       }

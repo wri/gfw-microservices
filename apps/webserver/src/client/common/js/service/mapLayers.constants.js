@@ -12,6 +12,7 @@ const DATASET_VERSIONS = {
   IDN_FOREST_AREA: 'v201709',
   IDN_LAND_COVER_2017: 'v201807',
   INPE_PRODES: 'v202507',
+  JRC_FOREST_COVER: 'v2020.3',
   GFWPRO_NEGLIGIBLE_RISK: 'v20260417',
   NASA_VIIRS_FIRE_ALERTS: 'v202010',
   UMD_GLAD_DIST_ALERTS: 'v202412',
@@ -30,6 +31,8 @@ const DATASET_URLS = {
   IDN_FOREST_TILES: `https://tiles.globalforestwatch.org/idn_forest_area/${DATASET_VERSIONS.IDN_FOREST_AREA}/default/root.json`,
   // Indonesia Land Cover
   IDN_LAND_COVER_TILES: `https://tiles.globalforestwatch.org/idn_land_cover_2017/${DATASET_VERSIONS.IDN_LAND_COVER_2017}/default/{z}/{x}/{y}.png`,
+  // JRC Forest Cover
+  JRC_FOREST_COVER_TILES: `https://tiles.globalforestwatch.org/jrc_global_forest_cover/${DATASET_VERSIONS.JRC_FOREST_COVER}/default/{z}/{x}/{y}.png`,
   // Indigenous & Community Lands
   INDIGENOUS_LANDS_API: `https://data-api.globalforestwatch.org/dataset/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/features`,
   INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/default/root.json`,
@@ -2141,7 +2144,7 @@ export const mapLayers = [
       layerConfig: {
         type: 'tileLayer',
         body: {
-          url: 'https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020.2/default/{z}/{x}/{y}.png',
+          url: DATASET_URLS.JRC_FOREST_COVER_TILES,
           metadata: 'jrc_global_forest_cover',
         },
       },

@@ -106,12 +106,50 @@ const mutexWithTimeout = withTimeout(
 const staticConnections: Map<string, ConnectionCacheItem> = new Map();
 const dynamicConnections: Map<string, ConnectionCacheItem> = new Map();
 const MAX_CONNECTION_RETRIES = 3;
-const BASE_RETRY_DELAY_MS = 1000;
-const RETRY_JITTER_MS = 500;
+
+const getNonNegativeInteger = (value: string | undefined, fallback: number): number => {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsedValue = Number.parseInt(value, 10);
+  if (Number.isNaN(parsedValue) || parsedValue < 0) {
+    return fallback;
+  }
+
+  return parsedValue;
+};
+
+const getRetryConfig = () => {
+  const defaultBaseDelay = process.env.NODE_ENV === TEST_ENVIRONMENT ? 0 : 1000;
+  const defaultJitter = process.env.NODE_ENV === TEST_ENVIRONMENT ? 0 : 500;
+
+  return {
+    baseDelayMs: getNonNegativeInteger(
+      process.env.MSSQL_CONNECTION_RETRY_BASE_DELAY_MS,
+      defaultBaseDelay
+    ),
+    jitterMs: getNonNegativeInteger(process.env.MSSQL_CONNECTION_RETRY_JITTER_MS, defaultJitter),
+  };
+};
 
 @Injectable()
 export class ClientStoreConnection {
   private readonly logger = new Logger(ClientStoreConnection.name);
+
+  private refreshCachedConnectionTimeout(
+    cached: ConnectionCacheItem,
+    connectionId: string,
+    entityType: string
+  ): void {
+    clearTimeout(cached.timeout);
+    const timeout = setTimeout(() => {
+      this.clearCache(connectionId, entityType).catch((error) => {
+        Logger.error(`Error clearing cache for ${connectionId}:`, error);
+      });
+    }, CLEAR_CONNECTION_TIMEOUT[entityType]);
+    cached.timeout = timeout;
+  }
 
   public static getConnectionType(entities: MixedList<EntityType>) {
     return entities === organizationEntities || entities === systemEntities ? 'static' : 'dynamic';
@@ -184,13 +222,7 @@ export class ClientStoreConnection {
           `Data Source ${connectionId} cache hit on env: ${process.env.NODE_ENV} (age=${connectionAgeMs}ms)`
         );
         // reset timeout from now to prevent destroying connection while it's being used
-        clearTimeout(cached.timeout);
-        const timeout = setTimeout(() => {
-          this.clearCache(connectionId, entityType).catch((error) => {
-            Logger.error(`Error clearing cache for ${connectionId}:`, error);
-          });
-        }, CLEAR_CONNECTION_TIMEOUT[entityType]);
-        cached.timeout = timeout;
+        this.refreshCachedConnectionTimeout(cached, connectionId, entityType);
         return mapToInsert.get(connectionId).connection;
       }
       // recheck if connection was created while waiting for mutex
@@ -200,6 +232,8 @@ export class ClientStoreConnection {
         this.logger.debug(
           `Data Source ${connectionId} cache hit after mutex wait on env: ${process.env.NODE_ENV} (age=${connectionAgeMs}ms)`
         );
+        // reset timeout here too because this caller is actively using the connection
+        this.refreshCachedConnectionTimeout(cached, connectionId, entityType);
         return mapToInsert.get(connectionId).connection;
       }
       this.logger.debug(
@@ -210,6 +244,7 @@ export class ClientStoreConnection {
         database,
         entities
       ) as DataSourceOptions;
+      const retryConfig = getRetryConfig();
 
       let dbConnection: DataSource | undefined;
       for (let attempt = 1; attempt <= MAX_CONNECTION_RETRIES; attempt++) {
@@ -219,14 +254,18 @@ export class ClientStoreConnection {
           break;
         } catch (initError) {
           const errorMessage = initError instanceof Error ? initError.message : String(initError);
-          const backoffDelayMs =
-            BASE_RETRY_DELAY_MS * 2 ** (attempt - 1) + Math.floor(Math.random() * RETRY_JITTER_MS);
-          Logger.warn(
-            `Data Source ${database} initialization attempt ${attempt}/${MAX_CONNECTION_RETRIES} failed on env: ${process.env.NODE_ENV}: ${errorMessage}. Retrying in ${backoffDelayMs}ms`
-          );
           if (attempt < MAX_CONNECTION_RETRIES) {
+            const backoffDelayMs =
+              retryConfig.baseDelayMs * 2 ** (attempt - 1) +
+              Math.floor(Math.random() * retryConfig.jitterMs);
+            Logger.warn(
+              `Data Source ${database} initialization attempt ${attempt}/${MAX_CONNECTION_RETRIES} failed on env: ${process.env.NODE_ENV}: ${errorMessage}. Retrying in ${backoffDelayMs}ms`
+            );
             await new Promise((resolve) => setTimeout(resolve, backoffDelayMs));
           } else {
+            Logger.warn(
+              `Data Source ${database} initialization attempt ${attempt}/${MAX_CONNECTION_RETRIES} failed on env: ${process.env.NODE_ENV}: ${errorMessage}. No retries remaining`
+            );
             throw initError;
           }
         }

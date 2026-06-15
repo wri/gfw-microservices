@@ -25,6 +25,7 @@ type CreateTypeOrmSystemModuleProps = {
 export interface ConnectionCacheItem {
   connection: DataSource;
   timeout: NodeJS.Timeout;
+  createdAt: number;
 }
 
 type EntityType = Type<unknown> | string | EntitySchema<unknown>;
@@ -104,9 +105,14 @@ const mutexWithTimeout = withTimeout(
 );
 const staticConnections: Map<string, ConnectionCacheItem> = new Map();
 const dynamicConnections: Map<string, ConnectionCacheItem> = new Map();
+const MAX_CONNECTION_RETRIES = 3;
+const BASE_RETRY_DELAY_MS = 1000;
+const RETRY_JITTER_MS = 500;
 
 @Injectable()
 export class ClientStoreConnection {
+  private readonly logger = new Logger(ClientStoreConnection.name);
+
   public static getConnectionType(entities: MixedList<EntityType>) {
     return entities === organizationEntities || entities === systemEntities ? 'static' : 'dynamic';
   }
@@ -159,13 +165,24 @@ export class ClientStoreConnection {
     let connectionId = process.env.MSSQL_HOSTNAME + database;
     if (entityType === 'dynamic') {
       connectionId = `${connectionId}_${(entities as Array<unknown>)
-        .map((entity: any) => entity.options?.name || entity.name || 'unknown')
+        .map((entity) => {
+          if (typeof entity === 'string') {
+            return entity;
+          }
+
+          const typedEntity = entity as EntitySchema<unknown> & Type<unknown>;
+          return typedEntity.options?.name || typedEntity.name || 'unknown';
+        })
         .join('')}`;
     }
     const [mapToInsert, release] = await ClientStoreConnection.getConnections(entityType);
     try {
       if (mapToInsert.has(connectionId)) {
         const cached = mapToInsert.get(connectionId);
+        const connectionAgeMs = Date.now() - cached.createdAt;
+        this.logger.debug(
+          `Data Source ${connectionId} cache hit on env: ${process.env.NODE_ENV} (age=${connectionAgeMs}ms)`
+        );
         // reset timeout from now to prevent destroying connection while it's being used
         clearTimeout(cached.timeout);
         const timeout = setTimeout(() => {
@@ -178,15 +195,42 @@ export class ClientStoreConnection {
       }
       // recheck if connection was created while waiting for mutex
       if (mapToInsert.has(connectionId)) {
+        const cached = mapToInsert.get(connectionId);
+        const connectionAgeMs = Date.now() - cached.createdAt;
+        this.logger.debug(
+          `Data Source ${connectionId} cache hit after mutex wait on env: ${process.env.NODE_ENV} (age=${connectionAgeMs}ms)`
+        );
         return mapToInsert.get(connectionId).connection;
       }
+      this.logger.debug(
+        `Data Source ${connectionId} cache miss on env: ${process.env.NODE_ENV}; initializing new connection`
+      );
       const datasourceConfig = createDatasourceConfig(
         database,
         database,
         entities
       ) as DataSourceOptions;
-      const connectionDb = new DataSource(datasourceConfig);
-      const dbConnection = await connectionDb.initialize();
+
+      let dbConnection: DataSource | undefined;
+      for (let attempt = 1; attempt <= MAX_CONNECTION_RETRIES; attempt++) {
+        try {
+          const connectionDb = new DataSource(datasourceConfig);
+          dbConnection = await connectionDb.initialize();
+          break;
+        } catch (initError) {
+          const errorMessage = initError instanceof Error ? initError.message : String(initError);
+          const backoffDelayMs =
+            BASE_RETRY_DELAY_MS * 2 ** (attempt - 1) + Math.floor(Math.random() * RETRY_JITTER_MS);
+          Logger.warn(
+            `Data Source ${database} initialization attempt ${attempt}/${MAX_CONNECTION_RETRIES} failed on env: ${process.env.NODE_ENV}: ${errorMessage}. Retrying in ${backoffDelayMs}ms`
+          );
+          if (attempt < MAX_CONNECTION_RETRIES) {
+            await new Promise((resolve) => setTimeout(resolve, backoffDelayMs));
+          } else {
+            throw initError;
+          }
+        }
+      }
 
       const timeout = setTimeout(() => {
         this.clearCache(connectionId, entityType).catch((error) => {
@@ -197,16 +241,18 @@ export class ClientStoreConnection {
       mapToInsert.set(connectionId, {
         connection: dbConnection,
         timeout,
+        createdAt: Date.now(),
       });
 
       Logger.log(`Data Source ${connectionId} has been initialized`);
       return mapToInsert.get(connectionId).connection;
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       Logger.error(
-        `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
-        error.stack
+        `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}: ${errorMessage}`,
+        error instanceof Error ? error.stack : undefined
       );
-      return null;
+      throw error;
     } finally {
       release();
     }

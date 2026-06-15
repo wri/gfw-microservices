@@ -25,6 +25,10 @@ describe('createDatasourceConfig', () => {
     await ClientStoreConnection.clearAllConnections();
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('returns correct config for test environment', () => {
     process.env.NODE_ENV = TEST_ENVIRONMENT;
     const config = createDatasourceConfig('default', 'someDB', ['Entity1', 'Entity2']);
@@ -104,11 +108,14 @@ describe('createDatasourceConfig', () => {
     const clientStoreConnection = new ClientStoreConnection();
 
     // Mock DataSource.initialize to throw an error
-    jest
+    const initializeSpy = jest
       .spyOn(DataSource.prototype, 'initialize')
-      .mockRejectedValueOnce(new Error('Connection failed'));
+      .mockRejectedValue(new Error('Connection failed'));
 
-    await expect(clientStoreConnection.getConnection('errorDB')).resolves.toBeNull();
+    await expect(clientStoreConnection.getConnection('errorDB')).rejects.toThrow(
+      'Connection failed'
+    );
+    initializeSpy.mockRestore();
   });
 
   it('should handle connection timeout', async () => {

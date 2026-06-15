@@ -17,6 +17,8 @@ const CLEAR_CONNECTION_TIMEOUT = {
   dynamic: 30 * 1000, // 30 seconds
 };
 
+type ConnectionType = keyof typeof CLEAR_CONNECTION_TIMEOUT;
+
 type CreateTypeOrmSystemModuleProps = {
   name: string;
   imports?: Array<Type<unknown> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
@@ -153,7 +155,7 @@ export class ClientStoreConnection {
   private refreshCachedConnectionTimeout(
     cached: ConnectionCacheItem,
     connectionId: string,
-    entityType: string
+    entityType: ConnectionType
   ): void {
     clearTimeout(cached.timeout);
     const timeout = setTimeout(() => {
@@ -168,14 +170,14 @@ export class ClientStoreConnection {
     cached.timeout = timeout;
   }
 
-  public static getConnectionType(entities: MixedList<EntityType>) {
+  public static getConnectionType(entities: MixedList<EntityType>): ConnectionType {
     return entities === organizationEntities || entities === systemEntities ? 'static' : 'dynamic';
   }
 
   // Returns a map of connections
   // Also, acquire mutex and return release function to ensure all callers handle mutex
   public static async getConnections(
-    type: string
+    type: ConnectionType
   ): Promise<[Map<string, ConnectionCacheItem>, () => void]> {
     const mapToUse = type === 'dynamic' ? dynamicConnections : staticConnections;
     try {
@@ -233,26 +235,15 @@ export class ClientStoreConnection {
     }
     const [mapToInsert, release] = await ClientStoreConnection.getConnections(entityType);
     try {
-      if (mapToInsert.has(connectionId)) {
-        const cached = mapToInsert.get(connectionId);
+      const cached = mapToInsert.get(connectionId);
+      if (cached) {
         const connectionAgeMs = Date.now() - cached.createdAt;
         this.logger.debug(
           `Data Source ${connectionId} cache hit on env: ${process.env.NODE_ENV} (age=${connectionAgeMs}ms)`
         );
         // reset timeout from now to prevent destroying connection while it's being used
         this.refreshCachedConnectionTimeout(cached, connectionId, entityType);
-        return mapToInsert.get(connectionId).connection;
-      }
-      // recheck if connection was created while waiting for mutex
-      if (mapToInsert.has(connectionId)) {
-        const cached = mapToInsert.get(connectionId);
-        const connectionAgeMs = Date.now() - cached.createdAt;
-        this.logger.debug(
-          `Data Source ${connectionId} cache hit after mutex wait on env: ${process.env.NODE_ENV} (age=${connectionAgeMs}ms)`
-        );
-        // reset timeout here too because this caller is actively using the connection
-        this.refreshCachedConnectionTimeout(cached, connectionId, entityType);
-        return mapToInsert.get(connectionId).connection;
+        return cached.connection;
       }
       this.logger.debug(
         `Data Source ${connectionId} cache miss on env: ${process.env.NODE_ENV}; initializing new connection`
@@ -325,7 +316,7 @@ export class ClientStoreConnection {
     }
   }
 
-  async clearCache(connectionId: string, entityType: string): Promise<void> {
+  async clearCache(connectionId: string, entityType: ConnectionType): Promise<void> {
     const [mapToUse, release] = await ClientStoreConnection.getConnections(entityType);
     try {
       const cached = mapToUse.get(connectionId);

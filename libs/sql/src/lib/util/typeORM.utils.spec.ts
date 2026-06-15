@@ -6,9 +6,10 @@ import { Mutex } from 'async-mutex';
 
 describe('createDatasourceConfig', () => {
   const TEST_ENVIRONMENT = 'test';
+  type ConnectionType = 'static' | 'dynamic';
 
   // Helper function to get connection map for testing
-  async function getConnMap(type: string): Promise<Map<string, any>> {
+  async function getConnMap(type: ConnectionType): Promise<Map<string, any>> {
     const [mapToInsert, release] = await ClientStoreConnection.getConnections(type);
     release();
     return mapToInsert;

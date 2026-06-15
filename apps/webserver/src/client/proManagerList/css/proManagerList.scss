@@ -11,6 +11,7 @@
     max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
+    // Flip the scroll container to position the horizontal scrollbar at the top; the table is flipped back below.
     transform: rotateX(180deg);
   }
 

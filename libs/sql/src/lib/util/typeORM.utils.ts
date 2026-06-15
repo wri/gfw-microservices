@@ -13,8 +13,8 @@ const CONNECTION_TYPE_MSSQL = 'mssql';
 const CONNECTION_TYPE_SQLITE = 'sqlite';
 
 const CLEAR_CONNECTION_TIMEOUT = {
-  static: 10 * 60 * 1000, // 10 minutes
-  dynamic: 1 * 60 * 1000, // 1 minute
+  static: 5 * 60 * 1000, // 5 minutes
+  dynamic: 30 * 1000, // 30 seconds
 };
 
 type CreateTypeOrmSystemModuleProps = {

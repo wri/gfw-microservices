@@ -6,9 +6,10 @@ import { Mutex } from 'async-mutex';
 
 describe('createDatasourceConfig', () => {
   const TEST_ENVIRONMENT = 'test';
+  type ConnectionType = 'static' | 'dynamic';
 
   // Helper function to get connection map for testing
-  async function getConnMap(type: string): Promise<Map<string, any>> {
+  async function getConnMap(type: ConnectionType): Promise<Map<string, any>> {
     const [mapToInsert, release] = await ClientStoreConnection.getConnections(type);
     release();
     return mapToInsert;
@@ -23,6 +24,10 @@ describe('createDatasourceConfig', () => {
     process.env.MSSQL_PORT = undefined;
     // Clear all connections before each test
     await ClientStoreConnection.clearAllConnections();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('returns correct config for test environment', () => {
@@ -104,11 +109,15 @@ describe('createDatasourceConfig', () => {
     const clientStoreConnection = new ClientStoreConnection();
 
     // Mock DataSource.initialize to throw an error
-    jest
+    const initializeSpy = jest
       .spyOn(DataSource.prototype, 'initialize')
-      .mockRejectedValueOnce(new Error('Connection failed'));
+      .mockRejectedValue(new Error('Connection failed'));
 
-    await expect(clientStoreConnection.getConnection('errorDB')).resolves.toBeNull();
+    await expect(clientStoreConnection.getConnection('errorDB')).rejects.toThrow(
+      'Connection failed'
+    );
+    expect(initializeSpy).toHaveBeenCalledTimes(3);
+    initializeSpy.mockRestore();
   });
 
   it('should handle connection timeout', async () => {

@@ -6,6 +6,21 @@
 }
 
 .pro-manager-panel {
+  .users-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    // Flip the scroll container to position the horizontal scrollbar at the top; the table is flipped back below.
+    transform: rotateX(180deg);
+  }
+
+  .users-table {
+    width: max-content;
+    min-width: 100%;
+    transform: rotateX(180deg);
+  }
+
   table {
     th,
     td {
@@ -67,11 +82,11 @@
     vertical-align: middle;
   }
 
-  ::-webkit-scrollbar {
-    height: 8px;
+  .users-table-wrapper::-webkit-scrollbar {
+    height: 6px;
   }
 
-  ::-webkit-scrollbar-thumb {
+  .users-table-wrapper::-webkit-scrollbar-thumb {
     background: #aaa;
     border-radius: 4px;
   }

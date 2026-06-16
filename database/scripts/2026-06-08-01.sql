@@ -4,6 +4,8 @@
 USE [gfwpro]
 GO
 
+SET NOCOUNT ON;
+
 IF OBJECT_ID('tempdb..#CountryLanguageMap') IS NOT NULL
     DROP TABLE #CountryLanguageMap;
 
@@ -220,13 +222,16 @@ DECLARE @OrgName NVARCHAR(200);
 DECLARE @OrgDbName NVARCHAR(200);
 DECLARE @SQL NVARCHAR(MAX);
 DECLARE @SQL2 NVARCHAR(MAX);
+DECLARE @OrgStartUtc DATETIME2(7);
+DECLARE @OrgElapsedSeconds INT;
+DECLARE @LogMessage NVARCHAR(4000);
 
 DECLARE org_cursor CURSOR FOR
 SELECT organization_name, organization_db
 FROM gfwpro.dbo.Organizations
 WHERE organization_status_id = 2
   AND organization_db IS NOT NULL
-  AND LTRIM(RTRIM(organization_db)) <> N'';
+    AND LTRIM(RTRIM(organization_db)) <> N'';
 
 OPEN org_cursor;
 FETCH NEXT FROM org_cursor INTO @OrgName, @OrgDbName;
@@ -234,6 +239,10 @@ FETCH NEXT FROM org_cursor INTO @OrgName, @OrgDbName;
 WHILE @@FETCH_STATUS = 0
 BEGIN
     BEGIN TRY
+    SET @OrgStartUtc = SYSUTCDATETIME();
+    SET @LogMessage = N'Started org: ' + @OrgName + N' (' + @OrgDbName + N') at ' + CONVERT(NVARCHAR(19), @OrgStartUtc, 120) + N' UTC';
+    RAISERROR(N'%s', 10, 1, @LogMessage) WITH NOWAIT;
+
         -- Batch 1: add columns. Must be a separate sp_executesql call so SQL Server
         -- compiles Batch 2 only after the columns already exist in the schema.
         SET @SQL = N'
@@ -256,81 +265,138 @@ IF COL_LENGTH(''dbo.Users'', ''language'') IS NULL
         SET @SQL2 = N'
 USE ' + QUOTENAME(@OrgDbName) + N';
 
-;WITH OrgCountry AS
-(
-    SELECT TOP (1)
-        LastSegment =
-            CASE
-                WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
-                WHEN CHARINDEX('','', ap.organization_address) > 0 THEN
-                    NULLIF(LTRIM(RTRIM(RIGHT(ap.organization_address, CHARINDEX('','', REVERSE(ap.organization_address)) - 1))), N'''')
-                ELSE NULLIF(LTRIM(RTRIM(ap.organization_address)), N'''')
-            END,
-        PreviousSegment =
-            CASE
-                WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
-                WHEN CHARINDEX('','', ap.organization_address) = 0 THEN NULL
-                ELSE
-                    LTRIM(RTRIM(
-                        CASE
-                            WHEN CHARINDEX('','', REVERSE(LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))))) > 0
-                                THEN RIGHT(
-                                    LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))),
-                                    CHARINDEX('','', REVERSE(LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))))) - 1
-                                )
-                            ELSE LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address)))
-                        END
-                    ))
-            END
-    FROM dbo.AccountProfile ap
-    ORDER BY ap.id DESC
-)
-UPDATE u
-SET
-    -- Keep the existing country only when it is already a known valid country.
-    -- If it is NULL, empty, or an unrecognised value (e.g. a street address),
-    -- replace it with the candidate derived from the org address segments.
-    [country] = CASE
-        WHEN clmExisting.CountryName IS NOT NULL THEN u.[country]
-        ELSE resolved.CandidateCountry
-    END,
-    -- Backfill language when empty: if country is valid, use that country's map;
-    -- otherwise use the resolved candidate country map; default to EN when needed.
-    [language] = CASE
-        WHEN NULLIF(LTRIM(RTRIM(u.[language])), N'''') IS NOT NULL THEN u.[language]
-        WHEN clmExisting.CountryName IS NOT NULL THEN COALESCE(clmExisting.LanguageCode, N''EN'')
-        ELSE COALESCE(clm.LanguageCode, N''EN'')
-    END
-FROM dbo.Users u
-CROSS JOIN OrgCountry oc
--- Validate the currently stored country value against the known country map.
--- CI_AI (Case Insensitive and Accent Insensitive) collation ensures matching is case- and accent-insensitive regardless
--- of the org database''s own collation setting.
-LEFT JOIN #CountryLanguageMap clmExisting ON clmExisting.CountryName = NULLIF(LTRIM(RTRIM(u.[country])), N'''') COLLATE Latin1_General_CI_AI
-LEFT JOIN #CountryLanguageMap clmLast ON clmLast.CountryName = oc.LastSegment COLLATE Latin1_General_CI_AI
-LEFT JOIN #CountryLanguageMap clmPrev ON clmPrev.CountryName = oc.PreviousSegment COLLATE Latin1_General_CI_AI
-CROSS APPLY
-(
-    -- Only use a segment as the country value when it actually matches a known
-    -- country in the map. If neither segment matches, leave the country as NULL
-    -- rather than storing a street address or postal code.
-    SELECT CandidateCountry =
-        CASE
-            WHEN clmLast.CountryName IS NOT NULL THEN oc.LastSegment
-            WHEN clmPrev.CountryName IS NOT NULL THEN oc.PreviousSegment
-            ELSE NULL
+DECLARE @BatchSize INT = 1000;
+DECLARE @LastUserId INT = 0;
+DECLARE @NextLastUserId INT;
+DECLARE @RowsAffected INT;
+DECLARE @BatchNo INT = 0;
+DECLARE @TotalRowsAffected INT = 0;
+DECLARE @BatchMessage NVARCHAR(400);
+
+WHILE 1 = 1
+BEGIN
+    SELECT @NextLastUserId = MAX(src.id)
+    FROM
+    (
+        SELECT TOP (@BatchSize) u.id
+        FROM dbo.Users u
+        WHERE u.is_system_user = 0
+          AND u.id > @LastUserId
+        ORDER BY u.id
+    ) src;
+
+    IF @NextLastUserId IS NULL
+        BREAK;
+
+    ;WITH OrgCountry AS
+    (
+        SELECT TOP (1)
+            LastSegment =
+                CASE
+                    WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
+                    WHEN CHARINDEX('','', ap.organization_address) > 0 THEN
+                        NULLIF(LTRIM(RTRIM(RIGHT(ap.organization_address, CHARINDEX('','', REVERSE(ap.organization_address)) - 1))), N'''')
+                    ELSE NULLIF(LTRIM(RTRIM(ap.organization_address)), N'''')
+                END,
+            PreviousSegment =
+                CASE
+                    WHEN ap.organization_address IS NULL OR LTRIM(RTRIM(ap.organization_address)) = N'''' THEN NULL
+                    WHEN CHARINDEX('','', ap.organization_address) = 0 THEN NULL
+                    ELSE
+                        LTRIM(RTRIM(
+                            CASE
+                                WHEN CHARINDEX('','', REVERSE(LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))))) > 0
+                                    THEN RIGHT(
+                                        LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))),
+                                        CHARINDEX('','', REVERSE(LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address))))) - 1
+                                    )
+                                ELSE LEFT(ap.organization_address, LEN(ap.organization_address) - CHARINDEX('','', REVERSE(ap.organization_address)))
+                            END
+                        ))
+                END
+        FROM dbo.AccountProfile ap
+        ORDER BY ap.id DESC
+    ),
+    BatchUsers AS
+    (
+        SELECT TOP (@BatchSize) u.id
+        FROM dbo.Users u
+        WHERE u.is_system_user = 0
+          AND u.id > @LastUserId
+        ORDER BY u.id
+    )
+    UPDATE u
+    SET
+        -- Keep the existing country only when it is already a known valid country.
+        -- If it is NULL, empty, or an unrecognised value (e.g. a street address),
+        -- replace it with the candidate derived from the org address segments.
+        [country] = CASE
+            WHEN clmExisting.CountryName IS NOT NULL THEN u.[country]
+            ELSE resolved.CandidateCountry
+        END,
+        -- Backfill language when empty: if country is valid, use that country''s map;
+        -- otherwise use the resolved candidate country map; default to EN when needed.
+        [language] = CASE
+            WHEN NULLIF(LTRIM(RTRIM(u.[language])), N'''') IS NOT NULL THEN u.[language]
+            WHEN clmExisting.CountryName IS NOT NULL THEN COALESCE(clmExisting.LanguageCode, N''EN'')
+            ELSE COALESCE(clm.LanguageCode, N''EN'')
         END
-) resolved
-LEFT JOIN #CountryLanguageMap clm ON clm.CountryName = resolved.CandidateCountry
-WHERE u.is_system_user = 0;
+    FROM dbo.Users u
+    INNER JOIN BatchUsers bu ON bu.id = u.id
+    CROSS JOIN OrgCountry oc
+    -- Validate the currently stored country value against the known country map.
+    -- CI_AI (Case Insensitive and Accent Insensitive) collation ensures matching is case- and accent-insensitive regardless
+    -- of the org database''s own collation setting.
+    LEFT JOIN #CountryLanguageMap clmExisting ON clmExisting.CountryName = NULLIF(LTRIM(RTRIM(u.[country])), N'''') COLLATE Latin1_General_CI_AI
+    LEFT JOIN #CountryLanguageMap clmLast ON clmLast.CountryName = oc.LastSegment COLLATE Latin1_General_CI_AI
+    LEFT JOIN #CountryLanguageMap clmPrev ON clmPrev.CountryName = oc.PreviousSegment COLLATE Latin1_General_CI_AI
+    CROSS APPLY
+    (
+        -- Only use a segment as the country value when it actually matches a known
+        -- country in the map. If neither segment matches, leave the country as NULL
+        -- rather than storing a street address or postal code.
+        SELECT CandidateCountry =
+            CASE
+                WHEN clmLast.CountryName IS NOT NULL THEN oc.LastSegment
+                WHEN clmPrev.CountryName IS NOT NULL THEN oc.PreviousSegment
+                ELSE NULL
+            END
+    ) resolved
+    LEFT JOIN #CountryLanguageMap clm ON clm.CountryName = resolved.CandidateCountry;
+
+    SET @RowsAffected = @@ROWCOUNT;
+    SET @BatchNo = @BatchNo + 1;
+    SET @TotalRowsAffected = @TotalRowsAffected + @RowsAffected;
+
+    SET @BatchMessage = N''  Batch '' + CAST(@BatchNo AS NVARCHAR(20))
+        + N'': users.id <= '' + CAST(@NextLastUserId AS NVARCHAR(20))
+        + N'', rows affected = '' + CAST(@RowsAffected AS NVARCHAR(20));
+    RAISERROR(N''%s'', 10, 1, @BatchMessage) WITH NOWAIT;
+
+    SET @LastUserId = @NextLastUserId;
+END;
+
+SET @BatchMessage = N''  Total rows affected in org = '' + CAST(@TotalRowsAffected AS NVARCHAR(20));
+RAISERROR(N''%s'', 10, 1, @BatchMessage) WITH NOWAIT;
 ';
 
         EXEC sp_executesql @SQL2;
-        PRINT N'Updated user table for org: ' + @OrgName + N' (' + @OrgDbName + N')';
+
+        SET @OrgElapsedSeconds = CASE
+            WHEN DATEDIFF(SECOND, @OrgStartUtc, SYSUTCDATETIME()) < 0 THEN 0
+            ELSE DATEDIFF(SECOND, @OrgStartUtc, SYSUTCDATETIME())
+        END;
+        SET @LogMessage = N'Updated user table for org: ' + @OrgName + N' (' + @OrgDbName + N')';
+        RAISERROR(N'%s', 10, 1, @LogMessage) WITH NOWAIT;
+        SET @LogMessage = N'Elapsed for org: ' + CAST(@OrgElapsedSeconds AS NVARCHAR(20)) + N' sec ('
+            + CAST(CAST(@OrgElapsedSeconds / 60.0 AS DECIMAL(10,2)) AS NVARCHAR(20)) + N' min)';
+        RAISERROR(N'%s', 10, 1, @LogMessage) WITH NOWAIT;
     END TRY
     BEGIN CATCH
-        PRINT N'ERROR updating organization: ' + @OrgName + N' (' + ISNULL(@OrgDbName, N'NULL') + N')';
-        PRINT N'Error: ' + ERROR_MESSAGE();
+        SET @LogMessage = N'ERROR updating organization: ' + @OrgName + N' (' + ISNULL(@OrgDbName, N'NULL') + N')';
+        RAISERROR(N'%s', 10, 1, @LogMessage) WITH NOWAIT;
+        SET @LogMessage = N'Error: ' + ERROR_MESSAGE();
+        RAISERROR(N'%s', 10, 1, @LogMessage) WITH NOWAIT;
     END CATCH;
 
     FETCH NEXT FROM org_cursor INTO @OrgName, @OrgDbName;
@@ -339,6 +405,6 @@ END
 CLOSE org_cursor;
 DEALLOCATE org_cursor;
 
-PRINT N'========================================';
-PRINT N'GPV-5346 migration completed';
-PRINT N'========================================';
+RAISERROR(N'========================================', 10, 1) WITH NOWAIT;
+RAISERROR(N'GPV-5346 migration completed', 10, 1) WITH NOWAIT;
+RAISERROR(N'========================================', 10, 1) WITH NOWAIT;

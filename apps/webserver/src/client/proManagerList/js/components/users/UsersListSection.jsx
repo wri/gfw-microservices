@@ -146,6 +146,10 @@ function UsersListSection({ isLoading, setIsLoading }) {
     return sortedUser;
   };
 
+  const exportUsers = () => {
+    // TODO GPV-5430: Wire/connect users list export functionality to backend route and implement error handling
+  };
+
   const getUserLists = () => {
     const filteredUsers = users.filter((e) => {
       return (
@@ -171,6 +175,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
           usersList={getUserLists()}
           sortUserTable={sortUserTable}
           searchUsers={searchUsers}
+          exportUsers={exportUsers}
         />
       )}
     </>

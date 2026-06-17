@@ -15,6 +15,7 @@ const pageOptions = {
 
 const newEmptyUser = {
   users: [],
+  currentAccount: {},
   userInfo: {},
   classifications: [],
   commodities: [],
@@ -55,6 +56,7 @@ function App() {
 
   const {
     users,
+    currentAccount,
     userInfo,
     classifications,
     commodities,
@@ -81,6 +83,7 @@ function App() {
         <Page links={pageOptions.links} active="profile">
           <UserProfile
             users={users}
+            currentAccount={currentAccount}
             userInfo={userInfo}
             userOnly={users.length === 0}
             classificationsData={classifications}

@@ -14,6 +14,11 @@ import {
 import { USER_STATUS, USER_STATUS_LABELS } from '../../../../config/env/userStatuses.constants';
 
 import { profilePage } from '../../../common/js/config';
+import {
+  LANGUAGE_OPTIONS,
+  getDefaultLanguageForCountry,
+  normalizeCountryToken,
+} from '../../../common/js/constants/userLanguage.constants';
 import * as userProfileService from '../services/userProfileService.ts';
 import { Link, PillButton } from '../../../components';
 import GfwSelect from '../../../common/js/components/GfwSelect';
@@ -64,15 +69,32 @@ const AUTH_PREFERENCE = {
   PASSWORD: 2,
 };
 
-const LANGUAGE_OPTIONS = [
-  { label: 'English', value: 'en' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Portuguese', value: 'pt' },
-];
+const getOrgCountry = (currentAccount) => {
+  const orgAddress = currentAccount?.organization_address;
+  const addressTokens = String(orgAddress)
+    .split(',')
+    .map((token) => normalizeCountryToken(token))
+    .filter(Boolean);
+
+  return addressTokens.length ? addressTokens[addressTokens.length - 1] : '';
+};
+
+const getDefaultLanguageFromOrgCountry = (currentAccount) => {
+  const orgCountry = getOrgCountry(currentAccount);
+  return getDefaultLanguageForCountry(orgCountry);
+};
 
 export default function UserProfile(props) {
-  const { titlesData, currentUser, geographiesData, commoditiesData, userInfo, users, userOnly } =
-    props;
+  const {
+    titlesData,
+    currentUser,
+    currentAccount,
+    geographiesData,
+    commoditiesData,
+    userInfo,
+    users,
+    userOnly,
+  } = props;
 
   // Helper to validate a single field
   const validateField = (fieldValue, { validations, mandatoryChecks, text }) => {
@@ -86,6 +108,9 @@ export default function UserProfile(props) {
 
   // Initial derived values
   const newUserInitial = !currentUser.email;
+  const defaultLanguage = getDefaultLanguageFromOrgCountry(currentAccount);
+  const initialLanguage = (currentUser.language || (newUserInitial ? defaultLanguage : 'en'))
+    .toLowerCase();
   const geographyArray = parseMultiIds(currentUser.user_geography_ids);
   const geographiesInitial =
     geographiesData && geographiesData.length
@@ -136,10 +161,9 @@ export default function UserProfile(props) {
     secret: '',
     secret_url: '',
     updating: false,
-    preferred_language: (currentUser.language ?? 'en').toLowerCase(),
+    preferred_language: initialLanguage,
     selectedDropdownLanguageOption:
-      LANGUAGE_OPTIONS.find((l) => l.value === (currentUser.language ?? 'en').toLowerCase()) ??
-      LANGUAGE_OPTIONS[0],
+      LANGUAGE_OPTIONS.find((option) => option.value === initialLanguage) || LANGUAGE_OPTIONS[0],
   }));
 
   // Small helper to update state

@@ -21,7 +21,7 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
-import { getListOfUsers } from '@wri-monorepos/sql';
+import { getListOfUsers, getAccountProfile } from '@wri-monorepos/sql';
 import config from '../config';
 
 const AWSSES = require('../privateutils/ses.utils');
@@ -302,7 +302,7 @@ export const getAccountProfile = (req) => {
     ];
     // Get Account Profile.
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetAccountProfile', params)
+      .executeOrganizationQuery(req, getAccountProfile, params)
       .then((recordsets) => {
         resolve(recordsets[0]);
       })

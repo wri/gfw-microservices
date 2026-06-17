@@ -64,6 +64,12 @@ const AUTH_PREFERENCE = {
   PASSWORD: 2,
 };
 
+const LANGUAGE_OPTIONS = [
+  { label: 'English', value: 'en' },
+  { label: 'Spanish', value: 'es' },
+  { label: 'Portuguese', value: 'pt' },
+];
+
 export default function UserProfile(props) {
   const { titlesData, currentUser, geographiesData, commoditiesData, userInfo, users, userOnly } =
     props;
@@ -130,6 +136,10 @@ export default function UserProfile(props) {
     secret: '',
     secret_url: '',
     updating: false,
+    preferred_language: (currentUser.language ?? 'en').toLowerCase(),
+    selectedDropdownLanguageOption:
+      LANGUAGE_OPTIONS.find((l) => l.value === (currentUser.language ?? 'en').toLowerCase()) ??
+      LANGUAGE_OPTIONS[0],
   }));
 
   // Small helper to update state
@@ -297,6 +307,7 @@ export default function UserProfile(props) {
       access_level_id: state.access_level_id,
       enableAlerts: state.enableAlerts,
       auth_preference_id: state.auth_preference_id,
+      preferred_language: state.preferred_language,
       geographies: (state.geographies || []).map((g) => g.value),
       commodities: (state.commodities || []).map((c) => c.value),
     };
@@ -357,6 +368,7 @@ export default function UserProfile(props) {
         user_geography_ids: (geographies || []).map((g) => g.value).join(','),
         user_id: userId,
         viirs_email_frequency: 0,
+        preferred_language: state.preferred_language,
       };
 
       if (newUser) {
@@ -440,6 +452,16 @@ export default function UserProfile(props) {
     [state, updateState]
   );
 
+  const handleDropdownLanguageSelection = useCallback(
+    (evt) => {
+      const selectedDropdownLanguageOption = LANGUAGE_OPTIONS.find(
+        (option) => option.value === evt.value
+      );
+      updateState({ selectedDropdownLanguageOption, preferred_language: evt.value });
+    },
+    [updateState]
+  );
+
   // Multi select handlers
   const handleGeographiesChange = useCallback(
     (results) => updateState({ geographies: results }),
@@ -476,6 +498,7 @@ export default function UserProfile(props) {
     selectedDropdownTitleOption,
     dropdownTitleOptions: dropdownTitleOptionsState,
     dropdownAccessLevelOptions,
+    selectedDropdownLanguageOption,
   } = state;
 
   const dialogContent =
@@ -657,6 +680,18 @@ export default function UserProfile(props) {
               onChange={(evt) => handleDropdownTitleSelection(evt)}
               id="title-select"
               required
+            />
+          </div>
+
+          <div className="input-field__block-container">
+            <label htmlFor="language-select" className="block-label">
+              Preferred Language
+            </label>
+            <GfwSelect
+              value={selectedDropdownLanguageOption}
+              options={LANGUAGE_OPTIONS}
+              onChange={(evt) => handleDropdownLanguageSelection(evt)}
+              id="language-select"
             />
           </div>
 

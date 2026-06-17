@@ -45,6 +45,7 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
 
 import { USER_STATUS } from '../env/userStatuses.constants';
 import { UserAccessLevel } from '@wri-monorepos/constants';
+import { updateUser as updateUserQuery } from '@wri-monorepos/sql';
 
 const lstTitles = [
   { id: 1, title: 'Analyst' },
@@ -538,6 +539,7 @@ export const updateUserInfo = ({
   arr_user_geography_ids = [],
   arr_user_commodity_ids = [],
   user_auth_preference_id = 0,
+  user_preferred_language = null,
   loggedUserAccessLevelId,
 }) => {
   return new Promise((resolve, reject) => {
@@ -553,6 +555,7 @@ export const updateUserInfo = ({
       { field: 'email_subscription', type: sql.Bit, value: email_subscription },
       { field: 'commodity_ids', type: sql.VarChar(200), value: arr_user_commodity_ids.toString() },
       { field: 'geography_ids', type: sql.VarChar(200), value: arr_user_geography_ids.toString() },
+      { field: 'language', type: sql.NChar(2), value: user_preferred_language },
     ];
     const isUserAdmin = loggedUserAccessLevelId === UserAccessLevel.ADMIN;
 
@@ -563,7 +566,7 @@ export const updateUserInfo = ({
     });
 
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspUpdateUser', params)
+      .executeOrganizationQuery(req, updateUserQuery, params)
       .then(() => {
         // Need to update user authentication preference - this exists in system so must do separately
         const parameters = [

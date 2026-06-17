@@ -15,6 +15,12 @@ const STATUS_INACTIVE_ID = 3;
 const DEFAULT_ACCESS_LEVEL = 3;
 const DEFAULT_STATUS_ID = 1;
 const DEFAULT_TITLE_ID = 1;
+const DEFAULT_LANGUAGE = 'en';
+const LANGUAGE_OPTIONS = [
+  { id: 'en', name: 'English' },
+  { id: 'es', name: 'Spanish' },
+  { id: 'pt', name: 'Portuguese' },
+];
 
 export default function UserProfile({
   currentUser,
@@ -63,6 +69,8 @@ export default function UserProfile({
     currentUser.gran_chaco_email_frequency || 0
   );
   const [enableAlerts, setEnableAlerts] = useState(currentUser.email_subscription || false);
+  const userLanguage = (currentUser.preferred_language || DEFAULT_LANGUAGE).toLowerCase();
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
@@ -340,6 +348,8 @@ export default function UserProfile({
   const commOptions = commoditiesData.map(createMultiSelectOption('commmodity_name'));
   const geogOptions = geographiesData.map(createMultiSelectOption('geography_name'));
   const titleOptions = titlesData.map(createSelectOption('title'));
+  const preferredLanguageLabel =
+    LANGUAGE_OPTIONS.find((option) => option.id === userLanguage)?.name || userLanguage;
 
   return (
     <div className="profile-body">
@@ -476,6 +486,12 @@ export default function UserProfile({
                   >
                     {titleOptions}
                   </select>
+                </div>
+              </div>
+              <div className="flex-grid-column">
+                <div className="col flex-grid-column">
+                  <span className="profile-label">Preferred Language</span>
+                  <input value={preferredLanguageLabel} disabled={true} name="user_language" />
                 </div>
               </div>
 

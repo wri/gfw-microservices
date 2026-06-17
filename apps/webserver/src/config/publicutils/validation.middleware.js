@@ -88,6 +88,12 @@ const updateUserSchema = z
       .nonnegative('Auth preference ID must be a non-negative integer')
       .optional()
       .default(0),
+    preferred_language: z
+      .string()
+      .trim()
+      .regex(/^(en|es|pt)$/i, 'Preferred language must be one of: en, es, pt')
+      .optional()
+      .nullable(),
   })
   .strict(); // Reject any unknown keys
 

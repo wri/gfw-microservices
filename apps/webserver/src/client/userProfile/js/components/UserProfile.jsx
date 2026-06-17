@@ -109,8 +109,9 @@ export default function UserProfile(props) {
   // Initial derived values
   const newUserInitial = !currentUser.email;
   const defaultLanguage = getDefaultLanguageFromOrgCountry(currentAccount);
-  const initialLanguage = (currentUser.language || (newUserInitial ? defaultLanguage : 'en'))
-    .toLowerCase();
+  const initialLanguage = (
+    currentUser.language || (newUserInitial ? defaultLanguage : 'en')
+  ).toLowerCase();
   const geographyArray = parseMultiIds(currentUser.user_geography_ids);
   const geographiesInitial =
     geographiesData && geographiesData.length

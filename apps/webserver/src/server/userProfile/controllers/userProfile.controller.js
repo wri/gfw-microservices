@@ -123,7 +123,8 @@ export const createNewUserProfile = (req, res) => {
         const [userInfo, accountProfile] = results;
         const enhancedUserInfo = {
           ...userInfo,
-          organization_name: accountProfile?.organization_name || req.session.organization_name || '',
+          organization_name:
+            accountProfile?.organization_name || req.session.organization_name || '',
           organization_address: accountProfile?.organization_address || '',
         };
 

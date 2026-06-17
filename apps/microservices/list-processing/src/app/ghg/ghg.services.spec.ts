@@ -1,4 +1,4 @@
-import { ClientStoreConnection, GHGAnalyses, Lists, SQLUtils } from '@wri-monorepos/sql';
+import { ClientStoreConnection, GHGAnalyses, Lists } from '@wri-monorepos/sql';
 import { GHGService } from './ghg.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
@@ -77,91 +77,95 @@ describe('GHG - service', () => {
     });
   });
 
+  const buildConnectionMock = (rawRows: unknown[], list = {}) => {
+    const queryBuilder = {
+      innerJoin: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      orderBy: jest.fn().mockReturnThis(),
+      offset: jest.fn().mockReturnThis(),
+      limit: jest.fn().mockReturnThis(),
+      getRawMany: jest.fn().mockResolvedValue(rawRows),
+    };
+    const getConnection = jest.fn().mockResolvedValue({
+      getRepository: (entity: unknown) =>
+        entity === Lists
+          ? {
+              findOne: () => ({
+                listName: 'mockedListName',
+                listTableName: 'mock_list_table',
+                Commodity: 'COCOA',
+                ...list,
+              }),
+            }
+          : { createQueryBuilder: () => queryBuilder },
+      options: { database: 'mock_db' },
+    });
+    return { getConnection, queryBuilder };
+  };
+
   it(`Should return GHG Data Per Page`, async () => {
-    const mockData = [
+    const rawRows = [
       {
         listId: 1,
-        listName: 'mockedListName',
-        locationId: 2,
+        country: 'Mock Country',
+        state: 'Mock State',
+        subState: 'Mock SubState',
+        locationName: 'brazil2',
         totalAreaHa: 1.2921,
         statusCode: 2,
         locationError: null,
-        commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
         efCo2ByYear: '{}',
         efCh4ByYear: '{}',
         efN2oByYear: '{}',
+        emissionsCo2Yearly: '{"2021":1}',
+        emissionsCh4Yearly: '{"2021":2}',
+        emissionsN2oYearly: '{"2021":3}',
+        emissionsYearly: '{"2021":6}',
+        production: 10.5,
+        weightedAvgYield: 2.5,
       },
       {
         listId: 1,
-        listName: 'mockedListName',
-        locationId: 3,
+        country: 'Mock Country',
+        state: 'Mock State',
+        subState: 'Mock SubState',
+        locationName: 'arg3 landmark',
         totalAreaHa: 1.1921,
         statusCode: 2,
         locationError: null,
-        commodity: 'COCOA',
         emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
         efCo2ByYear: '{}',
         efCh4ByYear: '{}',
         efN2oByYear: '{}',
+        emissionsCo2Yearly: '{"2021":4}',
+        emissionsCh4Yearly: '{"2021":5}',
+        emissionsN2oYearly: '{"2021":6}',
+        emissionsYearly: '{"2021":15}',
+        production: 8.1,
+        weightedAvgYield: 1.9,
       },
     ];
     const listId = 1;
-    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
-      getRepository: () => ({
-        findAndCount: () => [mockData, mockData.length],
-        findOne: () => ({
-          listName: 'mockedListName',
-          Commodity: 'COCOA',
-          country: 'Mock Country',
-          state: 'Mock State',
-          subState: 'Mock SubState',
-        }),
-      }),
-      options: {
-        database: 'mock_db',
-      },
-    });
+    const { getConnection, queryBuilder } = buildConnectionMock(rawRows);
+    clientStoreConnection.getConnection = getConnection;
 
-    jest.spyOn(SQLUtils, 'queryDB').mockResolvedValueOnce([
-      {
-        efCh4ByYear: '{}',
-        efCo2ByYear: '{}',
-        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.3258}',
-        Commodity: 'COCOA',
-        listId: 1,
-        listName: 'mockedListName',
-        country: 'Mock Country',
-        state: 'Mock State',
-        subState: 'Mock SubState',
-        locationError: null,
-        locationName: 'brazil2',
-        efN2oByYear: '{}',
-        statusCode: 2,
-        totalAreaHa: 1.2921,
-      },
-      {
-        efCh4ByYear: '{}',
-        efCo2ByYear: '{}',
-        emissionsFactorByYear: '{"2021":0.5839,"2022":0.1825,"2023":0.4258}',
-        Commodity: 'COCOA',
-        listId: 1,
-        listName: 'mockedListName',
-        country: 'Mock Country',
-        state: 'Mock State',
-        subState: 'Mock SubState',
-        locationError: null,
-        locationName: 'arg3 landmark',
-        efN2oByYear: '{}',
-        statusCode: 2,
-        totalAreaHa: 1.1921,
-      },
-    ]);
     const response = await ghgService.getGHGDataPerPage(listId, {
       clientDatabase: 'mockDatabase',
       rowsPerPage: 2,
       pageNumber: 0,
     });
+
+    expect(queryBuilder.innerJoin).toHaveBeenCalledWith(
+      '(SELECT * FROM dbo.[mock_list_table])',
+      'lt',
+      'lt.location_id = ghg.location_id'
+    );
+    expect(queryBuilder.offset).toHaveBeenCalledWith(0);
+    expect(queryBuilder.limit).toHaveBeenCalledWith(2);
     expect(response).toEqual([
       {
         listId: listId,
@@ -178,6 +182,12 @@ describe('GHG - service', () => {
         ch4EmissionsFactor: '{}',
         co2EmissionsFactor: '{}',
         n2oEmissionsFactor: '{}',
+        emissionsCo2Yearly: '{"2021":1}',
+        emissionsCh4Yearly: '{"2021":2}',
+        emissionsN2oYearly: '{"2021":3}',
+        emissionsYearly: '{"2021":6}',
+        production: 10.5,
+        weightedAvgYield: 2.5,
       },
       {
         listId: 1,
@@ -194,26 +204,38 @@ describe('GHG - service', () => {
         ch4EmissionsFactor: '{}',
         co2EmissionsFactor: '{}',
         n2oEmissionsFactor: '{}',
+        emissionsCo2Yearly: '{"2021":4}',
+        emissionsCh4Yearly: '{"2021":5}',
+        emissionsN2oYearly: '{"2021":6}',
+        emissionsYearly: '{"2021":15}',
+        production: 8.1,
+        weightedAvgYield: 1.9,
       },
     ]);
   });
   it(`Should not find GHG data for an inexistent ID`, async () => {
     const listId = 2;
-    jest.spyOn(SQLUtils, 'queryDB').mockResolvedValueOnce([]);
-    clientStoreConnection.getConnection = jest.fn().mockResolvedValueOnce({
-      getRepository: () => ({
-        findAndCount: () => [[], 0],
-        findOne: () => ({ listName: 'mockedListName', Commodity: 'COCOA' }),
-      }),
-      options: {
-        database: 'mock_db',
-      },
-    });
+    const { getConnection } = buildConnectionMock([]);
+    clientStoreConnection.getConnection = getConnection;
     const response = await ghgService.getGHGDataPerPage(listId, {
       clientDatabase: 'mockDatabase',
       rowsPerPage: 2,
       pageNumber: 0,
     });
     expect(response).toEqual([]);
+  });
+  it(`Should return empty data when the list has no list_table_name`, async () => {
+    const listId = 3;
+    const { getConnection, queryBuilder } = buildConnectionMock([], {
+      listTableName: null,
+    });
+    clientStoreConnection.getConnection = getConnection;
+    const response = await ghgService.getGHGDataPerPage(listId, {
+      clientDatabase: 'mockDatabase',
+      rowsPerPage: 2,
+      pageNumber: 0,
+    });
+    expect(response).toEqual([]);
+    expect(queryBuilder.getRawMany).not.toHaveBeenCalled();
   });
 });

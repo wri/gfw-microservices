@@ -1,13 +1,10 @@
 import {
   ClientStoreConnection,
-  getPaginatedGHGAnalysisLocationLevel,
   GHGAnalyses,
   GHGAnalysisDataByListId,
   Lists,
-  SQLUtils,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
-import * as sql from 'mssql';
 
 interface GHGAnalysisData {
   listId: number;
@@ -63,69 +60,77 @@ export class GHGService {
 
     const connection = await this.clientStoreConnection.getConnection(clientDatabase);
     try {
-      const ListRepository = await connection.getRepository(Lists);
-      const { listName, Commodity } = await ListRepository.findOne({
+      const listRepository = await connection.getRepository(Lists);
+      const { listName, listTableName, Commodity } = await listRepository.findOne({
         where: { id: listId },
       });
 
-      const parameters = [
-        { field: 'listId', type: sql.Int, value: listId },
-        { field: 'rowsOfPage', type: sql.Int, value: rowsPerPage },
-        { field: 'pageNumber', type: sql.Int, value: pageNumber },
-      ];
+      if (!listTableName) {
+        this.logger.error(`listId: ${listId} has no list_table_name`);
+        return [];
+      }
 
-      const data = await SQLUtils.queryDB<GHGAnalysisDataByListId[]>(
-        clientDatabase,
-        getPaginatedGHGAnalysisLocationLevel,
-        parameters
-      );
+      // The location-level columns live on a per-list table whose name is stored
+      // in Lists.list_table_name, so it has to be joined by its raw table name.
+      // Wrapping in a subquery avoids TypeORM misinterpreting "dbo" as an alias.
+      // Double any closing bracket so the value cannot break out of the quoted
+      // identifier (SQL injection guard for the interpolated table name).
+      const safeListTableName = listTableName.replace(/]/g, ']]');
+      const data = await connection
+        .getRepository(GHGAnalyses)
+        .createQueryBuilder('ghg')
+        .innerJoin(
+          `(SELECT * FROM dbo.[${safeListTableName}])`,
+          'lt',
+          'lt.location_id = ghg.location_id'
+        )
+        .select('ghg.listId', 'listId')
+        .addSelect('lt.Country', 'country')
+        .addSelect('lt.State', 'state')
+        .addSelect('lt.[Sub State]', 'subState')
+        .addSelect('lt.[Location Name]', 'locationName')
+        .addSelect('ghg.totalAreaHa', 'totalAreaHa')
+        .addSelect('ghg.statusCode', 'statusCode')
+        .addSelect('ghg.locationError', 'locationError')
+        .addSelect('ghg.emissionsFactorByYear', 'emissionsFactorByYear')
+        .addSelect('ghg.efCo2ByYear', 'efCo2ByYear')
+        .addSelect('ghg.efCh4ByYear', 'efCh4ByYear')
+        .addSelect('ghg.efN2oByYear', 'efN2oByYear')
+        .addSelect('ghg.emissionsCo2Yearly', 'emissionsCo2Yearly')
+        .addSelect('ghg.emissionsCh4Yearly', 'emissionsCh4Yearly')
+        .addSelect('ghg.emissionsN2oYearly', 'emissionsN2oYearly')
+        .addSelect('ghg.emissionsYearly', 'emissionsYearly')
+        .addSelect('ghg.production', 'production')
+        .addSelect('ghg.weightedAvgYield', 'weightedAvgYield')
+        .where('ghg.locationId > 0')
+        .andWhere('ghg.listId = :listId', { listId })
+        .orderBy('ghg.locationId', 'ASC')
+        .offset(pageNumber * rowsPerPage)
+        .limit(rowsPerPage)
+        .getRawMany<GHGAnalysisDataByListId>();
 
-      return await Promise.all(
-        data.map(async (item) => {
-          const {
-            listId,
-            totalAreaHa,
-            statusCode,
-            locationError,
-            emissionsFactorByYear,
-            efCo2ByYear,
-            efCh4ByYear,
-            efN2oByYear,
-            locationName,
-            country,
-            state,
-            subState,
-            emissionsCo2Yearly,
-            emissionsN2oYearly,
-            emissionsCh4Yearly,
-            emissionsYearly,
-            production,
-            weightedAvgYield,
-          } = item;
-          return {
-            listId,
-            listName,
-            country,
-            state,
-            subState,
-            locationName,
-            totalAreaHa,
-            statusCode,
-            locationError,
-            commodity: Commodity,
-            co2EmissionsFactor: efCo2ByYear,
-            ch4EmissionsFactor: efCh4ByYear,
-            n2oEmissionsFactor: efN2oByYear,
-            combinedEmissionsFactor: emissionsFactorByYear,
-            emissionsCh4Yearly,
-            emissionsN2oYearly,
-            emissionsCo2Yearly,
-            emissionsYearly,
-            production,
-            weightedAvgYield,
-          };
-        })
-      );
+      return data.map((item) => ({
+        listId: item.listId,
+        listName,
+        country: item.country,
+        state: item.state,
+        subState: item.subState,
+        locationName: item.locationName,
+        totalAreaHa: item.totalAreaHa,
+        statusCode: item.statusCode,
+        locationError: item.locationError,
+        commodity: Commodity,
+        co2EmissionsFactor: item.efCo2ByYear,
+        ch4EmissionsFactor: item.efCh4ByYear,
+        n2oEmissionsFactor: item.efN2oByYear,
+        combinedEmissionsFactor: item.emissionsFactorByYear,
+        emissionsCh4Yearly: item.emissionsCh4Yearly,
+        emissionsN2oYearly: item.emissionsN2oYearly,
+        emissionsCo2Yearly: item.emissionsCo2Yearly,
+        emissionsYearly: item.emissionsYearly,
+        production: item.production,
+        weightedAvgYield: item.weightedAvgYield,
+      }));
     } catch (e) {
       this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${e}`);
       return [];

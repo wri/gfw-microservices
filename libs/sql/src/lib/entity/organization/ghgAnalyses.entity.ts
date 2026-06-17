@@ -29,4 +29,22 @@ export class GHGAnalyses {
 
   @Column({ name: 'ef_n2o_by_year' })
   efN2oByYear: string;
+
+  @Column({ name: 'emissions_co2_yearly', nullable: true })
+  emissionsCo2Yearly: string;
+
+  @Column({ name: 'emissions_ch4_yearly', nullable: true })
+  emissionsCh4Yearly: string;
+
+  @Column({ name: 'emissions_n2o_yearly', nullable: true })
+  emissionsN2oYearly: string;
+
+  @Column({ name: 'emissions_yearly', nullable: true })
+  emissionsYearly: string;
+
+  @Column({ name: 'production', type: 'float', nullable: true })
+  production: number;
+
+  @Column({ name: 'weighted_avg_yield', type: 'float', nullable: true })
+  weightedAvgYield: number;
 }

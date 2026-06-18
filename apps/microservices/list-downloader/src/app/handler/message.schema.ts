@@ -25,6 +25,7 @@ export enum CSVInputTypes {
   SOUTHEASTASIATC = 'southEastAsiaTCL',
   AFIVC = 'afiVC',
   GHG = 'ghg',
+  PROMANAGERUSERS = 'proManagerUsers',
 }
 
 export const BooleanStringZod = z.preprocess((val) => val === 'true', z.boolean()).default(false);
@@ -130,6 +131,9 @@ export const getSchemaByType = (type: string) => {
       return AlertFieldsFileRequestSchema;
     case CSVInputTypes.ACCOUNTUSERSUSAGE:
       return AccountUsersUsageRequestSchema;
+    case CSVInputTypes.PROMANAGERUSERS:
+      // System-wide users export: only the common fields (type, key, userEmail) are needed.
+      return CommonRequestSchema;
     case CSVInputTypes.ARGENTINA:
     case CSVInputTypes.COLOMBIA:
     case CSVInputTypes.COMMODITYRISKDIAGNOSTICLOCATIONSUMMARY:

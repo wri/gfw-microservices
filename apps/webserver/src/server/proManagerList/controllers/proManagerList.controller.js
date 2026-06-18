@@ -11,6 +11,9 @@ const PolicyManager = require(path.resolve('./config/publicutils/policyManager.u
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
+const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
+
+import { sendMessageToQueue } from '../../downloader';
 
 import {
   getLatestLimits,
@@ -165,6 +168,39 @@ export const proManagerListUsersData = (req, res) => {
       console.log('Pro-manager-list page failed on the server:', error);
       res.status(500).send(error);
     });
+};
+
+/**
+ * @function proManagerListUsersExport
+ * @summary Triggers the asynchronous generation of the Pro Manager users CSV export.
+ *          The file is built by the list-downloader microservice and delivered to the
+ *          requesting user via email. See GPV-5430.
+ * @param {Express.Request} req - Express request object
+ * @param res - Express response object
+ */
+export const proManagerListUsersExport = async (req, res) => {
+  try {
+    const { user_email: userEmail } = req.session;
+
+    const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
+    const fileName = `ProManagerUsers-${currentDate}.csv`;
+
+    const filters = sendMessageToQueue({ userEmail, fileName }, 'proManagerUsers');
+
+    return res.status(201).send({
+      success: true,
+      message: filters,
+    });
+  } catch (error) {
+    logger.error('Error in proManagerListUsersExport', error.stack || error);
+    return res.status(500).send({
+      status: 500,
+      message: {
+        error: 'Internal server error.',
+        success: false,
+      },
+    });
+  }
 };
 
 export const proManagerListUserDetailData = (req, res) => {

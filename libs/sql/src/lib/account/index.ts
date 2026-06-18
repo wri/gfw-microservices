@@ -6,3 +6,4 @@ export * from './getAccountUsersAnalysisUsageExport';
 export * from './getAccountUsersAnalysisUsageExportWithTokenization';
 export * from './getAccountYearlyUsageSinceActivation';
 export * from './getAccountAnalysisUsageByAnalysisType';
+export * from './getProManagerUsersExport';

@@ -55,6 +55,12 @@ module.exports = (app, limiter) => {
   );
 
   app.get(
+    '/pro-manager-list/users/export',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListUsersExport
+  );
+
+  app.get(
     '/pro-manager-list/users/:organizationId/:userId',
     middlewares.checkProManagerAuthentication,
     controller.proManagerListUserDetailData

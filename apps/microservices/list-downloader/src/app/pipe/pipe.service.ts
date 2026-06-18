@@ -4,6 +4,7 @@ import { ListGeneratorService } from './list.generator.service';
 import { BasicFieldsFileRequest, GFWList, ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
+import { ProManagerUsersFileService } from './pro-manager-users.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { ReadmeService } from '../files/readme.service';
 import { createDirectory } from '../shared/file.utils';
@@ -21,6 +22,7 @@ export class PipeService {
     private readonly afiGeneratorService: AfiGeneratorService,
     private readonly listGeneratorService: ListGeneratorService,
     private readonly accountUsersUsageGeneratorService: AccountUsersAnalysisUsageFileService,
+    private readonly proManagerUsersGeneratorService: ProManagerUsersFileService,
     private readonly alertsGeneratorService: AlertsGeneratorService,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly readmeService: ReadmeService,
@@ -91,6 +93,7 @@ export class PipeService {
   private getGeneratorBaseOnType = () => {
     return {
       accountUsersUsage: this.accountUsersUsageGeneratorService,
+      proManagerUsers: this.proManagerUsersGeneratorService,
       afi: this.afiGeneratorService,
       alerts: this.alertsGeneratorService,
       argentina: this.listGeneratorService,

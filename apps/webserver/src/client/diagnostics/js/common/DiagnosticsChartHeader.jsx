@@ -22,7 +22,7 @@ function DiagnosticsChartHeader({
       {downloadId && (
         <DownloadForOfflineIcon
           className="diagnostics-chart-header__download_icon"
-          fontSize="16"
+          sx={{ fontSize: 18 }}
           onClick={() => fireDownload(downloadId)}
         />
       )}

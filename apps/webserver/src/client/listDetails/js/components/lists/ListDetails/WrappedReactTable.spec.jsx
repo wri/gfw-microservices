@@ -78,7 +78,11 @@ describe('WrappedReactTable', () => {
     // Verify ReactTable props
     const reactTableProps = ReactTable.mock.calls[0][0];
     expect(reactTableProps.data).toEqual(mockFilteredLists);
-    expect(reactTableProps.columns).toEqual(mockColumns);
+    // Columns pass through, though sortable ones are wrapped with the sort dropdown.
+    expect(reactTableProps.columns).toHaveLength(mockColumns.length);
+    expect(reactTableProps.columns.map((col) => col.id ?? col.accessor)).toEqual(
+      mockColumns.map((col) => col.id ?? col.accessor)
+    );
     expect(reactTableProps.defaultPageSize).toBe(50);
     expect(reactTableProps.showPagination).toBe(true);
     expect(reactTableProps.manual).toBe(true);

@@ -111,14 +111,17 @@ const getAllColumnNames = (
   } else if (listView === ALERTS) {
     const analysis = columns.alerts_analysis.slice();
 
+    // `_originalHeader` is the pre-wrap header when the column has already been given a
+    // sort dropdown by WrappedReactTable (GPV-3912); fall back to `Header` otherwise.
+    const getColumnLabel = (col) => (col._originalHeader || col.Header)?.()?.props?.label;
     const filteredColumns = analysis.filter((col) => {
       if (forestDataset === forestDataSet.NaturalForestMap) {
-        return col.Header?.()?.props?.label !== columnHeaders.alertsInJrc;
+        return getColumnLabel(col) !== columnHeaders.alertsInJrc;
       }
       if (forestDataset === forestDataSet.JrcForestLoss) {
         return (
-          col.Header?.()?.props?.label !== columnHeaders.alertsInNaturalForest &&
-          col.Header?.()?.props?.label !== columnHeaders.alertsInNonForest
+          getColumnLabel(col) !== columnHeaders.alertsInNaturalForest &&
+          getColumnLabel(col) !== columnHeaders.alertsInNonForest
         );
       }
       return true;

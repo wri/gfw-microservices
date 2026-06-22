@@ -362,7 +362,7 @@ BEGIN
                 ELSE NULL
             END
     ) resolved
-    LEFT JOIN #CountryLanguageMap clm ON clm.CountryName = resolved.CandidateCountry;
+    LEFT JOIN #CountryLanguageMap clm ON clm.CountryName = resolved.CandidateCountry COLLATE Latin1_General_CI_AI;
 
     SET @RowsAffected = @@ROWCOUNT;
     SET @BatchNo = @BatchNo + 1;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import UserProfile from './UserProfile';
+import ManagedUserProfile from './ManagedUserProfile';
 import errorLogger from '../../../../common/js/utils/errorLogger';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 
 function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) {
   const [promanagerData, setPromanagerData] = useState({});
@@ -32,17 +33,25 @@ function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) 
 
   const { classes, commoditiesData, geographiesData, titlesData, selectedUser } = promanagerData;
 
+  console.log(
+    '[UserDetailSection] selectedUser.org_status:',
+    selectedUser?.org_status,
+    '| isReadOnly:',
+    selectedUser ? selectedUser.org_status == ACCOUNT_ORG_STATUSES.INACTIVE : 'no selectedUser yet'
+  );
+
   return (
     <>
       {selectedUser && !isLoading && (
-        <UserProfile
+        <ManagedUserProfile
           userOnly
           classificationsData={classes}
           commoditiesData={commoditiesData}
           geographiesData={geographiesData}
           titlesData={titlesData}
           currentUser={selectedUser}
-          disable={selectedUser.org_status !== 1}
+          // isReadOnly: disables all fields when the organization is inactive (org_status == 3)
+          isReadOnly={selectedUser.org_status == ACCOUNT_ORG_STATUSES.INACTIVE}
         />
       )}
     </>

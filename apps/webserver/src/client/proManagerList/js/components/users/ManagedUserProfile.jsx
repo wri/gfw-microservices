@@ -7,6 +7,7 @@ import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
 import '../../../css/profile.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
+import { LANGUAGE_OPTIONS } from '../../../../common/js/constants/userLanguage.constants';
 
 // Constants
 const TITLE_OTHER_ID = 10;
@@ -15,19 +16,14 @@ const STATUS_INACTIVE_ID = 3;
 const DEFAULT_ACCESS_LEVEL = 3;
 const DEFAULT_STATUS_ID = 1;
 const DEFAULT_TITLE_ID = 1;
-const DEFAULT_LANGUAGE = 'en';
-const LANGUAGE_OPTIONS = [
-  { id: 'en', name: 'English' },
-  { id: 'es', name: 'Spanish' },
-  { id: 'pt', name: 'Portuguese' },
-];
+const DEFAULT_LANGUAGE = 'EN';
 
-export default function UserProfile({
+export default function ManagedUserProfile({
   currentUser,
   geographiesData,
   commoditiesData,
   titlesData,
-  disable,
+  isReadOnly,
   userOnly,
 }) {
   // Initialize geographies and commodities arrays
@@ -69,7 +65,9 @@ export default function UserProfile({
     currentUser.gran_chaco_email_frequency || 0
   );
   const [enableAlerts, setEnableAlerts] = useState(currentUser.email_subscription || false);
-  const userLanguage = (currentUser.preferred_language || DEFAULT_LANGUAGE).toLowerCase();
+  const [preferredLanguage, setPreferredLanguage] = useState(
+    (currentUser.preferred_language || DEFAULT_LANGUAGE).toUpperCase()
+  );
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState('');
@@ -99,6 +97,10 @@ export default function UserProfile({
 
   const updateOther = (evt) => {
     setOtherTitle(evt.target.value);
+  };
+
+  const preferredLanguageChange = (evt) => {
+    setPreferredLanguage(String(evt.target.value || DEFAULT_LANGUAGE).toUpperCase());
   };
 
   const geogChange = (results) => {
@@ -240,6 +242,7 @@ export default function UserProfile({
           phone: phone,
           title: title,
           other_title: otherTitle,
+          preferred_language: preferredLanguage,
           geographies: geoString,
           commodities: commoditiesString,
         }),
@@ -348,8 +351,6 @@ export default function UserProfile({
   const commOptions = commoditiesData.map(createMultiSelectOption('commmodity_name'));
   const geogOptions = geographiesData.map(createMultiSelectOption('geography_name'));
   const titleOptions = titlesData.map(createSelectOption('title'));
-  const preferredLanguageLabel =
-    LANGUAGE_OPTIONS.find((option) => option.id === userLanguage)?.name || userLanguage;
 
   return (
     <div className="profile-body">
@@ -380,7 +381,7 @@ export default function UserProfile({
                 <span className="profile-label">First Name</span>
                 <input
                   value={firstName}
-                  disabled={disable}
+                  disabled={isReadOnly}
                   required
                   id="user_first_name"
                   name="user_first_name"
@@ -393,7 +394,7 @@ export default function UserProfile({
                 <span className="profile-label">Last Name</span>
                 <input
                   value={lastName}
-                  disabled={disable}
+                  disabled={isReadOnly}
                   required
                   id="user_last_name"
                   name="user_last_name"
@@ -406,7 +407,7 @@ export default function UserProfile({
                 <span className="profile-label">E-mail</span>
                 <input
                   value={email}
-                  disabled={disable}
+                  disabled={isReadOnly}
                   required
                   name="user_email"
                   onChange={handleInputChange(setEmail)}
@@ -441,7 +442,7 @@ export default function UserProfile({
                 <span className="profile-label">Phone</span>
                 <input
                   value={phone}
-                  disabled={disable}
+                  disabled={isReadOnly}
                   required
                   name="user_phone"
                   onChange={handleInputChange(setPhone)}
@@ -463,7 +464,7 @@ export default function UserProfile({
                   <span className="profile-label">Access Level</span>
                   <select
                     value={accessLevelId}
-                    disabled={disable}
+                    disabled={isReadOnly}
                     required
                     name="access_status"
                     onChange={accessChange}
@@ -478,7 +479,7 @@ export default function UserProfile({
                   <span className="profile-label">Title</span>
                   <select
                     value={title}
-                    disabled={disable}
+                    disabled={isReadOnly}
                     required
                     name="user_title_id"
                     ref={titleSelectRef}
@@ -491,7 +492,18 @@ export default function UserProfile({
               <div className="flex-grid-column">
                 <div className="col flex-grid-column">
                   <span className="profile-label">Preferred Language</span>
-                  <input value={preferredLanguageLabel} disabled={true} name="user_language" />
+                  <select
+                    value={preferredLanguage}
+                    disabled={isReadOnly}
+                    name="user_language"
+                    onChange={preferredLanguageChange}
+                  >
+                    {LANGUAGE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -507,7 +519,7 @@ export default function UserProfile({
                     name="alternative_title"
                     value={otherTitle}
                     onChange={updateOther}
-                    disabled={disable}
+                    disabled={isReadOnly}
                   />
                 </div>
               </div>
@@ -525,7 +537,7 @@ export default function UserProfile({
                     id="arr_user_geography_ids"
                     onChange={geogChange}
                     value={geographies}
-                    disabled={disable}
+                    disabled={isReadOnly}
                     name="arr_user_geography_ids"
                   />
                 </div>
@@ -545,7 +557,7 @@ export default function UserProfile({
                     name="arr_user_commodity_ids"
                     onChange={commChange}
                     value={commodities}
-                    disabled={disable}
+                    disabled={isReadOnly}
                   />
                 </div>
               </div>
@@ -560,14 +572,14 @@ export default function UserProfile({
           <input
             id="EnableEmailAlertNotificationsManager"
             checked={enableAlerts}
-            disabled={disable}
+            disabled={isReadOnly}
             type="checkbox"
             name="email_preferences"
             onChange={updateEmailPrefs}
           />
           <label
             htmlFor="EnableEmailAlertNotificationsManager"
-            className={`profile-label ${disable ? 'disabled' : null}`}
+            className={`profile-label ${isReadOnly ? 'disabled' : null}`}
           >
             Enable Email Alert Notifications
           </label>
@@ -619,7 +631,7 @@ export default function UserProfile({
             Deactivate
           </PillButton>
         )}
-        <PillButton variant="contained" size="small" disabled={disable} onClick={updateUser}>
+        <PillButton variant="contained" size="small" disabled={isReadOnly} onClick={updateUser}>
           Save
         </PillButton>
       </div>

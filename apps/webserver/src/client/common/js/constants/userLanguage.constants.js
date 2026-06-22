@@ -1,7 +1,7 @@
 export const LANGUAGE_OPTIONS = [
-  { label: 'English', value: 'en' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Portuguese', value: 'pt' },
+  { label: 'English', value: 'EN' },
+  { label: 'Spanish', value: 'ES' },
+  { label: 'Portuguese', value: 'PT' },
 ];
 
 export const SPANISH_LANGUAGE_COUNTRIES = new Set([
@@ -48,12 +48,12 @@ export const getDefaultLanguageForCountry = (country = '') => {
   const normalizedCountry = normalizeCountryToken(country);
 
   if (PORTUGUESE_LANGUAGE_COUNTRIES.has(normalizedCountry)) {
-    return 'pt';
+    return 'PT';
   }
 
   if (SPANISH_LANGUAGE_COUNTRIES.has(normalizedCountry)) {
-    return 'es';
+    return 'ES';
   }
 
-  return 'en';
+  return 'EN';
 };

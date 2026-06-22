@@ -48,36 +48,34 @@ export = (app, limiter) => {
   app.use('/profile/info', routeMiddlewares);
   app.get('/profile/info', controller.profileInfo);
 
-  app.post('/profile/activateUser', (req, res) => {
+  app.post('/profile/activateUser', async (req, res) => {
     logger.info('POST /profile/activateUser');
     const { id, email, first_name, last_name } = req.body;
 
-    UserManager.activateUser(req, id, email, first_name, last_name)
-      .then(() => {
-        res.send({ redirect: '/profile' });
-      })
-      .catch(async (err) => {
-        logger.error('POST /profile/activateUser', err);
+    try {
+      await UserManager.activateUser(req, id, email, first_name, last_name);
+      res.send({ redirect: '/profile?tab=USER_MANAGEMENT&flash=user-activated' });
+    } catch (err) {
+      logger.error('POST /profile/activateUser', err);
 
-        const { user_id, user_email, organization_id, user_first_name, user_last_name } =
-          req.session;
+      const { user_id, user_email, organization_id, user_first_name, user_last_name } = req.session;
 
-        const slackMessage = slackUtils.buildSlackNotificationMessage({
-          url: 'POST /profile/activateUser',
-          stackTrace: JSON.stringify(err),
-          userInfo: {
-            id: user_id,
-            email: user_email,
-            OrgID: organization_id,
-            first_name: user_first_name,
-            last_name: user_last_name,
-          },
-          browserInfo: '',
-        });
-
-        await slackUtils.sendNotification(slackMessage);
-        res.status(500).send(err);
+      const slackMessage = slackUtils.buildSlackNotificationMessage({
+        url: 'POST /profile/activateUser',
+        stackTrace: JSON.stringify(err),
+        userInfo: {
+          id: user_id,
+          email: user_email,
+          OrgID: organization_id,
+          first_name: user_first_name,
+          last_name: user_last_name,
+        },
+        browserInfo: '',
       });
+
+      await slackUtils.sendNotification(slackMessage);
+      res.status(500).send(err);
+    }
   });
 
   app.post('/profile/deactivateUser', (req, res) => {
@@ -151,7 +149,7 @@ export = (app, limiter) => {
       });
   });
 
-  app.post('/profile/createuser', (req, res) => {
+  app.post('/profile/createuser', async (req, res) => {
     logger.info('POST /profile/createuser');
     const {
       first_name,
@@ -165,32 +163,34 @@ export = (app, limiter) => {
       enableAlerts,
       geographies,
       commodities,
+      preferred_language: language,
     } = req.body;
 
-    UserManager.createNewUser(
-      req,
-      first_name,
-      middle_initial,
-      last_name,
-      email,
-      phone,
-      title_id,
-      other_title,
-      access_level_id,
-      enableAlerts,
-      geographies,
-      commodities
-    )
-      .then((user_id) => {
-        res.send({
-          redirect: '/profile',
-          user_id,
-        });
-      })
-      .catch((err) => {
-        logger.error('POST /profile/createuser', err);
-        res.send(err);
+    try {
+      const user_id = await UserManager.createNewUser(
+        req,
+        first_name,
+        middle_initial,
+        last_name,
+        email,
+        phone,
+        title_id,
+        other_title,
+        access_level_id,
+        enableAlerts,
+        geographies,
+        commodities,
+        language
+      );
+
+      res.send({
+        redirect: '/profile?tab=USER_MANAGEMENT&flash=user-created',
+        user_id,
       });
+    } catch (err) {
+      logger.error('POST /profile/createuser', err);
+      res.send(err);
+    }
   });
 
   app.post('/profile/updateuser', validateRequest(updateUserSchema), async (req, res) => {

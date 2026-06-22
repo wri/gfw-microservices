@@ -110,8 +110,8 @@ export default function UserProfile(props) {
   const newUserInitial = !currentUser.email;
   const defaultLanguage = getDefaultLanguageFromOrgCountry(currentAccount);
   const initialLanguage = (
-    currentUser.language || (newUserInitial ? defaultLanguage : 'en')
-  ).toLowerCase();
+    currentUser.language || (newUserInitial ? defaultLanguage : 'EN')
+  ).toUpperCase();
   const geographyArray = parseMultiIds(currentUser.user_geography_ids);
   const geographiesInitial =
     geographiesData && geographiesData.length
@@ -224,13 +224,14 @@ export default function UserProfile(props) {
 
         if (!parsedResponse) {
           updateState(createErrorDialog('Activation failed: invalid server response.'));
-          return;
+          return false;
         }
 
         const { errorCode, userMessage } = parsedResponse;
 
         if (errorCode) {
           updateState(createErrorDialog(userMessage));
+          return false;
         } else {
           updateState({
             ...createActivationSuccessDialog(first_name, last_name),
@@ -243,9 +244,11 @@ export default function UserProfile(props) {
             activated_time: new Date(),
           };
           store.dispatch(updateUser(userObject));
+          return true;
         }
       } catch (err) {
         updateState(createErrorDialog('Activation failed.'));
+        return false;
       }
     },
     [state, updateState]
@@ -332,7 +335,7 @@ export default function UserProfile(props) {
       access_level_id: state.access_level_id,
       enableAlerts: state.enableAlerts,
       auth_preference_id: state.auth_preference_id,
-      preferred_language: state.preferred_language,
+      preferred_language: state.preferred_language || null,
       geographies: (state.geographies || []).map((g) => g.value),
       commodities: (state.commodities || []).map((c) => c.value),
     };
@@ -393,7 +396,7 @@ export default function UserProfile(props) {
         user_geography_ids: (geographies || []).map((g) => g.value).join(','),
         user_id: userId,
         viirs_email_frequency: 0,
-        preferred_language: state.preferred_language,
+        preferred_language: state.preferred_language || null,
       };
 
       if (newUser) {

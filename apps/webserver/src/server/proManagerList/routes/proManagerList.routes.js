@@ -9,7 +9,7 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-const ALLOWED_LANGUAGE_CODES = new Set(['en', 'es', 'pt']);
+const ALLOWED_LANGUAGE_CODES = new Set(['EN', 'ES', 'PT']);
 
 /**
  * @name exports
@@ -109,7 +109,7 @@ module.exports = (app, limiter) => {
 
     const normalizedLanguage = String(preferred_language || '')
       .trim()
-      .toLowerCase();
+      .toUpperCase();
     const safePreferredLanguage = ALLOWED_LANGUAGE_CODES.has(normalizedLanguage)
       ? normalizedLanguage
       : null;

@@ -304,7 +304,8 @@ export const getAccountProfile = (req) => {
     sqlUtils
       .executeOrganizationQuery(req, getAccountProfileQuery, params)
       .then((recordsets) => {
-        resolve(recordsets[0]);
+        const [rows = []] = recordsets || [];
+        resolve(rows[0] || {});
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(

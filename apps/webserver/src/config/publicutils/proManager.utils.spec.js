@@ -321,7 +321,9 @@ describe('Pro Manager Utils Tests', () => {
       jest.spyOn(speakEasy, 'createSecret').mockReturnValue('fake-secret');
       jest.spyOn(PolicyManager, 'movePolicy').mockResolvedValue(undefined);
       jest.spyOn(awsCognito, 'createUser').mockResolvedValue(undefined);
-      jest.spyOn(sqlUtils, 'executeSystemQuery').mockResolvedValue([[{ organization_db: 'org_db_555' }]]);
+      jest
+        .spyOn(sqlUtils, 'executeSystemQuery')
+        .mockResolvedValue([[{ organization_db: 'org_db_555' }]]);
       jest.spyOn(sqlUtils, 'executeOrganizationQuery').mockResolvedValue([]);
       jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
 

@@ -528,7 +528,7 @@ export default class Account extends Component {
                 </div>
               </section>
               <section>
-                <h2 className="section-title-large">Account Manager Contact Information</h2>
+                <h2 className="section-title-x-large">Account Manager Contact Information</h2>
 
                 <div className="input-field__block-container">
                   <label

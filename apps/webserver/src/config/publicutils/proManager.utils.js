@@ -167,10 +167,7 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
 
     // Get pending account information
     const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
-    const accountInfo = await sqlUtils.executeSystemQuery(
-      getPendingAccountInformation,
-      parameters
-    );
+    const accountInfo = await sqlUtils.executeSystemQuery(getPendingAccountInformation, parameters);
 
     const [record] = accountInfo;
     userID = record.id;

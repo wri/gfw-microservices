@@ -21,7 +21,11 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
-import { createNewAccount, getListOfUsers, updatePendingAccount as updatePendingAccountQuery } from '@wri-monorepos/sql';
+import {
+  createNewAccount,
+  getListOfUsers,
+  updatePendingAccount as updatePendingAccountQuery,
+} from '@wri-monorepos/sql';
 import config from '../config';
 
 const AWSSES = require('../privateutils/ses.utils');
@@ -475,7 +479,7 @@ export const updatePendingAccount = (
   org_id,
   org_name,
   org_address,
-    org_country,
+  org_country,
   org_website,
   parent_org_name,
   is_subsidiary,

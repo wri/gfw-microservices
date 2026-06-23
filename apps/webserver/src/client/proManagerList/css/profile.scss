@@ -5,8 +5,12 @@
   margin: 0 auto;
   padding: 1rem 0rem;
 
-  .section-title-large {
+  .section-title-x-large {
     font-size: $font-size-x-large;
+  }
+
+  .section-title-large {
+    font-size: $font-size-large;
   }
 
   .section-title-normal {

@@ -70,8 +70,8 @@ const AUTH_PREFERENCE = {
 };
 
 const getOrgCountry = (currentAccount) => {
-  const orgAddress = currentAccount?.organization_address;
-  const addressTokens = String(orgAddress)
+  const orgAddress = currentAccount?.organization_address || '';
+  const addressTokens = orgAddress
     .split(',')
     .map((token) => normalizeCountryToken(token))
     .filter(Boolean);

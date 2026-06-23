@@ -25,6 +25,7 @@ AS
 		PendingAccounts.organization_parent,
 		PendingAccounts.organization_website,
 		PendingAccounts.organization_address,
+		PendingAccounts.organization_country,
 		PendingAccountsUsers.id,
 		PendingAccountsUsers.first_name,
 		PendingAccountsUsers.last_name,

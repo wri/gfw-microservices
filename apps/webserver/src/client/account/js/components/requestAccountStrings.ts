@@ -5,7 +5,7 @@ const requestAccountStrings = {
   },
   helpTooltip: {
     prefix: 'Please ensure the ',
-    linkText: 'GWF Pro URL Allow List',
+    linkText: 'GFW Pro URL Allow List',
     suffix: ' is added to your organization’s network settings.',
     link: 'https://www.globalforestwatch.org/help/gfw-pro/additional-materials/gfw-pro-url-allowlist/',
     explanation:

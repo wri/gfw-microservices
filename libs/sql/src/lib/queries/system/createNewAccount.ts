@@ -26,6 +26,7 @@ export const createNewAccount = `
 	INSERT INTO PendingAccounts (
 		organization_name,
 		organization_address,
+		organization_country,
 		organization_website,
 		organization_is_subsidiary,
 		organization_parent,

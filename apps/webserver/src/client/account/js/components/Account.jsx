@@ -462,7 +462,7 @@ export default class Account extends Component {
                       htmlFor="org_country"
                       className="block-label profile-label required-param"
                     >
-                      Organization Contry
+                      Organization Country
                     </label>
                     <Select
                       placeholder={profilePage.profileManager.selectCountry}

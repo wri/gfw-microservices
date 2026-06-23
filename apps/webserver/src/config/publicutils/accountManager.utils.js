@@ -21,7 +21,7 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
-import { getListOfUsers } from '@wri-monorepos/sql';
+import { createNewAccount, getListOfUsers, updatePendingAccount as updatePendingAccountQuery } from '@wri-monorepos/sql';
 import config from '../config';
 
 const AWSSES = require('../privateutils/ses.utils');
@@ -102,6 +102,7 @@ export const requestNewAccount = (
     const params = [
       { field: 'orgName', type: sql.NVarChar(200), value: org_name },
       { field: 'orgAddress', type: sql.NVarChar(200), value: `${org_address}, ${org_country}` },
+      { field: 'orgCountry', type: sql.NVarChar(100), value: org_country },
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
       { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
@@ -109,12 +110,13 @@ export const requestNewAccount = (
       { field: 'active', type: sql.Bit, value: true }, // default to active
     ];
     sqlUtils
-      .executeSystemStoredProcedure(req, 'uspCreateNewAccount', params)
+      .executeSystemQuery(createNewAccount, params)
       .then((recordsets) => {
         uspCreateNewAccountExecuted = true;
+        const [newAccountResults = []] = recordsets || [];
         // Get Organization ID
-        if (recordsets.length > 0) {
-          organizationId = recordsets[0].organization_id;
+        if (newAccountResults.length > 0) {
+          organizationId = newAccountResults[0].organization_id;
           // Use Organization ID to add Classifications.
           const parameters = [
             { field: 'orgID', type: sql.Int, value: organizationId },
@@ -132,7 +134,7 @@ export const requestNewAccount = (
           );
         }
         // TODO @Hanseul - handle error
-        console.log('ERROR: Recordset Length', recordsets.length);
+        console.log('ERROR: Recordset Length', newAccountResults.length);
       })
       .then(() => {
         // Insert the new user account
@@ -473,6 +475,7 @@ export const updatePendingAccount = (
   org_id,
   org_name,
   org_address,
+    org_country,
   org_website,
   parent_org_name,
   is_subsidiary,
@@ -483,6 +486,7 @@ export const updatePendingAccount = (
       { field: 'orgID', type: sql.Int, value: org_id },
       { field: 'orgName', type: sql.NVarChar(200), value: org_name },
       { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
+      { field: 'orgCountry', type: sql.NVarChar(100), value: org_country || null },
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
       { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
@@ -493,7 +497,7 @@ export const updatePendingAccount = (
       },
     ];
     sqlUtils
-      .executeSystemStoredProcedure(req, 'uspUpdatePendingAccount', params)
+      .executeSystemQuery(updatePendingAccountQuery, params)
       .then(() => {
         resolve(true);
       })

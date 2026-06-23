@@ -19,12 +19,22 @@ GO
 CREATE PROCEDURE [dbo].[uspCreateNewAccount]
 	@orgName NVARCHAR(200),
 	@orgAddress NVARCHAR(200),
+	@orgCountry NVARCHAR(100) = NULL,
 	@orgWebsite NVARCHAR(200),
 	@isSubsidiary BIT = 0,
 	@orgParent NVARCHAR(200) = '',
 	@requestDate SMALLDATETIME
 
 AS
-	INSERT INTO PendingAccounts VALUES(@orgName, @orgAddress, @orgWebsite, @isSubsidiary, @orgParent, @requestDate)
+	INSERT INTO PendingAccounts (
+		organization_name,
+		organization_address,
+		organization_country,
+		organization_website,
+		organization_is_subsidiary,
+		organization_parent,
+		organization_requested_time
+	)
+	VALUES (@orgName, @orgAddress, @orgCountry, @orgWebsite, @isSubsidiary, @orgParent, @requestDate)
 	SELECT SCOPE_IDENTITY() AS [organization_id];
 GO

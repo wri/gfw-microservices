@@ -16,6 +16,7 @@ jest.mock('../privateutils/logger.utils');
 jest.mock('../privateutils/sql.utils', () => ({
   executeSystemStoredProcedure: jest.fn(),
   executeSystemQuery: jest.fn(),
+  executeOrganizationQuery: jest.fn(),
 }));
 
 jest.mock('../env/orgAccountStatus.constants', () => ({
@@ -245,6 +246,7 @@ describe('Pro Manager Utils Tests', () => {
                   organization_parent: '',
                   organization_website: '',
                   organization_address: '',
+                  organization_country: 'Argentina',
                 },
               ]);
             case 'uspGetPendingUserCommodities':
@@ -267,10 +269,13 @@ describe('Pro Manager Utils Tests', () => {
         });
 
       jest.spyOn(sqlUtils, 'executeSystemQuery').mockResolvedValue(undefined);
+      jest.spyOn(sqlUtils, 'executeOrganizationQuery').mockResolvedValue([]);
       jest.spyOn(PolicyManager, 'movePolicy').mockResolvedValue(undefined);
       jest.spyOn(awsCognito, 'createUser').mockResolvedValue(undefined);
       jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
       jest.spyOn(speakEasy, 'createSecret').mockReturnValue('fake-secret');
+
+      sqlUtils.executeSystemQuery.mockResolvedValue([[{ organization_db: 'org_db_777' }]]);
 
       await expect(activatePendingAccount(mockReq, pendingaccount_id, true)).resolves.toBe(true);
     });
@@ -316,7 +321,8 @@ describe('Pro Manager Utils Tests', () => {
       jest.spyOn(speakEasy, 'createSecret').mockReturnValue('fake-secret');
       jest.spyOn(PolicyManager, 'movePolicy').mockResolvedValue(undefined);
       jest.spyOn(awsCognito, 'createUser').mockResolvedValue(undefined);
-      jest.spyOn(sqlUtils, 'executeSystemQuery').mockResolvedValue(undefined);
+      jest.spyOn(sqlUtils, 'executeSystemQuery').mockResolvedValue([[{ organization_db: 'org_db_555' }]]);
+      jest.spyOn(sqlUtils, 'executeOrganizationQuery').mockResolvedValue([]);
       jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
 
       const activateSpy = jest
@@ -351,6 +357,7 @@ describe('Pro Manager Utils Tests', () => {
                   organization_parent: '',
                   organization_website: '',
                   organization_address: '',
+                  organization_country: 'Argentina',
                 },
               ]);
             case 'uspGetPendingUserCommodities':
@@ -374,6 +381,8 @@ describe('Pro Manager Utils Tests', () => {
         });
 
       await expect(activatePendingAccount(mockReq, pendingaccount_id, true)).resolves.toBe(true);
+
+      expect(sqlUtils.executeOrganizationQuery).toHaveBeenCalled();
 
       expect(activateSpy).toHaveBeenCalledWith(
         mockReq,

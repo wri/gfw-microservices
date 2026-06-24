@@ -1,22 +1,40 @@
 .analysis-chips {
   display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .MuiChip-root {
+    height: 20px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
   .MuiChip-label {
-    font-size: 10px;
+    font-size: 11px;
+    padding: 0 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .MuiChip-icon {
+    color: inherit;
+    font-size: 14px;
+    margin-left: 4px;
+    margin-right: -4px;
   }
 
   .MuiChip-colorSuccess {
-    color: #97bd3d;
-    background-color: #97bd3d40;
+    color: #005b45;
+    background-color: #e7f4f0;
   }
 
   .MuiChip-colorError {
-    color: #d32f2f;
-    background-color: #d32f2f40;
+    color: #860c10;
+    background-color: #ffeceb;
   }
 
-  .MuiChip-root .MuiChip-icon {
-    color: #97bd3d;
-    font-size: 14px;
+  .MuiChip-colorDefault {
+    color: #524f4f;
+    background-color: #e3e2e2;
   }
 }
 

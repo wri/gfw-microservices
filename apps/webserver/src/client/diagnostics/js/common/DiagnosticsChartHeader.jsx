@@ -1,4 +1,5 @@
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
+import { IconButton } from '@mui/material';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import './DiagnosticsChartHeader.scss';
 import BetaTag from '../../../common/js/components/BetaTag';
@@ -20,11 +21,16 @@ function DiagnosticsChartHeader({
       {subtitle && <span>{subtitle}</span>}
       {informationBubbleId && <InfoBubble infoBubbleId={informationBubbleId} />}
       {downloadId && (
-        <DownloadForOfflineIcon
-          className="diagnostics-chart-header__download_icon"
-          sx={{ fontSize: 18 }}
+        <IconButton
+          aria-label="Download chart"
           onClick={() => fireDownload(downloadId)}
-        />
+          sx={{ p: 0 }}
+        >
+          <DownloadForOfflineIcon
+            className="diagnostics-chart-header__download_icon"
+            sx={{ fontSize: 18 }}
+          />
+        </IconButton>
       )}
     </div>
   );

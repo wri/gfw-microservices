@@ -62,7 +62,18 @@ export function NavBar({ isComingFromMap }: NavBarProps) {
         {isComingFromMap ? 'Map' : 'New Location'}
       </Typography>
 
-      <Stepper activeStep={activeStep()} sx={{ width: '100%', ml: 8 }}>
+      <Stepper
+        activeStep={activeStep()}
+        sx={{
+          width: '100%',
+          ml: 8,
+          // Completed (previous) steps use a neutral grey so they don't visually
+          // compete with the current active step, which stays green.
+          '& .MuiStepIcon-root.Mui-completed': {
+            color: (theme) => theme.palette.neutral?.[400] ?? theme.palette.grey[400],
+          },
+        }}
+      >
         {steps.map((label) => {
           return (
             <Step key={label}>

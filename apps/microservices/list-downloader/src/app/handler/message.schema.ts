@@ -121,6 +121,11 @@ export const AccountUsersUsageRequestSchema = CommonRequestSchema.extend({
   }
 );
 
+export const ProManagerUsersExportRequestSchema = CommonRequestSchema.extend({
+  key: z.string().trim().min(1).describe('File name/key for the generated export'),
+  userEmail: z.string().trim().email().describe('Email address of the requesting user'),
+});
+
 export const getSchemaByType = (type: string) => {
   switch (type) {
     case CSVInputTypes.AFI:
@@ -132,8 +137,9 @@ export const getSchemaByType = (type: string) => {
     case CSVInputTypes.ACCOUNTUSERSUSAGE:
       return AccountUsersUsageRequestSchema;
     case CSVInputTypes.PROMANAGERUSERS:
-      // System-wide users export: only the common fields (type, key, userEmail) are needed.
-      return CommonRequestSchema;
+      // System-wide users export: needs the common fields plus a required key (file name)
+      // and userEmail, which the generator relies on to name the file and email the link.
+      return ProManagerUsersExportRequestSchema;
     case CSVInputTypes.ARGENTINA:
     case CSVInputTypes.COLOMBIA:
     case CSVInputTypes.COMMODITYRISKDIAGNOSTICLOCATIONSUMMARY:

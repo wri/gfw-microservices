@@ -144,7 +144,7 @@ export class ProManagerUsersFileService extends IFileGenerator {
         headers: PRO_MANAGER_USERS_CSV_HEADER,
       });
 
-      const writePromise = new Promise<void>((resolve) => {
+      const writePromise = new Promise<void>((resolve, reject) => {
         const writeStream = fs.createWriteStream(filePath, {
           flags: 'w',
         });
@@ -152,8 +152,8 @@ export class ProManagerUsersFileService extends IFileGenerator {
           resolve();
         });
         writeStream.on('error', (error) => {
-          throw new Error(
-            `[generateCsvFile] Failed writing data stream into file. ${error.message}`
+          reject(
+            new Error(`[generateCsvFile] Failed writing data stream into file. ${error.message}`)
           );
         });
         // write into the file

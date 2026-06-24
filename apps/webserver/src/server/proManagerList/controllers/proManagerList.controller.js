@@ -185,7 +185,7 @@ export const proManagerListUsersExport = async (req, res) => {
     const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
     const fileName = `ProManagerUsers-${currentDate}.csv`;
 
-    const filters = sendMessageToQueue({ userEmail, fileName }, 'proManagerUsers');
+    const filters = await sendMessageToQueue({ userEmail, fileName }, 'proManagerUsers');
 
     return res.status(201).send({
       success: true,

@@ -50,7 +50,6 @@ function AnalysisListChips({ listAnalysesStatus = [] }) {
               label={getShortLabel(analysisId)}
               color={color}
               size="small"
-              style={{ height: '17px', marginRight: '10px' }}
             />
           );
         })}

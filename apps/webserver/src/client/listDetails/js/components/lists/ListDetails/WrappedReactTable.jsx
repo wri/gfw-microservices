@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { useTheme, Tooltip } from '@mui/material';
 import { Info } from '@mui/icons-material';
 import ReactTable from 'react-table';
@@ -5,6 +6,8 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import columns from '../../../config/columns';
 import CustomRow from './CustomRow';
+import SortableColumnHeader from '../../columns/SortableColumnHeader';
+import SortMenu from '../../columns/SortMenu';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
 const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
@@ -36,6 +39,30 @@ const WrappedReactTable = ({
   currentUser,
 }) => {
   const theme = useTheme();
+
+  // GPV-3912: a single sort menu shared by all headers (one MUI Menu per table, not
+  // one per column) keeps re-renders cheap on wide tables. It anchors to the captured
+  // click position rather than the trigger element, because react-table remounts the
+  // header cells on every render — a DOM-node anchor would detach and the menu would
+  // jump to the top-left of the page. `sortId` tracks which column's trigger is open.
+  const [sortMenu, setSortMenu] = useState({ position: null, sortId: null });
+
+  const openSortMenu = useCallback((event, sortId) => {
+    // Stop the header's own click handler from toggling the sort.
+    event.stopPropagation();
+    const { bottom, left } = event.currentTarget.getBoundingClientRect();
+    setSortMenu({ position: { top: bottom, left }, sortId });
+  }, []);
+
+  const closeSortMenu = useCallback(() => setSortMenu({ position: null, sortId: null }), []);
+
+  const handleMenuSort = (desc) => {
+    const { sortId } = sortMenu;
+    setSortMenu({ position: null, sortId: null });
+    if (sortId != null) {
+      setSortedBy(sortId, desc);
+    }
+  };
 
   const setRowProps = (state, rowInfo) => {
     function returnBgColor(id) {
@@ -154,6 +181,28 @@ const WrappedReactTable = ({
         col.maxWidth = 500;
       }
     }
+
+    // GPV-3912: give each sortable column header a secondary sort control (a dropdown
+    // exposing explicit Ascending/Descending options). Header groups (col.columns) and
+    // explicitly non-sortable columns keep a plain header.
+    //
+    // The header is wrapped in place (not on a copy) so the column object keeps a
+    // stable identity across renders — otherwise react-table remounts every header/
+    // body cell on each render, which both detaches the open menu's anchor and makes
+    // sorting expensive. The untouched header is stashed on `_originalHeader` so it can
+    // still be introspected elsewhere (getAllColumnNames reads Header().props.label for
+    // the alerts view) and so re-renders never wrap an already-wrapped header.
+    const isSortableLeaf = !col.columns && col.sortable !== false && !!col.Header;
+    if (isSortableLeaf) {
+      col._originalHeader = col._originalHeader || col.Header;
+      const OriginalHeader = col._originalHeader;
+      const sortId = col.id ?? col.accessor;
+      col.Header = (headerProps) => (
+        <SortableColumnHeader onOpenMenu={(event) => openSortMenu(event, sortId)}>
+          {typeof OriginalHeader === 'function' ? OriginalHeader(headerProps) : OriginalHeader}
+        </SortableColumnHeader>
+      );
+    }
   });
 
   const [REACT_TABLE__LOCATION_NAME] = cloneDeep(columns.react_table__location_name);
@@ -171,6 +220,11 @@ const WrappedReactTable = ({
     nextText: transifex('Next'),
     pageText: transifex('Page'),
     getTheadProps: setHeaderProps,
+    // GPV-3912: highlight the column the table is currently sorted by so it's clear
+    // which column drives the ordering.
+    getTheadThProps: (state, rowInfo, column) => ({
+      className: column?.id === tableSortedBy ? 'rt-th--sorted' : undefined,
+    }),
     getTrProps: setRowProps,
     pageSizeOptions: [50],
     minRows: 0,
@@ -244,33 +298,42 @@ const WrappedReactTable = ({
   };
 
   return (
-    <ReactTable
-      className={`-highlight notranslate lists-react-table table__${listView}`}
-      {...reactTableOptions}
-      TrComponent={(props) => {
-        return (
-          <CustomRow
-            isGfwList={isGfwList}
-            listId={listId}
-            isSharedList={isSharedList}
-            rowInfo={props.rowInfo}
-            viewDiagnostic={viewDiagnostic}
-            isDeleteButtonAvailable={isDeleteButtonAvailable}
-            promptDeleteSelectedLocations={promptDeleteSelectedLocations}
-            copyMoveAction={copyMoveAction}
-            isCopyMoveActionAvailable={isCopyMoveActionAvailable}
-            visibleColumns={visibleColumns}
-            currentUser={currentUser}
-            listView={listView}
-            selectedList={selectedList}
-            setIsLoading={setIsLoading}
-            style={props.style}
-          >
-            {props.children}
-          </CustomRow>
-        );
-      }}
-    />
+    <>
+      <ReactTable
+        className={`-highlight notranslate lists-react-table table__${listView}`}
+        {...reactTableOptions}
+        TrComponent={(props) => {
+          return (
+            <CustomRow
+              isGfwList={isGfwList}
+              listId={listId}
+              isSharedList={isSharedList}
+              rowInfo={props.rowInfo}
+              viewDiagnostic={viewDiagnostic}
+              isDeleteButtonAvailable={isDeleteButtonAvailable}
+              promptDeleteSelectedLocations={promptDeleteSelectedLocations}
+              copyMoveAction={copyMoveAction}
+              isCopyMoveActionAvailable={isCopyMoveActionAvailable}
+              visibleColumns={visibleColumns}
+              currentUser={currentUser}
+              listView={listView}
+              selectedList={selectedList}
+              setIsLoading={setIsLoading}
+              style={props.style}
+            >
+              {props.children}
+            </CustomRow>
+          );
+        }}
+      />
+      <SortMenu
+        position={sortMenu.position}
+        isSorted={sortMenu.sortId === tableSortedBy}
+        isSortedDesc={tableSortedDesc}
+        onClose={closeSortMenu}
+        onSort={handleMenuSort}
+      />
+    </>
   );
 };
 

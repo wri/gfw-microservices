@@ -155,6 +155,88 @@
   padding: $table-cell-pad-sortable;
 }
 
+// GPV-3912: Enhanced sorting UI for the list detail tables.
+$table-header-sorted-bg: #a9a9a9;
+
+.ReactTable.lists-react-table {
+  // Highlight the column the table is currently sorted by.
+  .rt-thead .rt-th.rt-th--sorted {
+    background-color: $table-header-sorted-bg;
+
+    &:hover {
+      background-color: $table-header-sorted-bg;
+    }
+  }
+
+  // The sort dropdown trigger replaces the static asc/desc/sortable glyph.
+  .rt-thead .rt-th.-cursor-pointer:after {
+    display: none;
+  }
+
+  // Let sortable header content fill the cell so the trigger can sit at the far
+  // right. Scoped to sortable headers so the checkbox column header keeps its
+  // centered layout.
+  .rt-thead .rt-th.-cursor-pointer .rt-resizable-header-content {
+    width: 100%;
+  }
+}
+
+.sortable-column-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 2px;
+
+  // The label takes the remaining space (text centered) so the trigger can sit at
+  // the right without overlapping the text on narrow columns.
+  &__label {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  &__trigger {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    color: $gfw-gray-2;
+    cursor: pointer;
+
+    .MuiSvgIcon-root {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      color: $gfw-x-dark-gray;
+      background-color: rgba(#000000, 0.08);
+    }
+  }
+}
+
+// Sort menu lives in a portal, so it is styled outside the table scope.
+.sortable-column-header__menu {
+  .sortable-column-header__menu-title {
+    line-height: 2;
+    font-size: 0.75rem;
+    color: $gfw-gray-2;
+  }
+
+  .MuiListItemIcon-root {
+    min-width: 32px;
+  }
+
+  .sortable-column-header__check {
+    margin-left: 12px;
+    color: $gfw-x-dark-gray;
+  }
+}
+
 .ReactTable .rt-thead .rt-th:last-child,
 .ReactTable .rt-thead .rt-td:last-child {
   border-right: 0;

@@ -45,8 +45,7 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
 
 import { USER_STATUS } from '../env/userStatuses.constants';
 import { UserAccessLevel } from '@wri-monorepos/constants';
-import { setUserStatus } from 'libs/sql/src/lib/queries/organization/setUserStatus';
-import { setGlobalAnalysisLimit } from 'libs/sql/src/lib/queries/system/setGlobalAnalysisLimit';
+import { setUserStatus } from '@wri-monorepos/sql';
 
 const lstTitles = [
   { id: 1, title: 'Analyst' },
@@ -598,27 +597,25 @@ export const updateUserInfo = ({
  * @return  true if successful, false otherwise.
  */
 export const setStatus = (req, status_id) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userEmail', type: sql.VarChar(50), value: req.session.user_email },
       { field: 'statusID', type: sql.Int, value: status_id },
     ];
     // Set User Status.
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspSetUserStatus', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToSetStatus,
-          'Failed to set status ID of user',
-          errorMessage
-        );
-        reject(errorObject);
-      });
+    try {
+      await sqlUtils.executeSystemQuery(setUserStatus, params);
+      resolve(true);
+    } catch (error) {
+      const errorObject = errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.failedToSetStatus,
+        'Failed to set status ID of user',
+        error?.message || error
+      );
+      reject(errorObject);
+    }
   });
 };
 

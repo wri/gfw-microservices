@@ -112,8 +112,19 @@ const WrappedReactTable = ({
   const tableColumns = [...combinedColumns];
   tableColumns.forEach((col) => {
     if (col.accessor === 'checkbox') {
+      col.headerClassName = 'sticky-checkbox';
+
+      col.getProps = () => ({
+        className: 'sticky-checkbox',
+      });
+
+      col.width = 40;
+      col.minWidth = 40;
+      col.maxWidth = 40;
+
       return;
     }
+
     // Only override show property if the column doesn't have its own show logic
     // and it's in the toggleable columns list
     const hasGetter = !!Object.getOwnPropertyDescriptor(col, 'show')?.get;
@@ -125,8 +136,18 @@ const WrappedReactTable = ({
     col.defaultSortDesc = true;
 
     if (col.id === 'Location Name') {
+      col.headerClassName = `${col.headerClassName || ''} sticky-location-header`;
+
+      col.getProps = () => ({
+        className: 'sticky-location-cell',
+      });
+
+      col.width = 220;
+      col.minWidth = 180;
+
       col.Cell = ({ row }) => {
         const error = extractRowError(row);
+
         return (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <span>{getLocationName(row)}</span>
@@ -138,6 +159,8 @@ const WrappedReactTable = ({
           </div>
         );
       };
+
+      return;
     }
 
     const max = Math.max(

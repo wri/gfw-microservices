@@ -27,7 +27,18 @@ const ColorStepIconRoot = styled(Box)<{
   alignItems: 'center',
   variants: [
     {
-      props: ({ ownerState }) => ownerState.active || ownerState.completed,
+      // Completed (previous) steps use a neutral grey so they don't visually
+      // compete with the current active step.
+      props: ({ ownerState }) => ownerState.completed,
+      style: {
+        border: `2px solid ${theme.palette.neutral[400]}`,
+        backgroundColor: theme.palette.neutral[400],
+        color: theme.palette.neutral[700],
+      },
+    },
+    {
+      // The current active step stays green to highlight the user's position.
+      props: ({ ownerState }) => ownerState.active,
       style: {
         border: `2px solid ${theme.palette.primary[700]}`,
         backgroundColor: theme.palette.primary[500],

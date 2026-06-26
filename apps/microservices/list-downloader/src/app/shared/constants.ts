@@ -1586,6 +1586,18 @@ export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'UI/API',
 ];
 
+export const PRO_MANAGER_USERS_CSV_HEADER = [
+  'First Name',
+  'Last Name',
+  'Email',
+  'Access Level',
+  'Organization Name',
+  'Activation Date',
+  'Deactivation Date',
+  'Country',
+  'Language',
+];
+
 export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {
   listName: 'List Name',
   locationName: 'Location Name',

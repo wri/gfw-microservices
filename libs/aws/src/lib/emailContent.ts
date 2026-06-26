@@ -54,6 +54,15 @@ export function createEmailContent<CustomFilter>(
         body: 'DOWNLOAD FILE',
       },
     },
+    proManagerUsersExportSuccess: {
+      icon: 'https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png',
+      title: 'File generation completed successfully',
+      body: [`Your GFW Pro users export is ready to be downloaded.`],
+      cta: {
+        href: `${location}`,
+        body: 'DOWNLOAD FILE',
+      },
+    },
     listUploadError: {
       icon: 'https://dpptfqp76xood.cloudfront.net/images/error_black_24dp.png',
       title: 'Unable to process',

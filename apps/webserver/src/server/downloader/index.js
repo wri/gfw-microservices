@@ -3,6 +3,7 @@ import buildAfiMessage from './afi.message';
 import buildListMessage from './list.message';
 import buildAlertsMessage from './alerts.message';
 import buildAccountUsersUsageMessage from './account.users.usage.message';
+import buildProManagerUsersMessage from './pro.manager.users.message';
 import axios from 'axios';
 
 const buildMessageMethods = {
@@ -10,6 +11,7 @@ const buildMessageMethods = {
   list: buildListMessage,
   alerts: buildAlertsMessage,
   accountUsersUsage: buildAccountUsersUsageMessage,
+  proManagerUsers: buildProManagerUsersMessage,
 };
 
 const sendMessageToQueue = async (request, source) => {

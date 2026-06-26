@@ -68,6 +68,7 @@ jest.mock('../controllers/proManagerList.controller', () => ({
     res.status(200).json({ route: 'account-detail' })
   ),
   proManagerListUsersData: jest.fn((req, res) => res.status(200).json({ route: 'users' })),
+  proManagerListUsersExport: jest.fn((req, res) => res.status(201).json({ route: 'users-export' })),
   proManagerListUserDetailData: jest.fn((req, res) =>
     res.status(200).json({ route: 'user-detail' })
   ),
@@ -128,6 +129,14 @@ describe('proManagerList.routes', () => {
     expect(controller.proManagerListUsersData).toHaveBeenCalled();
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ route: 'users' });
+  });
+
+  it('GET /pro-manager-list/users/export calls users export controller', async () => {
+    const res = await request(app).get('/pro-manager-list/users/export');
+    expect(controller.proManagerListUsersExport).toHaveBeenCalled();
+    expect(controller.proManagerListUserDetailData).not.toHaveBeenCalled();
+    expect(res.status).toBe(201);
+    expect(res.body).toEqual({ route: 'users-export' });
   });
 
   it('GET /pro-manager-list/users/:orgId/:userId calls user-detail controller', async () => {

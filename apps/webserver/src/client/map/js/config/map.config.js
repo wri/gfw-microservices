@@ -14,3 +14,8 @@ export const DEFAULT_MAPVIEW_ZOOM_CENTER = {
   zoom: DEFAULT_MAPVIEW_ZOOM,
 };
 export const MAP_WATER_COLOR = '#b9defa';
+
+// Zoom level at/above which the map may no longer line up with analysis pixels
+// (geographic-projection differences). Surfaces the high-zoom accuracy warning.
+// TODO(GPV-4587): confirm/tune exact threshold with product/GIS (pending technical subtask).
+export const HIGH_ZOOM_WARNING_LEVEL = 13;

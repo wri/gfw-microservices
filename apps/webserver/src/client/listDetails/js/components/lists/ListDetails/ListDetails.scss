@@ -54,19 +54,55 @@ body:has(.list-details) {
   position: relative;
   margin: auto;
   max-width: none;
+
   .-headerGroups {
     display: none;
   }
+
   .rt-thead.-header {
     box-shadow: none;
   }
+
   .rt-th {
     background-color: lightgray;
   }
+
   .rt-tr-group {
     border-bottom: 1px solid lightgray;
   }
+
   .rt-tbody .rt-td {
     border: none;
+  }
+
+  .rt-table {
+    overflow: auto;
+  }
+
+  .rt-tbody {
+    overflow: visible !important;
+  }
+  .rt-td.sticky-checkbox,
+  .rt-th.sticky-checkbox {
+    position: sticky;
+    left: 0;
+    z-index: 30;
+  }
+
+  .rt-th.sticky-location-header,
+  .rt-td.sticky-location-cell {
+    position: sticky !important;
+    left: 40px !important;
+    z-index: 10 !important;
+  }
+
+  .rt-td.sticky-checkbox,
+  .rt-td.sticky-location-cell {
+    background-color: #fff !important;
+  }
+
+  .rt-th.sticky-checkbox,
+  .rt-th.sticky-location-header {
+    z-index: 40;
   }
 }

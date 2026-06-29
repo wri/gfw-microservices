@@ -33,13 +33,6 @@ function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) 
 
   const { classes, commoditiesData, geographiesData, titlesData, selectedUser } = promanagerData;
 
-  console.log(
-    '[UserDetailSection] selectedUser.org_status:',
-    selectedUser?.org_status,
-    '| isReadOnly:',
-    selectedUser ? selectedUser.org_status == ACCOUNT_ORG_STATUSES.INACTIVE : 'no selectedUser yet'
-  );
-
   return (
     <>
       {selectedUser && !isLoading && (

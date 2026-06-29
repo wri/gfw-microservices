@@ -281,4 +281,35 @@ describe('Argentina Layers Parser', () => {
       ['wri', 1, 'Argentina Indigenous Territories', 'dog3', 15, 30],
     ]);
   });
+
+  it('should use the composite nonOverlapLabel for the non-overlap row when provided', () => {
+    const csvData = [];
+
+    argentinaLayers({
+      operation: {
+        name: 'argentinaLayers',
+        parsed: 'overhead',
+        composites: [
+          {
+            attribute: 'protected_areas_by_category_area',
+            type: 'country',
+            label: 'Argentina Protected Areas',
+            nonOverlapLabel: 'Non-overlap with Protected Areas',
+          },
+        ],
+      },
+      data: {
+        country_area: '{ "ARG": 5 }',
+        protected_areas_by_category_area: '{ "cat1": 1, "cat2": 2 }',
+      },
+      dataRow: [],
+      csvData,
+    });
+
+    expect(csvData).toStrictEqual([
+      ['Argentina Protected Areas', 'cat1', 1, 20],
+      ['Argentina Protected Areas', 'cat2', 2, 40],
+      ['Argentina Protected Areas', 'Non-overlap with Protected Areas', 2, 40],
+    ]);
+  });
 });

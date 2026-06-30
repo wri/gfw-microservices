@@ -258,12 +258,21 @@ jest.mock('../../../config/env/userStatuses.constants', () => ({
   USER_STATUS: {},
 }));
 
+jest.mock('../../downloader', () => ({
+  sendMessageToQueue: jest.fn(() => 'queue-message'),
+}));
+
+jest.mock('../../vectorTiles/utils/vectorTile.utils', () => ({
+  getCurrentDateTimeFormatted: jest.fn(() => '20260102_120000'),
+}));
+
 // Now import the controller (mocks are in place)
 import {
   proManagerList,
   proManagerListAccountsData,
   proManagerListAccountDetailData,
   proManagerListUsersData,
+  proManagerListUsersExport,
   proManagerListUserDetailData,
   activatePendingAccount,
   reactivateAccount,
@@ -285,6 +294,7 @@ const {
   combineOrganizationLimits,
 } = require('@wri-monorepos/shared');
 const { getAccountRenewalTime } = require('@wri-monorepos/sql');
+const { sendMessageToQueue } = require('../../downloader');
 
 const mockRes = () => {
   const res: any = {};
@@ -465,6 +475,36 @@ describe('proManagerList.controller', () => {
 
       expect(res.status).toHaveBeenCalledWith(500);
       consoleSpy.mockRestore();
+    });
+  });
+
+  describe('proManagerListUsersExport', () => {
+    it('queues a Pro Manager users export and returns 201', async () => {
+      const res = mockRes();
+      (sendMessageToQueue as jest.Mock).mockReturnValue('queue-message');
+
+      await proManagerListUsersExport({ session: { user_email: 'pm@example.com' } } as any, res);
+
+      expect(sendMessageToQueue).toHaveBeenCalledWith(
+        {
+          userEmail: 'pm@example.com',
+          fileName: 'ProManagerUsers-20260102_120000.csv',
+        },
+        'proManagerUsers'
+      );
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.send).toHaveBeenCalledWith({ success: true, message: 'queue-message' });
+    });
+
+    it('returns 500 when queuing fails', async () => {
+      const res = mockRes();
+      (sendMessageToQueue as jest.Mock).mockImplementation(() => {
+        throw new Error('queue down');
+      });
+
+      await proManagerListUsersExport({ session: { user_email: 'pm@example.com' } } as any, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
     });
   });
 

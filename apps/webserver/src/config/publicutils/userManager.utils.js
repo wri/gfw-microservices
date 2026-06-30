@@ -48,6 +48,7 @@ import { UserAccessLevel } from '@wri-monorepos/constants';
 import {
   createNewUser as createNewUserQuery,
   updateUser as updateUserQuery,
+  setUserStatus
 } from '@wri-monorepos/sql';
 
 const lstTitles = [
@@ -303,55 +304,54 @@ export const activateUser = (
  * @param  {Number}   user_id A number containing the user ID of the user you want to deactivate.
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
-export const deactivateUser = (req, user_id) => {
-  return new Promise((resolve, reject) => {
-    // Make sure the user is an Administrator before making the call.
-    if (!isAdministrator(req)) {
-      const errMessage = langResources.getResourceString('userIsNotAnAdmin');
-      throw errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotAdmin,
-        errMessage,
-        errMessage
-      );
-    }
+export const deactivateUser = async (req, user_id) => {
+  // Make sure the user is an Administrator before making the call.
+  if (!isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+
+  try {
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
       { field: 'statusID', type: sql.Int, value: USER_STATUS.Inactive },
       { field: 'activatedTime', type: sql.SmallDateTime, value: null },
+      { field: 'deactivationDate', type: sql.SmallDateTime, value: new Date() },
     ];
-    // Set User Status.
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspSetUserStatus', params)
-      .then(() => {
-        // Setup Parameters to pass to set status SP.
-        const parameters = [
-          { field: 'orgID', type: sql.Int, value: req.session.organization_id },
-          { field: 'OrgUserID', type: sql.Int, value: user_id },
-          { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Inactive },
-        ];
-        // Set User Status in the Routes Table.
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.User.UserDeactivated,
-          `User ID ${user_id} has been deactivated.`
-        );
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToDeactiveUser,
-          'Failed to deactivate user',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+
+    // Set User Status in the organization's database.
+    await sqlUtils.executeOrganizationQuery(req, setUserStatus, params);
+
+    // Setup Parameters to pass to the system-level status SP.
+    const parameters = [
+      { field: 'orgID', type: sql.Int, value: req.session.organization_id },
+      { field: 'OrgUserID', type: sql.Int, value: user_id },
+      { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Inactive },
+    ];
+
+    // Set User Status in the system-wide UserRoutes Table.
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.User.UserDeactivated,
+      `User ID ${user_id} has been deactivated.`
+    );
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToDeactiveUser,
+      'Failed to deactivate user',
+      error?.message
+    );
+    throw errorObject;
+  }
 };
 
 /**
@@ -632,27 +632,25 @@ export const updateUserInfo = ({
  * @return  true if successful, false otherwise.
  */
 export const setStatus = (req, status_id) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userEmail', type: sql.VarChar(50), value: req.session.user_email },
       { field: 'statusID', type: sql.Int, value: status_id },
     ];
     // Set User Status.
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspSetUserStatus', params)
-      .then(() => {
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToSetStatus,
-          'Failed to set status ID of user',
-          errorMessage
-        );
-        reject(errorObject);
-      });
+    try {
+      await sqlUtils.executeSystemQuery(setUserStatus, params);
+      resolve(true);
+    } catch (error) {
+      const errorObject = errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.failedToSetStatus,
+        'Failed to set status ID of user',
+        error?.message || error
+      );
+      reject(errorObject);
+    }
   });
 };
 

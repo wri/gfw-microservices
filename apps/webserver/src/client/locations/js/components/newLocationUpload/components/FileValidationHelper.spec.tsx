@@ -1,16 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { FileValidationHelper } from './FileValidationHelper';
 import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from '../../../../../styles/ThemeProvider';
 
 describe('FileValidationHelper', () => {
   it('should render correctly', () => {
-    render(<FileValidationHelper />);
+    render(<FileValidationHelper />, { wrapper: ThemeProvider });
 
     expect(screen.getByText(/how do we validate your file for upload\?/i)).toBeInTheDocument();
   });
 
   it('should trigger popover on button click', async () => {
-    render(<FileValidationHelper />);
+    render(<FileValidationHelper />, { wrapper: ThemeProvider });
 
     const titleText = /file validation process:/i;
     const button = screen.getByRole('button', {

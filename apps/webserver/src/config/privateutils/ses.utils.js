@@ -1,11 +1,11 @@
 /* eslint-disable consistent-return */
 /* eslint-disable camelcase */
 /* eslint-disable default-case */
-/** ******************************************************************
+/* ******************************************************************
 *   @name: ses.utils.js
 *   @description : A utility file to allow calling various
-* functionality from AWS SDK to create and
-* send SES notifications
+*     functionalities from AWS SDK to create and
+*     send SES notifications
 *
 *   @function {sendEmail}
 
@@ -101,12 +101,13 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
         `<p>We received your GFW Pro Account application submitted on ${formatDate(
           new Date(),
           'dd MMM yyyy, hh:mm a'
-        )}.</p>` + '<p>We will review your application and respond within 2 business days.</p>';
+        )}.</p>` +
+        '<p>We will review your application. Once approved and activated, we will notify you and provide a temporary password to access your account.</p>';
       break;
     case config.platformVars.emailType.ORGANIZATION_ACTIVATED:
       title = `<h3>Dear ${content.user_first_name} ${content.user_last_name},</h3>`;
-      msg = `<p>Welcome to Global Forest Watch Pro. Your account has been approved.' +
-      'If this is your first time using the GFW Pro platform, you will be receiving a separate email with login instructions as well.</p>`;
+      msg =
+        '<p>Welcome to Global Forest Watch Pro. Your account has been approved. If this is your first time using the GFW Pro platform, you will receive a separate email with login instructions as well.</p>';
       break;
     case config.platformVars.emailType.VERIFY_AUTHENTICATION:
       title = 'Dear GFW Pro User,';
@@ -126,12 +127,12 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS:
       title = `Dear ${req.session.user_first_name} ${req.session.user_last_name},`;
-      msg = `Diagnostics and List Views rerun process for the GFW Pro list ${content.list_name} has started and will be completed shortly. Please expect email notification upon completion.`;
+      msg = `Diagnostics and List Views re-run process for the GFW Pro list ${content.list_name} has started and will be completed shortly. Please expect an email notification upon completion.`;
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_ERROR:
       title = 'Unable to process';
       msg =
-        `<p>Diagnostic and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>.</p>` +
+        `<p>Diagnostics and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>.</p>` +
         '<p>Try again and if the problem persists please contact the GFW Pro support team for help and additional information by filling out this <a href="https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363" style="color: #404041; text-decoration: underline;">support form</a>. </p>';
       hasClosing = false;
       break;
@@ -141,7 +142,7 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
       hasClosing = false;
       break;
     case config.platformVars.emailType.ORGANIZATION_APPROVED:
-      title = `Dear ${content.user_first_name} ${content.user_last_name},</h3><p>Thank you for your GFW Pro account application.</p><p>We are pleased to inform you that your profile has been activated.</p><p>You will receive a separate email with your username and a temporary password.</p>`;
+      title = `<h3>Dear ${content.user_first_name} ${content.user_last_name},</h3><p>Thank you for your GFW Pro account application.</p><p>We are pleased to inform you that your profile has been activated.</p><p>You will receive a separate email with your username and a temporary password.</p>`;
       msg =
         `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td><u>Account Profile</u></td></tr><tr><td>Company Name:</td><td>${
           content.org_name

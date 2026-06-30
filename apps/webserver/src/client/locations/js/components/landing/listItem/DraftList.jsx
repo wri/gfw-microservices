@@ -139,11 +139,7 @@ function DraftList({
         <div className="locations-list__controls" onClick={(e) => e.stopPropagation()}>
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
-          <ListDiagnosticStatusDraft
-            submitForAnalysis={submitForAnalysis}
-            hideSubmit={showRerunOpt}
-          />
-          {showNonOwnerDraft && (
+          {showNonOwnerDraft ? (
             <span className="DiagnosticStatusDraft__label">
               <CustomTooltip
                 placement="top"
@@ -153,6 +149,11 @@ function DraftList({
                 iconHeight={16}
               />
             </span>
+          ) : (
+            <ListDiagnosticStatusDraft
+              submitForAnalysis={submitForAnalysis}
+              hideSubmit={showRerunOpt}
+            />
           )}
         </div>
 

@@ -14,6 +14,11 @@ import {
 import { USER_STATUS, USER_STATUS_LABELS } from '../../../../config/env/userStatuses.constants';
 
 import { profilePage } from '../../../common/js/config';
+import {
+  LANGUAGE_OPTIONS,
+  getDefaultLanguageForCountry,
+  normalizeCountryToken,
+} from '../../../common/js/constants/userLanguage.constants';
 import * as userProfileService from '../services/userProfileService.ts';
 import { Link, PillButton } from '../../../components';
 import GfwSelect from '../../../common/js/components/GfwSelect';
@@ -64,9 +69,32 @@ const AUTH_PREFERENCE = {
   PASSWORD: 2,
 };
 
+const getOrgCountry = (currentAccount) => {
+  const orgAddress = currentAccount?.organization_address || '';
+  const addressTokens = orgAddress
+    .split(',')
+    .map((token) => normalizeCountryToken(token))
+    .filter(Boolean);
+
+  return addressTokens.length ? addressTokens[addressTokens.length - 1] : '';
+};
+
+const getDefaultLanguageFromOrgCountry = (currentAccount) => {
+  const orgCountry = getOrgCountry(currentAccount);
+  return getDefaultLanguageForCountry(orgCountry);
+};
+
 export default function UserProfile(props) {
-  const { titlesData, currentUser, geographiesData, commoditiesData, userInfo, users, userOnly } =
-    props;
+  const {
+    titlesData,
+    currentUser,
+    currentAccount,
+    geographiesData,
+    commoditiesData,
+    userInfo,
+    users,
+    userOnly,
+  } = props;
 
   // Helper to validate a single field
   const validateField = (fieldValue, { validations, mandatoryChecks, text }) => {
@@ -80,6 +108,10 @@ export default function UserProfile(props) {
 
   // Initial derived values
   const newUserInitial = !currentUser.email;
+  const defaultLanguage = getDefaultLanguageFromOrgCountry(currentAccount);
+  const initialLanguage = (
+    currentUser.language || (newUserInitial ? defaultLanguage : 'EN')
+  ).toUpperCase();
   const geographyArray = parseMultiIds(currentUser.user_geography_ids);
   const geographiesInitial =
     geographiesData && geographiesData.length
@@ -130,6 +162,9 @@ export default function UserProfile(props) {
     secret: '',
     secret_url: '',
     updating: false,
+    preferred_language: initialLanguage,
+    selectedDropdownLanguageOption:
+      LANGUAGE_OPTIONS.find((option) => option.value === initialLanguage) || LANGUAGE_OPTIONS[0],
   }));
 
   // Small helper to update state
@@ -189,13 +224,14 @@ export default function UserProfile(props) {
 
         if (!parsedResponse) {
           updateState(createErrorDialog('Activation failed: invalid server response.'));
-          return;
+          return false;
         }
 
         const { errorCode, userMessage } = parsedResponse;
 
         if (errorCode) {
           updateState(createErrorDialog(userMessage));
+          return false;
         } else {
           updateState({
             ...createActivationSuccessDialog(first_name, last_name),
@@ -208,9 +244,11 @@ export default function UserProfile(props) {
             activated_time: new Date(),
           };
           store.dispatch(updateUser(userObject));
+          return true;
         }
       } catch (err) {
         updateState(createErrorDialog('Activation failed.'));
+        return false;
       }
     },
     [state, updateState]
@@ -297,6 +335,7 @@ export default function UserProfile(props) {
       access_level_id: state.access_level_id,
       enableAlerts: state.enableAlerts,
       auth_preference_id: state.auth_preference_id,
+      preferred_language: state.preferred_language || null,
       geographies: (state.geographies || []).map((g) => g.value),
       commodities: (state.commodities || []).map((c) => c.value),
     };
@@ -357,6 +396,7 @@ export default function UserProfile(props) {
         user_geography_ids: (geographies || []).map((g) => g.value).join(','),
         user_id: userId,
         viirs_email_frequency: 0,
+        preferred_language: state.preferred_language || null,
       };
 
       if (newUser) {
@@ -366,6 +406,10 @@ export default function UserProfile(props) {
       } else {
         store.dispatch(updateUser(userObject));
         store.dispatch(updateCurrentUser(userObject));
+        updateState({
+          ...createSuccessDialog('User profile updated successfully.', 'User updated'),
+          updating: false,
+        });
       }
     } catch (err) {
       updateState({
@@ -440,6 +484,16 @@ export default function UserProfile(props) {
     [state, updateState]
   );
 
+  const handleDropdownLanguageSelection = useCallback(
+    (evt) => {
+      const selectedDropdownLanguageOption = LANGUAGE_OPTIONS.find(
+        (option) => option.value === evt.value
+      );
+      updateState({ selectedDropdownLanguageOption, preferred_language: evt.value });
+    },
+    [updateState]
+  );
+
   // Multi select handlers
   const handleGeographiesChange = useCallback(
     (results) => updateState({ geographies: results }),
@@ -476,6 +530,7 @@ export default function UserProfile(props) {
     selectedDropdownTitleOption,
     dropdownTitleOptions: dropdownTitleOptionsState,
     dropdownAccessLevelOptions,
+    selectedDropdownLanguageOption,
   } = state;
 
   const dialogContent =
@@ -657,6 +712,18 @@ export default function UserProfile(props) {
               onChange={(evt) => handleDropdownTitleSelection(evt)}
               id="title-select"
               required
+            />
+          </div>
+
+          <div className="input-field__block-container">
+            <label htmlFor="language-select" className="block-label">
+              Preferred Language
+            </label>
+            <GfwSelect
+              value={selectedDropdownLanguageOption}
+              options={LANGUAGE_OPTIONS}
+              onChange={(evt) => handleDropdownLanguageSelection(evt)}
+              id="language-select"
             />
           </div>
 

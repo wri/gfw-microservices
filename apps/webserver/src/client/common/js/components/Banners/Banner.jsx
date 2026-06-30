@@ -21,6 +21,7 @@ export default class Banner extends Component {
         <div className="banner__inner">
           <div className="banner__content">
             {intent === 'alert' && <IconLightbulbExclamation className="banner__icon" />}
+            {intent === 'info' && <IconLightbulbExclamation className="banner__icon" />}
             {intent === 'danger' && <IconExclamationTriangle className="banner__icon" />}
             {intent === 'new' && <IconStar className="banner__icon" />}
             {intent === 'positive' && <IconCheck className="banner__icon" />}
@@ -39,6 +40,6 @@ export default class Banner extends Component {
 Banner.propTypes = {
   children: PropTypes.element.isRequired,
   className: PropTypes.string,
-  intent: PropTypes.oneOf(['alert', 'danger', 'new', 'positive', 'notice']),
+  intent: PropTypes.oneOf(['alert', 'info', 'danger', 'new', 'positive', 'notice']),
   onBannerClose: PropTypes.func,
 };

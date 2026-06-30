@@ -28,6 +28,20 @@ $lightGray: rgba(158, 158, 158, 0.3);
 .map-container {
   width: 100%;
   height: 600px;
+  position: relative;
+}
+
+// High-zoom accuracy warning: non-intrusive inline message centered at the bottom of the map.
+.map-zoom-warning {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  width: auto;
+  max-width: 560px;
+  margin: 0;
+  pointer-events: none;
 }
 
 .map__header {

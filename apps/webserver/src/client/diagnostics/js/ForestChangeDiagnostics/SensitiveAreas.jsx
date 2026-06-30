@@ -5,6 +5,7 @@ import Highcharts from 'highcharts';
 import _range from 'lodash/range';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import InfoBubble from '../../../common/js/components/InfoBubble';
+import Banner from '../../../common/js/components/Banners/Banner';
 
 import {
   formatNum,
@@ -553,6 +554,12 @@ export default class SensitiveAreas extends Component {
 
     const { startYear, endYear, sliderActive } = this.state;
 
+    // Small-polygon disclaimer: when no forest loss is counted yet the selected location(s)
+    // are tiny, loss pixels can be visible on the map but excluded because their centroid
+    // falls outside the polygon. See GPV-4587.
+    const totalArea = this.props.parseYearlyData('total_area', startYear, endYear);
+    const showCentroidWarning = totals.totalTCL === 0 && totalArea < 2;
+
     let lossLabel = <span key="SensitiveAreasLossLabel__default">Loss, all years (ha)</span>;
     if (startYear === endYear) {
       lossLabel = <span key="SensitiveAreasLossLabel__same-years">Loss, ({startYear}) (ha)</span>;
@@ -586,6 +593,16 @@ export default class SensitiveAreas extends Component {
         }`}
       >
         <h2 className="locations-diagnostics__subtitle">Sensitive Areas</h2>
+
+        {showCentroidWarning && (
+          <Banner intent="info" className="diagnostics-centroid-warning">
+            <span>
+              There may be forest loss visible in the map image that isn&apos;t counted in numerical
+              reports because the loss pixel centroid falls outside the selected location(s). This
+              is expected behavior that helps reduce false positives.
+            </span>
+          </Banner>
+        )}
 
         <DiagnosticsChartHeader
           title={'Loss of Forests'}

@@ -25,7 +25,7 @@ import {
   createNewAccount,
   getListOfUsers,
   updatePendingAccount as updatePendingAccountQuery,
-  getAccountProfile as getAccountProfileQuery
+  getAccountProfile as getAccountProfileQuery,
 } from '@wri-monorepos/sql';
 import config from '../config';
 

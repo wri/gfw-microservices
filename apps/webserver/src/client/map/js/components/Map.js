@@ -98,6 +98,7 @@ import { getQueryParams } from './getQueryParams';
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
 import Warning from './controls/Warning';
+import Banner from '../../../common/js/components/Banners/Banner';
 import Legend from './legend/Legend';
 import LayerPanel from './layerPanel/LayerPanel';
 import DrawShapeNoteDetailsModal from './modals/DrawShapeNoteDetailsModal';
@@ -123,6 +124,7 @@ import {
   PLANET_BASEMAP_REFERENCE_LAYER_VECTOR_TILE_STYLE,
   USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID,
   MAP_WATER_COLOR,
+  HIGH_ZOOM_WARNING_LEVEL,
 } from '../config/map.config';
 
 // Services
@@ -195,6 +197,7 @@ class Map extends Component {
       dialogTitle: '',
       dialogMessage: '',
       esriJson: {},
+      highZoomWarning: false,
       activeGFWList: '',
       locationName: '',
       globalIds: [],
@@ -333,6 +336,12 @@ class Map extends Component {
       this.zoomUpdateTimeout = setTimeout(() => {
         this.updateCoordinateTextFontSizes(newZoom);
       }, 100); // Wait 100ms after zoom stops changing
+
+      // Surface the high-zoom accuracy warning past the threshold; hide it when zooming back out.
+      const shouldWarn = newZoom >= HIGH_ZOOM_WARNING_LEVEL;
+      if (shouldWarn !== this.state.highZoomWarning) {
+        this.setState({ highZoomWarning: shouldWarn });
+      }
     });
 
     mapView.when(this.mapLoaded);
@@ -2913,6 +2922,14 @@ class Map extends Component {
 
         <div style={containerStyle} className="map-container">
           <div style={mapStyle} ref="mapView" />
+          {this.state.highZoomWarning && (
+            <Banner intent="info" className="map-zoom-warning">
+              <span>
+                At this zoom level, individual map pixels may not exactly match analysis metrics due
+                to geographic projection differences.
+              </span>
+            </Banner>
+          )}
         </div>
       </Page>
     );

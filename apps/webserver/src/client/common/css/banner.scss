@@ -52,6 +52,17 @@
     }
   }
 
+  // Info Blue Banner (inline message)
+  &--info {
+    background: $theme-non-x-light-blue;
+  }
+
+  &--info & {
+    &__icon {
+      color: $theme-non-blue;
+    }
+  }
+
   // Danger Red Banner
   &--danger {
     background: $theme-danger-x-light-red;

@@ -48,7 +48,7 @@ import { UserAccessLevel } from '@wri-monorepos/constants';
 import {
   createNewUser as createNewUserQuery,
   updateUser as updateUserQuery,
-  setUserStatus
+  setUserStatus,
 } from '@wri-monorepos/sql';
 
 const lstTitles = [

@@ -147,7 +147,7 @@ export const chartDatasetConfigs = {
       { id: 'lessRestricted', color: '#eb5027', legend: 'Less Restricted' },
       {
         id: 'Outside of Protected Areas',
-        legend: 'Outside of Protected Areas',
+        legend: 'Non-overlap with Protected Areas',
         color: nonOverlapAreaColor,
         checked: true,
       },
@@ -163,7 +163,7 @@ export const chartDatasetConfigs = {
       {
         id: 'nonIndigenous',
         color: nonOverlapAreaColor,
-        legend: 'Outside of Indigenous Territories',
+        legend: 'Non-overlap with Indigenous Territories',
       },
     ],
   },

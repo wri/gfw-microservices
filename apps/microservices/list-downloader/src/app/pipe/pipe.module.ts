@@ -11,6 +11,7 @@ import { SqlModule } from '@wri-monorepos/sql';
 import { ListGeneratorService } from './list.generator.service';
 import { AfiGeneratorService } from './afi.generator.service';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
+import { ProManagerUsersFileService } from './pro-manager-users.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { FilesModule } from '../files';
 import { DataModule } from '../data';
@@ -23,6 +24,7 @@ import { DownloadActivityLogService } from '../services/download-activity-log.se
   imports: [envModule, AwsModule, SqlModule, FilesModule, DataModule],
   providers: [
     AccountUsersAnalysisUsageFileService,
+    ProManagerUsersFileService,
     AfiGeneratorService,
     AlertsGeneratorService,
     DashboardService,

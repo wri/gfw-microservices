@@ -941,11 +941,13 @@ export const EXCEL_TEMPLATES = {
           attribute: 'protected_areas_by_category_area',
           type: 'country',
           label: 'Argentina Protected Areas',
+          nonOverlapLabel: 'Non-overlap with Protected Areas',
         },
         {
           attribute: 'landmark_by_category_area',
           type: 'country',
           label: 'Argentina Indigenous Territories',
+          nonOverlapLabel: 'Non-overlap with Indigenous Territories',
         },
       ],
     },
@@ -969,11 +971,13 @@ export const EXCEL_TEMPLATES = {
           attribute: 'protected_areas_by_category_area',
           type: 'country',
           label: 'Argentina Protected Areas',
+          nonOverlapLabel: 'Non-overlap with Protected Areas',
         },
         {
           attribute: 'landmark_by_category_area',
           type: 'country',
           label: 'Argentina Indigenous Territories',
+          nonOverlapLabel: 'Non-overlap with Indigenous Territories',
         },
       ],
     },
@@ -1055,11 +1059,13 @@ export const EXCEL_TEMPLATES = {
           attribute: 'protected_areas_by_category_area',
           type: 'category',
           label: 'Protected Areas',
+          nonOverlapLabel: 'Non-overlap with Protected Areas',
         },
         {
           attribute: 'landmark_by_category_area',
           type: 'category',
           label: 'Indigenous Territories',
+          nonOverlapLabel: 'Non-overlap with Indigenous Territories',
         },
       ],
     },
@@ -1083,11 +1089,13 @@ export const EXCEL_TEMPLATES = {
           attribute: 'protected_areas_by_category_area',
           type: 'category',
           label: 'Protected Areas',
+          nonOverlapLabel: 'Non-overlap with Protected Areas',
         },
         {
           attribute: 'landmark_by_category_area',
           type: 'category',
           label: 'Indigenous Territories',
+          nonOverlapLabel: 'Non-overlap with Indigenous Territories',
         },
       ],
     },
@@ -1584,6 +1592,18 @@ export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Effective Rate Date',
   'Date/Timestamp',
   'UI/API',
+];
+
+export const PRO_MANAGER_USERS_CSV_HEADER = [
+  'First Name',
+  'Last Name',
+  'Email',
+  'Access Level',
+  'Organization Name',
+  'Activation Date',
+  'Deactivation Date',
+  'Country',
+  'Language',
 ];
 
 export const GREEN_HOUSE_GAS_EMISSIONS_HEADER = {

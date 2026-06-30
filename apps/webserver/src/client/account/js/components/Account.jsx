@@ -410,7 +410,9 @@ export default class Account extends Component {
           <Grid container spacing={2} sx={{ paddingBottom: 2 }}>
             <Grid item xs={7}>
               <section>
-                <h2 className="section-title-large">Account Information</h2>
+                <h2 className="section-title-large">
+                  {requestAccountStrings.sectionTitles.accountInfo}
+                </h2>
                 <div>
                   <div className="input-field__block-container">
                     <label htmlFor="org_name" className="block-label profile-label required-param">
@@ -528,7 +530,9 @@ export default class Account extends Component {
                 </div>
               </section>
               <section>
-                <h2 className="section-title-x-large">Account Manager Contact Information</h2>
+                <h2 className="section-title-large">
+                  {requestAccountStrings.sectionTitles.accountManagerContactInfo}
+                </h2>
 
                 <div className="input-field__block-container">
                   <label

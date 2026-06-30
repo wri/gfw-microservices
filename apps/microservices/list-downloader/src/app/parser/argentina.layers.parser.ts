@@ -92,9 +92,10 @@ class ArgentinaLayerUtil {
   /**
    * inserts into layerData the non-overlap values from data if greater than zero
    * clears all entries if all values are zero
+   * @param nonOverlapLabel label for the non-overlap row (defaults to 'Non-Overlap')
    * @returns this
    */
-  handleNonOverlapDifference() {
+  handleNonOverlapDifference(nonOverlapLabel = 'Non-Overlap') {
     const totalArea = getTotalArea(this.data, 'ARG');
     const sumOfValues = this.accumulateEntryValues();
     const nonOverlapValue = totalArea - sumOfValues;
@@ -104,7 +105,7 @@ class ArgentinaLayerUtil {
     }
 
     if (nonOverlapValue > 0) {
-      this.layerData.push(['Non-Overlap', nonOverlapValue]);
+      this.layerData.push([nonOverlapLabel, nonOverlapValue]);
     }
 
     return this;
@@ -138,7 +139,7 @@ class ArgentinaLayerUtil {
 }
 
 const parseArgentinaLayer = (operation, data, dataRow, csvData, type) => {
-  const { attribute, limit, label } = operation;
+  const { attribute, limit, label, nonOverlapLabel } = operation;
 
   // parse property from the data source
   const layer = new ArgentinaLayerUtil(attribute, data, type);
@@ -146,7 +147,7 @@ const parseArgentinaLayer = (operation, data, dataRow, csvData, type) => {
   // generate rows from parsed data
   const layerGeneratedRows = layer
     .handleCategoryLayerLimit(limit)
-    .handleNonOverlapDifference()
+    .handleNonOverlapDifference(nonOverlapLabel)
     .handleRowPercentageAndFormat(attribute)
     .getLayerRowValues();
 

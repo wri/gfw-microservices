@@ -8,6 +8,7 @@
  * @param accessLevelId INT
  * @param statusId INT
  * @param email_subscription BIT
+ * @param language NCHAR(2)
  * @param commodity_ids VARCHAR(200)
  * @param geography_ids VARCHAR(200)
  * @param viirs_email_frequency INT = 0
@@ -20,10 +21,10 @@ export const createNewUser = `
 -- Insert User into Users Tables.
 INSERT INTO Users(first_name, middle_initial, last_name,
     email, phone, title_id, other_title, access_level_id, status_id, is_system_user, email_subscription,
-    viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency)
+    viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency, language)
 VALUES(@firstName, @mi, @lastName,
     @email, @phone, @titleId, @other_title, @accessLevelId, @statusId, 0, @email_subscription,
-    @viirs_email_frequency, @glad_email_frequency, @forma_email_frequency, @terrai_email_frequency, @gran_chaco_email_frequency)
+    @viirs_email_frequency, @glad_email_frequency, @forma_email_frequency, @terrai_email_frequency, @gran_chaco_email_frequency, @language)
 
 DECLARE @userID INT
 SET @userID = SCOPE_IDENTITY()

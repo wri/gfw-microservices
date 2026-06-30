@@ -3,6 +3,10 @@ const requestAccountStrings = {
     title: 'Request New Account',
     subHeader: 'Please complete all mandatory fields * below and submit.',
   },
+  sectionTitles: {
+    accountInfo: 'Account Information',
+    accountManagerContactInfo: 'Account Manager Contact Information',
+  },
   helpTooltip: {
     prefix: 'Please ensure the ',
     linkText: 'GFW Pro URL Allow List',

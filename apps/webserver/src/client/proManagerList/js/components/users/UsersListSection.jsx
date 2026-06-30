@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Alert, Snackbar } from '@mui/material';
 import UsersListTable from './UsersListTable';
 import '../../../css/proManagerList.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
@@ -10,6 +11,11 @@ function UsersListSection({ isLoading, setIsLoading }) {
   const [userSortingCategory, setUserSortingCategory] = useState('first_name');
   const [userDir, setUserDir] = useState('desc');
   const [promanagerData, setPromanagerData] = useState({});
+  const [exportFeedback, setExportFeedback] = useState({
+    open: false,
+    severity: 'success',
+    message: '',
+  });
 
   useEffect(() => {
     fetch('/pro-manager-list/users', {
@@ -146,8 +152,43 @@ function UsersListSection({ isLoading, setIsLoading }) {
     return sortedUser;
   };
 
-  const exportUsers = () => {
-    // TODO GPV-5430: Wire/connect users list export functionality to backend route and implement error handling
+  const exportUsers = async () => {
+    try {
+      const response = await fetch('/pro-manager-list/users/export', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Export request failed with status ${response.status}`);
+      }
+
+      // The file is generated asynchronously by the list-downloader service and
+      // delivered to the requesting user by email.
+      setExportFeedback({
+        open: true,
+        severity: 'success',
+        message: 'Your users export is being generated and will be emailed to you shortly.',
+      });
+    } catch (error) {
+      errorLogger.error('Error exporting users list', {
+        component: 'UsersListSection',
+        action: 'exportUsers',
+        error,
+      });
+      setExportFeedback({
+        open: true,
+        severity: 'error',
+        message: 'Something went wrong while exporting the users list. Please try again.',
+      });
+    }
+  };
+
+  const closeExportFeedback = () => {
+    setExportFeedback((prev) => ({ ...prev, open: false }));
   };
 
   const getUserLists = () => {
@@ -178,6 +219,20 @@ function UsersListSection({ isLoading, setIsLoading }) {
           exportUsers={exportUsers}
         />
       )}
+      <Snackbar
+        open={exportFeedback.open}
+        autoHideDuration={6000}
+        onClose={closeExportFeedback}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={closeExportFeedback}
+          severity={exportFeedback.severity}
+          sx={{ width: '100%' }}
+        >
+          {exportFeedback.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

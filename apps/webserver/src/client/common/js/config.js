@@ -83,8 +83,6 @@ export const nav = {
   about: 'About',
   users: 'Users',
   blog: 'Blog',
-  selectLangageSpanish: 'Español',
-  selectLangageEnglish: 'English',
   myGfwPro: 'My GFW Pro',
   username: 'Username',
   usernameOrEmail: 'Username or email',

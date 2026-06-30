@@ -79,6 +79,16 @@ export interface AccountUsersUsageRequest extends BasicFieldsFileRequest {
   endDate?: string;
 }
 
+/**
+ * Request for the Pro Manager users CSV export (GPV-5430). The export covers every
+ * GFW Pro user system-wide, so it carries no list- or organization-specific fields
+ * beyond the common request shape.
+ */
+export type ProManagerUsersExportRequest = BasicFieldsFileRequest & {
+  key: string;
+  userEmail: string;
+};
+
 // duplicate with libs/geo/src/utils/list.utils.ts for circular dependency
 export type ListFilters = {
   country?: string;

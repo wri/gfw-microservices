@@ -49,13 +49,22 @@ export const userProfileData = (req, res) => {
         // Add organization_name from account profile
         // All users in getUsersList are from the same organization as the administrator
         const orgName = accountProfile?.organization_name || req.session.organization_name;
+        const orgAddress = accountProfile?.organization_address || '';
         if (userToEdit) {
           userToEdit.organization_name = orgName;
+          userToEdit.organization_address = orgAddress;
         }
+
+        const enhancedUserInfo = {
+          ...userInfo,
+          organization_name: orgName,
+          organization_address: orgAddress,
+        };
 
         res.status(200).json({
           users: usersList,
-          userInfo, // TODO: use getAccountProfile..or should this be called accountInfo ?
+          currentAccount: accountProfile || {},
+          userInfo: enhancedUserInfo, // TODO: use getAccountProfile..or should this be called accountInfo ?
           userToEdit,
           classifications: classes,
           commodities: commoditiesData,
@@ -107,15 +116,22 @@ export const createNewUserProfile = (req, res) => {
   const isAdministrator = UserManager.isAdministrator(req);
 
   if (isAdministrator) {
-    const promises = [AuthManager.getUserInfo(req)];
+    const promises = [AuthManager.getUserInfo(req), AccountManager.getAccountProfile(req)];
 
     Promise.all(promises)
       .then((results) => {
-        const [userInfo] = results;
+        const [userInfo, accountProfile] = results;
+        const enhancedUserInfo = {
+          ...userInfo,
+          organization_name:
+            accountProfile?.organization_name || req.session.organization_name || '',
+          organization_address: accountProfile?.organization_address || '',
+        };
 
         res.status(200).json({
           users: [],
-          userInfo,
+          currentAccount: accountProfile || {},
+          userInfo: enhancedUserInfo,
           userToEdit: {},
           classifications: classes,
           commodities: commoditiesData,

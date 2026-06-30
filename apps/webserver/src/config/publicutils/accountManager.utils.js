@@ -105,7 +105,7 @@ export const requestNewAccount = (
     // Setup Parameters for a new account request.
     const params = [
       { field: 'orgName', type: sql.NVarChar(200), value: org_name },
-      { field: 'orgAddress', type: sql.NVarChar(200), value: `${org_address}, ${org_country}` },
+      { field: 'orgAddress', type: sql.NVarChar(200), value: org_address },
       { field: 'orgCountry', type: sql.NVarChar(100), value: org_country },
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },

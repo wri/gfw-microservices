@@ -29,10 +29,10 @@ CREATE TABLE #OrgCountryMap
 -- 3) Run with @DryRun = 1 first, then @DryRun = 0 after verification.
 -- 4) Revert/remove inserted values before committing.
 
-INSERT INTO #OrgCountryMap (OrgName, Country)
-VALUES
-    (N'REPLACE_ORG_NAME_1', N'REPLACE_COUNTRY_1'),
-    (N'REPLACE_ORG_NAME_2', N'REPLACE_COUNTRY_2');
+-- INSERT INTO #OrgCountryMap (OrgName, Country)
+-- VALUES
+--     (N'REPLACE_ORG_NAME_1', N'REPLACE_COUNTRY_1'),
+--     (N'REPLACE_ORG_NAME_2', N'REPLACE_COUNTRY_2');
 
 
 ------------------------------------------------------------

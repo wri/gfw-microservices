@@ -8,6 +8,7 @@
  * Ensure that the request date is not NULL before proceeding with the insertion.
  * @param orgName NVARCHAR(200)
  * @param orgAddress NVARCHAR(200)
+ * @param orgCountry NVARCHAR(100)
  * @param orgWebsite NVARCHAR(200)
  * @param isSubsidiary BIT = 0
  * @param orgParent NVARCHAR(200) = ''
@@ -36,6 +37,7 @@ export const createNewAccount = `
 	VALUES (
 		@orgName,
 		@orgAddress,
+		@orgCountry,
 		@orgWebsite,
 		@isSubsidiary,
 		@orgParent,

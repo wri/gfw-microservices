@@ -45,7 +45,11 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
 
 import { USER_STATUS } from '../env/userStatuses.constants';
 import { UserAccessLevel } from '@wri-monorepos/constants';
-import { setUserStatus } from '@wri-monorepos/sql';
+import {
+  createNewUser as createNewUserQuery,
+  updateUser as updateUserQuery,
+  setUserStatus,
+} from '@wri-monorepos/sql';
 
 const lstTitles = [
   { id: 1, title: 'Analyst' },
@@ -157,7 +161,10 @@ export function getUserEmail(req) {
  * @return  true if administrator, false otherwise.
  */
 export function isAdministrator(req) {
-  if (req.session.user_access_level_id === config.platformVars.accessLevel.Administrator) {
+  const sessionAccessLevel = Number(req?.session?.user_access_level_id);
+  const adminAccessLevel = Number(config?.platformVars?.accessLevel?.Administrator);
+
+  if (sessionAccessLevel === adminAccessLevel) {
     return true;
   }
   return false;
@@ -169,7 +176,10 @@ export function isAdministrator(req) {
  * @return  true if Editor, false otherwise.
  */
 export function isEditor(req) {
-  if (req.session.user_access_level_id === config.platformVars.accessLevel.Editor) {
+  const sessionAccessLevel = Number(req?.session?.user_access_level_id);
+  const editorAccessLevel = Number(config?.platformVars?.accessLevel?.Editor);
+
+  if (sessionAccessLevel === editorAccessLevel) {
     return true;
   }
   return false;
@@ -359,9 +369,10 @@ export const deactivateUser = async (req, user_id) => {
  * @param  {Number}   email_subscription - An integer that is either 1 or 0.
  * @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
+ * @param  {String|null} language - Preferred language code.
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
-export const createNewUser = (
+export const createNewUser = async (
   req,
   user_first_name,
   user_middle_initial,
@@ -374,6 +385,7 @@ export const createNewUser = (
   email_subscription,
   arr_user_geography_ids,
   arr_user_commodity_ids,
+  language = null,
   viirs_email_frequency = 0,
   glad_email_frequency = 0,
   forma_email_frequency = 0,
@@ -383,124 +395,135 @@ export const createNewUser = (
   let user_id;
   let uspCreateNewUser = false;
   let uspCreateNewUserRoute = false;
-  return new Promise((resolve, reject) => {
-    // Make sure the user is an Administrator before making the call.
-    if (!isAdministrator(req)) {
-      const errMessage = langResources.getResourceString('userIsNotAnAdmin');
-      throw errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotAdmin,
-        errMessage,
-        errMessage
-      );
-    }
+  const normalizedLanguage = language ? String(language).trim().toUpperCase() : null;
+  // Make sure the user is an Administrator before making the call.
+  if (!isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+
+  try {
     // Setup Parameters to pass to set status SP.
     const params = [{ field: 'userEmail', type: sql.NVarChar(50), value: user_email }];
     // Check whether the user exists in the current organization.
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetUserInfoByEmail', params)
-      .then((recordSets) => {
-        // If the user already exists, return an error.
-        if (recordSets.length) {
-          const errMessage = langResources.getResourceString('userExistsInOrg');
-          throw errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.userExists,
-            errMessage,
-            user_email
-          );
-        } else {
-          // Create the new user - Setup Parameters to pass to set status SP.
-          const parameters = [
-            { field: 'firstName', type: sql.NVarChar(35), value: user_first_name },
-            { field: 'mi', type: sql.NVarChar(2), value: user_middle_initial },
-            { field: 'lastName', type: sql.NVarChar(35), value: user_last_name },
-            { field: 'email', type: sql.NVarChar(50), value: user_email },
-            { field: 'phone', type: sql.NVarChar(50), value: user_phone },
-            { field: 'titleId', type: sql.Int, value: user_title_id },
-            { field: 'other_title', type: sql.NVarChar(150), value: other_title },
-            { field: 'accessLevelId', type: sql.Int, value: access_level_id },
-            { field: 'statusId', type: sql.Int, value: USER_STATUS.Pending },
-            { field: 'email_subscription', type: sql.Bit, value: email_subscription },
-            {
-              field: 'commodity_ids',
-              type: sql.NVarChar(200),
-              value: arr_user_commodity_ids.toString(),
-            },
-            {
-              field: 'geography_ids',
-              type: sql.NVarChar(200),
-              value: arr_user_geography_ids.toString(),
-            },
-            { field: 'viirs_email_frequency', type: sql.Int, value: viirs_email_frequency },
-            { field: 'glad_email_frequency', type: sql.Int, value: glad_email_frequency },
-            { field: 'forma_email_frequency', type: sql.Int, value: forma_email_frequency },
-            { field: 'terrai_email_frequency', type: sql.Int, value: terrai_email_frequency },
-            {
-              field: 'gran_chaco_email_frequency',
-              type: sql.Int,
-              value: gran_chaco_email_frequency,
-            },
-          ];
-          // Add user to organization.
-          return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateNewUser', parameters);
-        }
-      })
-      .then((recordSets) => {
-        const [user] = recordSets;
-        user_id = user.NewUserID;
-        uspCreateNewUser = true;
-        // Must declare before due to func structure
-        uspCreateNewUserRoute = true;
-        // Recordset received after creating user in organization.
-        if (recordSets.length) {
-          const parameters = [
-            { field: 'userEmail', type: sql.NVarChar(50), value: user_email },
-            { field: 'orgID', type: sql.Int, value: req.session.organization_id },
-            { field: 'OrgUserID', type: sql.Int, value: recordSets[0].NewUserID },
-            { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Pending },
-          ];
-          // Add to User Routes.
-          return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewUserRoute', parameters);
-        }
-        const errMessage = langResources.getResourceString('userExistsInOrg');
-        throw errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.userExists,
-          errMessage,
-          user_email
-        );
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.User.UserCreated,
-          `User ID ${user_id} has been created in status "Pending".`
-        );
-        resolve(user_id);
-      })
-      .catch((errorMessage) => {
-        if (uspCreateNewUser) {
-          rollbackUtils.deleteOrganizationTableRow(req, 'Users', user_first_name, 'first_name');
-          rollbackUtils.deleteOrganizationTableRow(req, 'UserGeographies', user_id, 'user_id');
-          rollbackUtils.deleteOrganizationTableRow(req, 'UserCommodities', user_id, 'user_id');
-        }
-        if (uspCreateNewUserRoute) {
-          rollbackUtils.dropUserRoute(req, user_email, req.session.organization_id, user_id);
-        }
-        if (Object.prototype.hasOwnProperty.call(errorMessage, 'errorCode')) {
-          reject(errorMessage);
-        } else {
-          const errorObject = errorUtils.createErrorMessage(
-            req,
-            errorUtils.ERROR_CODES.failedToCreateNewUser,
-            'Failed to create new user',
-            errorMessage
-          );
-          reject(errorObject);
-        }
-      });
-  });
+    const recordSets = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspGetUserInfoByEmail',
+      params
+    );
+
+    // If the user already exists, return an error.
+    if (recordSets.length) {
+      const errMessage = langResources.getResourceString('userExistsInOrg');
+      throw errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.userExists,
+        errMessage,
+        user_email
+      );
+    }
+
+    // Create the new user - Setup Parameters to pass to set status SP.
+    const parameters = [
+      { field: 'firstName', type: sql.NVarChar(35), value: user_first_name },
+      { field: 'mi', type: sql.NVarChar(2), value: user_middle_initial },
+      { field: 'lastName', type: sql.NVarChar(35), value: user_last_name },
+      { field: 'email', type: sql.NVarChar(50), value: user_email },
+      { field: 'phone', type: sql.NVarChar(50), value: user_phone },
+      { field: 'titleId', type: sql.Int, value: user_title_id },
+      { field: 'other_title', type: sql.NVarChar(150), value: other_title },
+      { field: 'accessLevelId', type: sql.Int, value: access_level_id },
+      { field: 'statusId', type: sql.Int, value: USER_STATUS.Pending },
+      { field: 'email_subscription', type: sql.Bit, value: email_subscription },
+      { field: 'language', type: sql.NChar(2), value: normalizedLanguage },
+      {
+        field: 'commodity_ids',
+        type: sql.NVarChar(200),
+        value: arr_user_commodity_ids.toString(),
+      },
+      {
+        field: 'geography_ids',
+        type: sql.NVarChar(200),
+        value: arr_user_geography_ids.toString(),
+      },
+      { field: 'viirs_email_frequency', type: sql.Int, value: viirs_email_frequency },
+      { field: 'glad_email_frequency', type: sql.Int, value: glad_email_frequency },
+      { field: 'forma_email_frequency', type: sql.Int, value: forma_email_frequency },
+      { field: 'terrai_email_frequency', type: sql.Int, value: terrai_email_frequency },
+      {
+        field: 'gran_chaco_email_frequency',
+        type: sql.Int,
+        value: gran_chaco_email_frequency,
+      },
+    ];
+    // Add user to organization.
+    const createdRecordSets = await sqlUtils.executeOrganizationQuery(
+      req,
+      createNewUserQuery,
+      parameters
+    );
+
+    const [rows = []] = createdRecordSets || [];
+    const [user = {}] = rows;
+    user_id = user.NewUserID;
+    uspCreateNewUser = true;
+    // Must declare before due to func structure
+    uspCreateNewUserRoute = true;
+    // Recordset received after creating user in organization.
+    if (user_id) {
+      const routeParameters = [
+        { field: 'userEmail', type: sql.NVarChar(50), value: user_email },
+        { field: 'orgID', type: sql.Int, value: req.session.organization_id },
+        { field: 'OrgUserID', type: sql.Int, value: user_id },
+        { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Pending },
+      ];
+      // Add to User Routes.
+      await sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewUserRoute', routeParameters);
+    } else {
+      const errMessage = 'Failed to create user record in organization database';
+      throw errorUtils.createErrorMessage(
+        req,
+        errorUtils.ERROR_CODES.failedToCreateNewUser,
+        errMessage,
+        user_email
+      );
+    }
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.User.UserCreated,
+      `User ID ${user_id} has been created in status "Pending".`
+    );
+    return user_id;
+  } catch (errorMessage) {
+    if (uspCreateNewUser) {
+      rollbackUtils.deleteOrganizationTableRow(req, 'Users', user_first_name, 'first_name');
+      rollbackUtils.deleteOrganizationTableRow(req, 'UserGeographies', user_id, 'user_id');
+      rollbackUtils.deleteOrganizationTableRow(req, 'UserCommodities', user_id, 'user_id');
+    }
+    if (uspCreateNewUserRoute) {
+      rollbackUtils.dropUserRoute(req, user_email, req.session.organization_id, user_id);
+    }
+    if (Object.prototype.hasOwnProperty.call(errorMessage, 'errorCode')) {
+      throw errorMessage;
+    }
+
+    const normalizedErrorMessage =
+      errorMessage instanceof Error ? errorMessage.message : String(errorMessage);
+
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToCreateNewUser,
+      'Failed to create new user',
+      normalizedErrorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /**
@@ -538,9 +561,14 @@ export const updateUserInfo = ({
   arr_user_geography_ids = [],
   arr_user_commodity_ids = [],
   user_auth_preference_id = 0,
+  user_preferred_language = null,
   loggedUserAccessLevelId,
 }) => {
   return new Promise((resolve, reject) => {
+    const normalizedLanguage = user_preferred_language
+      ? String(user_preferred_language).trim().toUpperCase()
+      : null;
+
     const params = [
       { field: 'userId', type: sql.Int, value: user_id },
       { field: 'firstName', type: sql.NVarChar(35), value: user_first_name },
@@ -553,6 +581,7 @@ export const updateUserInfo = ({
       { field: 'email_subscription', type: sql.Bit, value: email_subscription },
       { field: 'commodity_ids', type: sql.VarChar(200), value: arr_user_commodity_ids.toString() },
       { field: 'geography_ids', type: sql.VarChar(200), value: arr_user_geography_ids.toString() },
+      { field: 'language', type: sql.NChar(2), value: normalizedLanguage },
     ];
     const isUserAdmin = loggedUserAccessLevelId === UserAccessLevel.ADMIN;
 
@@ -563,7 +592,7 @@ export const updateUserInfo = ({
     });
 
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspUpdateUser', params)
+      .executeOrganizationQuery(req, updateUserQuery, params)
       .then(() => {
         // Need to update user authentication preference - this exists in system so must do separately
         const parameters = [

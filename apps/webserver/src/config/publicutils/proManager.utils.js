@@ -333,6 +333,7 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
  * @param  {String}   user_phone - Phone for the manager (Administrative User)
  * @param  {Number}   user_title_id - Title for the manager (Administrative User)
  * @param  {String}   other_title - Title for other title
+ * @param  {String|null} preferred_language - User preferred language code.
  * @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
  * @return {Promise<Boolean>} True if successful, false otherwise.
@@ -347,10 +348,31 @@ export const updatePendingAccountUser = async (
   user_phone,
   user_title_id,
   other_title,
+  preferred_language,
   arr_user_geography_ids,
   arr_user_commodity_ids
 ) => {
   try {
+    // Backward compatibility: older callers pass only two trailing arrays (no preferred_language).
+    if (
+      Array.isArray(preferred_language) &&
+      Array.isArray(arr_user_geography_ids) &&
+      typeof arr_user_commodity_ids === 'undefined'
+    ) {
+      arr_user_commodity_ids = arr_user_geography_ids;
+      arr_user_geography_ids = preferred_language;
+      preferred_language = null;
+    }
+
+    const safeGeographyIds = Array.isArray(arr_user_geography_ids) ? arr_user_geography_ids : [];
+    const safeCommodityIds = Array.isArray(arr_user_commodity_ids) ? arr_user_commodity_ids : [];
+    const normalizedPreferredLanguage = preferred_language
+      ? String(preferred_language).trim().toLowerCase()
+      : null;
+
+    // Stored procedure currently does not persist preferred language for this flow.
+    void normalizedPreferredLanguage;
+
     // Insert the new user account
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
@@ -361,8 +383,8 @@ export const updatePendingAccountUser = async (
       { field: 'phone', type: sql.NVarChar(50), value: user_phone },
       { field: 'titleId', type: sql.Int, value: user_title_id },
       { field: 'other_title', type: sql.NVarChar(150), value: other_title },
-      { field: 'geography_ids', type: sql.NVarChar(200), value: arr_user_geography_ids.toString() },
-      { field: 'commodity_ids', type: sql.NVarChar(200), value: arr_user_commodity_ids.toString() },
+      { field: 'geography_ids', type: sql.NVarChar(200), value: safeGeographyIds.toString() },
+      { field: 'commodity_ids', type: sql.NVarChar(200), value: safeCommodityIds.toString() },
     ];
     await sqlUtils.executeSystemStoredProcedure(req, 'uspUpdatePendingAccountUser', params);
     return true;

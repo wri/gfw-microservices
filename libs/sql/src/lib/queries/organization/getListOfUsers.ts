@@ -20,7 +20,8 @@ DECLARE @CompiledUsers TABLE
   [glad_email_frequency] INT,
   [forma_email_frequency] INT,
   [terrai_email_frequency] INT,
-  [gran_chaco_email_frequency] INT
+  [gran_chaco_email_frequency] INT,
+  [language] NCHAR(2)
 )
 
 -- Setup a new cursor to go through each user.
@@ -53,13 +54,15 @@ BEGIN
   DECLARE @forma_email_frequency INT
   DECLARE @terrai_email_frequency INT
   DECLARE @gran_chaco_email_frequency INT
+  DECLARE @language NCHAR(2)
 
   SELECT @first_name = first_name, @middle_initial = middle_initial,
   @last_name = last_name, @email = email, @phone = phone, @title_id = title_id, @other_title = other_title,
   @access_level_id = access_level_id, @status_id = status_id,
   @email_subscription = email_subscription, @activated_time = activated_time,
   @viirs_email_frequency = viirs_email_frequency, @glad_email_frequency = glad_email_frequency, @forma_email_frequency = forma_email_frequency,
-  @terrai_email_frequency = terrai_email_frequency, @gran_chaco_email_frequency = gran_chaco_email_frequency
+  @terrai_email_frequency = terrai_email_frequency, @gran_chaco_email_frequency = gran_chaco_email_frequency,
+  @language = language
   FROM Users WHERE id = @userID
 
   -- Obtain User Commodities Info.
@@ -79,7 +82,7 @@ BEGIN
   INSERT INTO @CompiledUsers
   VALUES(@first_name, @middle_initial, @last_name, @email, @phone, @title_id, @other_title, @access_level_id,
     @arrCommodities, @arrGeographies, @email_subscription, @auth_preference_id, @status_id, @activated_time, @userID,
-    @viirs_email_frequency, @glad_email_frequency, @forma_email_frequency, @terrai_email_frequency, @gran_chaco_email_frequency)
+    @viirs_email_frequency, @glad_email_frequency, @forma_email_frequency, @terrai_email_frequency, @gran_chaco_email_frequency, @language)
 
   -- Fetch Next Row.
   FETCH NEXT FROM user_cursor
@@ -115,4 +118,5 @@ export interface ListOfUsersType {
   forma_email_frequency: number;
   terrai_email_frequency: number;
   gran_chaco_email_frequency: number;
+  language: string;
 }

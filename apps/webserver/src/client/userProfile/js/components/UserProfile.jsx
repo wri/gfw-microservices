@@ -406,6 +406,10 @@ export default function UserProfile(props) {
       } else {
         store.dispatch(updateUser(userObject));
         store.dispatch(updateCurrentUser(userObject));
+        updateState({
+          ...createSuccessDialog('User profile updated successfully.', 'User updated'),
+          updating: false,
+        });
       }
     } catch (err) {
       updateState({

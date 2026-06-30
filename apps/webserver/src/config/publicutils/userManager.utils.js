@@ -327,6 +327,12 @@ export const deactivateUser = async (req, user_id) => {
 
     // Set User Status in the system-wide UserRoutes Table.
     await sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.User.UserDeactivated,
+      `User ID ${user_id} has been deactivated.`
+    );
   } catch (error) {
     const errorObject = errorUtils.createErrorMessage(
       req,

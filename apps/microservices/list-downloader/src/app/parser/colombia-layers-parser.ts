@@ -28,7 +28,8 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   }
 
   composites.forEach((composite) => {
-    const { type, label, attribute, hasSecondarySubLayers, constantLayers } = composite;
+    const { type, label, attribute, hasSecondarySubLayers, constantLayers, nonOverlapLabel } =
+      composite;
 
     if (type !== 'yearly' && type !== 'category') {
       return;
@@ -145,7 +146,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
         csvData.push([
           ...dataRow,
           label,
-          'Non-overlap',
+          nonOverlapLabel ?? 'Non-overlap',
           nonOverlap,
           getOverlapPercentage(nonOverlap, totalArea),
           '',

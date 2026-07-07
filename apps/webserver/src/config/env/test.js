@@ -7,7 +7,7 @@
 module.exports = {
   port: 3000,
   sessionVars: {
-    secret: 'TheSecretSession',
+    secret: 'anything',
   },
   devTestUserAuthSecret: 'unsafe',
 };

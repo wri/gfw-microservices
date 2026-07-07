@@ -37,7 +37,7 @@ graph TD;
 
 Each of the 3 microservices (EAPI, LP, LD) and the webserver also communicate with a SQL DB
 (running on an EC2 instance). DB schema for tables associated with lists is documented at
-https://gfw.atlassian.net/wiki/spaces/GPS/pages/1888944174/Database+schema+for+lists
+[Database schema for lists](./DBSchemaForLists.md)
 
 For more information on connections between services, see
 https://github.com/wri/gfwpro-infrastructure/blob/develop/README.md.

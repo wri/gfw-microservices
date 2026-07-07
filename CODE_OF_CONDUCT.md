@@ -69,8 +69,9 @@ please report it privately to repository maintainers.
 
 Preferred reporting options:
 
-1. Open a private GitHub issue directed to maintainers, or
-2. Contact maintainers through the organization's established private support channels.
+1. Contact maintainers through the organization's established private support channels.
+2. Use the organization's confidential ethics reporting channel:
+   https://www.wri.org/whistleblower-and-ethics-reporting
 
 Community moderators will review reports promptly and seek to protect the safety
 and confidentiality of everyone involved.

@@ -21,10 +21,10 @@ Create your environment file(s) as described in [README.md](README.md).
 Common commands:
 
 ```sh
-nx serve webserver
-nx serve microservices-list-processing
-nx serve microservices-list-downloader
-nx serve microservices-externalapi
+npx nx serve webserver
+npx nx serve microservices-list-processing
+npx nx serve microservices-list-downloader
+npx nx serve microservices-externalapi
 ```
 
 ## Testing, Linting, and Formatting
@@ -32,8 +32,8 @@ nx serve microservices-externalapi
 Run relevant checks before opening a pull request:
 
 ```sh
-nx test <project>
-nx lint <project>
+npx nx test <project>
+npx nx lint <project>
 npx nx format:write --files="<comma-separated-files>"
 ```
 

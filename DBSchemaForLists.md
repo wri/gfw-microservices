@@ -31,20 +31,20 @@ GFW lists are special because they are visible to all organizations and have a s
 
 - `GFWLists`: Equivalent of `Lists`.
 - `list-xxx`: Equivalent of user list `list-xxx` tables for each of the five GFW lists:
-	- AdministrativeAreas (`1`)
-	- OilPalmConcessions (`2`)
-	- PalmOilMills (`3`)
-	- ProtectedAreas (`4`)
-	- RSPOOilPalmConcessions (`5`)
+  - AdministrativeAreas (`1`)
+  - OilPalmConcessions (`2`)
+  - PalmOilMills (`3`)
+  - ProtectedAreas (`4`)
+  - RSPOOilPalmConcessions (`5`)
 - `GFWAnalyses`: Equivalent of `Analyses`.
 - `analysis-xxx`: Equivalent of user list `analysis-xxx` tables for each of the five GFW lists:
-	- AdministrativeAreas (`1`)
-	- OilPalmConcessions (`2`)
-	- PalmOilMills (`3`)
-	- ProtectedAreas (`4`)
-	- RSPOOilPalmConcessions (`5`)
+  - AdministrativeAreas (`1`)
+  - OilPalmConcessions (`2`)
+  - PalmOilMills (`3`)
+  - ProtectedAreas (`4`)
+  - RSPOOilPalmConcessions (`5`)
 - `Analyses-Dashboard`: Equivalent of user list `Analyses-Dashboard`, but only for these lists:
-	- OilPalmConcessions (`2`)
-	- PalmOilMills (`3`)
-	- RSPOOilPalmConcessions (`5`)
+  - OilPalmConcessions (`2`)
+  - PalmOilMills (`3`)
+  - RSPOOilPalmConcessions (`5`)
     - AdministrativeAreas and ProtectedAreas are not included in `Analyses-Dashboard` because they are too large.

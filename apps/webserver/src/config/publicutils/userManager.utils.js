@@ -203,7 +203,7 @@ export function isProManager(req) {
  * @param  {String}   user_email A string containing the user email of the user you want to activate.
  * @return  A promise that resolves to true if user is successfully, rejected otherwise.
  */
-export const activateUser = (
+export const activateUser = async (
   req,
   user_id,
   user_email,
@@ -211,94 +211,95 @@ export const activateUser = (
   last_name,
   unit_test = false
 ) => {
-  return new Promise((resolve, reject) => {
-    let organizationName;
-    // Make sure the user is an Administrator before making the call.
-    if (!isAdministrator(req)) {
-      const errMessage = langResources.getResourceString('userIsNotAnAdmin');
-      throw errorUtils.createErrorMessage(
-        req,
-        errorUtils.ERROR_CODES.userNotAdmin,
-        errMessage,
-        errMessage
-      );
-    }
-    // Setup Parameters to pass to set status SP.
+  let organizationName;
+
+  // Make sure the user is an Administrator before making the call.
+  if (!isAdministrator(req)) {
+    const errMessage = langResources.getResourceString('userIsNotAnAdmin');
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.userNotAdmin,
+      errMessage,
+      errMessage
+    );
+  }
+
+  try {
+    // Setup parameters to pass to set status SP.
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
       { field: 'statusID', type: sql.Int, value: USER_STATUS.Active },
       { field: 'activatedTime', type: sql.SmallDateTime, value: new Date() },
+      { field: 'deactivationDate', type: sql.SmallDateTime, value: null },
     ];
+
     // Set User Status in the organization database.
-    sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspSetUserStatus', params)
-      .then(() => {
-        // Setup Parameters to pass to set status SP.
-        const parameters = [
-          { field: 'orgID', type: sql.Int, value: req.session.organization_id },
-          { field: 'OrgUserID', type: sql.Int, value: user_id },
-          { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Active },
-        ];
-        // Set User Status in the Routes Table.
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
-      })
-      .then((recordSets) => {
-        const [record] = recordSets;
-        organizationName = record?.organization_name;
-        // Create a new secret for the user in case it is needed. Default authentication preference to be 0 - email
-        const secret = speakEasy.createSecret();
-        const parameters = [
-          { field: 'UserSecret', type: sql.VarChar(50), value: secret },
-          { field: 'UserEmail', type: sql.NVarChar(50), value: user_email },
-          { field: 'UserAuthPreferenceId', type: sql.Int, value: 0 },
-        ];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspActivateUser', parameters);
-      })
-      .then(() => {
-        // Check if the account exists in Cognito.
-        return awsCognito.userExists(user_email);
-      })
-      .then((doesUserExist) => {
-        if (doesUserExist) {
-          const subject = 'Welcome to Global Forest Watch Pro!';
-          const content = {
-            organization_name: organizationName,
-            first_name,
-            last_name,
-          };
-          const msg = awsSes.createBodyContent(
-            req,
-            config.platformVars.emailType.INVITATION,
-            content
-          );
-          // Send the token via email to the user.
-          return awsSes.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
-        }
-        // Create new user in Cognito.
-        return awsCognito.createUser(req, user_email, false, unit_test);
-      })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.User.UserActivated,
-          `User ID ${user_id} has been activated.`
-        );
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.ERROR_CODES.failedToActivateUser,
-          'Failed to activate user',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
+    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspSetUserStatus', params);
+
+    // Setup parameters to pass to set status SP.
+    const routeStatusParams = [
+      { field: 'orgID', type: sql.Int, value: req.session.organization_id },
+      { field: 'OrgUserID', type: sql.Int, value: user_id },
+      { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Active },
+    ];
+
+    // Set User Status in the Routes Table.
+    const recordSets = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspSetUserRouteStatus',
+      routeStatusParams
+    );
+    const [record] = recordSets;
+    organizationName = record?.organization_name;
+
+    // Create a new secret for the user in case it is needed. Default authentication preference to be 0 - email
+    const secret = speakEasy.createSecret();
+    const activateParams = [
+      { field: 'UserSecret', type: sql.VarChar(50), value: secret },
+      { field: 'UserEmail', type: sql.NVarChar(50), value: user_email },
+      { field: 'UserAuthPreferenceId', type: sql.Int, value: 0 },
+    ];
+    await sqlUtils.executeSystemStoredProcedure(req, 'uspActivateUser', activateParams);
+
+    // Check if the account exists in Cognito.
+    const doesUserExist = await awsCognito.userExists(user_email);
+
+    if (doesUserExist) {
+      const subject = 'Welcome to Global Forest Watch Pro!';
+      const content = {
+        organization_name: organizationName,
+        first_name,
+        last_name,
+      };
+      const msg = awsSes.createBodyContent(req, config.platformVars.emailType.INVITATION, content);
+
+      // Send the token via email to the user.
+      await awsSes.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
+    } else {
+      // Create new user in Cognito.
+      await awsCognito.createUser(req, user_email, false, unit_test);
+    }
+
+    logger.logActivity(
+      req,
+      logger.listActivityTypes.User.UserActivated,
+      `User ID ${user_id} has been activated.`
+    );
+
+    return true;
+  } catch (errorMessage) {
+    const errorObject = errorUtils.createErrorMessage(
+      req,
+      errorUtils.ERROR_CODES.failedToActivateUser,
+      'Failed to activate user',
+      errorMessage
+    );
+    throw errorObject;
+  }
 };
 
 /**
- * @function deActivateUser
+ * @function deactivateUser
  * @summary Deactivates a User that is active/pending.
  * @param  {Object}   req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param  {Number}   user_id A number containing the user ID of the user you want to deactivate.

@@ -15,7 +15,7 @@ module.exports = {
     password: process.env.MSSQL_PASSWORD,
   },
   sessionVars: {
-    secret: 'TheSecretSession',
+    secret: process.env.SESSION_SECRET || 'not-a-secret-local-dev-session-secret',
   },
   AWSVars: {
     credentials: {

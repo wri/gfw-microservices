@@ -19,6 +19,7 @@ CREATE TABLE [dbo].[PendingAccounts](
 	[id] [int] IDENTITY(1,1) NOT NULL,
 	[organization_name] [nvarchar](200) NOT NULL,
 	[organization_address] [nvarchar](200) NOT NULL,
+	[organization_country] [nvarchar](100) NULL,
 	[organization_website] [nvarchar](200) NOT NULL,
 	[organization_is_subsidiary] [bit] NOT NULL,
 	[organization_parent] [nvarchar](200) NOT NULL,

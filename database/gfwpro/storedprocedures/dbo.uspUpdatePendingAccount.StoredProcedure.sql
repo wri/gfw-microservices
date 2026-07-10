@@ -20,6 +20,7 @@ CREATE PROCEDURE [dbo].[uspUpdatePendingAccount]
 	@orgID INT,
 	@orgName NVARCHAR(200),
 	@orgAddress NVARCHAR(200),
+	@orgCountry NVARCHAR(100) = NULL,
 	@orgWebsite NVARCHAR(200),
 	@isSubsidiary BIT = 0,
 	@orgParent NVARCHAR(200) = '',
@@ -29,6 +30,7 @@ AS
 	UPDATE PendingAccounts SET
 		organization_name = @orgName,
 		[organization_address] = @orgAddress,
+		organization_country = COALESCE(@orgCountry, organization_country),
 		organization_website = @orgWebsite,
 		organization_is_subsidiary = @isSubsidiary,
 		organization_parent = @orgParent

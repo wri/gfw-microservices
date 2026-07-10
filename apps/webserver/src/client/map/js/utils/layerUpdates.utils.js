@@ -72,10 +72,25 @@ export const updateInteractiveLayers = (map, prevState, state) => {
   }
 
   // update argentineanNativeForestsLoss and treeCoverLossID
-  if (
+  const hasTreeCoverLossRangeChanged =
     prevState.treeCoverLossDateRange?.startYear !== treeCoverLossDateRange?.startYear ||
-    prevState.treeCoverLossDateRange?.endYear !== treeCoverLossDateRange?.endYear
-  ) {
+    prevState.treeCoverLossDateRange?.endYear !== treeCoverLossDateRange?.endYear;
+
+  const isTreeCoverLossLayerOutOfSync = [argentineanNativeForestsLoss, treeCoverLossID].some(
+    (layerId) => {
+      const mapLayer = map.findLayerById(layerId);
+      if (!mapLayer) {
+        return false;
+      }
+
+      return (
+        mapLayer.minYear !== treeCoverLossDateRange.startYear ||
+        mapLayer.maxYear !== treeCoverLossDateRange.endYear
+      );
+    }
+  );
+
+  if (hasTreeCoverLossRangeChanged || isTreeCoverLossLayerOutOfSync) {
     [argentineanNativeForestsLoss, treeCoverLossID].forEach((layerId) => {
       const mapLayer = map.findLayerById(layerId);
       if (mapLayer) {

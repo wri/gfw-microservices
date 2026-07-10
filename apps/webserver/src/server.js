@@ -75,10 +75,8 @@ loadenv
       process.env.NODE_ENV !== 'test'
     ) {
       const sslOptions = {
-        key: fs.readFileSync(path.join(__dirname, `config/ssl/${process.env.NODE_ENV}/gfwpro.key`)),
-        cert: fs.readFileSync(
-          path.join(__dirname, `config/ssl/${process.env.NODE_ENV}/gfwpro.crt`)
-        ),
+        key: process.env.SSL_KEY,
+        cert: process.env.SSL_CERT,
       };
       server = https.createServer(sslOptions, app);
     } else {

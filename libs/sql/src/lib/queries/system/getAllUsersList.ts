@@ -26,7 +26,10 @@ export const getAllUsersList = `
 		[auth_preference_id] INT NOT NULL,
 		[user_status_id] INT NOT NULL,
 		[user_activated_time] SMALLDATETIME NULL,
-		[user_id] INT NULL
+		[user_id] INT NULL,
+		[deactivation_date] SMALLDATETIME NULL,
+		[country] NVARCHAR(100) NULL,
+		[language] NCHAR(2) NULL
 	);
 
 	/************************************************************
@@ -124,7 +127,10 @@ export const getAllUsersList = `
 			@auth_preference_id,
 			@status_id,
 			NULL,   -- user_activated_time
-			@userid
+			@userid,
+			NULL,   -- deactivation_date
+			NULL,   -- country
+			NULL    -- language
 		);
 
 		FETCH NEXT FROM user_cursor INTO @organization_id, @organization_name;
@@ -194,7 +200,10 @@ SELECT
 	0 AS auth_preference_id,         -- keep legacy behavior
 	u.status_id AS user_status_id,
 	u.activated_time AS user_activated_time,
-	u.id AS user_id
+	u.id AS user_id,
+	u.deactivation_date,
+	u.country,
+	u.language
 FROM ' + QUOTENAME(@organization_db) + N'.dbo.Users AS u
 WHERE u.is_system_user = 0;
 ';

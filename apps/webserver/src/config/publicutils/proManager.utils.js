@@ -38,6 +38,7 @@ const AccountManager = require(path.resolve(__dirname, '../publicutils/accountMa
 const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
 // SQL Queries
 import {
+  getPendingAccountInformation,
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
   setOrganizationRenewalTime,
@@ -125,7 +126,7 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
   let userEmail = '';
   let userExists = 0;
   let orgID = 0;
-  let content = {};
+  let content = /** @type {any} */ ({});
 
   try {
     // Get data for emails
@@ -166,19 +167,16 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
 
     // Get pending account information
     const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingAccountId }];
-    const accountInfo = await sqlUtils.executeSystemStoredProcedure(
-      req,
-      'uspGetPendingAccountInformation',
-      parameters
-    );
+    const accountInfo = await sqlUtils.executeSystemQuery(getPendingAccountInformation, parameters);
 
-    const [record] = accountInfo;
+    const record = accountInfo?.[0]?.[0];
     userID = record.id;
     const titleObject =
       record.title_id === 10
         ? { title: record.other_title }
         : titles.filter((title) => title.id === record.title_id)[0];
     content = {
+      org_country: record.organization_country || '',
       org_name: record.organization_name,
       is_subsidiary: record.organization_is_subsidiary,
       parent_org_name: record.organization_parent,
@@ -276,6 +274,36 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
     userEmail = activationRecord.ManagerEmail;
     userExists = activationRecord.UserExists;
     orgID = activationRecord.orgID;
+
+    const requestedCountry =
+      typeof record.organization_country === 'string' ? record.organization_country.trim() : '';
+    if (requestedCountry) {
+      const orgDbResult = await sqlUtils.executeSystemQuery(
+        'SELECT organization_db FROM dbo.Organizations WHERE id = @orgID',
+        [{ field: 'orgID', type: sql.Int, value: orgID }]
+      );
+      const organizationDatabase = orgDbResult?.[0]?.[0]?.organization_db;
+
+      if (organizationDatabase) {
+        const orgScopedReq = {
+          ...req,
+          session: {
+            ...req.session,
+            organization_database: organizationDatabase,
+          },
+        };
+
+        await sqlUtils.executeOrganizationQuery(
+          orgScopedReq,
+          `IF COL_LENGTH('dbo.AccountProfile', 'country') IS NOT NULL
+BEGIN
+  UPDATE dbo.AccountProfile
+  SET country = @country;
+END`,
+          [{ field: 'country', type: sql.NVarChar(100), value: requestedCountry }]
+        );
+      }
+    }
 
     // Move policy
     await PolicyManager.movePolicy(req, pendingAccountId, orgID);

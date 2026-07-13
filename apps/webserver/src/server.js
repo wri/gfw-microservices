@@ -35,7 +35,7 @@ const normalizePemFromEnv = (value) => {
   }
 
   // Convert escaped newlines from .env/S3 text into real PEM newlines.
-  return normalized.replace(/\\\\n/g, '\n').replace(/\\n/g, '\n');
+  return normalized.replace(/\\\n/g, '\n').replace(/\\n/g, '\n');
 };
 
 const gracefulShutdown = async (signal) => {

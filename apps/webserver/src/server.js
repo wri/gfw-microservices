@@ -19,6 +19,25 @@ const logger = winston.createLogger({ transports: [new winston.transports.Consol
 
 logger.info('Starting the application');
 
+const normalizePemFromEnv = (value) => {
+  if (!value || typeof value !== 'string') {
+    return value;
+  }
+
+  let normalized = value.trim();
+
+  // Some env sources wrap PEM values in quotes; strip only matching outer quotes.
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1);
+  }
+
+  // Convert escaped newlines from .env/S3 text into real PEM newlines.
+  return normalized.replace(/\\\\n/g, '\n').replace(/\\n/g, '\n');
+};
+
 const gracefulShutdown = async (signal) => {
   console.log(`Stopping container for ${signal}`);
   try {
@@ -75,8 +94,8 @@ loadenv
       process.env.NODE_ENV !== 'test'
     ) {
       const sslOptions = {
-        key: process.env.SSL_KEY,
-        cert: process.env.SSL_CERT,
+        key: normalizePemFromEnv(process.env.SSL_KEY),
+        cert: normalizePemFromEnv(process.env.SSL_CERT),
       };
       server = https.createServer(sslOptions, app);
     } else {

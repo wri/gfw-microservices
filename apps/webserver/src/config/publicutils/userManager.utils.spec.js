@@ -26,6 +26,7 @@ jest.mock('../langResources', () => ({
 }));
 
 jest.mock('../privateutils/sql.utils', () => ({
+  executeOrganizationQuery: jest.fn(),
   executeOrganizationStoredProcedure: jest.fn(),
   executeSystemStoredProcedure: jest.fn(),
 }));
@@ -81,6 +82,7 @@ describe('userManager.utils activateUser', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     speakEasy.createSecret.mockReturnValue('secret-123');
+    sqlUtils.executeOrganizationQuery.mockResolvedValue([]);
     sqlUtils.executeOrganizationStoredProcedure.mockResolvedValue([]);
     sqlUtils.executeSystemStoredProcedure
       .mockResolvedValueOnce([{ organization_name: 'Test Org' }])
@@ -95,9 +97,9 @@ describe('userManager.utils activateUser', () => {
     const result = await activateUser(req, 99, 'user@example.com', 'Ana', 'User');
 
     expect(result).toBe(true);
-    expect(sqlUtils.executeOrganizationStoredProcedure).toHaveBeenCalledWith(
+    expect(sqlUtils.executeOrganizationQuery).toHaveBeenCalledWith(
       req,
-      'uspSetUserStatus',
+      expect.anything(),
       expect.arrayContaining([
         expect.objectContaining({ field: 'userID', value: 99 }),
         expect.objectContaining({ field: 'statusID' }),
@@ -142,7 +144,7 @@ describe('userManager.utils activateUser', () => {
   it('should map failures to failedToActivateUser error', async () => {
     const dbError = new Error('db failed');
     const mappedError = { errorCode: 404, userMessage: 'Failed to activate user' };
-    sqlUtils.executeOrganizationStoredProcedure.mockRejectedValue(dbError);
+    sqlUtils.executeOrganizationQuery.mockRejectedValue(dbError);
     errorUtils.createErrorMessage.mockReturnValue(mappedError);
 
     await expect(activateUser(req, 77, 'broken@example.com', 'Broken', 'Flow')).rejects.toBe(
@@ -170,7 +172,7 @@ describe('userManager.utils activateUser', () => {
     await expect(activateUser(nonAdminReq, 1, 'x@example.com', 'No', 'Admin')).rejects.toBe(
       mappedError
     );
-    expect(sqlUtils.executeOrganizationStoredProcedure).not.toHaveBeenCalled();
+    expect(sqlUtils.executeOrganizationQuery).not.toHaveBeenCalled();
     expect(errorUtils.createErrorMessage).toHaveBeenCalledWith(
       nonAdminReq,
       errorUtils.ERROR_CODES.userNotAdmin,

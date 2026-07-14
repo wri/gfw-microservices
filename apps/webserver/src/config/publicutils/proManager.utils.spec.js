@@ -28,6 +28,7 @@ jest.mock('../env/orgAccountStatus.constants', () => ({
 }));
 
 jest.mock('@wri-monorepos/sql', () => ({
+  activatePendingAccount: 'activatePendingAccount',
   getPendingAccountInformation: 'getPendingAccountInformation',
   setOrganizationRenewalTime: 'setOrganizationRenewalTime',
   setOrganizationCustomAnalysisLimits: jest.fn(),

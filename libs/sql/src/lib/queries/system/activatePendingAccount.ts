@@ -544,7 +544,8 @@ EXEC sp_executesql @SQL
     SET @TEMPLATE = 'INSERT INTO [{DATABASENAME}].dbo.AccountProfile(organization_name, organization_address,
                     organization_website, organization_is_subsidiary, organization_parent, manager_user_id, country)
                     SELECT organization_name, organization_address, organization_website, organization_is_subsidiary,
-                    organization_parent, {MANAGER_ID}, organization_country FROM PendingAccounts WHERE id = {ACCOUNTID}'
+                    organization_parent, {MANAGER_ID}, NULLIF(LTRIM(RTRIM(organization_country)), '''')
+                    FROM PendingAccounts WHERE id = {ACCOUNTID}'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     SET @SQL = REPLACE(@SQL, '{MANAGER_ID}', @managerID)
     SET @SQL = REPLACE(@SQL, '{ACCOUNTID}', @PendingAccountID)

@@ -72,6 +72,7 @@ const {
   setOrganizationRenewalTime,
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
+  activatePendingAccount: activatePendingAccountQuery,
 } = require('@wri-monorepos/sql');
 
 const mockPendingAccountInfo = (overrides = {}) => ({
@@ -93,12 +94,18 @@ const mockPendingAccountInfo = (overrides = {}) => ({
 
 const mockExecuteSystemQueryForActivation = ({
   pendingAccountInfo = mockPendingAccountInfo(),
-  organizationDb = 'org_db_777',
+  managerEmail = 'john@example.com',
+  orgID = 777,
+  userExists = 0,
   failRenewal = false,
 } = {}) => {
   sqlUtils.executeSystemQuery.mockImplementation((query) => {
     if (query === getPendingAccountInformation) {
       return Promise.resolve([[pendingAccountInfo]]);
+    }
+
+    if (query === activatePendingAccountQuery) {
+      return Promise.resolve([[{ ManagerEmail: managerEmail, UserExists: userExists, orgID }]]);
     }
 
     if (query === setOrganizationRenewalTime) {
@@ -107,10 +114,6 @@ const mockExecuteSystemQueryForActivation = ({
       }
 
       return Promise.resolve([]);
-    }
-
-    if (typeof query === 'string' && query.includes('SELECT organization_db')) {
-      return Promise.resolve([[{ organization_db: organizationDb }]]);
     }
 
     return Promise.resolve([]);
@@ -309,10 +312,6 @@ describe('Pro Manager Utils Tests', () => {
               return Promise.resolve([{ document_name: 'Policy1' }]);
             case 'uspGetPendingAccountClassification':
               return Promise.resolve([{ classification_id: 30 }]);
-            case 'uspActivatePendingAccount':
-              return Promise.resolve([
-                { ManagerEmail: 'john@example.com', UserExists: 0, orgID: 777 },
-              ]);
             case 'uspRemovePendingOrganization':
               return Promise.resolve([]);
             default:
@@ -322,7 +321,6 @@ describe('Pro Manager Utils Tests', () => {
 
       mockExecuteSystemQueryForActivation();
 
-      jest.spyOn(sqlUtils, 'executeOrganizationQuery').mockResolvedValue([]);
       jest.spyOn(PolicyManager, 'movePolicy').mockResolvedValue(undefined);
       jest.spyOn(awsCognito, 'createUser').mockResolvedValue(undefined);
       jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
@@ -375,7 +373,7 @@ describe('Pro Manager Utils Tests', () => {
       });
     });
 
-    it('should call uspActivatePendingAccount and handle filtered users correctly', async () => {
+    it('should call activatePendingAccountQuery and handle filtered users correctly', async () => {
       const mockReq = { session: { user_email: 'admin@example.com' } };
       const pendingaccount_id = 123;
 
@@ -394,13 +392,13 @@ describe('Pro Manager Utils Tests', () => {
           last_name: 'User',
           email: 'test@example.com',
         }),
-        organizationDb: 'org_db_555',
+        managerEmail: 'test@example.com',
+        orgID: 555,
       });
-      jest.spyOn(sqlUtils, 'executeOrganizationQuery').mockResolvedValue([]);
       jest.spyOn(awsSes, 'sendEmail').mockResolvedValue(true);
       jest.spyOn(speakEasy, 'createSecret').mockReturnValue('fake-secret');
 
-      const activateSpy = jest
+      jest
         .spyOn(sqlUtils, 'executeSystemStoredProcedure')
         .mockImplementation((req, spName, params) => {
           switch (spName) {
@@ -422,14 +420,6 @@ describe('Pro Manager Utils Tests', () => {
             case 'uspGetPendingAccountPolicies':
             case 'uspGetPendingAccountClassification':
               return Promise.resolve([]);
-            case 'uspActivatePendingAccount':
-              return Promise.resolve([
-                {
-                  ManagerEmail: 'test@example.com',
-                  UserExists: 0,
-                  orgID: 555,
-                },
-              ]);
             case 'uspRemovePendingOrganization':
               return Promise.resolve([]);
             default:
@@ -439,11 +429,8 @@ describe('Pro Manager Utils Tests', () => {
 
       await expect(activatePendingAccount(mockReq, pendingaccount_id, true)).resolves.toBe(true);
 
-      expect(sqlUtils.executeOrganizationQuery).toHaveBeenCalled();
-
-      expect(activateSpy).toHaveBeenCalledWith(
-        mockReq,
-        'uspActivatePendingAccount',
+      expect(sqlUtils.executeSystemQuery).toHaveBeenCalledWith(
+        activatePendingAccountQuery,
         expect.arrayContaining([
           expect.objectContaining({ field: 'PendingAccountID', value: pendingaccount_id }),
         ])
@@ -1157,8 +1144,10 @@ describe('Pro Manager Utils Tests', () => {
           return Promise.resolve([]);
         }
 
-        if (typeof query === 'string' && query.includes('SELECT organization_db')) {
-          return Promise.resolve([[{ organization_db: 'org_db_555' }]]);
+        if (query === activatePendingAccountQuery) {
+          return Promise.resolve([
+            [{ ManagerEmail: 'john@example.com', UserExists: 1, orgID: 777 }],
+          ]);
         }
 
         return Promise.resolve([]);
@@ -1173,10 +1162,6 @@ describe('Pro Manager Utils Tests', () => {
                 organization_name: 'TestOrg',
                 organization_status_id: orgAccountStatus.Pending,
               },
-            ]);
-          case 'uspActivatePendingAccount':
-            return Promise.resolve([
-              { ManagerEmail: 'john@example.com', UserExists: 1, orgID: 777 },
             ]);
           default:
             return Promise.resolve([]);
@@ -1196,7 +1181,7 @@ describe('Pro Manager Utils Tests', () => {
       UserManager.getGeographies.mockReturnValue([]);
       AccountManager.getClassifications.mockReturnValue([]);
       speakEasy.createSecret.mockReturnValue('secret');
-      mockExecuteSystemQueryForActivation();
+      mockExecuteSystemQueryForActivation({ orgID: 888 });
 
       const movePolicyError = new Error('S3 copy failed');
       PolicyManager.movePolicy.mockRejectedValue(movePolicyError);
@@ -1214,10 +1199,6 @@ describe('Pro Manager Utils Tests', () => {
                 organization_name: 'TestOrg',
                 organization_status_id: orgAccountStatus.Pending,
               },
-            ]);
-          case 'uspActivatePendingAccount':
-            return Promise.resolve([
-              { ManagerEmail: 'john@example.com', UserExists: 0, orgID: 888 },
             ]);
           default:
             return Promise.resolve([]);
@@ -1251,6 +1232,7 @@ describe('Pro Manager Utils Tests', () => {
       const renewalError = new Error('Renewal time update failed');
       mockExecuteSystemQueryForActivation({
         failRenewal: true,
+        orgID: 999,
       });
 
       sqlUtils.executeSystemStoredProcedure.mockImplementation((req, spName) => {
@@ -1262,10 +1244,6 @@ describe('Pro Manager Utils Tests', () => {
                 organization_name: 'TestOrg',
                 organization_status_id: orgAccountStatus.Pending,
               },
-            ]);
-          case 'uspActivatePendingAccount':
-            return Promise.resolve([
-              { ManagerEmail: 'john@example.com', UserExists: 0, orgID: 999 },
             ]);
           default:
             return Promise.resolve([]);
@@ -1299,7 +1277,7 @@ describe('Pro Manager Utils Tests', () => {
           phone: '123',
           organization_is_subsidiary: false,
         }),
-        organizationDb: 'org_db_555',
+        orgID: 555,
       });
 
       sqlUtils.executeSystemStoredProcedure.mockImplementation((req, spName) => {
@@ -1311,10 +1289,6 @@ describe('Pro Manager Utils Tests', () => {
                 organization_name: 'TestOrg',
                 organization_status_id: orgAccountStatus.Pending,
               },
-            ]);
-          case 'uspActivatePendingAccount':
-            return Promise.resolve([
-              { ManagerEmail: 'john@example.com', UserExists: 0, orgID: 555 },
             ]);
           default:
             return Promise.resolve([]);

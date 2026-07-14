@@ -60,6 +60,7 @@ BEGIN TRY
         [organization_is_subsidiary] BIT NOT NULL,
         [organization_parent] NVARCHAR(200) NOT NULL,
         [manager_user_id] INT NOT NULL,
+        [country] NVARCHAR(100) NULL,
         CONSTRAINT [PK_AccountProfile] PRIMARY KEY CLUSTERED(id)
     )'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
@@ -541,9 +542,9 @@ EXEC sp_executesql @SQL
 
     --Insert the Organization Info into the new Database.
     SET @TEMPLATE = 'INSERT INTO [{DATABASENAME}].dbo.AccountProfile(organization_name, organization_address,
-                    organization_website, organization_is_subsidiary, organization_parent, manager_user_id)
+                    organization_website, organization_is_subsidiary, organization_parent, manager_user_id, country)
                     SELECT organization_name, organization_address, organization_website, organization_is_subsidiary,
-                    organization_parent, {MANAGER_ID} FROM PendingAccounts WHERE id = {ACCOUNTID}'
+                    organization_parent, {MANAGER_ID}, organization_country FROM PendingAccounts WHERE id = {ACCOUNTID}'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     SET @SQL = REPLACE(@SQL, '{MANAGER_ID}', @managerID)
     SET @SQL = REPLACE(@SQL, '{ACCOUNTID}', @PendingAccountID)

@@ -114,8 +114,6 @@ export class ProManagerUsersFileService extends IFileGenerator {
         this.getAccessLevelLabel(user.access_level_id),
         user.organization_name ?? '',
         this.formatExportDate(user.user_activated_time),
-        // Deactivation Date, Country and Language were added in GPV-5346; their data
-        // is wired separately, so they default to empty until those values are populated.
         this.formatExportDate(user.deactivation_date),
         user.country ?? '',
         user.language ?? '',

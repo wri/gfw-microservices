@@ -234,7 +234,7 @@ export const activateUser = async (
     ];
 
     // Set User Status in the organization database.
-    await sqlUtils.executeOrganizationStoredProcedure(req, 'uspSetUserStatus', params);
+    await sqlUtils.executeOrganizationQuery(req, setUserStatus, params);
 
     // Setup parameters to pass to set status SP.
     const routeStatusParams = [

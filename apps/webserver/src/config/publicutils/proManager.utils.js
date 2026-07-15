@@ -39,6 +39,7 @@ const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountS
 // SQL Queries
 import {
   activatePendingAccount as activatePendingAccountQuery,
+  getAllUsersList as getAllUsersListQuery,
   getPendingAccountInformation,
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
@@ -102,8 +103,8 @@ export const getAllUsersList = async (req) => {
   }
 
   try {
-    const recordsets = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetAllUsersList');
-    return recordsets;
+    const recordsets = await sqlUtils.executeSystemQuery(getAllUsersListQuery);
+    return recordsets[0];
   } catch (err) {
     throw errorUtils.createErrorMessage(
       req,

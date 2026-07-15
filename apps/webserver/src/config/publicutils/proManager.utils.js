@@ -38,6 +38,7 @@ const AccountManager = require(path.resolve(__dirname, '../publicutils/accountMa
 const { orgAccountStatus } = require(path.resolve(__dirname, '../env/orgAccountStatus.constants'));
 // SQL Queries
 import {
+  activatePendingAccount as activatePendingAccountQuery,
   getPendingAccountInformation,
   setOrganizationCustomAnalysisLimits,
   setGlobalAnalysisLimit,
@@ -253,11 +254,7 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
       { field: 'UserSecret', type: sql.VarChar(50), value: secret },
       { field: 'ActivatedTime', type: sql.SmallDateTime, value: timestamp },
     ];
-    const activationResult = await sqlUtils.executeSystemStoredProcedure(
-      req,
-      'uspActivatePendingAccount',
-      params
-    );
+    const activationResult = await sqlUtils.executeSystemQuery(activatePendingAccountQuery, params);
 
     try {
       const renewalParams = [
@@ -270,40 +267,10 @@ export const activatePendingAccount = async (req, pendingAccountId, unit_test = 
       throw error;
     }
 
-    const [activationRecord] = activationResult;
+    const activationRecord = activationResult?.[0]?.[0];
     userEmail = activationRecord.ManagerEmail;
     userExists = activationRecord.UserExists;
     orgID = activationRecord.orgID;
-
-    const requestedCountry =
-      typeof record.organization_country === 'string' ? record.organization_country.trim() : '';
-    if (requestedCountry) {
-      const orgDbResult = await sqlUtils.executeSystemQuery(
-        'SELECT organization_db FROM dbo.Organizations WHERE id = @orgID',
-        [{ field: 'orgID', type: sql.Int, value: orgID }]
-      );
-      const organizationDatabase = orgDbResult?.[0]?.[0]?.organization_db;
-
-      if (organizationDatabase) {
-        const orgScopedReq = {
-          ...req,
-          session: {
-            ...req.session,
-            organization_database: organizationDatabase,
-          },
-        };
-
-        await sqlUtils.executeOrganizationQuery(
-          orgScopedReq,
-          `IF COL_LENGTH('dbo.AccountProfile', 'country') IS NOT NULL
-BEGIN
-  UPDATE dbo.AccountProfile
-  SET country = @country;
-END`,
-          [{ field: 'country', type: sql.NVarChar(100), value: requestedCountry }]
-        );
-      }
-    }
 
     // Move policy
     await PolicyManager.movePolicy(req, pendingAccountId, orgID);

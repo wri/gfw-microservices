@@ -29,6 +29,7 @@ jest.mock('../env/orgAccountStatus.constants', () => ({
 
 jest.mock('@wri-monorepos/sql', () => ({
   activatePendingAccount: 'activatePendingAccount',
+  getAllUsersList: 'getAllUsersList',
   getPendingAccountInformation: 'getPendingAccountInformation',
   setOrganizationRenewalTime: 'setOrganizationRenewalTime',
   setOrganizationCustomAnalysisLimits: jest.fn(),
@@ -69,6 +70,7 @@ const awsSes = require('../privateutils/ses.utils');
 const speakEasy = require('../privateutils/speakeasy.utils');
 const { orgAccountStatus } = require('../env/orgAccountStatus.constants');
 const {
+  getAllUsersList: getAllUsersListQuery,
   getPendingAccountInformation,
   setOrganizationRenewalTime,
   setOrganizationCustomAnalysisLimits,
@@ -227,21 +229,18 @@ describe('Pro Manager Utils Tests', () => {
     it('should resolve with user list if user is a Pro Manager', async () => {
       UserManager.isProManager.mockReturnValue(true);
       const mockData = [{ id: 1, name: 'Alice' }];
-      sqlUtils.executeSystemStoredProcedure.mockResolvedValue(mockData);
+      sqlUtils.executeSystemQuery.mockResolvedValue([mockData]);
 
       const result = await getAllUsersList(mockReq);
 
-      expect(sqlUtils.executeSystemStoredProcedure).toHaveBeenCalledWith(
-        mockReq,
-        'uspGetAllUsersList'
-      );
+      expect(sqlUtils.executeSystemQuery).toHaveBeenCalledWith(getAllUsersListQuery);
       expect(result).toEqual(mockData);
     });
 
-    it('should reject if stored procedure throws error', async () => {
+    it('should reject if query throws error', async () => {
       UserManager.isProManager.mockReturnValue(true);
       const error = new Error('DB failure');
-      sqlUtils.executeSystemStoredProcedure.mockRejectedValue(error);
+      sqlUtils.executeSystemQuery.mockRejectedValue(error);
       errorUtils.createErrorMessage.mockReturnValue({ message: 'query failed' });
 
       await expect(getAllUsersList(mockReq)).rejects.toEqual({ message: 'query failed' });

@@ -117,6 +117,9 @@ BEGIN TRY
         [forma_email_frequency] INT,
         [terrai_email_frequency] INT,
         [gran_chaco_email_frequency] INT,
+        [deactivation_date] SMALLDATETIME NULL,
+        [country] NVARCHAR(100) NULL,
+        [language] NCHAR(2) NULL,
         CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED(id),
         CONSTRAINT [UQ_UserEmail] UNIQUE(email),
         INDEX [Users_01] NONCLUSTERED(id)

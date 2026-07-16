@@ -530,10 +530,20 @@ EXEC sp_executesql @SQL
     -- Create an Admin Account for the Manager.
     SET @TEMPLATE = 'INSERT INTO [{DATABASENAME}].dbo.Users(first_name, middle_initial, last_name, email, phone, title_id, other_title,
         access_level_id, status_id, is_system_user, email_subscription, activated_time,
-        viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency)
-        SELECT first_name, middle_initial, last_name, email, phone,
-        title_id, other_title, access_level_id, 2, 0, email_subscription, ''{ACTIVATEDTIME}'' AS activated_time, 0, 0, 0, 0, 0
-        FROM PendingAccountsUsers WHERE pendingaccounts_id = {ACCOUNTID}'
+        viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency,
+        country, language)
+        SELECT pau.first_name, pau.middle_initial, pau.last_name, pau.email, pau.phone,
+        pau.title_id, pau.other_title, pau.access_level_id, 2, 0, pau.email_subscription, ''{ACTIVATEDTIME}'' AS activated_time, 0, 0, 0, 0, 0,
+        CASE WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NULL OR UPPER(LTRIM(RTRIM(pa.organization_country))) = ''NULL'' THEN NULL ELSE LTRIM(RTRIM(pa.organization_country)) END,
+        CASE
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL AND UPPER(LTRIM(RTRIM(pa.organization_country))) <> ''NULL'' AND UPPER(LTRIM(RTRIM(pa.organization_country))) IN (''ARGENTINA'',''BOLIVIA'',''CHILE'',''COLOMBIA'',''COSTA RICA'',''CUBA'',''DOMINICAN REPUBLIC'',''ECUADOR'',''EL SALVADOR'',''EQUATORIAL GUINEA'',''GUATEMALA'',''HONDURAS'',''MEXICO'',''NICARAGUA'',''PANAMA'',''PARAGUAY'',''PERU'',''SPAIN'',''URUGUAY'',''VENEZUELA'',''ANDORRA'',''VATICAN CITY'') THEN ''ES''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL AND UPPER(LTRIM(RTRIM(pa.organization_country))) <> ''NULL'' AND UPPER(LTRIM(RTRIM(pa.organization_country))) IN (''ANGOLA'',''BRAZIL'',''CABO VERDE'',''GUINEA-BISSAU'',''MOZAMBIQUE'',''PORTUGAL'',''SAO TOME AND PRINCIPE'',''TIMOR-LESTE'') THEN ''PT''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL AND UPPER(LTRIM(RTRIM(pa.organization_country))) <> ''NULL'' THEN ''EN''
+            ELSE NULL
+        END
+        FROM PendingAccountsUsers pau
+        JOIN PendingAccounts pa ON pa.id = pau.pendingaccounts_id
+        WHERE pau.pendingaccounts_id = {ACCOUNTID}'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     SET @SQL = REPLACE(@SQL, '{ACCOUNTID}', @PendingAccountID)
     SET @SQL = REPLACE(@SQL, '{ACTIVATEDTIME}', @ActivatedTime)

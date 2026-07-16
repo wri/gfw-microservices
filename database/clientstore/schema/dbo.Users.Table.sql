@@ -35,6 +35,9 @@ CREATE TABLE [dbo].[Users](
 	[forma_email_frequency] [int] NULL,
 	[terrai_email_frequency] [int] NULL,
 	[gran_chaco_email_frequency] [int] NULL,
+	[deactivation_date] [smalldatetime] NULL,
+	[country] [nvarchar](100) NULL,
+	[language] [nchar](2) NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC

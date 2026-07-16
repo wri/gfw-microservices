@@ -533,8 +533,8 @@ EXEC sp_executesql @SQL
         pau.title_id, pau.other_title, pau.access_level_id, 2, 0, pau.email_subscription, ''{ACTIVATEDTIME}'' AS activated_time, 0, 0, 0, 0, 0,
         NULLIF(LTRIM(RTRIM(pa.organization_country)), ''''),
         CASE
-            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Argentina'',''Bolivia'',''Chile'',''Colombia'',''Costa Rica'',''Cuba'',''Dominican Republic'',''Ecuador'',''El Salvador'',''Equatorial Guinea'',''Guatemala'',''Honduras'',''Mexico'',''Nicaragua'',''Panama'',''Paraguay'',''Peru'',''Spain'',''Uruguay'',''Venezuela'',''Andorra'',''Vatican City'') THEN ''SP''
-            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Angola'',''Brazil'',''Cabo Verde'',''Guinea-Bissau'',''Mozambique'',''Portugal'',''Sao Tome and Principe'',''Timor-Leste'') THEN ''PR''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Argentina'',''Bolivia'',''Chile'',''Colombia'',''Costa Rica'',''Cuba'',''Dominican Republic'',''Ecuador'',''El Salvador'',''Equatorial Guinea'',''Guatemala'',''Honduras'',''Mexico'',''Nicaragua'',''Panama'',''Paraguay'',''Peru'',''Spain'',''Uruguay'',''Venezuela'',''Andorra'',''Vatican City'') THEN ''ES''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Angola'',''Brazil'',''Cabo Verde'',''Guinea-Bissau'',''Mozambique'',''Portugal'',''Sao Tome and Principe'',''Timor-Leste'') THEN ''PT''
             WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL THEN ''EN''
             ELSE NULL
         END

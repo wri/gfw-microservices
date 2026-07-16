@@ -1,5 +1,6 @@
--- Diagnostic: check AccountProfile.country value across all active org databases,
--- and count how many non-system users are still missing country/language.
+-- Diagnostic: check AccountProfile.country value across all org databases
+-- (active and inactive), and count how many users (including system users)
+-- are still missing country/language.
 
 USE [gfwpro]
 GO

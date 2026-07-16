@@ -527,10 +527,20 @@ EXEC sp_executesql @SQL
     -- Create an Admin Account for the Manager.
     SET @TEMPLATE = 'INSERT INTO [{DATABASENAME}].dbo.Users(first_name, middle_initial, last_name, email, phone, title_id, other_title,
         access_level_id, status_id, is_system_user, email_subscription, activated_time,
-        viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency)
-        SELECT first_name, middle_initial, last_name, email, phone,
-        title_id, other_title, access_level_id, 2, 0, email_subscription, ''{ACTIVATEDTIME}'' AS activated_time, 0, 0, 0, 0, 0
-        FROM PendingAccountsUsers WHERE pendingaccounts_id = {ACCOUNTID}'
+        viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency,
+        country, language)
+        SELECT pau.first_name, pau.middle_initial, pau.last_name, pau.email, pau.phone,
+        pau.title_id, pau.other_title, pau.access_level_id, 2, 0, pau.email_subscription, ''{ACTIVATEDTIME}'' AS activated_time, 0, 0, 0, 0, 0,
+        NULLIF(LTRIM(RTRIM(pa.organization_country)), ''''),
+        CASE
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Argentina'',''Bolivia'',''Chile'',''Colombia'',''Costa Rica'',''Cuba'',''Dominican Republic'',''Ecuador'',''El Salvador'',''Equatorial Guinea'',''Guatemala'',''Honduras'',''Mexico'',''Nicaragua'',''Panama'',''Paraguay'',''Peru'',''Spain'',''Uruguay'',''Venezuela'',''Andorra'',''Vatican City'') THEN ''SP''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Angola'',''Brazil'',''Cabo Verde'',''Guinea-Bissau'',''Mozambique'',''Portugal'',''Sao Tome and Principe'',''Timor-Leste'') THEN ''PR''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL THEN ''EN''
+            ELSE NULL
+        END
+        FROM PendingAccountsUsers pau
+        JOIN PendingAccounts pa ON pa.id = pau.pendingaccounts_id
+        WHERE pau.pendingaccounts_id = {ACCOUNTID}'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     SET @SQL = REPLACE(@SQL, '{ACCOUNTID}', @PendingAccountID)
     SET @SQL = REPLACE(@SQL, '{ACTIVATEDTIME}', @ActivatedTime)

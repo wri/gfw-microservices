@@ -44,7 +44,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
 
   const getStatusString = (user) => {
     let statusString = 'Pending';
-    statusData.forEach((status) => {
+    (statusData || []).forEach((status) => {
       if (status.id === user.user_status_id) {
         statusString = status.status_name;
       }
@@ -58,7 +58,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
 
   const getAccessString = (user) => {
     let accessString = '';
-    accessData.forEach((access) => {
+    (accessData || []).forEach((access) => {
       if (access.id === user.access_level_id) {
         accessString = access.accesslevel_name;
       }
@@ -192,6 +192,9 @@ function UsersListSection({ isLoading, setIsLoading }) {
   };
 
   const getUserLists = () => {
+    if (!users) {
+      return [];
+    }
     const filteredUsers = users.filter((e) => {
       return (
         e.first_name.toLowerCase().includes(userFilterStr.toLowerCase()) ||

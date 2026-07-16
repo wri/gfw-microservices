@@ -531,11 +531,11 @@ EXEC sp_executesql @SQL
         country, language)
         SELECT pau.first_name, pau.middle_initial, pau.last_name, pau.email, pau.phone,
         pau.title_id, pau.other_title, pau.access_level_id, 2, 0, pau.email_subscription, ''{ACTIVATEDTIME}'' AS activated_time, 0, 0, 0, 0, 0,
-        NULLIF(LTRIM(RTRIM(pa.organization_country)), ''''),
+        CASE WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NULL OR UPPER(LTRIM(RTRIM(pa.organization_country))) = ''NULL'' THEN NULL ELSE LTRIM(RTRIM(pa.organization_country)) END,
         CASE
-            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Argentina'',''Bolivia'',''Chile'',''Colombia'',''Costa Rica'',''Cuba'',''Dominican Republic'',''Ecuador'',''El Salvador'',''Equatorial Guinea'',''Guatemala'',''Honduras'',''Mexico'',''Nicaragua'',''Panama'',''Paraguay'',''Peru'',''Spain'',''Uruguay'',''Venezuela'',''Andorra'',''Vatican City'') THEN ''ES''
-            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IN (''Angola'',''Brazil'',''Cabo Verde'',''Guinea-Bissau'',''Mozambique'',''Portugal'',''Sao Tome and Principe'',''Timor-Leste'') THEN ''PT''
-            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL THEN ''EN''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL AND UPPER(LTRIM(RTRIM(pa.organization_country))) <> ''NULL'' AND UPPER(LTRIM(RTRIM(pa.organization_country))) IN (''ARGENTINA'',''BOLIVIA'',''CHILE'',''COLOMBIA'',''COSTA RICA'',''CUBA'',''DOMINICAN REPUBLIC'',''ECUADOR'',''EL SALVADOR'',''EQUATORIAL GUINEA'',''GUATEMALA'',''HONDURAS'',''MEXICO'',''NICARAGUA'',''PANAMA'',''PARAGUAY'',''PERU'',''SPAIN'',''URUGUAY'',''VENEZUELA'',''ANDORRA'',''VATICAN CITY'') THEN ''ES''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL AND UPPER(LTRIM(RTRIM(pa.organization_country))) <> ''NULL'' AND UPPER(LTRIM(RTRIM(pa.organization_country))) IN (''ANGOLA'',''BRAZIL'',''CABO VERDE'',''GUINEA-BISSAU'',''MOZAMBIQUE'',''PORTUGAL'',''SAO TOME AND PRINCIPE'',''TIMOR-LESTE'') THEN ''PT''
+            WHEN NULLIF(LTRIM(RTRIM(pa.organization_country)), '''') IS NOT NULL AND UPPER(LTRIM(RTRIM(pa.organization_country))) <> ''NULL'' THEN ''EN''
             ELSE NULL
         END
         FROM PendingAccountsUsers pau

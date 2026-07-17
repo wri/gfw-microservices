@@ -9,11 +9,12 @@ const DATASET_VERSIONS = {
   GFW_INDIGENOUS_LANDS: 'v202408',
   GFW_UNIVERSAL_MILL_LIST: 'v202508',
   GFW_WEST_AFRICA_COCOA: 'v202312',
+  GFWPRO_NEGLIGIBLE_RISK: 'v20260417',
   IDN_FOREST_AREA: 'v201709',
   IDN_LAND_COVER_2017: 'v201807',
   INPE_PRODES: 'v202507',
   JRC_FOREST_COVER: 'v2020.3',
-  GFWPRO_NEGLIGIBLE_RISK: 'v20260417',
+  LANDMARK_INDIGENOUS_LANDS: 'v20260617',
   NASA_VIIRS_FIRE_ALERTS: 'v202010',
   UMD_GLAD_DIST_ALERTS: 'v202412',
   WDPA_PROTECTED_AREAS: 'v202605',
@@ -35,7 +36,8 @@ const DATASET_URLS = {
   JRC_FOREST_COVER_TILES: `https://tiles.globalforestwatch.org/jrc_global_forest_cover/${DATASET_VERSIONS.JRC_FOREST_COVER}/default/{z}/{x}/{y}.png`,
   // Indigenous & Community Lands
   INDIGENOUS_LANDS_API: `https://data-api.globalforestwatch.org/dataset/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/features`,
-  INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/default/root.json`,
+  // INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/default/root.json`,
+  INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/landmark_ip_lc_and_indicative_poly/${DATASET_VERSIONS.LANDMARK_INDIGENOUS_LANDS}/default/root.json`,
   // INPE PRODES
   INPE_PRODES_TILES: `https://tiles.globalforestwatch.org/inpe_prodes/${DATASET_VERSIONS.INPE_PRODES}/default/root.json`,
   // Negligible Risk Analysis

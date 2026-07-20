@@ -7,12 +7,6 @@ import {
 import { getAccountSubscriptionData } from '../utils';
 import { calculateAccountSubscriptionDates } from '../utils/accountSubscriptionDates';
 
-// Note: 'GHG' is the analysis type for greenhouse gas emissions.
-// The canonical definition exists in 'libs/shared/src/constants/analysisTypes.ts' as GREENHOUSE_GAS_EMISSIONS.
-// This constant is duplicated here to avoid cross-package import issues (e.g., circular dependencies or build constraints).
-// If possible, consider refactoring to use a shared constants module to avoid duplication.
-const GREENHOUSE_GAS_EMISSIONS = 'GHG';
-
 export interface CheckAccountListLocationProcessingLimit {
   listId: number;
   orgDbName: string;

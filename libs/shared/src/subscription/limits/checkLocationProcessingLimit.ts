@@ -38,15 +38,6 @@ export async function checkLocationProcessingLimit({
     .filter(([, enabled]) => enabled)
     .map(([type]) => type);
 
-  // If only GHG analysis is being processed, skip all limit checks (location and token)
-  // Note: empty analysisTypesToProcess means all analysis types, so we must enforce limits
-  const onlyGHG =
-    enabledAnalysisTypes.length === 1 && enabledAnalysisTypes[0] === GREENHOUSE_GAS_EMISSIONS;
-
-  if (onlyGHG) {
-    return false; // Don't block GHG-only analysis based on location or token limits
-  }
-
   const { accountUsage, accountLimits, organizationRenewalTime } = await getAccountSubscriptionData(
     {
       organizationId,
@@ -65,7 +56,7 @@ export async function checkLocationProcessingLimit({
   const tokensPerYearLimit = toNumber(accountLimits.tokens_per_year);
 
   if (tokensPerYearLimit <= 0) {
-    return false;
+    return true;
   }
 
   const { startDate, endDate } = calculateAccountSubscriptionDates(organizationRenewalTime);

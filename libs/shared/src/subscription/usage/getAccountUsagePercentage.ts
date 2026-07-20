@@ -39,7 +39,7 @@ export async function getAccountUsagePercentage({
   let tokenUsagePercentage = 0;
   const tokensPerYear = toNumber(accountLimits.tokens_per_year);
 
-  if (tokensPerYear > 0 && organizationDatabase) {
+  if (organizationDatabase) {
     const { startDate, endDate } = calculateAccountSubscriptionDates(organizationRenewalTime);
     const usageByType = await getAccountAnalysisUsageByAnalysisType({
       startDate,

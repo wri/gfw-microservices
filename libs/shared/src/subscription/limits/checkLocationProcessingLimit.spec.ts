@@ -77,19 +77,6 @@ describe('checkLocationProcessingLimit', () => {
     });
   });
 
-  it('returns false when only GHG analysis is requested', async () => {
-    const result = await checkLocationProcessingLimit({
-      listId: 1,
-      orgDbName: 'orgDb',
-      organizationId: 10,
-      subscriptionStatusId: 5,
-      analysisTypesToProcess: { GHG: true },
-    });
-
-    expect(result).toBe(false);
-    expect(mockGetAccountSubscriptionData).not.toHaveBeenCalled();
-  });
-
   it('enforces limits when analysisTypesToProcess is empty (default case)', async () => {
     mockGetAccountSubscriptionData.mockResolvedValue({
       accountUsage: { locations_analyzed: 10 },

@@ -7,12 +7,6 @@ import {
 import { getAccountSubscriptionData } from '../utils';
 import { calculateAccountSubscriptionDates } from '../utils/accountSubscriptionDates';
 
-// Note: 'GHG' is the analysis type for greenhouse gas emissions.
-// The canonical definition exists in 'libs/shared/src/constants/analysisTypes.ts' as GREENHOUSE_GAS_EMISSIONS.
-// This constant is duplicated here to avoid cross-package import issues (e.g., circular dependencies or build constraints).
-// If possible, consider refactoring to use a shared constants module to avoid duplication.
-const GREENHOUSE_GAS_EMISSIONS = 'GHG';
-
 export interface CheckAccountListLocationProcessingLimit {
   listId: number;
   orgDbName: string;
@@ -38,15 +32,6 @@ export async function checkLocationProcessingLimit({
     .filter(([, enabled]) => enabled)
     .map(([type]) => type);
 
-  // If only GHG analysis is being processed, skip all limit checks (location and token)
-  // Note: empty analysisTypesToProcess means all analysis types, so we must enforce limits
-  const onlyGHG =
-    enabledAnalysisTypes.length === 1 && enabledAnalysisTypes[0] === GREENHOUSE_GAS_EMISSIONS;
-
-  if (onlyGHG) {
-    return false; // Don't block GHG-only analysis based on location or token limits
-  }
-
   const { accountUsage, accountLimits, organizationRenewalTime } = await getAccountSubscriptionData(
     {
       organizationId,
@@ -58,14 +43,14 @@ export async function checkLocationProcessingLimit({
   const locationsAnalyzed = toNumber(accountUsage.locations_analyzed);
   const maxLocationsPerYear = toNumber(accountLimits.max_locations_per_year);
 
-  if (maxLocationsPerYear > 0 && locationsAnalyzed + listLocationsCount > maxLocationsPerYear) {
+  if (locationsAnalyzed + listLocationsCount > maxLocationsPerYear) {
     return true;
   }
 
   const tokensPerYearLimit = toNumber(accountLimits.tokens_per_year);
 
   if (tokensPerYearLimit <= 0) {
-    return false;
+    return true;
   }
 
   const { startDate, endDate } = calculateAccountSubscriptionDates(organizationRenewalTime);

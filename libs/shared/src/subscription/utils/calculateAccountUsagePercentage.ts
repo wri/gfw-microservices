@@ -1,6 +1,6 @@
 export function calculateAccountUsagePercentage(accountUsage: number, accountLimit: number) {
-  if (accountUsage === 0 || accountLimit === 0) {
-    return 0; // Avoid division by zero
+  if (accountLimit <= 0) {
+    return 100; // Avoid division by zero and negative values
   }
 
   const usagePercentage = (accountUsage / accountLimit) * 100;

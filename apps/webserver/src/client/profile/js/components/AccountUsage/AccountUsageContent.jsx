@@ -44,7 +44,7 @@ const LinearProgressBar = styled(LinearProgress, {
 }));
 
 export default function AccountUsage({ label, usedValue = 0, maxValue = 0, InfoBubbleContent }) {
-  const usagePercentage = maxValue > 0 ? Math.min((usedValue / maxValue) * 100, 100) : 0;
+  const usagePercentage = maxValue > 0 ? Math.min((usedValue / maxValue) * 100, 100) : 100;
 
   return (
     <Card>

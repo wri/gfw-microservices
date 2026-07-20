@@ -1,7 +1,7 @@
 import { calculateAccountUsagePercentage } from './calculateAccountUsagePercentage';
 
 describe('calculateAccountUsagePercentage', () => {
-  test('returns 100 when accountUsage or accountLimit is 0 or negative', () => {
+  test('returns 100 when accountLimit is 0 or negative', () => {
     expect(calculateAccountUsagePercentage(50, 0)).toBe(100);
     expect(calculateAccountUsagePercentage(0, 0)).toBe(100);
     expect(calculateAccountUsagePercentage(50, -10)).toBe(100);

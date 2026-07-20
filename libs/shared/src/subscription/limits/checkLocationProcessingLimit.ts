@@ -43,7 +43,7 @@ export async function checkLocationProcessingLimit({
   const locationsAnalyzed = toNumber(accountUsage.locations_analyzed);
   const maxLocationsPerYear = toNumber(accountLimits.max_locations_per_year);
 
-  if (maxLocationsPerYear > 0 && locationsAnalyzed + listLocationsCount > maxLocationsPerYear) {
+  if (locationsAnalyzed + listLocationsCount > maxLocationsPerYear) {
     return true;
   }
 

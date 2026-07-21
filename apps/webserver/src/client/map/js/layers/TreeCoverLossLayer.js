@@ -3,7 +3,7 @@ import { latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/confi
 
 const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   properties: {
-    threshold: 30,
+    threshold: 0,
     minYear: 2001,
     maxYear: latestTreeCoverLossYearForTclDataInMap,
   },

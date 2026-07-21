@@ -162,13 +162,19 @@ class ListDetailsPage {
       // Now try to click the Save As Draft button
       this.clickOnCopyLocationsBtn();
       if (isGFW) {
-        this.elements.listActionDialog().should('contain.text', 'Locations Added');
+        // The copy modal and completion dialog share the same container class.
+        // Wait for the copy modal text to disappear before asserting completion content.
         this.elements
           .listActionDialog()
-          .should(
-            'contain.text',
-            `You have successfully added locations and saved ${listName} as a draft`
-          );
+          .should('not.contain.text', 'Copy selection');
+        cy.contains('.list-diagnostics-dialog', 'Locations Added', { timeout: 120000 }).should(
+          'be.visible'
+        );
+        cy.contains(
+          '.list-diagnostics-dialog',
+          `You have successfully added locations and saved ${listName} as a draft`,
+          { timeout: 120000 }
+        ).should('be.visible');
       } else {
         this.elements
           .listActionDialog()

@@ -36,7 +36,6 @@ const DATASET_URLS = {
   JRC_FOREST_COVER_TILES: `https://tiles.globalforestwatch.org/jrc_global_forest_cover/${DATASET_VERSIONS.JRC_FOREST_COVER}/default/{z}/{x}/{y}.png`,
   // Indigenous & Community Lands
   INDIGENOUS_LANDS_API: `https://data-api.globalforestwatch.org/dataset/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/features`,
-  // INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/gfw_indigenous_community_and_indicative_lands/${DATASET_VERSIONS.GFW_INDIGENOUS_LANDS}/default/root.json`,
   INDIGENOUS_LANDS_TILES: `https://tiles.globalforestwatch.org/landmark_ip_lc_and_indicative_poly/${DATASET_VERSIONS.LANDMARK_INDIGENOUS_LANDS}/default/root.json`,
   // INPE PRODES
   INPE_PRODES_TILES: `https://tiles.globalforestwatch.org/inpe_prodes/${DATASET_VERSIONS.INPE_PRODES}/default/root.json`,

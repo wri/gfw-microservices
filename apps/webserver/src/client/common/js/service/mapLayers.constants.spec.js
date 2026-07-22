@@ -88,7 +88,7 @@ describe('mapLayers.constants', () => {
       {
         name: 'Land Rights',
         slug: 'Land-Rights-Esri',
-        dataset: 'landmark_ip_lc_and_indicative_poly'
+        dataset: 'landmark_ip_lc_and_indicative_poly',
         //dataset: 'gfw_indigenous_community_and_indicative_lands',
       },
       {

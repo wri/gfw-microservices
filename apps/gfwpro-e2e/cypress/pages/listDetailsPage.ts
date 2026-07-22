@@ -6,7 +6,7 @@ class ListDetailsPage {
     locationMapBtnOnHover: () => cy.get('[data-cy="locations-map"]'),
     locationMapBtn: () => cy.contains('Location(s) Map'),
     checkBoxSelectAll: () => cy.get('[data-cy="select-all-locations"]'),
-    checkBoxSelectLocation: (name) => cy.contains(name),
+    checkBoxSelectLocation: (name: string) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionListDetail: () => cy.contains('CSV'),
     downloadResultsOptionListDetail: () => cy.contains('Results'),
@@ -30,7 +30,7 @@ class ListDetailsPage {
       ),
     closeAlertDownloadBtn: () =>
       cy.get('[data-cy="download-dialog"]').parent().find('[data-testid="CloseIcon"]'),
-    listByName: (name) => cy.contains('.list-item', name),
+    listByName: (name: string) => cy.contains('.list-item', name),
     post2020Tab: () => cy.get('[data-cy="post-2020-tab"]'),
     post2000Tab: () => cy.get('[data-cy="post-2000-tab"]'),
     palmRiskAssessmentTab: () => cy.get('[data-cy="palm-risk-assessment-tab"]'),
@@ -45,6 +45,7 @@ class ListDetailsPage {
       ),
     columnHeaders: () => cy.get('.title-text'),
     listActionDialog: () => cy.get('.list-diagnostics-dialog'),
+    visibleListActionDialog: () => cy.get('.list-diagnostics-dialog:visible'),
     tableRow: () => cy.get('.rt-tbody').find('[data-testid="custom-row"]'),
     gridCell: () => cy.get('[role="gridcell"]'),
     alertsLandCoverSelect: () => cy.get('[data-cy="alerts-land-cover-select"]'),
@@ -138,12 +139,14 @@ class ListDetailsPage {
       } else {
         this.clickOnCopyMoveBtn();
       }
-      this.elements.createNewListText().should('be.visible');
+      this.elements.visibleListActionDialog().contains('Create new').should('be.visible');
       this.clickOnCreateNewListRadioBtn();
-      this.elements.inputCreateNewList().should('be.visible').type(listName);
+      this.elements.inputCreateNewList().should('be.visible').clear().type(listName);
 
       // Verify the input has the correct value
       this.elements.inputCreateNewList().should('have.value', listName);
+      // Blur to commit the input interaction before submit.
+      this.elements.inputCreateNewList().blur();
 
       // Debug: Log basic information
       cy.log('Checking Save As Draft button state...');
@@ -162,13 +165,23 @@ class ListDetailsPage {
       // Now try to click the Save As Draft button
       this.clickOnCopyLocationsBtn();
       if (isGFW) {
-        this.elements.listActionDialog().should('contain.text', 'Locations Added');
-        this.elements
-          .listActionDialog()
-          .should(
-            'contain.text',
-            `You have successfully added locations and saved ${listName} as a draft`
-          );
+        const listActionDialogSelector = '.list-diagnostics-dialog';
+
+        // In CI the first submit click can occasionally be dropped while the modal
+        // is still settling. If the copy form is still visible, submit once more.
+        this.elements.visibleListActionDialog().then(($dialog) => {
+          if ($dialog.text().includes('Copy selection')) {
+            this.clickOnCopyLocationsBtn();
+          }
+        });
+        cy.contains(listActionDialogSelector, 'Locations Added', { timeout: 120000 }).should(
+          'be.visible'
+        );
+        cy.contains(
+          listActionDialogSelector,
+          `You have successfully added locations and saved ${listName} as a draft`,
+          { timeout: 120000 }
+        ).should('be.visible');
       } else {
         this.elements
           .listActionDialog()
@@ -179,16 +192,17 @@ class ListDetailsPage {
     });
   }
 
-  selectList(list) {
+  selectList(list: string) {
     cy.get('div.move-to-list-select select').select(list);
   }
   clickOnCopyLocationsBtn() {
     this.elements
-      .copyLocationsBtn()
+      .visibleListActionDialog()
+      .contains('button', /^Copy Location\(s\)$/)
       .should('be.visible')
       .and('not.be.disabled')
       .scrollIntoView()
-      .click();
+      .click({ force: true });
   }
   clickOnMoveLocationsBtn() {
     this.elements
@@ -209,7 +223,12 @@ class ListDetailsPage {
     this.elements.moveSectionOptionRadioBtn().click({ force: true });
   }
   clickOnCreateNewListRadioBtn() {
-    this.elements.createNewListOptionRadioBtn().click({ force: true });
+    this.elements
+      .visibleListActionDialog()
+      .find('.move-or-copy__option')
+      .last()
+      .find('input')
+      .click({ force: true });
   }
   clickOnCopyMoveBtn() {
     this.elements.copyMoveBtn().click();

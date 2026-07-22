@@ -164,9 +164,7 @@ class ListDetailsPage {
       if (isGFW) {
         // The copy modal and completion dialog share the same container class.
         // Wait for the copy modal text to disappear before asserting completion content.
-        this.elements
-          .listActionDialog()
-          .should('not.contain.text', 'Copy selection');
+        this.elements.listActionDialog().should('not.contain.text', 'Copy selection');
         cy.contains('.list-diagnostics-dialog', 'Locations Added', { timeout: 120000 }).should(
           'be.visible'
         );

@@ -88,7 +88,8 @@ describe('mapLayers.constants', () => {
       {
         name: 'Land Rights',
         slug: 'Land-Rights-Esri',
-        dataset: 'gfw_indigenous_community_and_indicative_lands',
+        dataset: 'landmark_ip_lc_and_indicative_poly',
+        //dataset: 'gfw_indigenous_community_and_indicative_lands',
       },
       {
         name: 'PRODES Deforestation',

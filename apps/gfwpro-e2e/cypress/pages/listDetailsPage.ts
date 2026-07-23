@@ -149,6 +149,7 @@ class ListDetailsPage {
       // Blur to commit the input interaction before submit.
       this.elements.inputCreateNewList().blur();
       // updateNewListName is debounced in the app; allow state to settle before submit.
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(250);
       cy.get('#new-selection').should('be.checked');
 

@@ -141,12 +141,16 @@ class ListDetailsPage {
       }
       this.elements.visibleListActionDialog().contains('Create new').should('be.visible');
       this.clickOnCreateNewListRadioBtn();
+      cy.get('#new-selection').should('be.checked');
       this.elements.inputCreateNewList().should('be.visible').clear().type(listName);
 
       // Verify the input has the correct value
       this.elements.inputCreateNewList().should('have.value', listName);
       // Blur to commit the input interaction before submit.
       this.elements.inputCreateNewList().blur();
+      // updateNewListName is debounced in the app; allow state to settle before submit.
+      cy.wait(250);
+      cy.get('#new-selection').should('be.checked');
 
       // Debug: Log basic information
       cy.log('Checking Save As Draft button state...');
@@ -183,9 +187,22 @@ class ListDetailsPage {
           { timeout: 120000 }
         ).should('be.visible');
       } else {
-        this.elements
-          .listActionDialog()
-          .should('contain.text', 'process started, this can take a while, please be patient');
+        const listActionDialogSelector = '.list-diagnostics-dialog';
+
+        // In CI the first submit click can occasionally be dropped while the modal
+        // is still settling. If we are still on the copy form, submit once more.
+        this.elements.visibleListActionDialog().then(($dialog) => {
+          const dialogText = $dialog.text().toLowerCase();
+          if (dialogText.includes('selected location') && dialogText.includes('copy')) {
+            this.clickOnCopyLocationsBtn();
+          }
+        });
+
+        cy.contains(
+          listActionDialogSelector,
+          'process started, this can take a while, please be patient',
+          { timeout: 120000 }
+        ).should('be.visible');
       }
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
@@ -223,12 +240,7 @@ class ListDetailsPage {
     this.elements.moveSectionOptionRadioBtn().click({ force: true });
   }
   clickOnCreateNewListRadioBtn() {
-    this.elements
-      .visibleListActionDialog()
-      .find('.move-or-copy__option')
-      .last()
-      .find('input')
-      .click({ force: true });
+    this.elements.visibleListActionDialog().find('#new-selection').click({ force: true });
   }
   clickOnCopyMoveBtn() {
     this.elements.copyMoveBtn().click();

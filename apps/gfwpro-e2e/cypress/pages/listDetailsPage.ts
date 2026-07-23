@@ -141,7 +141,7 @@ class ListDetailsPage {
       }
       this.elements.visibleListActionDialog().contains('Create new').should('be.visible');
       this.clickOnCreateNewListRadioBtn();
-      cy.get('#new-selection').should('be.checked');
+      this.elements.visibleListActionDialog().find('#new-selection').should('be.checked');
       this.elements.inputCreateNewList().should('be.visible').clear().type(listName);
 
       // Verify the input has the correct value
@@ -150,8 +150,8 @@ class ListDetailsPage {
       this.elements.inputCreateNewList().blur();
       // updateNewListName is debounced in the app; allow state to settle before submit.
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(250);
-      cy.get('#new-selection').should('be.checked');
+      cy.wait(150);
+      this.elements.visibleListActionDialog().find('#new-selection').should('be.checked');
 
       // Debug: Log basic information
       cy.log('Checking Save As Draft button state...');
@@ -170,7 +170,7 @@ class ListDetailsPage {
       // Now try to click the Save As Draft button
       this.clickOnCopyLocationsBtn();
       if (isGFW) {
-        const listActionDialogSelector = '.list-diagnostics-dialog';
+        const listActionDialogSelector = '.list-diagnostics-dialog:visible';
 
         // In CI the first submit click can occasionally be dropped while the modal
         // is still settling. If the copy form is still visible, submit once more.
@@ -188,7 +188,7 @@ class ListDetailsPage {
           { timeout: 120000 }
         ).should('be.visible');
       } else {
-        const listActionDialogSelector = '.list-diagnostics-dialog';
+        const listActionDialogSelector = '.list-diagnostics-dialog:visible';
 
         // In CI the first submit click can occasionally be dropped while the modal
         // is still settling. If we are still on the copy form, submit once more.

@@ -184,42 +184,56 @@ class ListDetailsPage {
       hasCopyRequestStarted = true;
       req.continue();
     }).as(copyMoveAlias);
-    this.clickOnCopyLocationsBtn();
 
-    // If the first click was dropped and no request started, resubmit once from the copy form.
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(500);
-    this.elements.visibleListActionDialog().then(($dialog) => {
-      const dialogText = $dialog.text().toLowerCase();
-      const isCopyFormVisible =
-        dialogText.includes('selected location') && dialogText.includes('copy location(s)');
+    const waitForSuccessfulCopyRequest = (allowRetry: boolean) => {
+      return cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((interception) => {
+        const statusCode = interception.response?.statusCode;
 
-      if (!hasCopyRequestStarted && isCopyFormVisible) {
-        cy.log('No copy request detected after first click; retrying submit once.');
-        this.clickOnCopyLocationsBtn();
-      }
-    });
+        if (statusCode && statusCode < 400) {
+          return;
+        }
 
-    cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((interception) => {
-      const statusCode = interception.response?.statusCode;
-      if (!statusCode || statusCode >= 400) {
-        cy.log(`Retrying copy after failed response status: ${statusCode ?? 'no response'}`);
-        this.clickOnCopyLocationsBtn();
-        cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((retryInterception) => {
-          const retryStatusCode = retryInterception.response?.statusCode;
-          expect(retryStatusCode, 'copy retry should receive an HTTP response status below 400')
+        if (!allowRetry) {
+          expect(statusCode, 'copy request should receive an HTTP response status below 400')
             .to.be.a('number')
             .and.to.be.lessThan(400);
+          return;
+        }
+
+        cy.log(`Retrying copy after failed response status: ${statusCode ?? 'no response'}`);
+        hasCopyRequestStarted = false;
+        return this.clickOnCopyLocationsBtn().then(() => waitForSuccessfulCopyRequest(false));
+      });
+    };
+
+    return this.clickOnCopyLocationsBtn()
+      .then(() => {
+        // If the first click was dropped and no request started, resubmit once from the copy form.
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        return cy.wait(500);
+      })
+      .then(() => {
+        return this.elements.visibleListActionDialog().then(($dialog) => {
+          const dialogText = $dialog.text().toLowerCase();
+          const isCopyFormVisible =
+            dialogText.includes('selected location') && dialogText.includes('copy location(s)');
+
+          if (!hasCopyRequestStarted && isCopyFormVisible) {
+            cy.log('No copy request detected after first click; retrying submit once.');
+            return this.clickOnCopyLocationsBtn();
+          }
+
+          return undefined;
         });
-      }
-    });
+      })
+      .then(() => waitForSuccessfulCopyRequest(true));
   }
 
   selectList(list: string) {
     cy.get('div.move-to-list-select select').select(list);
   }
   clickOnCopyLocationsBtn() {
-    this.elements
+    return this.elements
       .visibleListActionDialog()
       .contains('button', /^Copy Location\(s\)$/)
       .should('be.visible')

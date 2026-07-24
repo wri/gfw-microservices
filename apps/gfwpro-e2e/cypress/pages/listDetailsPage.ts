@@ -124,13 +124,7 @@ class ListDetailsPage {
   copyLists(lists: string[], locations?: number[], isGFW?: boolean) {
     lists.forEach((listName) => {
       if (locations && locations.length > 0) {
-        locations.forEach((location) => {
-          cy.get('div.rt-table')
-            .find('[data-cy^="select-location-"]:visible')
-            .eq(location - 1)
-            .find('input[type="checkbox"]')
-            .click({ force: true });
-        });
+        this.selectCheckBoxes(locations);
       } else {
         this.checkOnCheckBoxSelectAll();
       }
@@ -153,32 +147,11 @@ class ListDetailsPage {
       cy.wait(150);
       this.elements.visibleListActionDialog().find('#new-selection').should('be.checked');
 
-      // Debug: Log basic information
-      cy.log('Checking Save As Draft button state...');
-      cy.log(`List name entered: ${listName}`);
+      this.submitCopyLocationsWithRetry();
 
-      // Check if there are any validation error messages
-      cy.get('body').then(($body) => {
-        if ($body.find('.error-message, .validation-error, [role="alert"]').length > 0) {
-          cy.log('Found validation errors:');
-          cy.get('.error-message, .validation-error, [role="alert"]').each(($error) => {
-            cy.log(`Error: ${$error.text()}`);
-          });
-        }
-      });
-
-      // Now try to click the Save As Draft button
-      this.clickOnCopyLocationsBtn();
       if (isGFW) {
         const listActionDialogSelector = '.list-diagnostics-dialog:visible';
 
-        // In CI the first submit click can occasionally be dropped while the modal
-        // is still settling. If the copy form is still visible, submit once more.
-        this.elements.visibleListActionDialog().then(($dialog) => {
-          if ($dialog.text().includes('Copy selection')) {
-            this.clickOnCopyLocationsBtn();
-          }
-        });
         cy.contains(listActionDialogSelector, 'Locations Added', { timeout: 120000 }).should(
           'be.visible'
         );
@@ -189,24 +162,34 @@ class ListDetailsPage {
         ).should('be.visible');
       } else {
         const listActionDialogSelector = '.list-diagnostics-dialog:visible';
+        const startedMessage = 'process started, this can take a while, please be patient';
 
-        // In CI the first submit click can occasionally be dropped while the modal
-        // is still settling. If we are still on the copy form, submit once more.
-        this.elements.visibleListActionDialog().then(($dialog) => {
-          const dialogText = $dialog.text().toLowerCase();
-          if (dialogText.includes('selected location') && dialogText.includes('copy')) {
-            this.clickOnCopyLocationsBtn();
-          }
-        });
-
-        cy.contains(
-          listActionDialogSelector,
-          'process started, this can take a while, please be patient',
-          { timeout: 120000 }
-        ).should('be.visible');
+        cy.contains(listActionDialogSelector, startedMessage, { timeout: 120000 }).should(
+          'be.visible'
+        );
       }
       this.elements.confirmActionBtn().should('be.visible');
       this.clickOnConfirmActionBtn();
+    });
+  }
+
+  submitCopyLocationsWithRetry() {
+    const copyMoveAlias = 'copyMoveLargeList';
+    const copyRequestPattern = '**/locations/cm-large-list';
+    const copyRequestTimeout = 120000;
+
+    // Track the async copy request and retry only after an actual request failure.
+    cy.intercept('POST', copyRequestPattern).as(copyMoveAlias);
+    this.clickOnCopyLocationsBtn();
+    cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((interception) => {
+      const statusCode = interception.response?.statusCode;
+      if (!statusCode || statusCode >= 400) {
+        cy.log(`Retrying copy after failed response status: ${statusCode ?? 'no response'}`);
+        this.clickOnCopyLocationsBtn();
+        cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout })
+          .its('response.statusCode')
+          .should('be.lessThan', 400);
+      }
     });
   }
 

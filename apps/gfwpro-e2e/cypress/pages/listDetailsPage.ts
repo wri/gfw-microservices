@@ -207,10 +207,9 @@ class ListDetailsPage {
         this.clickOnCopyLocationsBtn();
         cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((retryInterception) => {
           const retryStatusCode = retryInterception.response?.statusCode;
-          expect(
-            retryStatusCode,
-            'copy retry should receive an HTTP response status below 400'
-          ).to.be.a('number').and.to.be.lessThan(400);
+          expect(retryStatusCode, 'copy retry should receive an HTTP response status below 400')
+            .to.be.a('number')
+            .and.to.be.lessThan(400);
         });
       }
     });

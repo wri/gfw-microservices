@@ -177,18 +177,41 @@ class ListDetailsPage {
     const copyMoveAlias = 'copyMoveLargeList';
     const copyRequestPattern = '**/locations/cm-large-list';
     const copyRequestTimeout = 120000;
+    let hasCopyRequestStarted = false;
 
     // Track the async copy request and retry only after an actual request failure.
-    cy.intercept('POST', copyRequestPattern).as(copyMoveAlias);
+    cy.intercept('POST', copyRequestPattern, (req) => {
+      hasCopyRequestStarted = true;
+      req.continue();
+    }).as(copyMoveAlias);
     this.clickOnCopyLocationsBtn();
+
+    // If the first click was dropped and no request started, resubmit once from the copy form.
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
+    this.elements.visibleListActionDialog().then(($dialog) => {
+      const dialogText = $dialog.text().toLowerCase();
+      const isCopyFormVisible =
+        dialogText.includes('selected location') && dialogText.includes('copy location(s)');
+
+      if (!hasCopyRequestStarted && isCopyFormVisible) {
+        cy.log('No copy request detected after first click; retrying submit once.');
+        this.clickOnCopyLocationsBtn();
+      }
+    });
+
     cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((interception) => {
       const statusCode = interception.response?.statusCode;
       if (!statusCode || statusCode >= 400) {
         cy.log(`Retrying copy after failed response status: ${statusCode ?? 'no response'}`);
         this.clickOnCopyLocationsBtn();
-        cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout })
-          .its('response.statusCode')
-          .should('be.lessThan', 400);
+        cy.wait(`@${copyMoveAlias}`, { timeout: copyRequestTimeout }).then((retryInterception) => {
+          const retryStatusCode = retryInterception.response?.statusCode;
+          expect(
+            retryStatusCode,
+            'copy retry should receive an HTTP response status below 400'
+          ).to.be.a('number').and.to.be.lessThan(400);
+        });
       }
     });
   }

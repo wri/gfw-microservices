@@ -7,8 +7,11 @@ export class SecurityHeaderMiddleware implements NestMiddleware {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-    res.setHeader('X-XSS-Protection', 'default-src');
-    res.setHeader('Content-Security-Policy', 'default-src ');
+    res.setHeader('X-XSS-Protection', '0');
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+    );
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Referrer-Policy', 'no-referrer-when-downgrade');
     res.setHeader(

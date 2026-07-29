@@ -24,11 +24,13 @@ class BasePage {
   }
 
   clickOnLoginNav() {
-    this.elements.loginNav().click();
+    this.elements.loginNav().should('be.visible').click();
+    this.elements.usernameInput().should('be.visible');
+    this.elements.passwordInput().should('be.visible');
   }
 
   clickOnLoginBtn() {
-    this.elements.loginBtn().click();
+    this.elements.loginBtn().should('be.enabled').click();
   }
 
   clickOnVerifyBtn() {
@@ -36,15 +38,15 @@ class BasePage {
   }
 
   fillUsername(username) {
-    this.elements.usernameInput().type(username);
+    this.elements.usernameInput().clear().type(username).should('have.value', username);
   }
 
   fillPassword(password) {
-    this.elements.passwordInput().type(password);
+    this.elements.passwordInput().clear().type(password).should('have.value', password);
   }
 
   fillToken(token) {
-    this.elements.tokenInput().type(token);
+    this.elements.tokenInput().should('be.visible').clear().type(token).should('have.value', token);
   }
 }
 

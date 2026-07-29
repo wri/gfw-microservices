@@ -25,7 +25,9 @@ describe('Upload location', () => {
     cy.wait('@signInPost').its('response.body').should('eq', 'Authenticated');
     basePage.fillToken(credentials.password);
     basePage.clickOnVerifyBtn();
-    cy.wait('@verifyLogin').its('response.body').should('be.oneOf', ['User', 'Manager', 'Select Org']);
+    cy.wait('@verifyLogin')
+      .its('response.body')
+      .should('be.oneOf', ['User', 'Manager', 'Select Org']);
   };
 
   When('I login as admin', () => {

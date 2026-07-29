@@ -9,49 +9,35 @@ describe('Upload location', () => {
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
 
-  When('I login as admin', () => {
+  const loginAs = (username: string) => {
     cy.on('uncaught:exception', () => {
       // work around for existing errors that otherwise fail the test
       return false;
     });
+    cy.intercept('POST', '/auth/signinpost').as('signInPost');
+    cy.intercept('POST', '/auth/verifyLogin').as('verifyLogin');
     cy.visit('/');
 
     basePage.clickOnLoginNav();
-    basePage.fillUsername(credentials.username);
+    basePage.fillUsername(username);
     basePage.fillPassword(credentials.password);
     basePage.clickOnLoginBtn();
+    cy.wait('@signInPost').its('response.body').should('eq', 'Authenticated');
     basePage.fillToken(credentials.password);
     basePage.clickOnVerifyBtn();
+    cy.wait('@verifyLogin').its('response.body').should('be.oneOf', ['User', 'Manager', 'Select Org']);
+  };
+
+  When('I login as admin', () => {
+    loginAs(credentials.username);
   });
 
   When('I login as viewer', () => {
-    cy.on('uncaught:exception', () => {
-      // work around for existing errors that otherwise fail the test
-      return false;
-    });
-    cy.visit('/');
-
-    basePage.clickOnLoginNav();
-    basePage.fillUsername(credentials.viewer);
-    basePage.fillPassword(credentials.password);
-    basePage.clickOnLoginBtn();
-    basePage.fillToken(credentials.password);
-    basePage.clickOnVerifyBtn();
+    loginAs(credentials.viewer);
   });
 
   When('I login as editor', () => {
-    cy.on('uncaught:exception', () => {
-      // work around for existing errors that otherwise fail the test
-      return false;
-    });
-    cy.visit('/');
-
-    basePage.clickOnLoginNav();
-    basePage.fillUsername(credentials.editor);
-    basePage.fillPassword(credentials.password);
-    basePage.clickOnLoginBtn();
-    basePage.fillToken(credentials.password);
-    basePage.clickOnVerifyBtn();
+    loginAs(credentials.editor);
   });
 
   When('I share a list with users', () => {

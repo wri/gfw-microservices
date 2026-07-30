@@ -16,17 +16,27 @@ function LanguageDropdownMenuMobile({ languageChange }) {
   const [selectedLanguage, setSelectedLanguage] = useState();
 
   useEffect(() => {
-    if (Transifex) {
-      Transifex.live.onReady(() => {
-        const languageCode = Transifex.live.getSelectedLanguageCode();
-        const languages = Transifex.live.getAllLanguages();
-        const selected = languages.find((language) => language.code === languageCode);
+    const live = window.Transifex?.live;
 
-        setAllLanguages(languages);
-        setSelectedLanguage(selected);
-        store.dispatch(setLanguage(selected.code));
-      });
+    if (!live) {
+      return;
     }
+
+    const initializeLanguages = () => {
+      const languageCode = live.getSelectedLanguageCode?.() || 'en';
+      const languages = live.getAllLanguages?.() || [];
+      const selected = languages.find((language) => language.code === languageCode) || languages[0];
+
+      setAllLanguages(languages);
+      setSelectedLanguage(selected);
+
+      if (selected?.code) {
+        store.dispatch(setLanguage(selected.code));
+      }
+    };
+
+    initializeLanguages();
+    live.onReady?.(initializeLanguages);
   }, []);
 
   const changeLanguage = (language) => {

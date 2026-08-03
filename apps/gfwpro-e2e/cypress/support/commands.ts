@@ -163,6 +163,16 @@ Cypress.on('uncaught:exception', (err) => {
     return false;
   }
 
+  // ArcGIS worker initialisation throws this before any map interaction
+  if (err.message.includes("reading 'sequence'")) {
+    return false;
+  }
+
+  // MUI TouchRipple sets animationInProgress on a ref that is null during rapid re-renders
+  if (err.message.includes("setting 'animationInProgress'")) {
+    return false;
+  }
+
   if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }

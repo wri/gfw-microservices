@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +29,11 @@ import {
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
 
-import { LocationMapDrawer, LocationTypeButton, NavBar } from '../components';
+import { LocationTypeButton, NavBar } from '../components';
+// Lazy-load so ArcGIS workers don't initialise until the user picks "Draw a shape"
+const LocationMapDrawer = lazy(() =>
+  import('../components/LocationMapDrawer').then((m) => ({ default: m.LocationMapDrawer }))
+);
 import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { createGeometryAndGraphic } from '../../../utils/polygonCoordinatesUtils';
@@ -429,13 +433,15 @@ export function UploadLocationByPolygon({
                   alignItems: 'baseline',
                 }}
               >
-                <LocationMapDrawer
-                  geomFromMap={null}
-                  mapView={mapView}
-                  sketchViewModel={sketchViewModel}
-                  setSketchViewModel={setSketchViewModel}
-                  updateGeometry={updateGeometry}
-                />
+                <Suspense fallback={null}>
+                  <LocationMapDrawer
+                    geomFromMap={null}
+                    mapView={mapView}
+                    sketchViewModel={sketchViewModel}
+                    setSketchViewModel={setSketchViewModel}
+                    updateGeometry={updateGeometry}
+                  />
+                </Suspense>
               </Box>
             )}
             {!mapView && locationFormat !== null && (

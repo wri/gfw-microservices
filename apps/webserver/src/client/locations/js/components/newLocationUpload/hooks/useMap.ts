@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
@@ -14,6 +14,7 @@ type Coordinate = { longitude: string; latitude: string; id: string };
 
 export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: number) => {
   const [mapView, setMapView] = useState<MapView | null>(null);
+  const mapViewRef = useRef<MapView | null>(null);
   const [sketchViewModel, setSketchViewModel] = useState<SketchViewModel | null>(null);
   const [geometry, setGeometry] = useState<Polygon | Polygon[] | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinate[]>(
@@ -33,22 +34,26 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
     if (sketchViewModel) {
       sketchViewModel.destroy();
     }
-    if (mapView) {
-      mapView.destroy();
+    if (mapViewRef.current) {
+      mapViewRef.current.destroy();
+      mapViewRef.current = null;
     }
   };
 
   const initMap = () => {
-    new MapView({
+    const view = new MapView({
       container: 'mapView',
       center: [0, 16.53],
       zoom: 3,
       map: new EsriMap({
         basemap: 'hybrid',
       }),
-    }).when((mapViewInstance: MapView) => {
-      setMapView(mapViewInstance);
     });
+    mapViewRef.current = view;
+    view.when((mapViewInstance: MapView) => {
+      setMapView(mapViewInstance);
+    // absorb rejection thrown when the view is destroyed before .when() resolves
+    }).catch(Boolean);
   };
 
   const updateGeometry = (geometry: Polygon) => {

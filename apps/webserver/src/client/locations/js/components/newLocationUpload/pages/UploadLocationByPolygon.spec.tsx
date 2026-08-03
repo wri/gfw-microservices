@@ -22,11 +22,14 @@ jest.mock('../contexts', () => ({
   }),
 }));
 
+jest.mock('../components/LocationMapDrawer', () => ({
+  LocationMapDrawer: () => <span data-testid="location-map-drawer" />,
+}));
+
 jest.mock('../components', () => ({
   ...jest.requireActual('../components'),
   NavBar: () => <span />,
   ExternalHelperResource: () => <span />,
-  LocationMapDrawer: () => <span data-testid="location-map-drawer" />,
 }));
 
 describe('UploadLocationByPolygon', () => {

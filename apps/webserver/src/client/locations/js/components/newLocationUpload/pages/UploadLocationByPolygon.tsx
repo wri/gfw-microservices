@@ -31,10 +31,6 @@ import { TransitionGroup } from 'react-transition-group';
 
 import { LocationTypeButton, NavBar } from '../components';
 import { ExternalHelperResource, PillButton } from '../../../../../components';
-// Lazy-load so ArcGIS workers don't initialise until the user picks "Draw a shape"
-const LocationMapDrawer = lazy(() =>
-  import('../components/LocationMapDrawer').then((m) => ({ default: m.LocationMapDrawer }))
-);
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { createGeometryAndGraphic } from '../../../utils/polygonCoordinatesUtils';
 import { useMap } from '../hooks';
@@ -42,6 +38,11 @@ import { useUploadLocation } from '../contexts';
 import { useHistory } from '../hooks';
 import { PolygonFromMapPage, UploadType } from '../types';
 import { DATA_CY, ExternalLinks } from '../../../../../utils/constants';
+
+// Lazy-load so ArcGIS workers don't initialise until the user picks "Draw a shape"
+const LocationMapDrawer = lazy(() =>
+  import('../components/LocationMapDrawer').then((m) => ({ default: m.LocationMapDrawer }))
+);
 
 const MIN_AMOUNT_OF_COORDINATES = 3;
 const MAX_AMOUNT_OF_COORDINATES = 12;

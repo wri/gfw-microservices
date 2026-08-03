@@ -1,6 +1,17 @@
 import { Before, Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
+Cypress.on('uncaught:exception', (err) => {
+  if (
+    err.message.includes("Cannot read properties of null (reading 'sequence')") ||
+    err.message.includes("Cannot set properties of null (setting 'animationInProgress')")
+  ) {
+    return false;
+  }
+
+  return true;
+});
+
 describe('Upload location', () => {
   let timestamp: number;
   let listToUploadPolygonLocation: string;
@@ -8,18 +19,6 @@ describe('Upload location', () => {
   const locationsPage = new LocationsPage();
 
   Before(() => {
-    // Scope known transient frontend exceptions to this upload workflow only.
-    cy.on('uncaught:exception', (err) => {
-      if (
-        err.message.includes("Cannot read properties of null (reading 'sequence')") ||
-        err.message.includes("Cannot set properties of null (setting 'animationInProgress')")
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-
     timestamp = Date.now() + Math.floor(Math.random() * 1000);
     listToUploadPolygonLocation = `uploadPolygonLocation${timestamp}`;
     listToUploadPointLocation = `uploadPointLocation${timestamp}`;

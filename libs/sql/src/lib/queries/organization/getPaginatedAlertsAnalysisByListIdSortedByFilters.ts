@@ -279,7 +279,7 @@ BEGIN
                               WHERE list_id = @listId
                               AND attribute_name = @sortByAttribute
                           ) = 1
-                          THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS DECIMAL(18,6))'
+                          THEN 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS FLOAT)'
                           ELSE 'CAST(JSON_VALUE(lt.attributes, ''$."' + @sortByAttribute + '"'') AS NVARCHAR(MAX))'
                      END
                 ELSE QUOTENAME(@sortByAttribute)

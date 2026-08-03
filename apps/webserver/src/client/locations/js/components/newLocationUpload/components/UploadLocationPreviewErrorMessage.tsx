@@ -6,6 +6,7 @@ import { PillButton } from '../../../../../components';
 import { getFileExtension } from '../../../../../utils';
 import { useUploadLocation } from '../contexts';
 import { UploadType } from '../types';
+import { errorsMap } from '../../../../../listDetails/js/components/lists/ListDetails/WrappedReactTable';
 
 export function UploadLocationPreviewErrorMessage({
   error,
@@ -183,6 +184,19 @@ const errorMessageBuilder = ({
   for (const pattern of errorPatterns) {
     if (firstError && pattern.match(firstError)) {
       return pattern.message;
+    }
+  }
+
+  if (firstError) {
+    const mappedError =
+      errorsMap[firstError as keyof typeof errorsMap] ||
+      Object.entries(errorsMap).find(([key]) => firstError.startsWith(key))?.[1];
+
+    if (mappedError) {
+      return {
+        title: 'Invalid file',
+        body: mappedError,
+      };
     }
   }
 

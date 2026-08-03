@@ -364,7 +364,7 @@ export default WrappedReactTable;
 
 const getLocationName = (obj) => obj['Location Name'] || obj.locationName || obj.Location_N;
 
-const errorsMap = {
+export const errorsMap = {
   'Invalid location':
     'This location is not on land. Please ensure your geometry is accurate and in the WGS 84 projection.',
   'Invalid area':

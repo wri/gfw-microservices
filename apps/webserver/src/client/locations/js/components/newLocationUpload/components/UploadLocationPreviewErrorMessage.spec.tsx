@@ -262,4 +262,28 @@ describe('UploadLocationPreviewErrorMessage', () => {
       )
     ).toBeInTheDocument();
   });
+
+  it('should render mapped errorsMap message', () => {
+    const error = {
+      errors: ['Invalid area'],
+    };
+
+    render(
+      <UploadLocationProvider>
+        <UploadLocationPreviewErrorMessage
+          error={error}
+          keyFile="data.csv"
+          onRetryUpload={mockRetryUpload}
+          onRetryPreviewData={mockRetryPreviewData}
+        />
+      </UploadLocationProvider>
+    );
+
+    expect(screen.getByText(/invalid file/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /this location does not have a valid analysis radius or area defined\. analysis radius \(in Km\) or analysis area \(in Ha\) must be defined as a positive integer\./i
+      )
+    ).toBeInTheDocument();
+  });
 });

@@ -319,7 +319,7 @@ DEALLOCATE column_cursor;
 						WHERE list_id = @listID
 						AND attribute_name = @cleanedOrderByColumn COLLATE Latin1_General_CS_AS
 					) = 1
-					THEN 'CAST(JSON_VALUE(lt.attributes COLLATE Latin1_General_CS_AS, ''$."' + REPLACE(REPLACE(@cleanedOrderByColumn, '''', ''''''), '"', '""') + '"'') AS DECIMAL(18,6))'
+					THEN 'CAST(JSON_VALUE(lt.attributes COLLATE Latin1_General_CS_AS, ''$."' + REPLACE(REPLACE(@cleanedOrderByColumn, '''', ''''''), '"', '""') + '"'') AS FLOAT)'
 					ELSE 'CAST(JSON_VALUE(lt.attributes COLLATE Latin1_General_CS_AS, ''$."' + REPLACE(REPLACE(@cleanedOrderByColumn, '''', ''''''), '"', '""') + '"'') AS NVARCHAR(MAX))'
 				END
 						WHEN @listVersion >= 2 AND @cleanedOrderByColumn NOT LIKE '%[[]%' AND @cleanedOrderByColumn NOT LIKE '%]%'

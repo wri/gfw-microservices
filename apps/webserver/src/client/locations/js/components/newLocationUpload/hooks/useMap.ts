@@ -5,6 +5,7 @@ import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import {
   extractCoordinates,
   addCoordinateTextFromPolygon,
@@ -16,10 +17,15 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   const [mapView, setMapView] = useState<MapView | null>(null);
   const mapViewRef = useRef<MapView | null>(null);
   const [sketchViewModel, setSketchViewModel] = useState<SketchViewModel | null>(null);
+  const sketchViewModelRef = useRef<SketchViewModel | null>(null);
   const [geometry, setGeometry] = useState<Polygon | Polygon[] | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinate[]>(
     Array.from({ length: initialAmountOfCoordinates }, () => generateEmptyCoordinate())
   );
+
+  useEffect(() => {
+    sketchViewModelRef.current = sketchViewModel;
+  }, [sketchViewModel]);
 
   useEffect(() => {
     if (!shouldLoadMap) {
@@ -31,13 +37,16 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   }, [shouldLoadMap]);
 
   const cleanup = () => {
-    if (sketchViewModel) {
-      sketchViewModel.destroy();
+    if (sketchViewModelRef.current) {
+      sketchViewModelRef.current.destroy();
+      sketchViewModelRef.current = null;
     }
     if (mapViewRef.current) {
       mapViewRef.current.destroy();
       mapViewRef.current = null;
     }
+    setSketchViewModel(null);
+    setMapView(null);
   };
 
   const initMap = () => {
@@ -52,10 +61,23 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
     mapViewRef.current = view;
     view
       .when((mapViewInstance: MapView) => {
+        if (mapViewRef.current !== view) {
+          return;
+        }
+
         setMapView(mapViewInstance);
-        // absorb rejection thrown when the view is destroyed before .when() resolves
       })
-      .catch(Boolean);
+      .catch((error: unknown) => {
+        if (mapViewRef.current !== view) {
+          return;
+        }
+
+        errorLogger.warn('MapView failed to initialize', {
+          component: 'useMap',
+          action: 'initMap',
+          error,
+        });
+      });
   };
 
   const updateGeometry = (geometry: Polygon) => {

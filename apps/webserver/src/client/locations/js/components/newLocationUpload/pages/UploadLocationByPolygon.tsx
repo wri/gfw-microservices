@@ -30,11 +30,11 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { TransitionGroup } from 'react-transition-group';
 
 import { LocationTypeButton, NavBar } from '../components';
+import { ExternalHelperResource, PillButton } from '../../../../../components';
 // Lazy-load so ArcGIS workers don't initialise until the user picks "Draw a shape"
 const LocationMapDrawer = lazy(() =>
   import('../components/LocationMapDrawer').then((m) => ({ default: m.LocationMapDrawer }))
 );
-import { ExternalHelperResource, PillButton } from '../../../../../components';
 import { coordinateSchema, locationNameSchema } from '../utils/schema';
 import { createGeometryAndGraphic } from '../../../utils/polygonCoordinatesUtils';
 import { useMap } from '../hooks';

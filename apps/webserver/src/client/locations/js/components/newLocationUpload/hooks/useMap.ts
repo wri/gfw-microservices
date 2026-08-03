@@ -50,10 +50,12 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
       }),
     });
     mapViewRef.current = view;
-    view.when((mapViewInstance: MapView) => {
-      setMapView(mapViewInstance);
-    // absorb rejection thrown when the view is destroyed before .when() resolves
-    }).catch(Boolean);
+    view
+      .when((mapViewInstance: MapView) => {
+        setMapView(mapViewInstance);
+        // absorb rejection thrown when the view is destroyed before .when() resolves
+      })
+      .catch(Boolean);
   };
 
   const updateGeometry = (geometry: Polygon) => {

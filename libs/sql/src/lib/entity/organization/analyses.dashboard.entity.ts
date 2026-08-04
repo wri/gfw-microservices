@@ -42,33 +42,6 @@ export class AnalysesDashboardEntity {
   @Column({ name: 'total_ha', nullable: true })
   totalHa: number;
 
-  @Column({ name: 'integrated_alerts_daily_all_nominal', nullable: true })
-  integratedAlertsDailyAllNominal: string;
-
-  @Column({ name: 'integrated_alerts_daily_all_high', nullable: true })
-  integratedAlertsDailyAllHigh: string;
-
-  @Column({ name: 'integrated_alerts_daily_all_highest', nullable: true })
-  integratedAlertsDailyAllHighest: string;
-
-  @Column({ name: 'integrated_alerts_daily_sbtn_nominal', nullable: true })
-  integratedAlertsDailySbtnNominal: string;
-
-  @Column({ name: 'integrated_alerts_daily_sbtn_high', nullable: true })
-  integratedAlertsDailySbtnHigh: string;
-
-  @Column({ name: 'integrated_alerts_daily_sbtn_highest', nullable: true })
-  integratedAlertsDailySbtnHighest: string;
-
-  @Column({ name: 'integrated_alerts_daily_jrc_nominal', nullable: true })
-  integratedAlertsDailyJrcNominal: string;
-
-  @Column({ name: 'integrated_alerts_daily_jrc_high', nullable: true })
-  integratedAlertsDailyJrcHigh: string;
-
-  @Column({ name: 'integrated_alerts_daily_jrc_highest', nullable: true })
-  integratedAlertsDailyJrcHighest: string;
-
   @Column({ name: 'status_code', nullable: true })
   statusCode: number;
 }

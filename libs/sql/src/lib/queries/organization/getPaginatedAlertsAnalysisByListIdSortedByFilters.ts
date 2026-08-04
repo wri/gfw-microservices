@@ -20,22 +20,13 @@ DECLARE @listLocationTableName NVARCHAR(1000);
 DECLARE @dateFilteredAlertsSQL NVARCHAR(MAX) = '';
 DECLARE @unionClauses NVARCHAR(MAX) = '';
 
-DECLARE @alertsColumns NVARCHAR(MAX) = 'location_id, gadm_id, viirs_alerts_daily, tree_cover_extent_total, integrated_alerts_coverage, total_ha, integrated_alerts_daily_all_nominal, integrated_alerts_daily_all_high, integrated_alerts_daily_all_highest, integrated_alerts_daily_sbtn_nominal, integrated_alerts_daily_sbtn_high, integrated_alerts_daily_sbtn_highest, integrated_alerts_daily_jrc_nominal, integrated_alerts_daily_jrc_high, integrated_alerts_daily_jrc_highest, status_code, location_error';
+DECLARE @alertsColumns NVARCHAR(MAX) = 'location_id, gadm_id, viirs_alerts_daily, tree_cover_extent_total, integrated_alerts_coverage, total_ha, status_code, location_error';
 DECLARE @ltColumns NVARCHAR(MAX) = '[Location Name], Country, State, [Sub State]';
 DECLARE @calculatedColumns NVARCHAR(MAX) = 'intdistAlertsAreaSbtnNaturalForestsTotal, intdistAlertsAreaSbtnNaturalEcosystemTotal, intdistAlertsAreaJrcTotal, intdistAlertsAreaAllTotal';
 
 -- Define the JSON fields that need date-based aggregation
 DECLARE @DateBasedFields TABLE (FieldName NVARCHAR(128));
 INSERT INTO @DateBasedFields (FieldName) VALUES
-('integrated_alerts_daily_all_nominal'),
-('integrated_alerts_daily_all_high'),
-('integrated_alerts_daily_all_highest'),
-('integrated_alerts_daily_sbtn_nominal'),
-('integrated_alerts_daily_sbtn_high'),
-('integrated_alerts_daily_sbtn_highest'),
-('integrated_alerts_daily_jrc_nominal'),
-('integrated_alerts_daily_jrc_high'),
-('integrated_alerts_daily_jrc_highest'),
 ('intdist_alerts_area_sbtn_natural_forests_nominal'),
 ('intdist_alerts_area_sbtn_natural_forests_high'),
 ('intdist_alerts_area_sbtn_natural_forests_highest'),
@@ -140,15 +131,6 @@ SET @dateFilteredAlertsSQL = N'
 AggregatedAlerts AS (
     SELECT
         location_id,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_all_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_all_nominal,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_all_high'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_all_high,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_all_highest'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_all_highest,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_sbtn_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_sbtn_nominal,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_sbtn_high'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_sbtn_high,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_sbtn_highest'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_sbtn_highest,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_nominal,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_high'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_high,
-        ISNULL(SUM(CASE WHEN FieldName = ''integrated_alerts_daily_jrc_highest'' THEN CAST([value] AS FLOAT) END), 0) AS integrated_alerts_daily_jrc_highest,
         ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_sbtn_natural_forests_nominal'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_sbtn_natural_forests_nominal,
         ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_sbtn_natural_forests_high'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_sbtn_natural_forests_high,
         ISNULL(SUM(CASE WHEN FieldName = ''intdist_alerts_area_sbtn_natural_forests_highest'' THEN CAST([value] AS FLOAT) END), 0) AS intdist_alerts_area_sbtn_natural_forests_highest,
@@ -175,15 +157,6 @@ SELECT
     ISNULL(alerts.tree_cover_extent_total, 0) AS treeCoverExtentTotal,
     ISNULL(alerts.integrated_alerts_coverage, 0) AS integratedAlertsCoverage,
     ISNULL(alerts.total_ha, 0) AS totalHa,
-    ISNULL(agg.integrated_alerts_daily_all_nominal, 0) AS integratedAlertsDailyAllNominal,
-    ISNULL(agg.integrated_alerts_daily_all_high, 0) AS integratedAlertsDailyAllHigh,
-    ISNULL(agg.integrated_alerts_daily_all_highest, 0) AS integratedAlertsDailyAllHighest,
-    ISNULL(agg.integrated_alerts_daily_sbtn_nominal, 0) AS integratedAlertsDailySbtnNominal,
-    ISNULL(agg.integrated_alerts_daily_sbtn_high, 0) AS integratedAlertsDailySbtnHigh,
-    ISNULL(agg.integrated_alerts_daily_sbtn_highest, 0) AS integratedAlertsDailySbtnHighest,
-    ISNULL(agg.integrated_alerts_daily_jrc_nominal, 0) AS integratedAlertsDailyJrcNominal,
-    ISNULL(agg.integrated_alerts_daily_jrc_high, 0) AS integratedAlertsDailyJrcHigh,
-    ISNULL(agg.integrated_alerts_daily_jrc_highest, 0) AS integratedAlertsDailyJrcHighest,
     alerts.status_code AS location_status_id,
     REPLACE(alerts.location_error, ''n.n'', '''') AS analysisError,
     (ISNULL(agg.intdist_alerts_area_sbtn_natural_forests_nominal, 0) + ISNULL(agg.intdist_alerts_area_sbtn_natural_forests_high, 0) + ISNULL(agg.intdist_alerts_area_sbtn_natural_forests_highest, 0)) AS intdistAlertsAreaSbtnNaturalForestsTotal,
@@ -288,7 +261,7 @@ BEGIN
 END
 ELSE
 BEGIN
-    SET @SQL += ' ORDER BY alerts.integrated_alerts_daily_all_highest DESC';
+    SET @SQL += ' ORDER BY alerts.total_ha DESC';
 END;
 
 IF @RowsOfPage > 0 AND @PageNumber > 0
@@ -341,15 +314,6 @@ export class PaginatedAlertsAnalysisByListIdSortedByFilters {
   treeCoverExtentTotal: number;
   integratedAlertsCoverage: number;
   totalHa: number;
-  integratedAlertsDailyAllNominal: number;
-  integratedAlertsDailyAllHigh: number;
-  integratedAlertsDailyAllHighest: number;
-  integratedAlertsDailySbtnNominal: number;
-  integratedAlertsDailySbtnHigh: number;
-  integratedAlertsDailySbtnHighest: number;
-  integratedAlertsDailyJrcNominal: number;
-  integratedAlertsDailyJrcHigh: number;
-  integratedAlertsDailyJrcHighest: number;
   location_status_id: number;
   analysisError: number | null;
   intdistAlertsAreaSbtnNaturalForestsTotal: number;

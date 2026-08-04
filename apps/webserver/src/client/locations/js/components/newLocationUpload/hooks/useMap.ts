@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 
+import errorLogger from '../../../../../common/js/utils/errorLogger';
 import {
   extractCoordinates,
   addCoordinateTextFromPolygon,
@@ -14,11 +15,17 @@ type Coordinate = { longitude: string; latitude: string; id: string };
 
 export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: number) => {
   const [mapView, setMapView] = useState<MapView | null>(null);
+  const mapViewRef = useRef<MapView | null>(null);
   const [sketchViewModel, setSketchViewModel] = useState<SketchViewModel | null>(null);
+  const sketchViewModelRef = useRef<SketchViewModel | null>(null);
   const [geometry, setGeometry] = useState<Polygon | Polygon[] | null>(null);
   const [coordinates, setCoordinates] = useState<Coordinate[]>(
     Array.from({ length: initialAmountOfCoordinates }, () => generateEmptyCoordinate())
   );
+
+  useEffect(() => {
+    sketchViewModelRef.current = sketchViewModel;
+  }, [sketchViewModel]);
 
   useEffect(() => {
     if (!shouldLoadMap) {
@@ -30,25 +37,47 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   }, [shouldLoadMap]);
 
   const cleanup = () => {
-    if (sketchViewModel) {
-      sketchViewModel.destroy();
+    if (sketchViewModelRef.current) {
+      sketchViewModelRef.current.destroy();
+      sketchViewModelRef.current = null;
     }
-    if (mapView) {
-      mapView.destroy();
+    if (mapViewRef.current) {
+      mapViewRef.current.destroy();
+      mapViewRef.current = null;
     }
+    setSketchViewModel(null);
+    setMapView(null);
   };
 
   const initMap = () => {
-    new MapView({
+    const view = new MapView({
       container: 'mapView',
       center: [0, 16.53],
       zoom: 3,
       map: new EsriMap({
         basemap: 'hybrid',
       }),
-    }).when((mapViewInstance: MapView) => {
-      setMapView(mapViewInstance);
     });
+    mapViewRef.current = view;
+    view
+      .when((mapViewInstance: MapView) => {
+        if (mapViewRef.current !== view) {
+          return;
+        }
+
+        setMapView(mapViewInstance);
+      })
+      .catch((error: unknown) => {
+        if (mapViewRef.current !== view) {
+          return;
+        }
+
+        errorLogger.warn('MapView failed to initialize', {
+          component: 'useMap',
+          action: 'initMap',
+          error,
+        });
+      });
   };
 
   const updateGeometry = (geometry: Polygon) => {

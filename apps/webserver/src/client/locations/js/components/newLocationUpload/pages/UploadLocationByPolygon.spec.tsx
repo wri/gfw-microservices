@@ -22,11 +22,14 @@ jest.mock('../contexts', () => ({
   }),
 }));
 
+jest.mock('../components/LocationMapDrawer', () => ({
+  LocationMapDrawer: () => <span data-testid="location-map-drawer" />,
+}));
+
 jest.mock('../components', () => ({
   ...jest.requireActual('../components'),
   NavBar: () => <span />,
   ExternalHelperResource: () => <span />,
-  LocationMapDrawer: () => <span data-testid="location-map-drawer" />,
 }));
 
 describe('UploadLocationByPolygon', () => {
@@ -71,7 +74,7 @@ describe('UploadLocationByPolygon', () => {
 
     await user.click(drawAShapeButton);
 
-    expect(screen.getByTestId('location-map-drawer')).toBeInTheDocument();
+    expect(await screen.findByTestId('location-map-drawer')).toBeInTheDocument();
   });
 
   it('should go to next page if all fields are provided', async () => {

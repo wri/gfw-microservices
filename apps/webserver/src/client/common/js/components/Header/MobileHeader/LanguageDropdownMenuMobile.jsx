@@ -9,8 +9,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { setLanguage } from '../../../../../locations/js/actions/locationActions';
 import store from '../../../../../locations/js/store';
 
-const { Transifex } = window;
-
 function LanguageDropdownMenuMobile({ languageChange }) {
   const [allLanguages, setAllLanguages] = useState();
   const [selectedLanguage, setSelectedLanguage] = useState();
@@ -40,8 +38,8 @@ function LanguageDropdownMenuMobile({ languageChange }) {
   }, []);
 
   const changeLanguage = (language) => {
-    if (selectedLanguage.code !== language.code) {
-      Transifex.live.translateTo(language.code);
+    if (selectedLanguage?.code !== language.code) {
+      window.Transifex?.live?.translateTo?.(language.code);
 
       setSelectedLanguage(language);
       store.dispatch(setLanguage(language.code));

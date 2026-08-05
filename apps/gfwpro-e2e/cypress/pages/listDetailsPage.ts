@@ -300,9 +300,11 @@ class ListDetailsPage {
     this.elements.fullListMapBtn().click();
   }
   clickOnLocationMapBtnOnHover() {
-    cy.get('[data-testid="custom-row"]', { timeout: 60000 }).should('have.length.at.least', 3);
-
-    cy.get('[data-testid="custom-row"]').eq(2).as('targetRow').scrollIntoView();
+    cy.get('[data-testid="custom-row"]', { timeout: 60000 })
+      .should('have.length.at.least', 3)
+      .eq(2)
+      .as('targetRow')
+      .scrollIntoView();
 
     cy.get('@targetRow').children('[role="gridcell"]').eq(4).trigger('mouseover', { force: true });
 

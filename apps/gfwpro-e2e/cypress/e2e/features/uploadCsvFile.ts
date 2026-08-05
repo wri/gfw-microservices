@@ -1,17 +1,6 @@
 import { Before, Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 
-Cypress.on('uncaught:exception', (err) => {
-  if (
-    err.message.includes("Cannot read properties of null (reading 'sequence')") ||
-    err.message.includes("Cannot set properties of null (setting 'animationInProgress')")
-  ) {
-    return false;
-  }
-
-  return true;
-});
-
 describe('Upload File Csv', () => {
   const filePath = 'cypress/fixtures/uploadCsv.xlsx';
   let timestamp: number;

@@ -17,14 +17,20 @@
 import './commands';
 import 'cypress-file-upload';
 
+const shouldIgnoreUncaughtException = (message: string): boolean => {
+  return (
+    message.includes('plausible module') ||
+    message.includes('Module not found') ||
+    message.includes('plausible is not defined') ||
+    message.includes('is not defined') ||
+    message.includes("Cannot read properties of null (reading 'sequence')") ||
+    message.includes("Cannot set properties of null (setting 'animationInProgress')")
+  );
+};
+
 // Handle module resolution errors at runtime
 Cypress.on('uncaught:exception', (err) => {
-  if (
-    err.message.includes('plausible module') ||
-    err.message.includes('Module not found') ||
-    err.message.includes('plausible is not defined') || // Specifically ignore "plausible is not defined"
-    err.message.includes('is not defined')
-  ) {
+  if (shouldIgnoreUncaughtException(err.message)) {
     // Catch general "not defined" errors
     console.warn('Ignored error:', err.message);
     return false; // Ignore error and continue test

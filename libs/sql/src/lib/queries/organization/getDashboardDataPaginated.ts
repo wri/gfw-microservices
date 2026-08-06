@@ -33,6 +33,15 @@ export const getDashboardDataPaginated = `
     AD.viirs_alerts_daily,
     AD.tree_cover_extent_total,
     AD.integrated_alerts_coverage AS integratedAlertsCoverage,
+    AD.integrated_alerts_daily_all_nominal AS integratedAlertsDailyAllNominal,
+    AD.integrated_alerts_daily_all_high AS integratedAlertsDailyAllHigh,
+    AD.integrated_alerts_daily_all_highest AS integratedAlertsDailyAllHighest,
+    AD.integrated_alerts_daily_sbtn_nominal AS integratedAlertsDailySbtnNominal,
+    AD.integrated_alerts_daily_sbtn_high AS integratedAlertsDailySbtnHigh,
+    AD.integrated_alerts_daily_sbtn_highest AS integratedAlertsDailySbtnHighest,
+    AD.integrated_alerts_daily_jrc_nominal AS integratedAlertsDailyJrcNominal,
+    AD.integrated_alerts_daily_jrc_high AS integratedAlertsDailyJrcHigh,
+    AD.integrated_alerts_daily_jrc_highest AS integratedAlertsDailyJrcHighest,
     AD.intdist_alerts_area_all_nominal AS integratedAlertsAreaAllNominal,
     AD.intdist_alerts_area_all_high AS integratedAlertsAreaAllHigh,
     AD.intdist_alerts_area_all_highest AS integratedAlertsAreaAllHighest,
@@ -135,5 +144,14 @@ export class DashboardDataPaginated {
   tree_cover_extent_total: number;
   integrated_alerts_coverage: string;
   total_ha: number;
+  integratedAlertsDailyAllNominal: string;
+  integratedAlertsDailyAllHigh: string;
+  integratedAlertsDailyAllHighest: string;
+  integratedAlertsDailySbtnNominal: string;
+  integratedAlertsDailySbtnHigh: string;
+  integratedAlertsDailySbtnHighest: string;
+  integratedAlertsDailyJrcNominal: string;
+  integratedAlertsDailyJrcHigh: string;
+  integratedAlertsDailyJrcHighest: string;
   status_code: number;
 }

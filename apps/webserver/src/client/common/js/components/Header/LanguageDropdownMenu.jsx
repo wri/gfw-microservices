@@ -6,30 +6,38 @@ import { setLanguage } from '../../../../locations/js/actions/locationActions';
 import { getLanguageNameAbbreviation } from './getLanguageNameAbbreviation';
 import './DropDownNav.scss';
 
-const { Transifex } = window;
-
 function LanguageDropdownMenu({ languageChange }) {
   const [displayOptions, setDisplayOptions] = useState(false);
   const [allLanguages, setAllLanguages] = useState();
   const [selectedLanguage, setSelectedLanguage] = useState();
 
   useEffect(() => {
-    if (Transifex) {
-      Transifex.live.onReady(() => {
-        const languageCode = Transifex.live.getSelectedLanguageCode();
-        const languages = Transifex.live.getAllLanguages();
-        const selected = languages.find((language) => language.code === languageCode);
+    const live = window.Transifex?.live;
 
-        setAllLanguages(languages);
-        setSelectedLanguage(selected);
-        store.dispatch(setLanguage(selected.code));
-      });
+    if (!live) {
+      return;
     }
+
+    const initializeLanguages = () => {
+      const languageCode = live.getSelectedLanguageCode?.() || 'en';
+      const languages = live.getAllLanguages?.() || [];
+      const selected = languages.find((language) => language.code === languageCode) || languages[0];
+
+      setAllLanguages(languages);
+      setSelectedLanguage(selected);
+
+      if (selected?.code) {
+        store.dispatch(setLanguage(selected.code));
+      }
+    };
+
+    initializeLanguages();
+    live.onReady?.(initializeLanguages);
   }, []);
 
   const changeLanguage = (language) => {
-    if (selectedLanguage.code !== language.code) {
-      Transifex.live.translateTo(language.code);
+    if (selectedLanguage?.code !== language.code) {
+      window.Transifex?.live?.translateTo?.(language.code);
 
       setSelectedLanguage(language);
       store.dispatch(setLanguage(language.code));
@@ -53,7 +61,7 @@ function LanguageDropdownMenu({ languageChange }) {
         }
       }}
     >
-      <div className={`drop-down-nav ${displayOptions ? 'drop-down-navv--selected' : ''}`}>
+      <div className={`drop-down-nav ${displayOptions ? 'drop-down-nav--selected' : ''}`}>
         <button
           type="button"
           className="drop-down-nav__button"

@@ -5,7 +5,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   // Default threshold value on gfwpro is 0%, but on tile server
   //  it's 30%, therefore we have to specify when sending our default
   properties: {
-    threshold: 0,  
+    threshold: 0,
     minYear: 2001,
     maxYear: latestTreeCoverLossYearForTclDataInMap,
   },

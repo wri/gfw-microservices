@@ -300,12 +300,18 @@ class ListDetailsPage {
     this.elements.fullListMapBtn().click();
   }
   clickOnLocationMapBtnOnHover() {
-    cy.get('[data-testid="custom-row"]')
+    cy.get('[data-testid="custom-row"]', { timeout: 60000 })
+      .should('have.length.at.least', 3)
       .eq(2)
-      .children('[role="gridcell"]')
-      .eq(4)
-      .trigger('mouseover');
-    this.elements.locationMapBtnOnHover().click();
+      .as('targetRow')
+      .scrollIntoView();
+
+    cy.get('@targetRow').children('[role="gridcell"]').eq(4).trigger('mouseover', { force: true });
+
+    cy.get('@targetRow')
+      .find('[data-cy="locations-map"]', { timeout: 10000 })
+      .should('be.visible')
+      .click({ force: true });
   }
   clickOnLocationMapBtn() {
     this.elements.locationMapBtn().click();

@@ -261,7 +261,7 @@ BEGIN
 END
 ELSE
 BEGIN
-    SET @SQL += ' ORDER BY alerts.total_ha DESC';
+    SET @SQL += ' ORDER BY intdistAlertsAreaAllTotal DESC';
 END;
 
 IF @RowsOfPage > 0 AND @PageNumber > 0
@@ -306,26 +306,26 @@ N'@listId INT,
 @endDate              = @endDate;`;
 
 export class PaginatedAlertsAnalysisByListIdSortedByFilters {
-  listId: number;
-  listName: string;
-  locationId: number;
-  gadmId: number;
-  viirsAlertsDaily: number;
-  treeCoverExtentTotal: number;
-  integratedAlertsCoverage: number;
-  totalHa: number;
-  location_status_id: number;
-  analysisError: number | null;
-  intdistAlertsAreaSbtnNaturalForestsTotal: number;
-  intdistAlertsAreaSbtnNaturalEcosystemTotal: number;
-  intdistAlertsAreaJrcTotal: number;
-  intdistAlertsAreaAllTotal: number;
-  locationName: string;
-  country: string;
-  state: string;
-  subState: string;
-  totalRows: number;
-  errorDetails: string;
-  attributes: string;
-  version: number;
+  listId!: number;
+  listName!: string;
+  locationId!: number;
+  gadmId!: number;
+  viirsAlertsDaily!: number;
+  treeCoverExtentTotal!: number;
+  integratedAlertsCoverage!: number;
+  totalHa!: number;
+  location_status_id!: number;
+  analysisError!: number | null;
+  intdistAlertsAreaSbtnNaturalForestsTotal!: number;
+  intdistAlertsAreaSbtnNaturalEcosystemTotal!: number;
+  intdistAlertsAreaJrcTotal!: number;
+  intdistAlertsAreaAllTotal!: number;
+  locationName!: string;
+  country!: string;
+  state!: string;
+  subState!: string;
+  totalRows!: number;
+  errorDetails!: string;
+  attributes!: string;
+  version!: number;
 }

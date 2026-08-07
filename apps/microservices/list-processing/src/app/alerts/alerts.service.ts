@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DashboardDataType } from '@wri-monorepos/sql';
+import { DashboardDataPaginated, DashboardDataType } from '@wri-monorepos/sql';
 import { AlertsRepository } from './alerts.repository';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class AlertsService {
     return this.formatData(listDashboardData ?? []);
   }
 
-  formatData(listDashboardData: DashboardDataType[]) {
+  formatData(listDashboardData: DashboardDataPaginated[]) {
     return listDashboardData
       .filter((l) => l.gadmid)
       .map((l) => {

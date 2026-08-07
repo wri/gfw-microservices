@@ -126,7 +126,12 @@ export const getDashboardDataPaginated = `
 export class DashboardDataPaginated {
   list_id!: number;
   location_id!: number;
+  gadmid!: string;
   gadm_id!: number;
+  Country!: string;
+  State!: string;
+  'Sub State'!: string;
+  gladAlerts!: string | boolean;
   glad_alerts_coverage!: string;
   glad_alerts_daily!: string;
   glad_alerts_weekly!: string;

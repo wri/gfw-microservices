@@ -22,9 +22,9 @@ describe('AlertsRepository', () => {
       State: 'Test State',
       'Sub State': 'Test Sub State',
       gadmid: '123',
-      total_ha: 100,
+      totalHa: 100,
       glad_alerts_coverage: '',
-      integrated_alerts_coverage: '',
+      integratedAlertsCoverage: '',
       integratedAlertsAreaAllNominal: '',
       integratedAlertsAreaAllHigh: '',
       integratedAlertsAreaAllHighest: '',
@@ -37,7 +37,6 @@ describe('AlertsRepository', () => {
       integratedAlertsAreaJrcNominal: '',
       integratedAlertsAreaJrcHigh: '',
       integratedAlertsAreaJrcHighest: '',
-      status_code: 0,
     },
   ];
 

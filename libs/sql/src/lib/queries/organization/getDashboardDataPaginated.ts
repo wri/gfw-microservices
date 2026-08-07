@@ -138,8 +138,8 @@ export class DashboardDataPaginated {
   glad_alerts_monthly!: string;
   viirs_alerts_daily!: string;
   tree_cover_extent_total!: number;
-  integrated_alerts_coverage!: string;
-  total_ha!: number;
+  integratedAlertsCoverage!: string;
+  totalHa!: number;
   integratedAlertsAreaAllNominal!: string;
   integratedAlertsAreaAllHigh!: string;
   integratedAlertsAreaAllHighest!: string;
@@ -152,5 +152,4 @@ export class DashboardDataPaginated {
   integratedAlertsAreaJrcNominal!: string;
   integratedAlertsAreaJrcHigh!: string;
   integratedAlertsAreaJrcHighest!: string;
-  status_code!: number;
 }

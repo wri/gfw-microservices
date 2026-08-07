@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DashboardDataPaginated, DashboardDataType } from '@wri-monorepos/sql';
+import { DashboardDataPaginated } from '@wri-monorepos/sql';
 import { AlertsRepository } from './alerts.repository';
 
 @Injectable()

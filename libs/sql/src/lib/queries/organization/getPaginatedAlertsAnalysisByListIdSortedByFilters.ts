@@ -309,13 +309,13 @@ export class PaginatedAlertsAnalysisByListIdSortedByFilters {
   listId!: number;
   listName!: string;
   locationId!: number;
-  gadmId!: number;
-  viirsAlertsDaily!: number;
+  gadmId!: string;
+  viirsAlertsDaily!: string;
   treeCoverExtentTotal!: number;
-  integratedAlertsCoverage!: number;
+  integratedAlertsCoverage!: string;
   totalHa!: number;
   location_status_id!: number;
-  analysisError!: number | null;
+  analysisError!: string | null;
   intdistAlertsAreaSbtnNaturalForestsTotal!: number;
   intdistAlertsAreaSbtnNaturalEcosystemTotal!: number;
   intdistAlertsAreaJrcTotal!: number;

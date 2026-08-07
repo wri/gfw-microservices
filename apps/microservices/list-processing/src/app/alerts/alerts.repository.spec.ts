@@ -37,7 +37,7 @@ describe('AlertsRepository', () => {
       integratedAlertsAreaJrcNominal: '',
       integratedAlertsAreaJrcHigh: '',
       integratedAlertsAreaJrcHighest: '',
-      status_code: 0
+      status_code: 0,
     },
   ];
 

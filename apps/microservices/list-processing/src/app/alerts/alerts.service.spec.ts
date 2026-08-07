@@ -34,7 +34,7 @@ describe('AlertsService - formatData', () => {
         integratedAlertsAreaJrcNominal: '',
         integratedAlertsAreaJrcHigh: '',
         integratedAlertsAreaJrcHighest: '',
-        status_code: 0
+        status_code: 0,
       },
     ];
 
@@ -111,7 +111,7 @@ describe('AlertsService - formatData', () => {
         integratedAlertsAreaJrcNominal: '',
         integratedAlertsAreaJrcHigh: '',
         integratedAlertsAreaJrcHighest: '',
-        status_code: 0
+        status_code: 0,
       },
     ];
 

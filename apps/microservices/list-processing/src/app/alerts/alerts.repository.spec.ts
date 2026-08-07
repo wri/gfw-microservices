@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AlertsRepository } from './alerts.repository';
 import { ConfigService } from '@nestjs/config';
-import { DashboardDataType, CountDashboardDataType } from '@wri-monorepos/sql';
+import { DashboardDataPaginated, CountDashboardDataType } from '@wri-monorepos/sql';
 
 describe('AlertsRepository', () => {
   let repository: AlertsRepository;
   let configService: jest.Mocked<ConfigService>;
 
-  const mockDashboardData: DashboardDataType[] = [
+  const mockDashboardData: DashboardDataPaginated[] = [
     {
       list_id: 1,
       location_id: 1,
@@ -21,21 +21,23 @@ describe('AlertsRepository', () => {
       Country: 'Test Country',
       State: 'Test State',
       'Sub State': 'Test Sub State',
-      totalHa: 1000,
-      name_all: 'Test Location',
       gadmid: '123',
-      gadmid_2: '123',
-      gadmid_2_lat: 0,
-      gadmid_2_lon: 0,
-      gadmid_1: '123',
-      gadmid_1_lat: 0,
-      gadmid_1_lon: 0,
-      gadmid_0: '123',
-      gadmid_0_lat: 0,
-      gadmid_0_lon: 0,
-      location_lat: 0,
-      location_lon: 0,
-      location_name: 'Test Location',
+      total_ha: 100,
+      glad_alerts_coverage: '',
+      integrated_alerts_coverage: '',
+      integratedAlertsAreaAllNominal: '',
+      integratedAlertsAreaAllHigh: '',
+      integratedAlertsAreaAllHighest: '',
+      integratedAlertsAreaSbtnNaturalForestsNominal: '',
+      integratedAlertsAreaSbtnNaturalForestsHigh: '',
+      integratedAlertsAreaSbtnNaturalForestsHighest: '',
+      integratedAlertsAreaSbtnNaturalEcosystemNominal: '',
+      integratedAlertsAreaSbtnNaturalEcosystemHigh: '',
+      integratedAlertsAreaSbtnNaturalEcosystemHighest: '',
+      integratedAlertsAreaJrcNominal: '',
+      integratedAlertsAreaJrcHigh: '',
+      integratedAlertsAreaJrcHighest: '',
+      status_code: 0
     },
   ];
 

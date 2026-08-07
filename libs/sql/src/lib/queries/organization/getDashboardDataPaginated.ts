@@ -127,7 +127,7 @@ export class DashboardDataPaginated {
   list_id!: number;
   location_id!: number;
   gadmid!: string;
-  gadm_id!: number;
+  gadm_id!: string;
   Country!: string;
   State!: string;
   'Sub State'!: string;

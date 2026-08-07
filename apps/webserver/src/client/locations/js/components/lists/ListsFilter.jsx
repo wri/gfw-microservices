@@ -1,3 +1,4 @@
+import { useTransifexTranslation } from '../../../../hooks/useTransifexTranslation';
 import { locationsPage } from '../../../../common/js/config';
 import IconSearch from '../../../../common/js/components/icon/IconSearch';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
@@ -12,9 +13,9 @@ import IconButton from '../../../../common/js/components/IconButton';
  */
 function ListsFilter({ className, value, onChange, onkeydown }) {
   const wrapperClass = className || 'input-search';
-  const placeholder =
-    window.Transifex?.live?.translateText?.(locationsPage.lists.searchStringInputPlaceholder) ??
-    locationsPage.lists.searchStringInputPlaceholder;
+  const placeholder = useTransifexTranslation(locationsPage.lists.searchStringInputPlaceholder);
+  const filterLabel = useTransifexTranslation(locationsPage.lists.listsFilterPlaceholder);
+  const clearLabel = useTransifexTranslation(locationsPage.lists.listsFilterClear);
 
   return (
     <div className={wrapperClass}>
@@ -23,14 +24,14 @@ function ListsFilter({ className, value, onChange, onkeydown }) {
         type="text"
         className="input-search__input"
         placeholder={placeholder}
-        aria-label={locationsPage.lists.listsFilterPlaceholder}
+        aria-label={filterLabel}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={onkeydown}
       />
       <div className="input-search__clear">
         <IconButton
-          aria-label={locationsPage.lists.listsFilterClear}
+          aria-label={clearLabel}
           icon={<IconTimes />}
           size="small"
           onClick={() => onChange('')}

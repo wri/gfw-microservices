@@ -34,6 +34,7 @@ import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
+import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 
 function ActiveList({
   list,
@@ -76,6 +77,13 @@ function ActiveList({
     !isEmptyList &&
     Array.isArray(listAnalysesStatus) &&
     listAnalysesStatus.length > 0;
+
+  const updateAnalysisLabel = useTransifexTranslation(locationsPage.lists.update);
+  const manageFolderLabel = useTransifexTranslation(locationsPage.lists.manage);
+  const addToFolderLabel = useTransifexTranslation(locationsPage.lists.addToFolder);
+  const changeTypeOfAnalysisLabel = useTransifexTranslation(
+    locationsPage.lists.changeTypeOfAnalysis
+  );
 
   const getAnalysisLastUpdatedDate = () => {
     const analysisUpdateTime =
@@ -166,7 +174,7 @@ function ActiveList({
               color="info"
               sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
             >
-              {locationsPage.lists.update}
+              {updateAnalysisLabel}
             </PillButton>
           )}
         </div>
@@ -249,7 +257,7 @@ function ActiveList({
                   <ListItemIcon>
                     <RefreshIcon />
                   </ListItemIcon>
-                  <ListItemText>{locationsPage.lists.update}</ListItemText>
+                  <ListItemText>{updateAnalysisLabel}</ListItemText>
                 </MenuItem>
               )}
 
@@ -263,9 +271,7 @@ function ActiveList({
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
-                <ListItemText>
-                  {folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                </ListItemText>
+                <ListItemText>{folder ? manageFolderLabel : addToFolderLabel}</ListItemText>
               </MenuItem>
 
               {showChangeAnalysisOpt && (
@@ -278,7 +284,7 @@ function ActiveList({
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
+                  <ListItemText>{changeTypeOfAnalysisLabel}</ListItemText>
                 </MenuItem>
               )}
               {showDelete && (

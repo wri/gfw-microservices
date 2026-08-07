@@ -1,3 +1,4 @@
+import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 import { GFW_PRO_HELP_CENTER__LINK } from '../../../../../common/js/config';
 
 /**
@@ -9,13 +10,17 @@ import { GFW_PRO_HELP_CENTER__LINK } from '../../../../../common/js/config';
  * @constructor
  */
 const AddLocationsPrompt = () => {
+  const uploadText = useTransifexTranslation('Upload or enter locations by clicking the');
+  const addLocationsText = useTransifexTranslation('ADD LOCATIONS');
+  const helpIntroText = useTransifexTranslation('If you need help, please visit the');
+  const howToGuideText = useTransifexTranslation('how-to guide');
+
   return (
     <div className="no-lists__prompt">
       <p>
-        Upload or enter locations by clicking the <strong>ADD LOCATIONS</strong> button. If you need
-        help, please visit the{' '}
+        {uploadText} <strong>{addLocationsText}</strong> button. {helpIntroText}{' '}
         <a target="_blank" className="no-lists__how-to" href={GFW_PRO_HELP_CENTER__LINK}>
-          Help Center
+          {howToGuideText}
         </a>
         .
       </p>

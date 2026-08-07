@@ -3,6 +3,7 @@ import { PillButton } from '../../../../../../components';
 import CustomTooltip from '../../../../../../common/js/components/CustomTooltip/CustomTooltip';
 import CustomDialog from '../../../../../../common/js/components/CustomDialog/CustomDialog';
 import { locationsPage } from '../../../../../../common/js/config';
+import { useTransifexTranslation } from '../../../../../../hooks/useTransifexTranslation';
 import './ListDiagnosticStatusDraft.scss';
 
 const TOOLTIP__LABEL = 'DRAFT';
@@ -11,6 +12,7 @@ const TOOLTIP__MESSAGE =
 
 export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const submitLabel = useTransifexTranslation(locationsPage.lists.submit);
 
   const handleRerunDialogState = (evt) => {
     evt.preventDefault();
@@ -38,7 +40,7 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmi
           sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
           onClick={handleRerunDialogState}
         >
-          {locationsPage.lists.submit}
+          {submitLabel}
         </PillButton>
       )}
 

@@ -25,6 +25,7 @@ import FailedTooltip from '../../../../../common/js/components/CustomTooltip/Fai
 import { locationsPage, nav } from '../../../../../common/js/config';
 import AnalysisListChips from './AnalysisListChips';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
+import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 
 function FailedList({
   list,
@@ -43,6 +44,13 @@ function FailedList({
   const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
   const { id, list_name, folder, is_shared, listAnalysesStatus } = list;
   const isInFolder = !!folder;
+
+  const updateAnalysisLabel = useTransifexTranslation(locationsPage.lists.update);
+  const changeTypeOfAnalysisLabel = useTransifexTranslation(
+    locationsPage.lists.changeTypeOfAnalysis
+  );
+  const manageFolderLabel = useTransifexTranslation(locationsPage.lists.manage);
+  const addToFolderLabel = useTransifexTranslation(locationsPage.lists.addToFolder);
 
   const goToListDetails = () => {
     // clicked a location with a successfully completed analysis; go to it
@@ -88,7 +96,7 @@ function FailedList({
               sx={{ fontSize: '0.75rem', mr: 0.5, py: 0 }}
               onClick={handleRerunDialogState}
             >
-              {locationsPage.lists.update}
+              {updateAnalysisLabel}
             </PillButton>
           )}
           <span className="locations-list__failed">
@@ -142,7 +150,7 @@ function FailedList({
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
+                  <ListItemText>{changeTypeOfAnalysisLabel}</ListItemText>
                 </MenuItem>
               )}
               <MenuItem
@@ -154,9 +162,7 @@ function FailedList({
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
-                <ListItemText>
-                  {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                </ListItemText>
+                <ListItemText>{isInFolder ? manageFolderLabel : addToFolderLabel}</ListItemText>
               </MenuItem>
               {showDelete && (
                 <>

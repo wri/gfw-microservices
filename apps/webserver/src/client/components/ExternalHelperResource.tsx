@@ -1,8 +1,9 @@
 import { Typography, Link, Theme } from '@mui/material';
+import type { ReactNode } from 'react';
 import { OpenInNew } from '@mui/icons-material';
 
 type ExternalHelperResourceProps = {
-  text: string;
+  text: ReactNode;
   url: string;
   color: 'primary' | 'info';
 };

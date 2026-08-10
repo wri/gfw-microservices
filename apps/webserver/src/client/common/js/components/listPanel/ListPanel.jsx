@@ -79,9 +79,7 @@ function ListPanel({
         key={index}
       >
         <div className="locations-list-label">
-          <span style={{ wordBreak: 'break-word' }}>
-            <TranslatedText text={list.list_name} />
-          </span>
+          <span style={{ wordBreak: 'break-word' }}>{list.list_name}</span>
         </div>
         <div style={{ display: 'flex', justifyItems: 'right' }}>
           {listDraftStatus && (

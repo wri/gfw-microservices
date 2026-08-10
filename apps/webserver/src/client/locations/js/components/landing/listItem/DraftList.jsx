@@ -33,6 +33,7 @@ import AnalysisListChips from './AnalysisListChips';
 import CustomDialog from '../../../../../common/js/components/CustomDialog/CustomDialog';
 import { locationsPage, draftTooltipMessages, nav } from '../../../../../common/js/config';
 import { proLayers } from '../../../../../common/js/proLayers.config';
+import { useTransifexTranslation } from '../../../../../hooks/useTransifexTranslation';
 
 function DraftList({
   list,
@@ -68,6 +69,17 @@ function DraftList({
   const hasErrorFile = !!error_file_storage_path;
   const isInFolder = !!folder;
   const isDiagnosticAvailable = !!list.dashboard_last_results;
+
+  const submitAnalysisLabel = useTransifexTranslation('Submit Analysis');
+  const changeTypeOfAnalysisLabel = useTransifexTranslation(
+    locationsPage.lists.changeTypeOfAnalysis
+  );
+  const manageFolderLabel = useTransifexTranslation(locationsPage.lists.manage);
+  const addToFolderLabel = useTransifexTranslation(locationsPage.lists.addToFolder);
+  const confirmSubmissionTitleLabel = useTransifexTranslation('Confirm Submission');
+  const confirmSubmissionMessageLabel = useTransifexTranslation(
+    'Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete.'
+  );
 
   const clickLocationRow = () => {
     gtag('event', 'List click', {
@@ -235,7 +247,7 @@ function DraftList({
                   <ListItemIcon>
                     <KeyboardArrowUpIcon />
                   </ListItemIcon>
-                  <ListItemText>Submit Analysis</ListItemText>
+                  <ListItemText>{submitAnalysisLabel}</ListItemText>
                 </MenuItem>
               )}
               <Divider />
@@ -250,7 +262,7 @@ function DraftList({
                   <ListItemIcon>
                     <SettingsIcon />
                   </ListItemIcon>
-                  <ListItemText>{locationsPage.lists.changeTypeOfAnalysis}</ListItemText>
+                  <ListItemText>{changeTypeOfAnalysisLabel}</ListItemText>
                 </MenuItem>
               )}
 
@@ -263,9 +275,7 @@ function DraftList({
                 <ListItemIcon>
                   <FolderIcon />
                 </ListItemIcon>
-                <ListItemText>
-                  {isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                </ListItemText>
+                <ListItemText>{isInFolder ? manageFolderLabel : addToFolderLabel}</ListItemText>
               </MenuItem>
               {showDelete && (
                 <>
@@ -292,8 +302,8 @@ function DraftList({
               closeAction={() => {
                 setShowSubmitModal(false);
               }}
-              dialogTitle="Confirm Submission"
-              dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+              dialogTitle={confirmSubmissionTitleLabel}
+              dialogMessage={confirmSubmissionMessageLabel}
               dialogActionConfirm={() => {
                 setShowSubmitModal(false);
                 submitForAnalysis();

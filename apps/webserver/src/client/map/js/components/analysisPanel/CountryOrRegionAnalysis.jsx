@@ -3,6 +3,7 @@ import { MenuItem, Select } from '@mui/material';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
 import GfwButton from '../../../../common/js/components/GfwButton';
+import { useTransifexTranslation } from '../../../../hooks/useTransifexTranslation';
 import { getListOfCountries, getListOfStatesOrProvinces } from '../../../../api/map';
 import { ThemeProvider } from '../../../../styles/ThemeProvider';
 import store from '../../store';
@@ -14,6 +15,7 @@ const CountryOrRegionAnalysis = ({
   subscribeAdmin,
   analysisResults,
 }) => {
+  const selectCountryLabel = useTransifexTranslation('SELECT COUNTRY');
   const [countryOptions, setCountryOptions] = useState([]);
   const [stateOrProvinceOptions, setStateOrProvinceOptions] = useState([]);
   const [filterStr, setFilterStr] = useState('');
@@ -114,12 +116,12 @@ const CountryOrRegionAnalysis = ({
               renderValue={(selected) =>
                 selected
                   ? countryOptions.find((c) => c.gid_0 === selected)?.name_0
-                  : 'SELECT COUNTRY'
+                  : selectCountryLabel
               }
               data-testid="country-or-region-select"
             >
               <MenuItem value="" disabled>
-                SELECT COUNTRY
+                {selectCountryLabel}
               </MenuItem>
               {countryOptions.map(({ gid_0, name_0 }) => (
                 <MenuItem key={gid_0} value={gid_0}>

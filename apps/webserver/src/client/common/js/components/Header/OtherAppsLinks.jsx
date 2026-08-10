@@ -1,12 +1,15 @@
 import { Icon } from '@mui/material';
 
 import { nav } from '../../config';
+import { useTransifexTranslation } from '../../../../hooks/useTransifexTranslation';
 import logoGfw from './images/logo_gfw.svg';
 import logoGfwForestWatcher from './images/logo_gfw_forest_watcher.png';
 import logoMapBuilder from './images/icon-MapBuilder.jpg';
 import './IconLink.scss';
 
 function OtherAppsLinks() {
+  const allAppsLabel = useTransifexTranslation(nav.moreMenu.allApps);
+
   return (
     <div>
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -29,7 +32,7 @@ function OtherAppsLinks() {
           <a target="_blank" href="https://www.wri.org/data" rel="noreferrer">
             <Icon>more-horiz</Icon>
             <br />
-            <div className="explore-all__text">{nav.moreMenu.allApps}</div>
+            <div className="explore-all__text">{allAppsLabel}</div>
           </a>
         </div>
       </div>

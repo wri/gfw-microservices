@@ -10,6 +10,7 @@ import { signIn } from './signIn';
 import { nav } from '../../config';
 import './LoginForm.scss';
 import { PillButton } from '../../../../components';
+import { useTransifexTranslation } from '../../../../hooks/useTransifexTranslation';
 
 function LoginForm() {
   const [showForm, setShowForm] = useState(false);
@@ -19,6 +20,12 @@ function LoginForm() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState('');
   const [dialogMessage, setDialogMessage] = useState('');
+
+  const loginLabel = useTransifexTranslation(nav.login);
+  const usernameOrEmailLabel = useTransifexTranslation(nav.usernameOrEmail);
+  const passwordLabel = useTransifexTranslation(nav.password);
+  const rememberMeLabel = useTransifexTranslation(nav.rememberMe);
+  const forgotPasswordLabel = useTransifexTranslation(nav.forgotPassword);
 
   const handleSignIn = () => {
     signIn(username, password, rememberMe).then(({ open, title, message }) => {
@@ -50,7 +57,7 @@ function LoginForm() {
           data-cy="loginNav"
           onClick={() => setShowForm(!showForm)}
         >
-          {nav.login}
+          {loginLabel}
         </button>
         <Dialog
           open={dialogOpen}
@@ -68,7 +75,7 @@ function LoginForm() {
           </DialogActions>
         </Dialog>
         <div className={`login-form drop-down-nav__list ${showForm ? 'show' : 'hide'}`}>
-          <div className="login-form__title">{nav.login}</div>
+          <div className="login-form__title">{loginLabel}</div>
           <input
             value={username}
             onKeyPress={handleKeyPress}
@@ -76,7 +83,7 @@ function LoginForm() {
             data-cy="username"
             name="username"
             className="login-form__input"
-            placeholder={nav.usernameOrEmail}
+            placeholder={usernameOrEmailLabel}
           />
           <input
             value={password}
@@ -86,7 +93,7 @@ function LoginForm() {
             data-cy="password"
             name="password"
             className="login-form__input"
-            placeholder={nav.password}
+            placeholder={passwordLabel}
           />
 
           <div>
@@ -96,12 +103,12 @@ function LoginForm() {
               onChange={(evt) => setRememberMe(evt.target.value)}
               type="checkbox"
             />
-            <label htmlFor="remember-me-checkbox">{nav.rememberMe}</label>
+            <label htmlFor="remember-me-checkbox">{rememberMeLabel}</label>
           </div>
           <div className="login-form__actions-container">
             <div>
               <a type="button" href="/forgot">
-                {nav.forgotPassword}
+                {forgotPasswordLabel}
               </a>
             </div>
             <div>
@@ -114,7 +121,7 @@ function LoginForm() {
                 disabled={!password.length || !username.length}
                 data-cy="loginButton"
               >
-                {nav.login}
+                {loginLabel}
               </PillButton>
             </div>
           </div>

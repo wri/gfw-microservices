@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import { ServiceException } from '@smithy/core/client';
 import { APIGateway } from '@aws-sdk/client-api-gateway';
 import { TokenService } from '../token.service';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';
@@ -110,7 +109,7 @@ describe('Test Token Module', () => {
 
     stub.withArgs({ apiKey: 'TOTESTDELETE' }).returns({
       promise: () => {
-        const awsError: ServiceException = {
+        const awsError = {
           message: 'Key not found.',
           name: 'NotFoundException',
           $metadata: { httpStatusCode: 404, requestId: '123', attempts: 1, totalRetryDelay: 0 },

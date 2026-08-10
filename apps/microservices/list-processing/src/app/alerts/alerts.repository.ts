@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
-  DashboardDataType,
   SQLUtils,
   getDashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
   getGFWListsDashboardDataPaginated,
   getCountGFWListsDashboardData,
+  DashboardDataPaginated,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 import { ConfigService } from '@nestjs/config';
@@ -38,7 +38,7 @@ export class AlertsRepository {
       { field: 'rowsPerPage', type: sql.Int, value: rowsPerPage },
     ];
 
-    return await SQLUtils.queryDB<DashboardDataType[]>(
+    return await SQLUtils.queryDB<DashboardDataPaginated[]>(
       clientDatabase,
       getDashboardDataPaginated,
       parameters
@@ -66,7 +66,7 @@ export class AlertsRepository {
       { field: 'rowsPerPage', type: sql.Int, value: rowsPerPage },
     ];
 
-    return await SQLUtils.queryDB<DashboardDataType[]>(
+    return await SQLUtils.queryDB<DashboardDataPaginated[]>(
       this.config.get('MSSQL_DATABASE', { infer: true }),
       getGFWListsDashboardDataPaginated,
       parameters

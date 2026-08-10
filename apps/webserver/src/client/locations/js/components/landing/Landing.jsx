@@ -21,6 +21,7 @@ import UsageReachedLimitBanner from '../../../../common/js/components/Banners/Us
 import { ExternalHelperResource, PillButton } from '../../../../components';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import { locationsPage } from '../../../../common/js/config';
+import TranslatedText from '../../../../common/js/components/TranslatedText';
 import IconButton from '../../../../common/js/components/IconButton';
 import {
   changeView,
@@ -49,6 +50,7 @@ import getAccountUsagePercentage from './getAccountUsagePercentage';
 import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
 
 const EUDR_BANNER_KEY = 'GFW-is-landing-eudr-banner-dismissed';
+
 class Landing extends Component {
   constructor(props) {
     super(props);
@@ -317,7 +319,9 @@ class Landing extends Component {
           <section className="col main-panel">
             <section className="gfw-lists">
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h5">Welcome!</Typography>
+                <Typography variant="h5">
+                  <TranslatedText text="Welcome!" />
+                </Typography>
                 <Box
                   sx={{
                     display: 'flex',
@@ -335,10 +339,10 @@ class Landing extends Component {
                       history.push('/upload-location');
                     }}
                   >
-                    Add locations
+                    <TranslatedText text={locationsPage.landing.addLocations} />
                   </PillButton>
                   <ExternalHelperResource
-                    text="How to add your data"
+                    text={<TranslatedText text="How to add your data" />}
                     url={ExternalLinks.UploadListHelpCenter}
                     color="info"
                   />
@@ -416,31 +420,37 @@ class Landing extends Component {
               )}
 
               <Typography variant="h6" sx={{ mb: 1 }}>
-                {locationsPage.landing.gfwLists}
+                <TranslatedText text={locationsPage.landing.gfwLists} />
               </Typography>
 
               <div className="gfw-lists__inner">{gfwListsMapped}</div>
             </section>
             <section className="my-locations-section">
               <div className="my-locations__header">
-                <Typography variant="h6">{locationsPage.landing.myLocations}</Typography>
+                <Typography variant="h6">
+                  <TranslatedText text={locationsPage.landing.myLocations} />
+                </Typography>
 
                 <ListsFilter value={userListFilterText} onChange={onChangeListsFilter} />
               </div>
               {(userFoldersFiltered.length > 0 || userListsFiltered.length > 0) &&
                 userListFilterText.length > 0 && (
                   <p className="search-result-count">
-                    {`${numberWithCommas(
-                      userListsFiltered.length + userFoldersFiltered.length
-                    )} ${(userListsFiltered.length + userFoldersFiltered.length === 1
-                      ? locationsPage.landing.resultItem
-                      : locationsPage.landing.resultItems
-                    ).toLowerCase()}`}
+                    {numberWithCommas(userListsFiltered.length + userFoldersFiltered.length)}{' '}
+                    <TranslatedText
+                      text={
+                        userListsFiltered.length + userFoldersFiltered.length === 1
+                          ? locationsPage.landing.resultItem
+                          : locationsPage.landing.resultItems
+                      }
+                    />
                   </p>
                 )}
               {/* FOLDERS */}
               {userListFilterText.length === 0 && userFoldersFiltered.length > 0 && (
-                <h3 className="my-folders-title">{locationsPage.landing.myFolders}</h3>
+                <h3 className="my-folders-title">
+                  <TranslatedText text={locationsPage.landing.myFolders} />
+                </h3>
               )}
               {userFoldersFiltered.length > 0 && (
                 <ul className="my-folders-list">{userFoldersFiltered}</ul>
@@ -460,7 +470,7 @@ class Landing extends Component {
                   }}
                 >
                   <>
-                    Organize lists into folders by clicking a{' '}
+                    <TranslatedText text="Organize lists into folders by clicking a" />{' '}
                     {
                       <IconButton
                         className="illustration-button"
@@ -474,7 +484,7 @@ class Landing extends Component {
                         }}
                       />
                     }{' '}
-                    button below.
+                    <TranslatedText text="button below." />
                   </>
                 </Banner>
               )}
@@ -499,7 +509,7 @@ class Landing extends Component {
                       history.push('/upload-location');
                     }}
                   >
-                    {locationsPage.landing.addLocations}
+                    <TranslatedText text={locationsPage.landing.addLocations} />
                   </PillButton>
                 </div>
               )}
@@ -509,7 +519,7 @@ class Landing extends Component {
                 userListFilterText.length > 0 && (
                   <div className="no-search-results">
                     <p className="no-search-results__message">
-                      {locationsPage.landing.noSearchResults}
+                      <TranslatedText text={locationsPage.landing.noSearchResults} />
                     </p>
                     <PillButton
                       variant="contained"
@@ -518,7 +528,7 @@ class Landing extends Component {
                       onClick={() => this.setState({ userListFilterText: '' })}
                       sx={{ mx: 'auto', mt: 1 }}
                     >
-                      {locationsPage.landing.clearSearch}
+                      <TranslatedText text={locationsPage.landing.clearSearch} />
                     </PillButton>
                   </div>
                 )}

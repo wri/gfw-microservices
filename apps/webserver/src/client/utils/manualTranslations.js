@@ -31,6 +31,99 @@ export const manualTranslations = {
     es: 'Descargar Informe',
     pt: 'Baixar Relatório',
   },
+  "Alerts Dashboard has moved. To view your data, open a list with Alerts analysis applied and select the 'Recent Disturbance Alerts' tab in the List Details page.":
+    {
+      es: "El tablero de Alertas se ha movido. Para ver sus datos, abra una lista con el análisis de Alertas aplicado y seleccione la pestaña 'Alertas de perturbación reciente' en la página de detalles de la lista.",
+      pt: "O Painel de Alertas foi movido. Para ver seus dados, abra uma lista com a análise de Alertas aplicada e selecione a guia 'Alertas de perturbação recente' na página de detalhes da lista.",
+    },
+  'Show Lists': {
+    es: 'Mostrar listas',
+    pt: 'Mostrar listas',
+  },
+  'Welcome!': {
+    es: '¡Bienvenido!',
+    pt: 'Bem-vindo!',
+  },
+  'How to add your data': {
+    es: 'Cómo agregar tus datos',
+    pt: 'Como adicionar seus dados',
+  },
+  'Type and press Enter': {
+    es: 'Escriba y presione Enter',
+    pt: 'Digite e pressione Enter',
+  },
+  'Help Center': {
+    es: 'Centro de ayuda',
+    pt: 'Central de Ajuda',
+  },
+  'SELECT COUNTRY': {
+    es: 'SELECCIONAR PAÍS',
+    pt: 'SELECIONAR PAÍS',
+  },
+  'Draw in the map the area you want to analyze or subscribe to': {
+    es: 'Dibuje en el mapa el área que desea analizar o suscribirse a',
+    pt: 'Desenhe no mapa a área que você deseja analisar ou assinar',
+  },
+  'Start Drawing': {
+    es: 'Comenzar a dibujar',
+    pt: 'Iniciar desenho',
+  },
+  Cancel: {
+    es: 'Cancelar',
+    pt: 'Cancelar',
+  },
+  'Saved Locations': {
+    es: 'Ubicaciones guardadas',
+    pt: 'Locais salvos',
+  },
+  'All Locations': {
+    es: 'Todas las ubicaciones',
+    pt: 'Todos os locais',
+  },
+  Investment: {
+    es: 'Inversión',
+    pt: 'Investimento',
+  },
+  Commodity: {
+    es: 'Producto básico',
+    pt: 'Commodity',
+  },
+  'My Lists': {
+    es: 'Mis listas',
+    pt: 'Minhas listas',
+  },
+  'Global Forest Watch Lists': {
+    es: 'Listas de Global Forest Watch',
+    pt: 'Listas do Global Forest Watch',
+  },
+  'Shared Lists': {
+    es: 'Listas compartidas',
+    pt: 'Listas compartilhadas',
+  },
+  'Privacy Policy': {
+    es: 'Política de privacidad',
+    pt: 'Política de privacidade',
+  },
+  'Cookies Preference': {
+    es: 'Preferencia de cookies',
+    pt: 'Preferências de cookies',
+  },
+  'Terms of Use': {
+    es: 'Términos de uso',
+    pt: 'Termos de uso',
+  },
+  'License Agreement': {
+    es: 'Acuerdo de licencia',
+    pt: 'Contrato de licença',
+  },
+  'Organize lists into folders by clicking a': {
+    es: 'Organiza listas en carpetas haciendo clic en un',
+    pt: 'Organize listas em pastas clicando em um',
+  },
+  'button below.': {
+    es: 'botón a continuación.',
+    pt: 'botão abaixo.',
+  },
   'Analysis updated': {
     es: 'Análisis actualizado',
     pt: 'Análise atualizada',
@@ -66,6 +159,10 @@ export const manualTranslations = {
   'Update Analysis': {
     es: 'Actualizar análisis',
     pt: 'Atualizar análise',
+  },
+  'Change Type of analysis': {
+    es: 'Cambiar tipo de análisis',
+    pt: 'Alterar tipo de análise',
   },
   'List diagnostic': {
     es: 'Diagnóstico de lista',

@@ -1,5 +1,6 @@
 import './GDPRFooter.scss';
 import { privacyPolicy, termsOfServices, licenseAgreement } from '../../config';
+import TranslatedText from '../TranslatedText';
 
 /**
  * GDPRFooter Component
@@ -33,7 +34,7 @@ export default function GDPRFooter({ variant = 'default' }) {
     <div className={variantClasses[variant] || variantClasses.default}>
       <p>
         <a href={privacyPolicy} target="_blank" rel="noreferrer">
-          Privacy Policy
+          <TranslatedText text="Privacy Policy" />
         </a>
         <a
           href={privacyPolicy}
@@ -49,13 +50,13 @@ export default function GDPRFooter({ variant = 'default' }) {
           aria-label="Open cookie preferences settings"
           style={{ cursor: 'pointer' }}
         >
-          Cookies Preference
+          <TranslatedText text="Cookies Preference" />
         </a>
         <a href={termsOfServices} target="_blank" rel="noreferrer">
-          Terms of Use
+          <TranslatedText text="Terms of Use" />
         </a>
         <a href={licenseAgreement} target="_blank" rel="noreferrer">
-          License Agreement
+          <TranslatedText text="License Agreement" />
         </a>
       </p>
     </div>

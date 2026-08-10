@@ -21,6 +21,7 @@ import {
   downloadLinks,
 } from '../../../../common/js/proLayers.config';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
+import TranslatedText from '../../../../common/js/components/TranslatedText';
 
 import { PillButton } from '../../../../components';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
@@ -518,11 +519,11 @@ export default class AnalysisPanel extends Component {
             >
               <div className="analysis__body__instructions">
                 <ModalLoader position="absolute" size={60} open={isSpinnerVisible} />
-                {mapPage.drawInstructions}
+                <TranslatedText text={mapPage.drawInstructions} />
               </div>
               <div className="analysis__body__draw__button">
                 <PillButton variant="contained" size="small" onClick={this.startDrawing}>
-                  {drawingLabel}
+                  <TranslatedText text={drawingLabel} />
                 </PillButton>
               </div>
             </div>

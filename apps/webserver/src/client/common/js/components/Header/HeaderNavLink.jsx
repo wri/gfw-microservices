@@ -1,6 +1,7 @@
 import * as PropTypes from 'prop-types';
 import { Box, Typography, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { Warning } from '@mui/icons-material';
+import { useTransifexTranslation } from '../../../../hooks/useTransifexTranslation';
 
 const CustomTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} arrow classes={{ popper: className }} />
@@ -15,21 +16,21 @@ const CustomTooltip = styled(({ className, ...props }) => (
 }));
 
 function HeaderNavLink({ active, link, label, className = '' }) {
+  const translatedLabel = useTransifexTranslation(label);
+  const alertsTooltip = useTransifexTranslation(
+    "Alerts Dashboard has moved. To view your data, open a list with Alerts analysis applied and select the 'Recent Disturbance Alerts' tab in the List Details page."
+  );
+
   if (label === 'Alerts') {
     return (
       <CustomTooltip
         placement="bottom-end"
-        title={
-          <Typography variant="caption">
-            Alerts Dashboard has moved. To view your data, open a list with Alerts analysis applied
-            and select the 'Recent Disturbance Alerts' tab in the List Details page.
-          </Typography>
-        }
+        title={<Typography variant="caption">{alertsTooltip}</Typography>}
       >
         <Box className={'header__nav-link header__nav-link--inactive'}>
           <Warning fontSize="small" />
-          <span className={className} aria-label={label}>
-            {label}
+          <span className={className} aria-label={translatedLabel}>
+            {translatedLabel}
           </span>
         </Box>
       </CustomTooltip>
@@ -41,10 +42,10 @@ function HeaderNavLink({ active, link, label, className = '' }) {
       className={`header__nav-link ${
         active === link.replace('/', '') || active === true ? 'active' : ''
       } ${className}`}
-      aria-label={label}
+      aria-label={translatedLabel}
       href={link}
     >
-      {label}
+      {translatedLabel}
     </a>
   );
 }

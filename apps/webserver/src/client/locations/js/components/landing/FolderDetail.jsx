@@ -8,6 +8,7 @@ import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import ListsFilter from '../lists/ListsFilter';
 import { locationsPage, folderDetailPage } from '../../../../common/js/config';
 import Banner from '../../../../common/js/components/Banners/Banner';
+import TranslatedText from '../../../../common/js/components/TranslatedText';
 
 import { changeView, selectFolder } from '../../actions/locationActions';
 
@@ -151,7 +152,7 @@ export default class FolderDetail extends Component {
             {filteredFolderLists.length === 0 && folderLists.length !== 0 && (
               <div className="no-search-results">
                 <p className="no-search-results__message">
-                  {locationsPage.landing.noSearchResults}
+                  <TranslatedText text={locationsPage.landing.noSearchResults} />
                 </p>
                 <Link
                   className="no-search-results__clear"
@@ -159,7 +160,7 @@ export default class FolderDetail extends Component {
                   component="button"
                   type="button"
                 >
-                  {locationsPage.landing.clearSearch}
+                  <TranslatedText text={locationsPage.landing.clearSearch} />
                 </Link>
               </div>
             )}

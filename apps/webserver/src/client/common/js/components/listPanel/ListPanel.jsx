@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { locationsPage, userAccessLevel } from '../../config';
 import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
+import TranslatedText from '../TranslatedText';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import FailedTooltip from '../CustomTooltip/FailedTooltip';
 import InlineLoader from '../Loaders/InlineLoader';
@@ -131,22 +132,24 @@ function ListPanel({
         onClick={togglePanel}
         className="gfw-button list-section-button show-lists"
       >
-        Show Lists
+        <TranslatedText text="Show Lists" />
       </button>
 
       <div className="list-menu-container">
         <div className="locations-list-group lists-list-group">
-          <div className="locations-list-header">{locationsPage.lists.savedLocations}</div>
+          <div className="locations-list-header">
+            <TranslatedText text={locationsPage.lists.savedLocations} />
+          </div>
           <div className="sidebar-divider" />
           <div className="locations-list-body">
             <div className="locations-list-name saved-location">
-              {locationsPage.lists.allLocations}
+              <TranslatedText text={locationsPage.lists.allLocations} />
               <span className="locations-list-count">
                 {locationCount.TotalCount ? numberWithCommas(locationCount.TotalCount) : 0}
               </span>
             </div>
             <div className="locations-list-name saved-location">
-              {locationsPage.lists.investment}
+              <TranslatedText text={locationsPage.lists.investment} />
               <span className="locations-list-count">
                 {locationCount.InvestmentCount
                   ? numberWithCommas(locationCount.InvestmentCount)
@@ -154,7 +157,7 @@ function ListPanel({
               </span>
             </div>
             <div className="locations-list-name saved-location">
-              {locationsPage.lists.commodity}
+              <TranslatedText text={locationsPage.lists.commodity} />
               <span className="locations-list-count">
                 {locationCount.CommodityCount ? numberWithCommas(locationCount.CommodityCount) : 0}
               </span>
@@ -163,14 +166,18 @@ function ListPanel({
         </div>
 
         <div className="locations-list-group lists-list-group list-my-lists">
-          <div className="locations-list-header">{locationsPage.lists.myLists}</div>
+          <div className="locations-list-header">
+            <TranslatedText text={locationsPage.lists.myLists} />
+          </div>
           <div className="sidebar-divider" />
           <div className="locations-list-body">{userListsRendered}</div>
         </div>
 
         {gfwListsRendered && (
           <div className="locations-list-group lists-list-group">
-            <div className="locations-list-header">{locationsPage.lists.gfwLists}</div>
+            <div className="locations-list-header">
+              <TranslatedText text={locationsPage.lists.gfwLists} />
+            </div>
             <div className="sidebar-divider" />
             <div className="locations-list-body">{gfwListsRendered}</div>
           </div>
@@ -178,7 +185,9 @@ function ListPanel({
 
         {userSharedListsRendered && userSharedListsRendered.length > 0 && (
           <div className="locations-list-group lists-list-group">
-            <div className="locations-list-header">{locationsPage.lists.sharedLists}</div>
+            <div className="locations-list-header">
+              <TranslatedText text={locationsPage.lists.sharedLists} />
+            </div>
             <div className="sidebar-divider" />
             <div className="locations-list-body">{userSharedListsRendered}</div>
           </div>

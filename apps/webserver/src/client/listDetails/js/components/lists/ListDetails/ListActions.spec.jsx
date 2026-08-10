@@ -561,7 +561,11 @@ describe('ListActions', () => {
       expect(requestGeoTrellisAnalyzeList).toHaveBeenCalled();
     });
 
-    expect(requestGeoTrellisAnalyzeList).toHaveBeenCalledWith(mockStore.selectedLists[0], '1,2');
+    expect(requestGeoTrellisAnalyzeList).toHaveBeenCalledWith(
+      mockStore.selectedLists[0],
+      '1,2',
+      true
+    );
     expect(setIsListSubmittedForAnalysis).toHaveBeenCalledWith(true);
     expect(setDraftSubmitDialogOpen).toHaveBeenCalledWith(false);
     expect(global.gtag).toHaveBeenCalledWith('event', 'Submit List', expect.any(Object));

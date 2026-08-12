@@ -167,6 +167,7 @@ The project uses the following AWS services (account and IAM permissions require
 - **EC2** — Database server hosting
 
 **Required Environment Variables:**
+
 - `AWS_REGION` — AWS region (e.g., us-east-1)
 - `AWS_ACCESS_KEY_ID` — AWS credentials (development/testing only; use IAM roles in production)
 - `AWS_SECRET_ACCESS_KEY` — AWS credentials (development/testing only; use IAM roles in production)
@@ -174,28 +175,33 @@ The project uses the following AWS services (account and IAM permissions require
 #### Geospatial & Mapping Services
 
 **Mapbox**
+
 - Used for interactive map rendering and vector tiles
 - Tippecanoe generates MBTiles format vector tiles from geospatial data
 - See "Tippecanoe" section above for installation requirements
 
 **ArcGIS/Esri**
+
 - REST API integration for feature services and portal operations
 - Used via `@arcgis/core`, `@esri/arcgis-rest-*` packages
 - No API key typically required for non-commercial use; check terms if commercial
 
 **Google Fonts & Material Icons**
+
 - UI typography and icon library via Google Fonts CDN
 - Loaded at runtime; ensure CORS/firewall rules allow googleapis.com
 
 #### Data APIs
 
 **GFW Dataset API**
+
 - Provides spatial data for various geospatial datasets (SICAR, UML, etc.)
 - **Required Environment Variables:**
   - `GFW_DATASET_API_URL` — API endpoint base URL
   - `GFW_DATA_API_KEY` — API key for authenticated requests
 
 **Planet Labs API**
+
 - Satellite imagery provider for Planet Tiles feature
 - **Required Environment Variables:**
   - `PLANET_TILES_API_KEY` — API key for Planet imagery access
@@ -204,6 +210,7 @@ The project uses the following AWS services (account and IAM permissions require
 #### Notifications
 
 **Slack**
+
 - Sends operational alerts and notifications
 - **Required Environment Variables:**
   - `SLACK_SIGNING_SECRET` — Webhook signing secret
@@ -212,6 +219,7 @@ The project uses the following AWS services (account and IAM permissions require
 #### Database
 
 **Microsoft SQL Server (MSSQL)**
+
 - Primary database for user data, lists, and analysis results
 - Runs on EC2 in deployed environments; local Docker/VM setup for development
 - **Required Environment Variables:**
@@ -222,6 +230,7 @@ The project uses the following AWS services (account and IAM permissions require
   - `MSSQL_DATABASE` — Database name
 
 **Redis**
+
 - In-memory cache and session store
 - Runs via Docker in development (`docker-compose.website.dev.yml`)
 - **Required Environment Variables:**

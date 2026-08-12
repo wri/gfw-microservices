@@ -148,6 +148,109 @@ It should run the tippecanoe binary and print an error message like the followin
 tippecanoe: must specify -o out.mbtiles or -e directory
 ```
 
+### Third-Party Services & Integrations
+
+This project integrates with several third-party services and APIs. Ensure you have the necessary credentials and permissions before deployment.
+
+#### AWS Services
+
+The project uses the following AWS services (account and IAM permissions required):
+
+- **Cognito** — User authentication and identity management
+- **S3** — Object storage for files, datasets, and analysis outputs
+- **SES** — Email delivery for notifications
+- **SNS** — Push notifications and event messaging
+- **SQS** — Message queuing for asynchronous processing
+- **Lambda** — Serverless compute for utility functions
+- **API Gateway** — REST API management with authentication (x-api-key)
+- **Step Functions with Geotrellis** — Geospatial analysis pipeline orchestration
+- **EC2** — Database server hosting
+
+**Key Environment Variables (not exhaustive):**
+
+- `AWS_REGION` — AWS region (e.g., us-east-1)
+- `AWS_ACCESS_KEY_ID` — AWS credentials (development/testing only; use IAM roles in production)
+- `AWS_SECRET_ACCESS_KEY` — AWS credentials (development/testing only; use IAM roles in production)
+
+Additional AWS-specific variables (Cognito pool IDs, bucket names, queue URLs, SNS topic ARNs, etc.) are documented in each app's `example.env` file. See `apps/webserver/secrets/env.secrets.example` for the webserver.
+
+#### Geospatial & Mapping Services
+
+**Mapbox**
+
+- Used for interactive map rendering and vector tiles
+- Tippecanoe generates MBTiles format vector tiles from geospatial data
+- See "Tippecanoe" section above for installation requirements
+
+**ArcGIS/Esri**
+
+- REST API integration for feature services and portal operations
+- Used via `@arcgis/core`, `@esri/arcgis-rest-*` packages
+- No API key typically required for non-commercial use; check terms if commercial
+
+**Google Fonts & Material Icons**
+
+- UI typography and icon library via Google Fonts CDN
+- Loaded at runtime; ensure CORS/firewall rules allow googleapis.com
+
+#### Data APIs
+
+**GFW Dataset API**
+
+- Provides spatial data for various geospatial datasets (SICAR, UML, etc.)
+- **Required Environment Variables:**
+  - `GFW_DATASET_API_URL` — API endpoint base URL
+  - `GFW_DATA_API_KEY` — API key for authenticated requests
+
+**Planet Labs API**
+
+- Satellite imagery provider for Planet Tiles feature
+- **Required Environment Variables:**
+  - `PLANET_TILES_API_KEY` — API key for Planet imagery access
+  - Requires Planet Labs account and active subscription
+
+#### Notifications
+
+**Slack**
+
+- Sends operational alerts and notifications
+- **Runtime Environment Variables (webserver):**
+  - `SLACK_BOT_TOKEN` — Bot token used by the app to send notifications
+  - `SLACK_LOG_CHANNEL` — Channel ID to post log/alert messages to
+  - `SLACK_SIGNING_SECRET` — Used to verify incoming Slack event requests
+- **Note:** `SLACK_WEBHOOK_URL` is a GitHub Actions secret used only in CI/CD workflows (PR notifications), not by the application at runtime.
+
+#### Database
+
+**Microsoft SQL Server (MSSQL)**
+
+- Primary database for user data, lists, and analysis results
+- Runs on EC2 in deployed environments; local Docker/VM setup for development
+- **Required Environment Variables:**
+  - `MSSQL_HOSTNAME` — Database server hostname/IP
+  - `MSSQL_PORT` — Database port (default: 1433)
+  - `MSSQL_USERNAME` — Database user
+  - `MSSQL_PASSWORD` — Database password
+  - `MSSQL_DATABASE` — Primary database name
+  - `MSSQL_LOG_DATABASE` — (Optional) Separate database for application logs; omit to disable log database
+
+**Redis**
+
+- In-memory cache and session store
+- Runs via Docker in development (`docker-compose.website.dev.yml`)
+- **Required Environment Variables:**
+  - `REDIS_HOST` — Redis server hostname (typically `127.0.0.1` for local development)
+  - `REDIS_PORT` — Redis port (default: 6379)
+
+#### Attribution & License Compliance
+
+When deploying this application, ensure proper attribution for:
+
+- **Mapbox** — Requires map attribution (automatically included in Mapbox GL JS)
+- **ArcGIS/Esri** — Check your licensing terms
+- **Planet Labs** — Comply with data licensing terms
+- **Google Fonts** — Licensed under Open Font License
+
 ### Run
 
 Before running the microservices, you have to create a `.env` file inside the root of the project.

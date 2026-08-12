@@ -166,11 +166,13 @@ The project uses the following AWS services (account and IAM permissions require
 - **Step Functions with Geotrellis** — Geospatial analysis pipeline orchestration
 - **EC2** — Database server hosting
 
-**Required Environment Variables:**
+**Key Environment Variables (not exhaustive):**
 
 - `AWS_REGION` — AWS region (e.g., us-east-1)
 - `AWS_ACCESS_KEY_ID` — AWS credentials (development/testing only; use IAM roles in production)
 - `AWS_SECRET_ACCESS_KEY` — AWS credentials (development/testing only; use IAM roles in production)
+
+Additional AWS-specific variables (Cognito pool IDs, bucket names, queue URLs, SNS topic ARNs, etc.) are documented in each app's `example.env` file. See `apps/webserver/secrets/env.secrets.example` for the webserver.
 
 #### Geospatial & Mapping Services
 
@@ -212,9 +214,11 @@ The project uses the following AWS services (account and IAM permissions require
 **Slack**
 
 - Sends operational alerts and notifications
-- **Required Environment Variables:**
-  - `SLACK_SIGNING_SECRET` — Webhook signing secret
-  - `SLACK_WEBHOOK_URL` — Incoming webhook URL for notifications
+- **Runtime Environment Variables (webserver):**
+  - `SLACK_BOT_TOKEN` — Bot token used by the app to send notifications
+  - `SLACK_LOG_CHANNEL` — Channel ID to post log/alert messages to
+  - `SLACK_SIGNING_SECRET` — Used to verify incoming Slack event requests
+- **Note:** `SLACK_WEBHOOK_URL` is a GitHub Actions secret used only in CI/CD workflows (PR notifications), not by the application at runtime.
 
 #### Database
 
@@ -227,7 +231,8 @@ The project uses the following AWS services (account and IAM permissions require
   - `MSSQL_PORT` — Database port (default: 1433)
   - `MSSQL_USERNAME` — Database user
   - `MSSQL_PASSWORD` — Database password
-  - `MSSQL_DATABASE` — Database name
+  - `MSSQL_DATABASE` — Primary database name
+  - `MSSQL_LOG_DATABASE` — (Optional) Separate database for application logs; omit to disable log database
 
 **Redis**
 

@@ -41,4 +41,7 @@ cypress.env.json
 # eapi-e2e environment variables containing login credentials
 **/externalapi-e2e/jest.set.env.ts
 
+# Local HTTP client environment files (use .example template)
+apps/webserver/src/test/http-client.private.env.json
+
 /PR-MANIFEST.md

@@ -1,9 +1,7 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import BasePage from '../../pages/basePage';
 import LocationsPage from '../../pages/locationsPage';
 
 describe('Upload location', () => {
-  const basePage = new BasePage();
   const locationsPage = new LocationsPage();
   const sharedList = ['AAT ShareList'];
   const deployment = Cypress.env('deployment');
@@ -14,20 +12,9 @@ describe('Upload location', () => {
       // work around for existing errors that otherwise fail the test
       return false;
     });
-    cy.intercept('POST', '/auth/signinpost').as('signInPost');
-    cy.intercept('POST', '/auth/verifyLogin').as('verifyLogin');
     cy.visit('/');
-
-    basePage.clickOnLoginNav();
-    basePage.fillUsername(username);
-    basePage.fillPassword(credentials.password);
-    basePage.clickOnLoginBtn();
-    cy.wait('@signInPost').its('response.body').should('eq', 'Authenticated');
-    basePage.fillToken(credentials.password);
-    basePage.clickOnVerifyBtn();
-    cy.wait('@verifyLogin')
-      .its('response.body')
-      .should('be.oneOf', ['User', 'Manager', 'Select Org']);
+    cy.login(username, credentials.password, credentials.password);
+    cy.visit('/locations');
   };
 
   When('I login as admin', () => {

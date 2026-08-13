@@ -18,6 +18,16 @@ npm install --legacy-peer-deps
 
 Create your environment file(s) as described in [README.md](README.md).
 
+### HTTP Client Environment Files
+
+For local testing with REST clients, copy the example template:
+
+```sh
+cp apps/webserver/src/test/http-client.private.env.example.json apps/webserver/src/test/http-client.private.env.json
+```
+
+Then add your test tokens to `http-client.private.env.json` (this file is git-ignored).
+
 Common commands:
 
 ```sh

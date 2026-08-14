@@ -7,6 +7,10 @@ GO
 
 SET NOCOUNT ON;
 
+-- Set to 1 to preview changes only (no ALTER statements executed).
+-- Set to 0 to apply changes.
+DECLARE @DryRun BIT = 1;
+
 DECLARE @OrgDb NVARCHAR(200);
 DECLARE @SQL   NVARCHAR(MAX);
 
@@ -67,7 +71,7 @@ BEGIN
             SET @dropSQL = @dropSQL + ''ALTER TABLE [dbo].[Analyses-Dashboard] DROP CONSTRAINT ['' + @cname + ''];'' + CHAR(10);
 
         SET @dropSQL = @dropSQL + ''ALTER TABLE [dbo].[Analyses-Dashboard] DROP COLUMN ['' + @colName + ''];'' + CHAR(10);
-        PRINT ''  Dropped: '' + @colName;
+        PRINT ''  Queued drop: '' + @colName;
     END
     ELSE
         PRINT ''  Skipped (not found): '' + @colName;
@@ -79,10 +83,18 @@ CLOSE col_cursor;
 DEALLOCATE col_cursor;
 
 IF LEN(@dropSQL) > 0
-    EXEC sp_executesql @dropSQL;
+BEGIN
+    IF @DryRun = 1
+    BEGIN
+        PRINT ''  DRY RUN: statements generated, not executed.'';
+        PRINT @dropSQL;
+    END
+    ELSE
+        EXEC sp_executesql @dropSQL;
+END
 ';
 
-        EXEC sp_executesql @SQL;
+        EXEC sp_executesql @SQL, N'@DryRun BIT', @DryRun = @DryRun;
 
     END TRY
     BEGIN CATCH

@@ -68,9 +68,9 @@ BEGIN
           AND c.object_id = OBJECT_ID(''[dbo].[Analyses-Dashboard]'');
 
         IF @cname IS NOT NULL
-            SET @dropSQL = @dropSQL + ''ALTER TABLE [dbo].[Analyses-Dashboard] DROP CONSTRAINT ['' + @cname + ''];'' + CHAR(10);
+            SET @dropSQL = @dropSQL + ''ALTER TABLE [dbo].[Analyses-Dashboard] DROP CONSTRAINT '' + QUOTENAME(@cname) + '';'' + CHAR(10);
 
-        SET @dropSQL = @dropSQL + ''ALTER TABLE [dbo].[Analyses-Dashboard] DROP COLUMN ['' + @colName + ''];'' + CHAR(10);
+        SET @dropSQL = @dropSQL + ''ALTER TABLE [dbo].[Analyses-Dashboard] DROP COLUMN '' + QUOTENAME(@colName) + '';'' + CHAR(10);
         PRINT ''  Queued drop: '' + @colName;
     END
     ELSE

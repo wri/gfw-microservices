@@ -2,7 +2,7 @@ import { proLayers } from '../proLayers.config';
 
 // Dataset Version Constants
 // Update these versions when new datasets are released
-const DATASET_VERSIONS = {
+export const DATASET_VERSIONS = {
   ARG_NATIVE_FOREST: 'v202212',
   CLARK_LABS_AQUACULTURE_2018: 'v202203',
   CLARK_LABS_AQUACULTURE_CHANGE: 'v202203',
@@ -19,6 +19,8 @@ const DATASET_VERSIONS = {
   UMD_GLAD_DIST_ALERTS: 'v202412',
   WDPA_PROTECTED_AREAS: 'v202608',
 };
+
+export const WDPA_PROTECTED_AREAS = DATASET_VERSIONS.WDPA_PROTECTED_AREAS;
 
 // Pre-built Dataset URLs
 const DATASET_URLS = {

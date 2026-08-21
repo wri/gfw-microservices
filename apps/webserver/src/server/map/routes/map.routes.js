@@ -1,5 +1,6 @@
 const path = require('path');
 import axios from 'axios';
+import { WDPA_PROTECTED_AREAS } from '../../../client/common/js/service/mapLayers.constants';
 
 const controller = require('../controllers/map.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
@@ -7,6 +8,9 @@ const ListManager = require(path.resolve('./config/publicutils/listManager.utils
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 import * as logger from '../../../config/privateutils/logger.utils';
 import querystring from 'querystring';
+
+const WDPA_LICENSED_PROTECTED_AREAS_QUERY_URL =
+  `https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/${WDPA_PROTECTED_AREAS}/query/json`;
 
 /**
  * @name exports
@@ -277,8 +281,7 @@ module.exports = (app, limiter) => {
       const sql = `SELECT * FROM data WHERE name ILIKE '%${searchInput}%' LIMIT 4;`;
 
       const response = await fetch(
-        'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202511/query/json',
-
+        WDPA_LICENSED_PROTECTED_AREAS_QUERY_URL,
         {
           method: 'POST',
           headers: {

@@ -1,6 +1,6 @@
 const path = require('path');
 import axios from 'axios';
-import { WDPA_PROTECTED_AREAS } from '../../../client/common/js/service/mapLayers.constants';
+import { DATASET_VERSIONS } from '@wri-monorepos/constants';
 
 const controller = require('../controllers/map.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
@@ -9,7 +9,7 @@ const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 import * as logger from '../../../config/privateutils/logger.utils';
 import querystring from 'querystring';
 
-const WDPA_LICENSED_PROTECTED_AREAS_QUERY_URL = `https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/${WDPA_PROTECTED_AREAS}/query/json`;
+const WDPA_LICENSED_PROTECTED_AREAS_QUERY_URL = `https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/${DATASET_VERSIONS.WDPA_PROTECTED_AREAS}/query/json`;
 
 /**
  * @name exports

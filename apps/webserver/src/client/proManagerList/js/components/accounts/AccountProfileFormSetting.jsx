@@ -20,7 +20,7 @@ import { PillButton } from '../../../../components';
 import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
 import { useDialog } from '../../../../common/js/components/Dialog';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
 import { disabledStyles } from '../../common/formStyles';
 

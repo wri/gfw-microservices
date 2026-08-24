@@ -18,7 +18,7 @@ import {
   LANGUAGE_OPTIONS,
   getDefaultLanguageForCountry,
   normalizeCountryToken,
-} from '../../../common/js/constants/userLanguage.constants';
+} from '../../../common/js/constants/user-language.constants';
 import * as userProfileService from '../services/userProfileService.ts';
 import { Link, PillButton } from '../../../components';
 import GfwSelect from '../../../common/js/components/GfwSelect';

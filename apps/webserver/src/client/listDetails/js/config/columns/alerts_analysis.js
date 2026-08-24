@@ -1,7 +1,7 @@
 import { columnHeaders } from './columnHeaders.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import { calculateAndFormatTotalDeforestation } from '../../../../locations/js/utils/locationsTableUtils';
-import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../common/js/constants/info-bubble-config.constants';
 
 const FIELDS_SUBTITLE = 'since last TCL data update';
 

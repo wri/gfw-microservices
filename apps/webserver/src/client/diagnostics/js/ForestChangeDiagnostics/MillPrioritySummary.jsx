@@ -6,7 +6,7 @@ import {
   latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 
 export default class MillPrioritySummary extends Component {
   renderMillTable = () => {

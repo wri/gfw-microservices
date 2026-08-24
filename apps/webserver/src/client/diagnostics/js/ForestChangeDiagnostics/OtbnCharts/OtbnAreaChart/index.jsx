@@ -5,7 +5,7 @@ import Table from './Table';
 import DiagnosticsChartHeader from '../../../common/DiagnosticsChartHeader';
 import { locationsPage } from '../../../../../common/js/config';
 import '../../../common/DiagnosticsChartContainer.scss';
-import infoBubbleConfig from '../../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../../common/js/constants/info-bubble-config.constants';
 
 function OtbnAreaChart({ data }) {
   return (

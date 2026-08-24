@@ -14,7 +14,7 @@ import {
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
 import { latestTreeCoverLossYearForTclDataInAnalyses } from '../../../common/js/config';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 

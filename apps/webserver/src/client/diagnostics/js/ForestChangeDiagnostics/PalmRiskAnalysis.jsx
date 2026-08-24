@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import { latestTreeCoverLossYearCommodityRisk } from '../../../common/js/config';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 
 const lastYear = latestTreeCoverLossYearCommodityRisk;
 

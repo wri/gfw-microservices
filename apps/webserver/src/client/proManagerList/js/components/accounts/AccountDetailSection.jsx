@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import AccountProfile from './AccountProfile';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 import errorLogger from '../../../../common/js/utils/errorLogger';
 
 const AccountDetailContext = createContext();

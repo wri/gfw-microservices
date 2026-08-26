@@ -4,7 +4,7 @@ import { Grid, TextField, Typography, Divider } from '@mui/material';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 import { PillButton } from '../../../../components';
 import FieldLabel from './FieldLabel';
 

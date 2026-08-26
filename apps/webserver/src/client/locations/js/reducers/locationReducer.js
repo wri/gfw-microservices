@@ -26,7 +26,7 @@ import {
   SHOW_INFO_POPOVER,
 } from '../constants/actionTypes';
 import cloneDeep from 'lodash/cloneDeep';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 import {
   DISPLAY_FORMAT_SUMMARY,
   SBTN_NATURAL_FOREST_LOSS,

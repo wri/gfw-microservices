@@ -1,5 +1,5 @@
 import { Chip } from '@mui/material';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 
 const statusColors: Record<string, 'success' | 'warning' | 'default' | 'error'> = {
   Active: 'success',

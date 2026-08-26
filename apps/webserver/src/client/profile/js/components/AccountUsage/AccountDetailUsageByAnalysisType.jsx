@@ -26,7 +26,7 @@ import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 /**
  * Possible duplicate contents from
- * {@link libs/constants/src/lib/analysisTypes.constants.ts}
+ * {@link libs/constants/src/lib/analysis-types.constants.ts}
  *
  * @summary libs/constants is not buildable and libs/sql complaints about
  * not finding the contents of the filepath above

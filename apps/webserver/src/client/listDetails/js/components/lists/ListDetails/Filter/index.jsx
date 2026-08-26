@@ -38,7 +38,7 @@ import '../../../../../../common/css/_irsStyle.scss';
 import '../../../../../../common/css/filter-dialogs.scss';
 import { filterKeys, gfwListNames } from '../../../../../../common/js/constants/lists.constants';
 import InfoBubble from '../../../../../../common/js/components/InfoBubble';
-import infoBubbleConfig from '../../../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../../../common/js/constants/info-bubble-config.constants';
 import { PillButton } from '../../../../../../components';
 import {
   COMMODITY_RISK_VIEW,

@@ -1,4 +1,4 @@
-import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../common/js/constants/info-bubble-config.constants';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const id_type_columns = [

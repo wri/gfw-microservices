@@ -1,4 +1,4 @@
-import { VIEW_READY, SHARED_COLOR } from '../constants/actionTypes';
+import { VIEW_READY, SHARED_COLOR } from '../constants/action-types.constants';
 
 export function viewCreated() {
   return { type: VIEW_READY };

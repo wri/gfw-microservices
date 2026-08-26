@@ -8,7 +8,7 @@ import {
   earliestTreeCoverLossYearCommodityRisk,
   latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 
 const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 

@@ -5,7 +5,7 @@ import {
   renderDataIcon,
   renderDataLevelTag,
 } from '../../../../locations/js/utils/locationsTableUtils';
-import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../common/js/constants/info-bubble-config.constants';
 
 const transifex = (text) => window.Transifex?.live?.translateText?.(text) ?? text;
 

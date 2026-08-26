@@ -10,7 +10,7 @@ import { PRO_MANAGER_PATH } from '../../common/paths';
 import {
   ACCOUNT_ORG_STATUSES,
   ORG_CLASSIFICATIONS,
-} from '../../../../common/js/constants/orgAccountStatuses';
+} from '../../../../common/js/constants/org-account-statuses.constants';
 import AccountsListsTable from './AccountsListsTable';
 
 // Components

@@ -6,6 +6,36 @@
     "_exporter_id": "40077819",
     "_collection_link": "https://go.postman.co/collection/13247005-818487db-b814-4c0e-ba76-1251ca4e8843?source=collection_link"
   },
+  "variable": [
+    {
+      "key": "gfw_data_api_host",
+      "value": "data-api.globalforestwatch.org"
+    },
+    {
+      "key": "rw_api_host",
+      "value": "api.resourcewatch.org"
+    },
+    {
+      "key": "gadm_dataset",
+      "value": "gadm_administrative_boundaries"
+    },
+    {
+      "key": "gadm_dataset_version",
+      "value": "v4.1.64"
+    },
+    {
+      "key": "wdpa_dataset",
+      "value": "wdpa_licensed_protected_areas"
+    },
+    {
+      "key": "wdpa_dataset_version",
+      "value": "v202608"
+    },
+    {
+      "key": "uml_dataset",
+      "value": "gfw_universal_mill_list"
+    }
+  ],
   "item": [
     {
       "name": "Datasets",
@@ -469,9 +499,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://api.resourcewatch.org/widget/",
+              "raw": "http://{{rw_api_host}}/widget/",
               "protocol": "http",
-              "host": ["api", "resourcewatch", "org"],
+              "host": ["{{rw_api_host}}"],
               "path": ["widget", ""]
             }
           },
@@ -496,9 +526,9 @@
               "raw": "{\n  \"name\": \"Widget default\",\n  \"queryUrl\": \"query/5be16fea-5b1a-4daf-a9e9-9dc1f6ea6d4e?sql=select * from crops\",\n  \"application\":[\"aqueduct\"],\n  \"description\":\"\",\n  \"source\":\"\",\n  \"sourceUrl\":\"\",\n  \"authors\":\"\",\n  \"status\":1,\n  \"default\": true,\n  \"published\":true,\n  \"widgetConfig\": {\n    \"data\": [\n        {\n          \"name\": \"hist\",\n          \"url\": \"http://wri-01.carto.com/api/v2/sql?q=with f as (SELECT crops.*, {{water_column}} FROM crops inner join aqueduct_projections_20150309 ri on ri.basinid=crops.basinid), t as (select sum(area) as area, {{water_column}} as risk, crop from f group by {{water_column}}, crop ), r as (SELECT sum(value) as value, commodity FROM combined01_prepared where year='{{year}}' and impactparameter='Food Demand' group by commodity), d as ( select (value*100/(sum(value) over())) as value, commodity from r ) select crop, risk,value, (area*100/sum(area) over(partition by crop)) area_perc from d inner join t on lower(commodity)=crop order by risk desc, crop asc\",\n          \"format\": {\"type\": \"json\",\"property\": \"rows\"}\n        },\n        {\n          \"name\": \"stats_risk\",\n          \"source\": \"hist\",\n          \"transform\": [\n            {\n              \"type\": \"stack\",\n              \"groupby\": [\"crop\"],\n              \"field\": \"area_perc\",\n              \"offset\": \"zero\",\n              \"output\": {\"start\": \"val_s\",\"end\": \"val_e\",\"mid\": \"val_m\"}\n            },\n            {\n              \"type\": \"stack\",\n              \"groupby\": [\"risk\"],\n              \"field\": \"value\",\n              \"offset\": \"zero\",\n              \"output\": {\"start\": \"t_s\",\"end\": \"t_e\",\"mid\": \"t_m\"}\n            }\n          ]\n        },\n        {\n          \"name\": \"legend_crop\",\n          \"source\": \"stats_risk\",\n          \"transform\": [\n            {\n              \"type\": \"aggregate\",\n              \"groupby\": [\"crop\"],\n              \"summarize\": [\n                {\n                  \"field\": \"t_m\",\n                  \"ops\": [\"min\"],\n                  \"as\": [\"counts_r\"]\n                },\n                {\n                  \"field\": \"t_e\",\n                  \"ops\": [\"min\"],\n                  \"as\": [\"counts_e\"]\n                }\n              ]\n            }\n          ]\n        },\n        {\n          \"name\": \"legend_risk\",\n          \"source\": \"hist\",\n          \"transform\": [\n            {\n              \"type\": \"aggregate\",\n              \"groupby\": [\"risk\"],\n              \"summarize\": [\n                {\n                  \"field\": \"risk\",\n                  \"ops\": [\"count\"],\n                  \"as\": [\"counts_c\"]\n                }\n              ]\n            }\n          ]\n        }\n      ],\n      \"scales\": [\n        {\n          \"name\": \"x\",\n          \"type\": \"linear\",\n          \"domain\": {\"fields\": [{\"data\": \"stats_risk\",\"field\": \"t_e\"}]},\n          \"range\": \"width\"\n        },\n        {\n          \"name\": \"xl\",\n          \"type\": \"linear\",\n          \"domain\": {\"fields\": [{\"data\": \"legend_crop\",\"field\": \"counts_e\"}]},\n          \"range\": \"width\"\n        },\n        {\n          \"name\": \"x_label\",\n          \"type\": \"ordinal\",\n          \"points\":false,\n          \"domain\": {\"fields\": [{\"data\": \"legend_crop\",\"field\": \"counts_r\"}]},\n          \"range\": {\"fields\": [{\"data\": \"legend_crop\",\"field\": \"crop\"}]}\n        },\n        {\n          \"name\": \"y\",\n          \"type\": \"linear\",\n          \"range\": \"height\",\n          \"domain\": {\"fields\": [{\"data\": \"stats_risk\",\"field\": \"val_e\"}]}\n        },\n        \n        {\n          \"name\": \"color\",\n          \"type\": \"ordinal\",\n          \"range\": \"riskColor\",\n          \"domain\": {\"data\": \"legend_risk\",\"field\": \"risk\"}\n        },\n        {\n          \"name\": \"legend-series-x\",\n          \"type\": \"ordinal\",\n          \"domain\": {\"data\": \"legend_risk\", \"field\": \"risk\"},\n          \"range\": \"positionx\"\n        },\n        {\n          \"name\": \"legend-series-y\",\n          \"type\": \"ordinal\",\n          \"domain\": {\"data\": \"legend_risk\", \"field\": \"risk\"},\n          \"range\": \"positiony\"\n        }\n  ],\n      \"axes\": [\n    {\n      \"type\": \"x\",\n      \"scale\": \"x\",\n      \"orient\": \"top\"\n      \n    },\n    {\n      \"type\": \"x\",\n      \"scale\": \"xl\",\n      \"ticks\": 4,\n      \"layer\": \"front\",\n      \"grid\": false,\n      \"values\":[6,32,51,75],\n      \"formatType\":\"string\",\n      \"properties\": {\n        \"ticks\": {\n          \"stroke\": {\"value\": \"#EEEEEE\"},\n          \"strokeOpacity\": {\"value\": 1}\n        },\n        \"labels\": {\n          \"font\": {\"value\": \"\\\"Roboto\\\"\"},\n          \"align\": {\"value\": \"center\"},\n          \"text\": {\"scale\": \"x_label\"}\n        }\n      }\n    },\n    {\n      \"type\": \"y\",\n      \"scale\": \"y\",\n      \"properties\":{\"labels\":{\"baseline\": {\"value\": \"bottom\"},\n          \"align\": {\"value\": \"left\"}}}\n    }\n  ],\n      \"marks\": [\n    {\n      \"name\": \"columns\",\n      \"from\": {\"data\": \"stats_risk\"},\n      \"type\": \"rect\",\n      \"properties\": {\n        \"enter\": {\n          \"x\": {\"field\": \"t_s\",\"scale\": \"x\"},\n          \"x2\": {\"field\": \"t_e\",\"scale\": \"x\"},\n          \"y\": {\"field\": \"val_s\",\"scale\": \"y\"},\n          \"y2\": {\"field\": \"val_e\",\"scale\": \"y\"},\n          \"fill\": {\"scale\": \"color\",\"field\": \"risk\"},\n          \"strokeWidth\": {\"value\": 1},\n          \"stroke\": {\"value\": \"#eee\"}\n        }\n      }\n    }\n  ],\n      \"legends\": [\n    {\n      \"fill\": \"color\",\n      \"properties\": {\n       \"legend\": {\n          \"x\": {\"field\": {\"group\": \"width\"},\"mult\": 0.05, \"offset\": 5},\n          \"y\": {\"field\": {\"group\": \"height\"},\"mult\": 1.1, \"offset\": 0}\n        },\n        \"labels\": {\n          \"text\": {\n           \"template\": \"{{datum.data|truncate:8}}\"\n          },\n          \"x\": {\"scale\": \"legend-series-x\", \"offset\":10},\n          \"y\": {\"scale\": \"legend-series-y\"}\n        },\n        \"symbols\": {\n         \"x\": {\"scale\": \"legend-series-x\"},\n          \"y\": {\"scale\": \"legend-series-y\"}\n        }\n      }\n    }\n  ]\n  }\n}"
             },
             "url": {
-              "raw": "http://api.resourcewatch.org/dataset/:id/widget",
+              "raw": "http://{{rw_api_host}}/dataset/:id/widget",
               "protocol": "http",
-              "host": ["api", "resourcewatch", "org"],
+              "host": ["{{rw_api_host}}"],
               "path": ["dataset", ":id", "widget"],
               "variable": [
                 {
@@ -529,9 +559,9 @@
               "formdata": []
             },
             "url": {
-              "raw": "http://api.resourcewatch.org/dataset/:dataset_id/widget/:widget_id",
+              "raw": "http://{{rw_api_host}}/dataset/:dataset_id/widget/:widget_id",
               "protocol": "http",
-              "host": ["api", "resourcewatch", "org"],
+              "host": ["{{rw_api_host}}"],
               "path": ["dataset", ":dataset_id", "widget", ":widget_id"],
               "variable": [
                 {
@@ -563,12 +593,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"widgetConfig\":{\n\t\t  \"axes\": [\n\t\t    {\n\t\t      \"type\": \"x\",\n\t\t      \"scale\": \"x\",\n\t\t      \"tickSize\": 0,\n\t\t      \"properties\": {\n\t\t        \"axis\": {\"stroke\": {\"value\": \"#9BA2AA\"}},\n\t\t        \"labels\": {\"text\": {\"template\": \"\"}}\n\t\t      }\n\t\t    },\n\t\t    {\n\t\t      \"type\": \"y\",\n\t\t      \"scale\": \"y\",\n\t\t      \"tickSize\": 0,\n\t\t      \"properties\": {\n\t\t        \"axis\": {\"stroke\": {\"value\": \"transparent\"}},\n\t\t        \"labels\": {\"text\": {\"template\": \"\"}}\n\t\t      }\n\t\t    }\n\t\t  ],\n\t\t  \"data\": [\n\t\t    {\n\t\t      \"name\": \"table\",\n\t\t      \"url\": \"https://api.resourcewatch.org/v1/query/e663eb09-04de-4f39-b871-35c6c2ed10b5?sql=select+%2A+from+index_e663eb0904de4f39b87135c6c2ed10b5+where+year+%3E2016+and+julian_day+%3E135+order+by+year+desc%2C+julian_day+desc limit 30000\",\n\t\t      \"format\": {\"type\": \"json\",\"property\": \"data\"},\n\t\t      \"transform\": [\n\t\t        {\"type\": \"sort\",\"by\": \"julian_day\"},\n\t\t        {\n\t\t          \"type\": \"aggregate\",\n\t\t          \"groupby\": \"julian_day\",\n\t\t          \"summarize\": [\n\t\t            {\n\t\t              \"field\": \"julian_day\",\n\t\t              \"ops\": [\"count\"],\n\t\t              \"as\": [\"count_\"]\n\t\t            }\n\t\t          ]\n\t\t        },\n\t\t        {\"type\": \"formula\", \"field\": \"y\", \"expr\": \"datum.count_\"},\n\t\t        {\"type\": \"formula\", \"field\": \"x\", \"expr\": \"datetime(time(datetime(2017, 1, 1)) + (datum.julian_day*24*60*60*1000))\"},\n\t\t        {\"type\": \"formula\", \"field\": \"group\", \"expr\": \"1\"}\n\t\t      ]\n\t\t    }\n\t\t  ],\n\t\t  \"name\": \"Line visualization\",\n\t\t  \"marks\": [\n\t\t    {\n\t\t      \"from\": {\n\t\t        \"data\": \"table\",\n\t\t        \"transform\": [{\"type\": \"facet\",\"groupby\": [\"group\"]}]\n\t\t      },\n\t\t      \"type\": \"group\",\n\t\t      \"marks\": [\n\t\t        {\n\t\t          \"type\": \"line\",\n\t\t          \"properties\": {\n\t\t            \"enter\": {\n\t\t              \"x\": {\"field\": \"x\",\"scale\": \"x\"},\n\t\t              \"y\": {\"field\": \"y\",\"scale\": \"y\"},\n\t\t              \"stroke\": {\"field\": \"group\",\"scale\": \"group\"},\n\t\t              \"strokeWidth\": {\"value\": 2}\n\t\t            }\n\t\t          }\n\t\t        }\n\t\t      ]\n\t\t    }\n\t\t  ],\n\t\t  \"width\": 150,\n\t\t  \"height\": 150,\n\t\t  \"scales\": [\n\t\t    {\n\t\t      \"name\": \"x\",\n\t\t      \"type\": \"time\",\n\t\t      \"zero\": false,\n\t\t      \"range\": \"width\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"x\"}\n\t\t    },\n\t\t    {\n\t\t      \"name\": \"y\",\n\t\t      \"type\": \"linear\",\n\t\t      \"zero\": false,\n\t\t      \"range\": \"height\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"y\"}\n\t\t    },\n\t\t    {\n\t\t      \"name\": \"group\",\n\t\t      \"type\": \"ordinal\",\n\t\t      \"range\": \"colorRange1\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"group\"}\n\t\t    }\n\t\t  ],\n\t\t  \"padding\": {\"top\": 5,\"left\": 5,\"right\": 5,\"bottom\": 5}\n\t\t}\n\t}"
+              "raw": "{\n    \"widgetConfig\":{\n\t\t  \"axes\": [\n\t\t    {\n\t\t      \"type\": \"x\",\n\t\t      \"scale\": \"x\",\n\t\t      \"tickSize\": 0,\n\t\t      \"properties\": {\n\t\t        \"axis\": {\"stroke\": {\"value\": \"#9BA2AA\"}},\n\t\t        \"labels\": {\"text\": {\"template\": \"\"}}\n\t\t      }\n\t\t    },\n\t\t    {\n\t\t      \"type\": \"y\",\n\t\t      \"scale\": \"y\",\n\t\t      \"tickSize\": 0,\n\t\t      \"properties\": {\n\t\t        \"axis\": {\"stroke\": {\"value\": \"transparent\"}},\n\t\t        \"labels\": {\"text\": {\"template\": \"\"}}\n\t\t      }\n\t\t    }\n\t\t  ],\n\t\t  \"data\": [\n\t\t    {\n\t\t      \"name\": \"table\",\n\t\t      \"url\": \"https://{{rw_api_host}}/v1/query/e663eb09-04de-4f39-b871-35c6c2ed10b5?sql=select+%2A+from+index_e663eb0904de4f39b87135c6c2ed10b5+where+year+%3E2016+and+julian_day+%3E135+order+by+year+desc%2C+julian_day+desc limit 30000\",\n\t\t      \"format\": {\"type\": \"json\",\"property\": \"data\"},\n\t\t      \"transform\": [\n\t\t        {\"type\": \"sort\",\"by\": \"julian_day\"},\n\t\t        {\n\t\t          \"type\": \"aggregate\",\n\t\t          \"groupby\": \"julian_day\",\n\t\t          \"summarize\": [\n\t\t            {\n\t\t              \"field\": \"julian_day\",\n\t\t              \"ops\": [\"count\"],\n\t\t              \"as\": [\"count_\"]\n\t\t            }\n\t\t          ]\n\t\t        },\n\t\t        {\"type\": \"formula\", \"field\": \"y\", \"expr\": \"datum.count_\"},\n\t\t        {\"type\": \"formula\", \"field\": \"x\", \"expr\": \"datetime(time(datetime(2017, 1, 1)) + (datum.julian_day*24*60*60*1000))\"},\n\t\t        {\"type\": \"formula\", \"field\": \"group\", \"expr\": \"1\"}\n\t\t      ]\n\t\t    }\n\t\t  ],\n\t\t  \"name\": \"Line visualization\",\n\t\t  \"marks\": [\n\t\t    {\n\t\t      \"from\": {\n\t\t        \"data\": \"table\",\n\t\t        \"transform\": [{\"type\": \"facet\",\"groupby\": [\"group\"]}]\n\t\t      },\n\t\t      \"type\": \"group\",\n\t\t      \"marks\": [\n\t\t        {\n\t\t          \"type\": \"line\",\n\t\t          \"properties\": {\n\t\t            \"enter\": {\n\t\t              \"x\": {\"field\": \"x\",\"scale\": \"x\"},\n\t\t              \"y\": {\"field\": \"y\",\"scale\": \"y\"},\n\t\t              \"stroke\": {\"field\": \"group\",\"scale\": \"group\"},\n\t\t              \"strokeWidth\": {\"value\": 2}\n\t\t            }\n\t\t          }\n\t\t        }\n\t\t      ]\n\t\t    }\n\t\t  ],\n\t\t  \"width\": 150,\n\t\t  \"height\": 150,\n\t\t  \"scales\": [\n\t\t    {\n\t\t      \"name\": \"x\",\n\t\t      \"type\": \"time\",\n\t\t      \"zero\": false,\n\t\t      \"range\": \"width\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"x\"}\n\t\t    },\n\t\t    {\n\t\t      \"name\": \"y\",\n\t\t      \"type\": \"linear\",\n\t\t      \"zero\": false,\n\t\t      \"range\": \"height\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"y\"}\n\t\t    },\n\t\t    {\n\t\t      \"name\": \"group\",\n\t\t      \"type\": \"ordinal\",\n\t\t      \"range\": \"colorRange1\",\n\t\t      \"domain\": {\"data\": \"table\",\"field\": \"group\"}\n\t\t    }\n\t\t  ],\n\t\t  \"padding\": {\"top\": 5,\"left\": 5,\"right\": 5,\"bottom\": 5}\n\t\t}\n\t}"
             },
             "url": {
-              "raw": "http://api.resourcewatch.org/v1/dataset/:iataset_id/widget/:widget_id",
+              "raw": "http://{{rw_api_host}}/v1/dataset/:iataset_id/widget/:widget_id",
               "protocol": "http",
-              "host": ["api", "resourcewatch", "org"],
+              "host": ["{{rw_api_host}}"],
               "path": ["v1", "dataset", ":iataset_id", "widget", ":widget_id"],
               "variable": [
                 {
@@ -590,9 +620,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://api.resourcewatch.org/widget/:widget_id",
+              "raw": "http://{{rw_api_host}}/widget/:widget_id",
               "protocol": "http",
-              "host": ["api", "resourcewatch", "org"],
+              "host": ["{{rw_api_host}}"],
               "path": ["widget", ":widget_id"],
               "variable": [
                 {
@@ -618,7 +648,7 @@
       "response": []
     },
     {
-      "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+      "name": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
       "request": {
         "method": "POST",
         "header": [
@@ -643,10 +673,10 @@
           }
         },
         "url": {
-          "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "raw": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
           "protocol": "https",
-          "host": ["data-api", "globalforestwatch", "org"],
-          "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+          "host": ["{{gfw_data_api_host}}"],
+          "path": ["dataset", "{{gadm_dataset}}", "{{gadm_dataset_version}}", "query", "json"],
           "query": [
             {
               "key": "sql",
@@ -659,7 +689,7 @@
       },
       "response": [
         {
-          "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "name": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
           "originalRequest": {
             "method": "POST",
             "header": [
@@ -684,10 +714,10 @@
               }
             },
             "url": {
-              "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+              "raw": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
               "protocol": "https",
-              "host": ["data-api", "globalforestwatch", "org"],
-              "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+              "host": ["{{gfw_data_api_host}}"],
+              "path": ["dataset", "{{gadm_dataset}}", "{{gadm_dataset_version}}", "query", "json"],
               "query": [
                 {
                   "key": "sql",
@@ -769,7 +799,7 @@
       ]
     },
     {
-      "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json Copy",
+      "name": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json Copy",
       "request": {
         "auth": {
           "type": "bearer",
@@ -792,12 +822,6 @@
             "key": "Content-Type",
             "value": "application/json",
             "type": "text"
-          },
-          {
-            "key": "",
-            "value": "",
-            "type": "text",
-            "disabled": true
           }
         ],
         "body": {
@@ -810,10 +834,10 @@
           }
         },
         "url": {
-          "raw": "https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202502/query/json",
+          "raw": "https://{{gfw_data_api_host}}/dataset/{{wdpa_dataset}}/{{wdpa_dataset_version}}/query/json",
           "protocol": "https",
-          "host": ["data-api", "globalforestwatch", "org"],
-          "path": ["dataset", "wdpa_licensed_protected_areas", "v202502", "query", "json"],
+          "host": ["{{gfw_data_api_host}}"],
+          "path": ["dataset", "{{wdpa_dataset}}", "{{wdpa_dataset_version}}", "query", "json"],
           "query": [
             {
               "key": "sql",
@@ -826,7 +850,7 @@
       },
       "response": [
         {
-          "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "name": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
           "originalRequest": {
             "method": "POST",
             "header": [
@@ -851,10 +875,10 @@
               }
             },
             "url": {
-              "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+              "raw": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
               "protocol": "https",
-              "host": ["data-api", "globalforestwatch", "org"],
-              "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+              "host": ["{{gfw_data_api_host}}"],
+              "path": ["dataset", "{{gadm_dataset}}", "{{gadm_dataset_version}}", "query", "json"],
               "query": [
                 {
                   "key": "sql",
@@ -936,7 +960,7 @@
       ]
     },
     {
-      "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json Copy 2",
+      "name": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json Copy 2",
       "request": {
         "auth": {
           "type": "noauth"
@@ -952,12 +976,6 @@
             "key": "Content-Type",
             "value": "application/json",
             "type": "text"
-          },
-          {
-            "key": "",
-            "value": "",
-            "type": "text",
-            "disabled": true
           }
         ],
         "body": {
@@ -970,10 +988,10 @@
           }
         },
         "url": {
-          "raw": "https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query/json",
+          "raw": "https://{{gfw_data_api_host}}/dataset/{{uml_dataset}}/latest/query/json",
           "protocol": "https",
-          "host": ["data-api", "globalforestwatch", "org"],
-          "path": ["dataset", "gfw_universal_mill_list", "latest", "query", "json"],
+          "host": ["{{gfw_data_api_host}}"],
+          "path": ["dataset", "{{uml_dataset}}", "latest", "query", "json"],
           "query": [
             {
               "key": "sql",
@@ -986,7 +1004,7 @@
       },
       "response": [
         {
-          "name": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+          "name": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
           "originalRequest": {
             "method": "POST",
             "header": [
@@ -1011,10 +1029,10 @@
               }
             },
             "url": {
-              "raw": "https://data-api.globalforestwatch.org/dataset/gadm_administrative_boundaries/v4.1.64/query/json",
+              "raw": "https://{{gfw_data_api_host}}/dataset/{{gadm_dataset}}/{{gadm_dataset_version}}/query/json",
               "protocol": "https",
-              "host": ["data-api", "globalforestwatch", "org"],
-              "path": ["dataset", "gadm_administrative_boundaries", "v4.1.64", "query", "json"],
+              "host": ["{{gfw_data_api_host}}"],
+              "path": ["dataset", "{{gadm_dataset}}", "{{gadm_dataset_version}}", "query", "json"],
               "query": [
                 {
                   "key": "sql",

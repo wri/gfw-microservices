@@ -7,7 +7,7 @@ import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrumbs from '../common/DiagnosticsBreadCrumbs';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
 import useStaleAnalysis from '../common/useStaleAnalysis';

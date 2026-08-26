@@ -74,7 +74,7 @@ BEGIN
         ISNULL(ATC.activity_type_category_name, ''Unknown'') AS activity_type_category,
         -- Extract file type from download activity descriptions
         -- Activity types 42-45 correspond to ListDetailsDownload, ListLandingDownload, 
-        -- ListDashboardDownload, ListDiagnosticsDownload from listActivityTypesEnum.ts
+        -- ListDashboardDownload, ListDiagnosticsDownload from list-activity-types.enum.ts
         -- Pattern: "List Download: <FileType> for list..." so we extract what comes after the colon and before " for"
         CASE
           WHEN AL.activity_type_id IN (42, 43, 44, 45) AND AL.activity_description LIKE ''%: % for list%'' 

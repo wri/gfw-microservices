@@ -1,7 +1,7 @@
 import { Grid, Tooltip } from '@mui/material';
 import { PillButton } from '../../../../components';
 import { useDialog } from '../../../../common/js/components/Dialog';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 import { useAccountDetail } from './AccountDetailSection';
 import { disabledStyles } from '../../common/formStyles';
 import FieldLabel from './FieldLabel';

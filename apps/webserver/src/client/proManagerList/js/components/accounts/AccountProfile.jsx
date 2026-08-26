@@ -9,7 +9,7 @@ import UserProfileManager from '../users/UserProfileManager';
 import { accountProfileStrings } from '../../../../common/js/config';
 import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 import { useAccountDetail } from './AccountDetailSection';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 import { PillButton } from '../../../../components';
 import { PRO_MANAGER_PATH } from '../../common/paths';
 

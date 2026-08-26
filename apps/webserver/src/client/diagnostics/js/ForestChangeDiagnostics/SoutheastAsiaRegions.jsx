@@ -10,7 +10,7 @@ import {
 } from '../../../common/js/utils/diagnostics.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { mapPage, latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/config';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import '../../css/locations.scss';
 import '../../../common/css/_irsBase.scss';

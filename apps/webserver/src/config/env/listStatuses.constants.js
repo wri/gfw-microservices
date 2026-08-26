@@ -1,7 +1,7 @@
 /**
- * This file has same contents as libs/constants/src/lib/listStatus.constants.ts
+ * This file has same contents as libs/constants/src/lib/list-status.constants.ts
  * This file is intended for frontend client code, while
- * libs/constants/src/lib/listStatus.constants.ts is intended for the backend
+ * libs/constants/src/lib/list-status.constants.ts is intended for the backend
  * Test in apps/webserver/src/config/env/analysisTypes.constants.spec.js verifies the contents
  * of the two files are identical
  */

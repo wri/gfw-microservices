@@ -2,7 +2,7 @@ import { Card, CardContent, Table, TableBody, TableCell, TableHead, TableRow } f
 
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 
 function AfiDiagnosticsTable({
   data,

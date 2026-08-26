@@ -111,7 +111,7 @@ export default (): webpack.Configuration => {
       filename: '[name].[contenthash].js',
     },
     resolve: {
-      extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
       alias: aliases,
     },
   };

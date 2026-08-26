@@ -5,7 +5,7 @@ import {
   renderFormattedDeforestationValueWithIndicator,
   formatDigit,
 } from '../../../../locations/js/utils/locationsTableUtils';
-import infoBubbleConfig from '../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../common/js/constants/info-bubble-config.constants';
 import { renderCell } from './columns.utils';
 import store from '../../../../locations/js/store';
 import {

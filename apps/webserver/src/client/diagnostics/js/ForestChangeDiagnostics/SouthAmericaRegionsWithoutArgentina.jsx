@@ -18,7 +18,7 @@ import {
   prodesYearsRange,
 } from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 

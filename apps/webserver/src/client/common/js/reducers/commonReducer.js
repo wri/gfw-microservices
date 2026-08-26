@@ -1,5 +1,5 @@
 //updateCriteria
-import { VIEW_READY, SHARED_COLOR } from '../constants/actionTypes';
+import { VIEW_READY, SHARED_COLOR } from '../constants/action-types.constants';
 // import {initialCommonState} from 'js/config';
 const initialCommonState = {
   viewReady: false,

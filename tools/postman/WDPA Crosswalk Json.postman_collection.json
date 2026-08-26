@@ -29,7 +29,7 @@
           }
         ],
         "url": {
-          "raw": "https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202505/query/json?sql=select+wdpa_pid,gfw_geostore_id+from+data",
+          "raw": "https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202608/query/json?sql=select+wdpa_pid,gfw_geostore_id+from+data",
           "protocol": "https",
           "host": ["data-api", "globalforestwatch", "org"],
           "path": ["dataset", "wdpa_licensed_protected_areas", "v202505", "query", "json"],

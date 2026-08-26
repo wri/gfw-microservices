@@ -42,6 +42,7 @@ WORKDIR /srv
 COPY dist/apps/webserver .
 RUN rm -rf ./libs/sql
 COPY dist/libs/sql ./libs/sql
+COPY libs/constants/src ./libs/constants/src
 
 # Copy package*.json (required for npm install below)
 COPY package.json .

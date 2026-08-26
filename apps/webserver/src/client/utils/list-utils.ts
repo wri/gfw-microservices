@@ -1,4 +1,4 @@
-import { MAP_SPAM_COMMODITY } from '../common/js/constants/commodityMap';
+import { MAP_SPAM_COMMODITY } from '../common/js/constants/commodity-map.constants';
 
 export const getCommodityName = (commodity?: string) => {
   if (!commodity) {

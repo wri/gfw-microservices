@@ -1,6 +1,6 @@
 /**
  * Duplicate contents from
- * {@link libs/constants/src/lib/commodityMapSpam.ts}
+ * {@link libs/constants/src/lib/commodity-map-spam.constants.ts}
  *
  * @summary libs/constants is not buildable and libs/sql complaints about
  * not finding the contents of the filepath above

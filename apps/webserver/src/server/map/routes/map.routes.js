@@ -1,5 +1,6 @@
 const path = require('path');
 import axios from 'axios';
+import { DATASET_VERSIONS } from '@wri-monorepos/constants';
 
 const controller = require('../controllers/map.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
@@ -7,6 +8,8 @@ const ListManager = require(path.resolve('./config/publicutils/listManager.utils
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 import * as logger from '../../../config/privateutils/logger.utils';
 import querystring from 'querystring';
+
+const WDPA_LICENSED_PROTECTED_AREAS_QUERY_URL = `https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/${DATASET_VERSIONS.WDPA_PROTECTED_AREAS}/query/json`;
 
 /**
  * @name exports
@@ -276,19 +279,15 @@ module.exports = (app, limiter) => {
 
       const sql = `SELECT * FROM data WHERE name ILIKE '%${searchInput}%' LIMIT 4;`;
 
-      const response = await fetch(
-        'https://data-api.globalforestwatch.org/dataset/wdpa_licensed_protected_areas/v202511/query/json',
-
-        {
-          method: 'POST',
-          headers: {
-            'x-api-key': process.env.GFW_DATA_API_KEY,
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.GFW_BEARER_TOKEN}`,
-          },
-          body: JSON.stringify({ sql }),
-        }
-      );
+      const response = await fetch(WDPA_LICENSED_PROTECTED_AREAS_QUERY_URL, {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.GFW_DATA_API_KEY,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.GFW_BEARER_TOKEN}`,
+        },
+        body: JSON.stringify({ sql }),
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to fetch data: ${response.statusText}`);

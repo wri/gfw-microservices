@@ -1,4 +1,4 @@
-import { RunMode } from '../../../../constants/converters-constants';
+import { RunMode } from '@wri-monorepos/constants';
 
 export { RunMode };
 

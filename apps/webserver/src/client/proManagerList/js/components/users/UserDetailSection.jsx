@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import ManagedUserProfile from './ManagedUserProfile';
 import errorLogger from '../../../../common/js/utils/errorLogger';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/org-account-statuses.constants';
 
 function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) {
   const [promanagerData, setPromanagerData] = useState({});

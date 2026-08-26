@@ -1,24 +1,5 @@
 import { proLayers } from '../proLayers.config';
-
-// Dataset Version Constants
-// Update these versions when new datasets are released
-const DATASET_VERSIONS = {
-  ARG_NATIVE_FOREST: 'v202212',
-  CLARK_LABS_AQUACULTURE_2018: 'v202203',
-  CLARK_LABS_AQUACULTURE_CHANGE: 'v202203',
-  GFW_INDIGENOUS_LANDS: 'v202408',
-  GFW_UNIVERSAL_MILL_LIST: 'v202508',
-  GFW_WEST_AFRICA_COCOA: 'v202312',
-  GFWPRO_NEGLIGIBLE_RISK: 'v20260417',
-  IDN_FOREST_AREA: 'v201709',
-  IDN_LAND_COVER_2017: 'v201807',
-  INPE_PRODES: 'v202507',
-  JRC_FOREST_COVER: 'v2020.3',
-  LANDMARK_INDIGENOUS_LANDS: 'v20260617',
-  NASA_VIIRS_FIRE_ALERTS: 'v202010',
-  UMD_GLAD_DIST_ALERTS: 'v202412',
-  WDPA_PROTECTED_AREAS: 'v202605',
-};
+import { DATASET_VERSIONS } from '@wri-monorepos/constants';
 
 // Pre-built Dataset URLs
 const DATASET_URLS = {

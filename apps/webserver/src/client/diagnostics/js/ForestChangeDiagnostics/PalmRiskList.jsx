@@ -5,7 +5,7 @@ import { locationsPage, latestTreeCoverLossYearCommodityRisk } from '../../../co
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { getLastValue, getLastYear } from '../../../locations/js/utils/locationsTableUtils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
-import infoBubbleConfig from '../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../common/js/constants/info-bubble-config.constants';
 
 const lastYear = latestTreeCoverLossYearCommodityRisk;
 

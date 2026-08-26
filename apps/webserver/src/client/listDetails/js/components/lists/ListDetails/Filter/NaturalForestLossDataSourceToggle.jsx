@@ -2,7 +2,7 @@ import { FormControl, InputLabel, MenuItem, Select, Stack } from '@mui/material'
 import { toggleNaturalForestLossDataSource } from '../../../../../../locations/js/actions/locationActions';
 import store from '../../../../../../locations/js/store';
 import InfoBubble from '../../../../../../common/js/components/InfoBubble';
-import infoBubbleConfig from '../../../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../../../common/js/constants/info-bubble-config.constants';
 
 import {
   SBTN_NATURAL_FOREST_LOSS,

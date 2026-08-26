@@ -42,7 +42,7 @@ import fetch from '../../../../../common/js/utils/fetch';
 import httpRequest from '../../../../../common/js/utils/httpRequest';
 import Banner from '../../../../../common/js/components/Banners/Banner';
 import InfoBubble from '../../../../../common/js/components/InfoBubble';
-import infoBubbleConfig from '../../../../../common/js/infoBubbleConfig.constants';
+import infoBubbleConfig from '../../../../../common/js/constants/info-bubble-config.constants';
 import {
   checkColumnListDraftList,
   isHiddenColumnInPost2020riskTable,

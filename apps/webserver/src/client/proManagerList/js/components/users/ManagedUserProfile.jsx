@@ -7,7 +7,7 @@ import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
 import '../../../css/profile.scss';
 import { PRO_MANAGER_PATH } from '../../common/paths';
-import { LANGUAGE_OPTIONS } from '../../../../common/js/constants/userLanguage.constants';
+import { LANGUAGE_OPTIONS } from '../../../../common/js/constants/user-language.constants';
 
 // Constants
 const TITLE_OTHER_ID = 10;

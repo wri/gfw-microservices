@@ -12,7 +12,7 @@ interface GetAccountAnalysisUsageByAnalysisType {
 
 /**
  * Possible duplicate
- * canonical definition exists in {@link libs/constants/src/lib/analysisTypes.constants.ts}
+ * canonical definition exists in {@link libs/constants/src/lib/analysis-types.constants.ts}
  *
  * @summary libs/constants is not buildable and libs/sql complaints about
  * not finding the contents of the filepath above. This constant is duplicated here

@@ -1,18 +1,13 @@
 import { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
-  Alert,
-  AlertTitle,
   Box,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton as IconButtonMui,
   Typography,
-  Popover,
 } from '@mui/material';
-import { Campaign, Close, Info } from '@mui/icons-material';
 
 import Banner from '../../../../common/js/components/Banners/Banner';
 import GDPRFooter from '../../../../common/js/components/GDPRFooter';
@@ -48,14 +43,11 @@ import { normalizeShaledLists, nameContainsText } from '../../utils/shareList.ut
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
 import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
-
-const EUDR_BANNER_KEY = 'GFW-is-landing-eudr-banner-dismissed';
+import RetirementBanner from '../../../../common/js/components/Banners/RetirementBanner';
 
 class Landing extends Component {
   constructor(props) {
     super(props);
-
-    const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
 
     this.state = {
       bannerContent: '',
@@ -68,8 +60,6 @@ class Landing extends Component {
       folderFeatureNew: false,
       isReachingAccountUsageLimit: false,
       isReachedAccountUsageLimit: false,
-      isEudrBannerDismissed,
-      anchorEl: null,
     };
   }
 
@@ -98,14 +88,6 @@ class Landing extends Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  handlePopoverOpen = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handlePopoverClose = () => {
-    this.setState({ anchorEl: null });
-  };
 
   handleDialogClose = () => {
     this.setState({ dialogOpen: false });
@@ -225,8 +207,6 @@ class Landing extends Component {
       isReachedAccountUsageLimit,
     } = this.state;
     const { userLists, userSharedLists, userFolders, gfwLists, view, language } = this.props;
-
-    const isPopoverOpen = !!this.state.anchorEl;
 
     let userListsFiltered;
 
@@ -349,75 +329,7 @@ class Landing extends Component {
                 </Box>
               </Box>
 
-              {!this.state.isEudrBannerDismissed && (
-                <Alert
-                  severity="info"
-                  iconMapping={{
-                    info: <Campaign />,
-                  }}
-                  action={
-                    <IconButtonMui
-                      onClick={() => {
-                        localStorage.setItem(EUDR_BANNER_KEY, 1);
-                        this.setState({ isEudrBannerDismissed: true });
-                      }}
-                      disableRipple
-                    >
-                      <Close sx={{ color: (theme) => theme.palette.text.primary }} />
-                    </IconButtonMui>
-                  }
-                  sx={{
-                    borderRadius: 1,
-                    mb: 2,
-                    border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
-                    backgroundColor: (theme) => theme.palette.secondary[100],
-                    color: (theme) => theme.palette.secondary[900],
-                    '& svg': {
-                      color: (theme) => theme.palette.secondary[700],
-                    },
-                  }}
-                >
-                  <AlertTitle sx={{ display: 'flex' }}>
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                      New: Looking for EUDR-related analyses?
-                    </Typography>
-                    <IconButtonMui
-                      onClick={this.handlePopoverOpen}
-                      sx={{ p: 0, ml: 0.75 }}
-                      aria-label="open popover"
-                    >
-                      <Info fontSize="small" />
-                    </IconButtonMui>
-                    <Popover
-                      id={isPopoverOpen ? 'popover' : undefined}
-                      open={isPopoverOpen}
-                      anchorEl={this.state.anchorEl}
-                      onClose={this.handlePopoverClose}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      slotProps={{
-                        paper: {
-                          sx: {
-                            ml: 1,
-                          },
-                        },
-                      }}
-                    >
-                      <Box sx={{ width: (theme) => theme.spacing(40), p: 1 }}>
-                        <Typography variant="caption">
-                          {ReusableText.EudrLegalDisclaimer}
-                        </Typography>
-                      </Box>
-                    </Popover>
-                  </AlertTitle>
-                  <Typography variant="body1">
-                    Enable the Post-2020 Risk Assessment when uploading new locations, or add it to
-                    an existing list via Change Analyses.
-                  </Typography>
-                </Alert>
-              )}
+              <RetirementBanner dismissible />
 
               <Typography variant="h6" sx={{ mb: 1 }}>
                 <TranslatedText text={locationsPage.landing.gfwLists} />

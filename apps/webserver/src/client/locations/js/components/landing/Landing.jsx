@@ -1,13 +1,6 @@
 import { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import {
-  Box,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Typography,
-} from '@mui/material';
+import { Box, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from '@mui/material';
 
 import Banner from '../../../../common/js/components/Banners/Banner';
 import GDPRFooter from '../../../../common/js/components/GDPRFooter';
@@ -42,7 +35,7 @@ import AddLocationsPrompt from './components/AddLocationsPrompt';
 import { normalizeShaledLists, nameContainsText } from '../../utils/shareList.utils';
 import getCookie from '../../../../common/js/utils/getCookie';
 import getAccountUsagePercentage from './getAccountUsagePercentage';
-import { DATA_CY, ExternalLinks, ReusableText } from '../../../../utils/constants';
+import { DATA_CY, ExternalLinks } from '../../../../utils/constants';
 import RetirementBanner from '../../../../common/js/components/Banners/RetirementBanner';
 
 class Landing extends Component {

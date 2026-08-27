@@ -1,18 +1,16 @@
 import { useState } from 'react';
-import {
-  Alert,
-  AlertTitle,
-  Box,
-  IconButton,
-  Link,
-  Typography,
-} from '@mui/material';
+import { Alert, AlertTitle, Box, IconButton, Link, Typography } from '@mui/material';
 import { Campaign, Close } from '@mui/icons-material';
+
+const BLOG_LINK = 'https://www.globalnaturewatch.org/blog/data-and-tools/gfw-now-global-nature-watch/';
+const GNW_LINK = 'https://horizon.globalnaturewatch.org/';
 
 export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const [dismissed, setDismissed] = useState(false);
 
-  if (dismissed) return null;
+  if (dismissed) {
+    return null;
+  }
 
   return (
     <Alert
@@ -20,11 +18,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
       iconMapping={{ info: <Campaign sx={{ fontSize: 20 }} /> }}
       action={
         dismissible ? (
-          <IconButton
-            onClick={() => setDismissed(true)}
-            disableRipple
-            size="small"
-          >
+          <IconButton onClick={() => setDismissed(true)} disableRipple size="small">
             <Close sx={{ color: (theme) => theme.palette.text.primary, fontSize: 16 }} />
           </IconButton>
         ) : null
@@ -53,7 +47,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         <Box component="li" sx={{ mb: 0.5, display: 'list-item' }}>
           <Typography variant="body2" component="span">
             <Link
-              href="https://horizon.globalnaturewatch.org/"
+              href={GNW_LINK}
               target="_blank"
               rel="noopener noreferrer"
               fontWeight={500}
@@ -74,7 +68,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
       <Typography variant="body2">
         Using or considering GFW Pro today? Start planning your transition{' '}
         <Link
-          href="https://blog.globalnaturewatch.org/gfw-pro-retirement"
+          href={BLOG_LINK}
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -2641,7 +2641,10 @@ export default class ListDetails extends Component {
             severity="info"
             variant="filled"
           >
-            {`Filters specific to '${VIEW_LABELS[this.state.tabFiltersClearedPrevTab] ?? this.state.tabFiltersClearedPrevTab}' have been reset for '${VIEW_LABELS[listView] ?? listView}'.`}
+            {`Filters specific to '${
+              VIEW_LABELS[this.state.tabFiltersClearedPrevTab] ??
+              this.state.tabFiltersClearedPrevTab
+            }' have been reset for '${VIEW_LABELS[listView] ?? listView}'.`}
           </Alert>
         </Snackbar>
       </>

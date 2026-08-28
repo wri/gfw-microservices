@@ -23,7 +23,9 @@ function LanguageDropdownMenuMobile({ languageChange }) {
     const initializeLanguages = () => {
       const languageCode = live.getSelectedLanguageCode?.() || 'en';
       const languages = live.getAllLanguages?.() || [];
-      const selected = languages.find((language) => language.code === languageCode) || languages[0];
+      // Transifex omits the source language (English) from getAllLanguages(), so fall back to
+      // null rather than languages[0] to avoid silently selecting the wrong language.
+      const selected = languages.find((language) => language.code === languageCode) || null;
 
       setAllLanguages(languages);
       setSelectedLanguage(selected);

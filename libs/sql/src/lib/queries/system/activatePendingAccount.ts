@@ -31,6 +31,20 @@ BEGIN TRY
     --Create Database for the Account.
     DECLARE @TEMPLATE NVARCHAR(MAX)
     DECLARE @SQL NVARCHAR(MAX)
+
+    -- Drop any leftover database from a previous failed activation attempt.
+    IF DB_ID(@OrgdbName) IS NOT NULL
+    BEGIN
+        -- Safety check: refuse to drop if an active organization already owns this database.
+        IF EXISTS (SELECT 1 FROM Organizations WHERE organization_db = @OrgdbName)
+            RAISERROR('Cannot activate: database %s is already assigned to an existing organization.', 16, 1, @OrgdbName)
+        ELSE
+        BEGIN
+            SET @SQL = N'DROP DATABASE ' + QUOTENAME(@OrgdbName)
+            EXEC sp_executesql @SQL
+        END
+    END
+
     SET @TEMPLATE = 'CREATE DATABASE [{DATABASENAME}]; ALTER DATABASE [{DATABASENAME}] SET RECOVERY SIMPLE;'
     SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
     EXEC sp_executesql @SQL

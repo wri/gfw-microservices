@@ -64,7 +64,10 @@ export default function AccountStatusSetting() {
       } else if (data.errorCode) {
         dialog.setDialogTitle(errorTitle);
         dialog.setDialogMessage(
-          data.systemMessage?.userMessage || data.systemMessage?.message || 'Unknown error'
+          data.systemMessage?.userMessage ||
+            data.systemMessage?.message ||
+            data.userMessage ||
+            'Unknown error'
         );
         dialog.disableDialogAction(true);
       }

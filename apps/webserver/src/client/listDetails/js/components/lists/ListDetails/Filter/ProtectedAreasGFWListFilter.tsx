@@ -161,8 +161,13 @@ const GFWProtectedForestChangeFilter: FC<GFWProtectedForestChangeFilterProps> = 
   const isCountrySetInFilter = !!store.getState().filters?.selectedCountry;
   const isCountrySetInState = !!state?.selectedCountry;
   return (
-    <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
+    <Modal open={isFilterModalVisible} onClose={isCountrySetInFilter ? onCloseHandler : undefined}>
       <Box sx={boxStyle}>
+        {!isCountrySetInFilter && (
+          <p style={{ margin: '0 0 8px', color: '#555', fontSize: '0.875rem' }}>
+            At least one filter must be enabled in order to continue.
+          </p>
+        )}
         <h3>Show Protected Areas for</h3>
         <Grid container spacing={3}>
           <CountryStateSubStateFilter

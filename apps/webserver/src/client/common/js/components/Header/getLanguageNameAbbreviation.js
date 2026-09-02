@@ -11,8 +11,8 @@ export const getLanguageNameAbbreviation = (languageCode) => {
       languageNameAbbreviation = 'ES';
       break;
     default:
-      // For unknown/undefined codes (e.g. English as Transifex source language), show 'EN'.
-      languageNameAbbreviation = languageCode ?? 'EN';
+      // For undefined/null/empty codes (e.g. English as Transifex source language), show 'EN'.
+      languageNameAbbreviation = languageCode || 'EN';
       break;
   }
   return languageNameAbbreviation;

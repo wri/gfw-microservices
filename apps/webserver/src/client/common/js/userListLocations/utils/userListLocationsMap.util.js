@@ -1,8 +1,10 @@
 import Graphic from '@arcgis/core/Graphic';
-import Extent from '@arcgis/core/geometry/Extent';
+import ExtentModule from '@arcgis/core/geometry/Extent';
 import PopupTemplate from '@arcgis/core/PopupTemplate';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+
+const Extent = ExtentModule?.default || ExtentModule;
 
 // Utils
 import geojsonUtil from '../../utils/arcgis-to-geojson';
@@ -17,21 +19,70 @@ import { USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID } from '../../../../map/js/con
 import { generateUserListLocationsVectorTileLayerStyle } from './userListLocationsMapVectorTiles.util';
 
 /**
+ * @description - Normalizes MBTiles bounds into a numeric {xmin, ymin, xmax, ymax} object.
+ */
+export function normalizeUserListBounds(bounds) {
+  if (Array.isArray(bounds)) {
+    const [xmin, ymin, xmax, ymax] = bounds;
+    return { xmin, ymin, xmax, ymax };
+  }
+
+  if (typeof bounds === 'string') {
+    const numericValues = bounds
+      .split(',')
+      .map((item) => Number(item.trim()))
+      .filter((item) => Number.isFinite(item));
+
+    if (numericValues.length === 4) {
+      const [xmin, ymin, xmax, ymax] = numericValues;
+      return { xmin, ymin, xmax, ymax };
+    }
+
+    return null;
+  }
+
+  if (bounds && typeof bounds === 'object') {
+    const { xmin, ymin, xmax, ymax } = bounds;
+    return { xmin, ymin, xmax, ymax };
+  }
+
+  return null;
+}
+
+/**
  * @description - Adjusts the Esri MapView to focus on a specified extent, defined by the geographical bounds of a vector tile layer.
  *
- * @param {Object} esriMapView - Esri MapView object used to display the map.
- * @param {Array<number>} bounds - Geographical bounds of the vector tile layer, specified as [xmin, ymin, xmax, ymax]. These define the area that the map view will zoom to.
+ * @param {Array<number>|Object|string|null|undefined} bounds - Geographical bounds of the vector tile layer.
+ * These can be provided as [xmin, ymin, xmax, ymax], an object with xmin/ymin/xmax/ymax, or a comma-separated string.
  */
 export function goToUserListLocations(bounds) {
-  const [xmin, ymin, xmax, ymax] = bounds;
-  const extent = new Extent({
+  const defaultExtent = new Extent({
+    xmin: -180,
+    ymin: -90,
+    xmax: 180,
+    ymax: 90,
+    spatialReference: SpatialReference.WGS84,
+  });
+
+  const normalizedBounds = normalizeUserListBounds(bounds);
+
+  if (!normalizedBounds) {
+    return defaultExtent;
+  }
+
+  const { xmin, ymin, xmax, ymax } = normalizedBounds;
+
+  if (![xmin, ymin, xmax, ymax].every((value) => Number.isFinite(value))) {
+    return defaultExtent;
+  }
+
+  return new Extent({
     xmin,
     ymin,
     xmax,
     ymax,
     spatialReference: SpatialReference.WGS84,
   });
-  return extent;
 }
 
 /**

@@ -1,15 +1,4 @@
-export const COMMON_FILTER_KEYS = [
-  'selectedCountry',
-  'selectedState',
-  'selectedSubState',
-  'selectedStates',
-  'selectedSubStates',
-  'filterState',
-  'filterSubstate',
-  'filterStr',
-  'filterNames',
-  'hasError',
-];
+export const COMMON_FILTER_KEYS = ['selectedCountry', 'selectedState', 'selectedSubState'];
 
 export const defaultFilterValues = {
   selectedCountry: '',

@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import isEqual from 'lodash/isEqual';
 import {
   Typography,
   Grid,
@@ -38,7 +39,7 @@ import {
   updateListLevelAnalysis,
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
-import { COMMON_FILTER_KEYS } from '../defaultFilterValues';
+import { COMMON_FILTER_KEYS, defaultFilterValues } from '../defaultFilterValues';
 import LocationsSummary from './LocationsSummary';
 import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
@@ -1499,7 +1500,8 @@ export default class ListDetails extends Component {
   };
 
   handleSearchInputClick = () => {
-    const { selectedLists, filterString } = this.props;
+    const { selectedLists } = this.props;
+    const { filterString } = this.state;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (filterString.trim()) {
       this.getLocationsData(selectedLists[0].id, isGfwList);
@@ -1791,7 +1793,9 @@ export default class ListDetails extends Component {
       });
 
       const hasTabSpecificFilters = Object.keys(currentFilters).some(
-        (key) => !COMMON_FILTER_KEYS.includes(key)
+        (key) =>
+          !COMMON_FILTER_KEYS.includes(key) &&
+          !isEqual(currentFilters[key], defaultFilterValues[key])
       );
 
       const newFilterCount = ['selectedCountry', 'selectedState', 'selectedSubState'].filter(

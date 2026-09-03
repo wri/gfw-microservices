@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Alert, AlertTitle, Box, IconButton, Link, Typography } from '@mui/material';
 import { Campaign, Close } from '@mui/icons-material';
 
-const BLOG_LINK = 'https://www.globalnaturewatch.org/blog/data-and-tools/gfw-now-global-nature-watch/';
-const GNW_LINK = 'https://horizon.globalnaturewatch.org/';
+const BLOG_LINK =
+  'https://www.globalnaturewatch.org/blog/data-and-tools/gfw-now-global-nature-watch/';
+const GNW_LINK =
+  'https://pro-news.globalforestwatch.org/news-events/gfw-pro-is-consolidating-into-global-nature-watch';
 
 export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const [dismissed, setDismissed] = useState(false);
@@ -46,12 +48,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
       <Box component="ul" sx={{ m: 0, pl: 2.5, mb: 0.75, listStyleType: 'disc' }}>
         <Box component="li" sx={{ mb: 0.5, display: 'list-item' }}>
           <Typography variant="body2" component="span">
-            <Link
-              href={GNW_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              fontWeight={500}
-            >
+            <Link href={GNW_LINK} target="_blank" rel="noopener noreferrer" fontWeight={500}>
               GNW Horizon
             </Link>
             : Available in preview now, free browser-based monitoring with no GIS staff or
@@ -67,11 +64,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
       </Box>
       <Typography variant="body2">
         Using or considering GFW Pro today? Start planning your transition{' '}
-        <Link
-          href={BLOG_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer">
           here
         </Link>
         .

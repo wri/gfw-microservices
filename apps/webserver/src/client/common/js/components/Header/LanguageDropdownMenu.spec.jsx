@@ -39,10 +39,7 @@ describe('LanguageDropdownMenu', () => {
     window.Transifex = {
       live: {
         getSelectedLanguageCode: jest.fn(() => 'en'),
-        getAllLanguages: jest.fn(() => [
-          { code: 'en', name: 'English' },
-          { code: 'es_MX', name: 'Spanish' },
-        ]),
+        getAllLanguages: jest.fn(() => [{ code: 'es_MX', name: 'Spanish' }]),
         onReady,
         translateTo,
       },
@@ -57,6 +54,8 @@ describe('LanguageDropdownMenu', () => {
 
     const button = container.querySelector('.drop-down-nav__button');
     fireEvent.click(button);
+    expect(screen.getByRole('button', { name: 'English' })).toHaveClass('selected');
+
     fireEvent.click(screen.getByRole('button', { name: 'Spanish' }));
 
     expect(translateTo).toHaveBeenCalledWith('es_MX');

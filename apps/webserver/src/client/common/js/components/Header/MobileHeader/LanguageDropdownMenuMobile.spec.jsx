@@ -36,10 +36,7 @@ describe('LanguageDropdownMenuMobile', () => {
     window.Transifex = {
       live: {
         getSelectedLanguageCode: jest.fn(() => 'en'),
-        getAllLanguages: jest.fn(() => [
-          { code: 'en', name: 'English' },
-          { code: 'es_MX', name: 'Spanish' },
-        ]),
+        getAllLanguages: jest.fn(() => [{ code: 'es_MX', name: 'Spanish' }]),
         onReady,
         translateTo,
       },

@@ -6,6 +6,8 @@ import { setLanguage } from '../../../../locations/js/actions/locationActions';
 import { getLanguageNameAbbreviation } from './getLanguageNameAbbreviation';
 import './DropDownNav.scss';
 
+const SOURCE_LANGUAGE = { code: 'en', name: 'English' };
+
 function LanguageDropdownMenu({ languageChange }) {
   const [displayOptions, setDisplayOptions] = useState(false);
   const [allLanguages, setAllLanguages] = useState();
@@ -21,11 +23,14 @@ function LanguageDropdownMenu({ languageChange }) {
     const initializeLanguages = () => {
       const languageCode = live.getSelectedLanguageCode?.() || 'en';
       const languages = live.getAllLanguages?.() || [];
-      // Transifex omits the source language (English) from getAllLanguages(), so fall back to
-      // null rather than languages[0] to avoid silently selecting the wrong language.
-      const selected = languages.find((language) => language.code === languageCode) || null;
+      const normalizedLanguages =
+        languageCode === SOURCE_LANGUAGE.code &&
+        !languages.some((language) => language.code === SOURCE_LANGUAGE.code)
+          ? [SOURCE_LANGUAGE, ...languages]
+          : languages;
+      const selected = normalizedLanguages.find((language) => language.code === languageCode);
 
-      setAllLanguages(languages);
+      setAllLanguages(normalizedLanguages);
       setSelectedLanguage(selected);
 
       if (selected?.code) {

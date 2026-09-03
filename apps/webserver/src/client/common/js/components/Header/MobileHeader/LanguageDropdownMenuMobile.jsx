@@ -9,6 +9,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { setLanguage } from '../../../../../locations/js/actions/locationActions';
 import store from '../../../../../locations/js/store';
 
+const SOURCE_LANGUAGE = { code: 'en', name: 'English' };
+
 function LanguageDropdownMenuMobile({ languageChange }) {
   const [allLanguages, setAllLanguages] = useState();
   const [selectedLanguage, setSelectedLanguage] = useState();
@@ -23,9 +25,14 @@ function LanguageDropdownMenuMobile({ languageChange }) {
     const initializeLanguages = () => {
       const languageCode = live.getSelectedLanguageCode?.() || 'en';
       const languages = live.getAllLanguages?.() || [];
-      const selected = languages.find((language) => language.code === languageCode) || languages[0];
+      const normalizedLanguages =
+        languageCode === SOURCE_LANGUAGE.code &&
+        !languages.some((language) => language.code === SOURCE_LANGUAGE.code)
+          ? [SOURCE_LANGUAGE, ...languages]
+          : languages;
+      const selected = normalizedLanguages.find((language) => language.code === languageCode);
 
-      setAllLanguages(languages);
+      setAllLanguages(normalizedLanguages);
       setSelectedLanguage(selected);
 
       if (selected?.code) {

@@ -1,10 +1,8 @@
 import Graphic from '@arcgis/core/Graphic';
-import ExtentModule from '@arcgis/core/geometry/Extent';
+import Extent from '@arcgis/core/geometry/Extent';
 import PopupTemplate from '@arcgis/core/PopupTemplate';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
-
-const Extent = ExtentModule?.default || ExtentModule;
 
 // Utils
 import geojsonUtil from '../../utils/arcgis-to-geojson';

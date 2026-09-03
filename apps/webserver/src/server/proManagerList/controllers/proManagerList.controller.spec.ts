@@ -575,7 +575,7 @@ describe('proManagerList.controller', () => {
     it('returns 400 for failedToActivateAccount error', async () => {
       const res = mockRes();
       (ProManager.activatePendingAccount as jest.Mock).mockRejectedValue({
-        code: ERROR_CODES.failedToActivateAccount,
+        errorCode: ERROR_CODES.failedToActivateAccount,
         systemMessage: 'sys',
         userMessage: 'usr',
       });
@@ -593,7 +593,7 @@ describe('proManagerList.controller', () => {
     it('returns 403 for userNotProManager error', async () => {
       const res = mockRes();
       (ProManager.activatePendingAccount as jest.Mock).mockRejectedValue({
-        code: ERROR_CODES.userNotProManager,
+        errorCode: ERROR_CODES.userNotProManager,
         systemMessage: 'sys',
         userMessage: 'usr',
       });

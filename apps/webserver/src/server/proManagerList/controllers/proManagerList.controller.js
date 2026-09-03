@@ -243,10 +243,10 @@ export const activatePendingAccount = async (req, res) => {
   } catch (error) {
     logger.error('Error POST /pro-manager/activatePendingAccount', error);
 
-    switch (error.code) {
+    switch (error.errorCode) {
       case ERROR_CODES.failedToActivateAccount:
         res.status(400).send({
-          errorCode: error.code,
+          errorCode: error.errorCode,
           systemMessage: error.systemMessage,
           userMessage: error.userMessage,
         });
@@ -254,7 +254,7 @@ export const activatePendingAccount = async (req, res) => {
 
       case ERROR_CODES.userNotProManager:
         res.status(403).send({
-          errorCode: error.code,
+          errorCode: error.errorCode,
           systemMessage: error.systemMessage,
           userMessage: error.userMessage,
         });

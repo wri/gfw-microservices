@@ -96,8 +96,8 @@ export default function Login(): JSX.Element {
 
   return (
     <Page active="login">
-      <RetirementBanner dismissible mb={0} />
-      <div className={`hero videoHidden-${videoHidden}`} style={{ marginTop: '-20px' }}>
+      <RetirementBanner dismissible mb={-2.5} />
+      <div className={`hero videoHidden-${videoHidden}`}>
         <div className="hero__content container">
           <div className="hero__title">
             <h1

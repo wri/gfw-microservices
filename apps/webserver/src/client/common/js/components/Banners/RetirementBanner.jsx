@@ -3,9 +3,9 @@ import { Alert, AlertTitle, Box, IconButton, Link, Typography } from '@mui/mater
 import { Campaign, Close } from '@mui/icons-material';
 
 const BLOG_LINK =
-  'https://www.globalnaturewatch.org/blog/data-and-tools/gfw-now-global-nature-watch/';
-const GNW_LINK =
   'https://pro-news.globalforestwatch.org/news-events/gfw-pro-is-consolidating-into-global-nature-watch';
+const GNW_LINK =
+  'https://horizon.globalnaturewatch.org/';
 
 export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const [dismissed, setDismissed] = useState(false);

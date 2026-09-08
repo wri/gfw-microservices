@@ -8,6 +8,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 // Internal components
 import Page from '../../../common/js/components/Page';
 import GDPRFooter from '../../../common/js/components/GDPRFooter';
+import RetirementBanner from '../../../common/js/components/Banners/RetirementBanner';
 
 // Utils and data
 import loginStrings from './loginStrings';
@@ -95,6 +96,7 @@ export default function Login(): JSX.Element {
 
   return (
     <Page active="login">
+      <RetirementBanner dismissible mb={-2.5} />
       <div className={`hero videoHidden-${videoHidden}`}>
         <div className="hero__content container">
           <div className="hero__title">

@@ -17,13 +17,20 @@ jest.mock(
 jest.mock('common/js/components/InfoBubble', () => () => <div data-testid="info-bubble" />, {
   virtual: true,
 });
+jest.mock('../getAllColumnNames', () => () => ({ list: [], combinedColumns: [] }));
 
 import { render, screen } from '@testing-library/react';
 
 import ListDetails from './index';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
-import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
-import { FOREST_CHANGE_VIEW } from './listViews.constants';
+import {
+  changeListView,
+  setFilterCount,
+  updateFilters,
+  updateSelectedLocations,
+} from '../../../../../locations/js/actions/locationActions';
+import { defaultFilterValues } from '../defaultFilterValues';
+import { COMMODITY_RISK_VIEW, FOREST_CHANGE_VIEW } from './listViews.constants';
 import store from '../../../../../locations/js/store';
 
 // Mock componentDidMount to prevent network requests
@@ -203,6 +210,76 @@ describe('ListDetails', () => {
 
     // Verify store dispatch was called with updated locations
     expect(mockDispatch).toHaveBeenCalledWith(updateSelectedLocations([1, 3]));
+  });
+
+  describe('changeListView', () => {
+    const createComponent = (filters) => {
+      const component = new ListDetails({
+        ...defaultProps,
+        listView: FOREST_CHANGE_VIEW,
+        listData: [{}],
+        selectedLists: [
+          {
+            ...defaultProps.selectedLists[0],
+            custom_attribute_names: [],
+          },
+        ],
+      });
+      component.showListColumn = jest.fn(() => true);
+      component.areAllAnalysesDraft = jest.fn(() => false);
+      component.setState = (updates) => {
+        component.state = { ...component.state, ...updates };
+      };
+      store.getState = jest.fn(() => ({ filters }));
+      store.dispatch = jest.fn();
+
+      return component;
+    };
+
+    it('preserves common filters after switching views', () => {
+      const component = createComponent({
+        ...defaultFilterValues,
+        selectedCountry: 'Brazil',
+        selectedState: 'Para',
+      });
+
+      component.changeListView(COMMODITY_RISK_VIEW);
+
+      expect(store.dispatch).toHaveBeenCalledWith(changeListView(COMMODITY_RISK_VIEW));
+      expect(store.dispatch).toHaveBeenCalledWith(
+        updateFilters({
+          selectedCountry: 'Brazil',
+          selectedState: 'Para',
+          selectedSubState: '',
+        })
+      );
+      expect(store.dispatch).toHaveBeenCalledWith(setFilterCount(2));
+    });
+
+    it('removes tab-specific filters after switching views', () => {
+      const component = createComponent({
+        ...defaultFilterValues,
+        selectedCountry: 'Brazil',
+        selectedOverallThreats: ['High'],
+      });
+
+      component.changeListView(COMMODITY_RISK_VIEW);
+
+      const filterAction = store.dispatch.mock.calls.find(
+        ([action]) => action.type === updateFilters({}).type
+      )[0];
+      expect(filterAction.data).not.toHaveProperty('selectedOverallThreats');
+      expect(filterAction.data).toMatchObject({ selectedCountry: 'Brazil' });
+      expect(component.state.tabFiltersClearedNotification).toBe(true);
+    });
+
+    it('does not show the reset notification when tab-specific filters have default values', () => {
+      const component = createComponent(defaultFilterValues);
+
+      component.changeListView(COMMODITY_RISK_VIEW);
+
+      expect(component.state.tabFiltersClearedNotification).toBe(false);
+    });
   });
 
   describe('loadLocationView', () => {

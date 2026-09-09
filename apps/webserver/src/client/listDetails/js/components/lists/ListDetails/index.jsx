@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import isEqual from 'lodash/isEqual';
 import {
   Typography,
   Grid,
@@ -9,6 +10,7 @@ import {
   Alert,
   IconButton,
   Checkbox,
+  Snackbar,
 } from '@mui/material';
 import axios from 'axios';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
@@ -32,10 +34,12 @@ import {
   setFilterCount,
   toggleCanopyModal,
   updateFilteredData,
+  updateFilters,
   updateListData,
   updateListLevelAnalysis,
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
+import { COMMON_FILTER_KEYS, defaultFilterValues } from '../defaultFilterValues';
 import LocationsSummary from './LocationsSummary';
 import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
@@ -143,6 +147,13 @@ const DIAGNOSTICS_URLS = {
     '/locations/csv/[list-id]?listID=[list-id]&format=csv&type=alerts&selectedAlert=Integrated&selectedTimeframe=DAY&isGFWList=false&startDate=[start-date]&endDate=[end-date]',
 };
 
+const VIEW_LABELS = {
+  [FOREST_CHANGE_VIEW]: 'Post-2000 Forest Change',
+  [COMMODITY_RISK_VIEW]: 'Palm Risk Assessment',
+  [POST_2020_RISK_ASSESSMENT_VIEW]: 'Post-2020 Risk Assessment',
+  [ALERTS]: 'Alerts',
+};
+
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -234,6 +245,8 @@ export default class ListDetails extends Component {
       isDcfActive,
       syntheticWeeklyEntry: null,
       staleAnalysisIds: [],
+      tabFiltersClearedNotification: false,
+      tabFiltersClearedPrevTab: '',
     };
   }
 
@@ -1487,7 +1500,8 @@ export default class ListDetails extends Component {
   };
 
   handleSearchInputClick = () => {
-    const { selectedLists, filterString } = this.props;
+    const { selectedLists } = this.props;
+    const { filterString } = this.state;
     const isGfwList = selectedLists[0].isGlobalForestWatchList;
     if (filterString.trim()) {
       this.getLocationsData(selectedLists[0].id, isGfwList);
@@ -1768,11 +1782,38 @@ export default class ListDetails extends Component {
         this.areAllAnalysesDraft(),
         this.state.forestDataset
       );
+
+      // Preserve common (cross-tab) filters; clear tab-specific ones
+      const currentFilters = store.getState().filters;
+      const preservedFilters = {};
+      COMMON_FILTER_KEYS.forEach((key) => {
+        if (currentFilters[key] !== undefined) {
+          preservedFilters[key] = currentFilters[key];
+        }
+      });
+
+      const hasTabSpecificFilters = Object.keys(currentFilters).some(
+        (key) =>
+          !COMMON_FILTER_KEYS.includes(key) &&
+          !isEqual(currentFilters[key], defaultFilterValues[key])
+      );
+
+      const newFilterCount = ['selectedCountry', 'selectedState', 'selectedSubState'].filter(
+        (key) => !!preservedFilters[key]
+      ).length;
+
       store.dispatch(changeListView(listView));
-      this.clearFilters();
+      store.dispatch(updateFilters(preservedFilters));
+      store.dispatch(setFilterCount(newFilterCount));
+
       this.setState({
+        numberOfResults: undefined,
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,
+        ...(hasTabSpecificFilters && {
+          tabFiltersClearedNotification: true,
+          tabFiltersClearedPrevTab: listViewProps,
+        }),
       });
     }
   };
@@ -2593,6 +2634,23 @@ export default class ListDetails extends Component {
           onDownload={(date) => this.handleAlertsDownloadReport(listID, listView, date)}
         />
         <GDPRFooter variant="app" />
+        <Snackbar
+          open={this.state.tabFiltersClearedNotification}
+          autoHideDuration={4000}
+          onClose={() => this.setState({ tabFiltersClearedNotification: false })}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={() => this.setState({ tabFiltersClearedNotification: false })}
+            severity="info"
+            variant="filled"
+          >
+            {`Filters specific to '${
+              VIEW_LABELS[this.state.tabFiltersClearedPrevTab] ??
+              this.state.tabFiltersClearedPrevTab
+            }' have been reset for '${VIEW_LABELS[listView] ?? listView}'.`}
+          </Alert>
+        </Snackbar>
       </>
     );
   }

@@ -114,8 +114,18 @@ const AdministrativeAreasGFWListFilter: FC<AdministrativeAreasGFWListFilterProps
   const isCountrySetInState = !!state?.selectedCountry;
 
   return (
-    <Modal open={isFilterModalVisible} onClose={onCloseHandler}>
+    <Modal
+      open={isFilterModalVisible}
+      onClose={isCountrySetInFilter || countries.length === 0 ? onCloseHandler : undefined}
+    >
       <Box sx={boxStyle}>
+        {!isCountrySetInFilter && (
+          <p style={{ margin: '0 0 8px', color: '#555', fontSize: '0.875rem' }}>
+            {countries.length === 0
+              ? 'No filter options are available at the moment. Please try again later.'
+              : 'At least one filter must be enabled in order to continue.'}
+          </p>
+        )}
         <h3>Show Administrative Areas for</h3>
 
         <FormControl sx={selectStyle}>

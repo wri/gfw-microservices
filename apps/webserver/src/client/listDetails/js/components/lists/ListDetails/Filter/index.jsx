@@ -74,6 +74,12 @@ export default function Filter({
   const [state, setState] = useState({ ...defaultFilterValues });
   const [translatedLandCoverLabel, setTranslatedLandCoverLabel] = useState('Land Cover Dataset');
 
+  // Sync inline filter state from Redux when switching tabs so persisted common filters are reflected
+  useEffect(() => {
+    const currentFilters = store.getState().filters;
+    setState({ ...defaultFilterValues, ...currentFilters });
+  }, [listView]);
+
   useEffect(() => {
     if (!window.Transifex?.live) {
       return;

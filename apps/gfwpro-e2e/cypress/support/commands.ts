@@ -167,11 +167,8 @@ Cypress.on('uncaught:exception', (err) => {
     return false;
   }
 
-  // Plausible analytics script loads asynchronously and may not be defined
-  // when the app calls it - this is an app-side race, not a test failure
-  if (err.message.includes('plausible is not defined')) {
-    return false;
-  }
+  // Plausible / module-resolution errors are ignored centrally in e2e.ts
+  // (shouldIgnoreUncaughtException) to keep a single source of truth.
 
   return true;
 });

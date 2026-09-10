@@ -166,6 +166,13 @@ Cypress.on('uncaught:exception', (err) => {
   if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }
+
+  // Plausible analytics script loads asynchronously and may not be defined
+  // when the app calls it - this is an app-side race, not a test failure
+  if (err.message.includes('plausible is not defined')) {
+    return false;
+  }
+
   return true;
 });
 

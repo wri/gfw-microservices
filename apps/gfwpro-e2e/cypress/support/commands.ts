@@ -166,6 +166,10 @@ Cypress.on('uncaught:exception', (err) => {
   if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }
+
+  // Plausible / module-resolution errors are ignored centrally in e2e.ts
+  // (shouldIgnoreUncaughtException) to keep a single source of truth.
+
   return true;
 });
 

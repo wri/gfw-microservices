@@ -45,6 +45,11 @@ beforeEach(() => {
 });
 
 // Set language properties before page loads (for Transifex detection)
+// Also stub the Plausible analytics global before any app code runs.
+// The real Plausible script loads asynchronously; if the app calls
+// plausible() before it executes, a ReferenceError is thrown and fails
+// the currently-running Cypress command (e.g. loginUI's location check).
+// Defining a no-op stub up front removes the race entirely.
 Cypress.on('window:before:load', (win) => {
   Object.defineProperty(win.navigator, 'language', {
     value: 'en-US',
@@ -57,6 +62,11 @@ Cypress.on('window:before:load', (win) => {
     writable: false,
     configurable: true,
   });
+
+  // No-op Plausible stub - the real script overwrites this when it loads
+  if (!('plausible' in win)) {
+    (win as unknown as Record<string, unknown>).plausible = () => undefined;
+  }
 });
 
 // Hide third-party network requests from Cypress command log

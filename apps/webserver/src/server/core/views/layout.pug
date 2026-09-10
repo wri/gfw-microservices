@@ -71,6 +71,15 @@ html
 		meta(name='format-detection', content='telephone=no')
 		//-  Title
 		title #{title}
+		//- Plausible stub: Plausible is loaded asynchronously via Google Tag Manager.
+		//- Until GTM injects the Plausible script, any app code calling plausible()
+		//- would throw "ReferenceError: plausible is not defined" (seen as
+		//- intermittent uncaught exceptions in E2E tests). Define a no-op stub
+		//- first; the real Plausible script overwrites it when it loads.
+		script.
+			window.plausible = window.plausible || function() {
+				(window.plausible.q = window.plausible.q || []).push(arguments);
+			};
 		//- Google Tag Manager
 		script.
 			(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':

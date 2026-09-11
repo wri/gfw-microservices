@@ -42,13 +42,17 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         </Typography>
       </AlertTitle>
       <Typography variant="body2" sx={{ mb: 0.75 }}>
-        As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro, including both the web interface and the API, will retire on December 31, 2026.
-        Global Nature Watch offers two transition paths:
+        As part of the evolution from Global Forest Watch into Global Nature Watch, we are
+        consolidating our product suite and GFW Pro, including both the web interface and the API,
+        will retire on December 31, 2026. Global Nature Watch offers two transition paths:
       </Typography>
       <Box component="ul" sx={{ m: 0, pl: 2.5, mb: 0.75, listStyleType: 'disc' }}>
         <Box component="li" sx={{ display: 'list-item' }}>
           <Typography variant="body2" component="span">
-            <strong>Self-hosted monitoring</strong>: Available now. Open datasets and scripts that reproduce GFW Pro’s Post-2020 Risk Assessment and Recent Disturbance Alerts on your own infrastructure. Requires GIS or data engineering capacity. Your technical team can start today
+            <strong>Self-hosted monitoring</strong>: Available now. Open datasets and scripts that
+            reproduce GFW Pro’s Post-2020 Risk Assessment and Recent Disturbance Alerts on your own
+            infrastructure. Requires GIS or data engineering capacity. Your technical team can start
+            today
           </Typography>
         </Box>
         <Box component="li" sx={{ mb: 0.5, display: 'list-item' }}>
@@ -57,7 +61,8 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
               GNW Horizon
             </Link>
             : Available in preview now, free browser-based monitoring with no GIS staff or
-            infrastructure needed. EUDR- and AFi-aligned reporting dashboards coming in months ahead.
+            infrastructure needed. EUDR- and AFi-aligned reporting dashboards coming in months
+            ahead.
           </Typography>
         </Box>
       </Box>
@@ -65,12 +70,12 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         Using or considering GFW Pro today? Read the{' '}
         <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer">
           transition guidance
-        </Link>
-        {' '}and{' '}
+        </Link>{' '}
+        and{' '}
         <Link href={EXPORT_LINK} target="_blank" rel="noopener noreferrer">
           export your data
-        </Link>
-        {' '}. Both paths are self-service.
+        </Link>{' '}
+        . Both paths are self-service.
       </Typography>
     </Alert>
   );

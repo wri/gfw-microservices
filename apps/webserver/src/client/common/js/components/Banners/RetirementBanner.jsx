@@ -52,7 +52,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
             <strong>Self-hosted monitoring</strong>: Available now. Open datasets and scripts that
             reproduce GFW Pro’s Post-2020 Risk Assessment and Recent Disturbance Alerts on your own
             infrastructure. Requires GIS or data engineering capacity. Your technical team can start
-            today
+            today.
           </Typography>
         </Box>
         <Box component="li" sx={{ mb: 0.5, display: 'list-item' }}>
@@ -74,8 +74,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         and{' '}
         <Link href={EXPORT_LINK} target="_blank" rel="noopener noreferrer">
           export your data
-        </Link>{' '}
-        . Both paths are self-service.
+        </Link>. Both paths are self-service.
       </Typography>
     </Alert>
   );

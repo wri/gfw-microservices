@@ -74,7 +74,8 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         and{' '}
         <Link href={EXPORT_LINK} target="_blank" rel="noopener noreferrer">
           export your data
-        </Link>. Both paths are self-service.
+        </Link>
+        . Both paths are self-service.
       </Typography>
     </Alert>
   );

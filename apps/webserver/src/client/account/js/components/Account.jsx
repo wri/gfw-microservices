@@ -26,6 +26,7 @@ import '../../css/account.scss';
 import { fieldValidations } from '../../../profile/js/utils/validations';
 import requestAccountStrings from './requestAccountStrings';
 import LegalBanner from './LegalBanner';
+import AccountRequestBanner from '../../../common/js/components/Banners/AccountRequestBanner';
 import { Link as LinkButton, PillButton } from '../../../components';
 
 export default class Account extends Component {
@@ -406,6 +407,7 @@ export default class Account extends Component {
           header={requestAccountStrings.requestAccount.title}
           subHeader={requestAccountStrings.requestAccount.subHeader}
         />
+        <AccountRequestBanner />
         <div className="account">
           <Grid container spacing={2} sx={{ paddingBottom: 2 }}>
             <Grid item xs={7}>

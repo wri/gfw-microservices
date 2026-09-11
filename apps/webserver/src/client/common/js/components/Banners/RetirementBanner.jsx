@@ -5,6 +5,7 @@ import { Campaign, Close } from '@mui/icons-material';
 const BLOG_LINK =
   'https://pro-news.globalforestwatch.org/news-events/gfw-pro-is-consolidating-into-global-nature-watch';
 const GNW_LINK = 'https://horizon.globalnaturewatch.org/';
+const EXPORT_LINK = 'https://globalnaturewatch.org/help/gfw-pro/guides/share-receive-export-lists/';
 
 export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const [dismissed, setDismissed] = useState(false);
@@ -37,36 +38,44 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
     >
       <AlertTitle sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography variant="body1" sx={{ fontWeight: 500, flexGrow: 1 }}>
-          New ways forward as GFW Pro retires by early 2027
+          New ways forward as GFW Pro retires on December 31, 2026
         </Typography>
       </AlertTitle>
       <Typography variant="body2" sx={{ mb: 0.75 }}>
-        GFW Pro, including both the web interface and the API, will retire by the first quarter of
-        2027. Global Nature Watch offers two transition paths:
+        As part of the evolution from Global Forest Watch into Global Nature Watch, we are
+        consolidating our product suite and GFW Pro, including both the web interface and the API,
+        will retire on December 31, 2026. Global Nature Watch offers two transition paths:
       </Typography>
       <Box component="ul" sx={{ m: 0, pl: 2.5, mb: 0.75, listStyleType: 'disc' }}>
+        <Box component="li" sx={{ display: 'list-item' }}>
+          <Typography variant="body2" component="span">
+            <strong>Self-hosted monitoring</strong>: Available now. Open datasets and scripts that
+            reproduce GFW Pro’s Post-2020 Risk Assessment and Recent Disturbance Alerts on your own
+            infrastructure. Requires GIS or data engineering capacity. Your technical team can start
+            today.
+          </Typography>
+        </Box>
         <Box component="li" sx={{ mb: 0.5, display: 'list-item' }}>
           <Typography variant="body2" component="span">
             <Link href={GNW_LINK} target="_blank" rel="noopener noreferrer" fontWeight={500}>
               GNW Horizon
             </Link>
             : Available in preview now, free browser-based monitoring with no GIS staff or
-            infrastructure needed. Post-2020 risk assessment and alerts coming in months ahead.
-          </Typography>
-        </Box>
-        <Box component="li" sx={{ display: 'list-item' }}>
-          <Typography variant="body2" component="span">
-            <strong>Self-hosted monitoring</strong>: Available now, free and open datasets and
-            scripts for higher volume use cases and integration into your own applications.
+            infrastructure needed. EUDR- and AFi-aligned reporting dashboards coming in months
+            ahead.
           </Typography>
         </Box>
       </Box>
       <Typography variant="body2">
-        Using or considering GFW Pro today? Start planning your transition{' '}
+        Using or considering GFW Pro today? Read the{' '}
         <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer">
-          here
+          transition guidance
+        </Link>{' '}
+        and{' '}
+        <Link href={EXPORT_LINK} target="_blank" rel="noopener noreferrer">
+          export your data
         </Link>
-        .
+        . Both paths are self-service.
       </Typography>
     </Alert>
   );

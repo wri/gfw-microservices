@@ -64,7 +64,12 @@ Cypress.Commands.add('loginUI', () => {
   cy.get('[data-cy="verifyToken"]').type(credentials.password);
   cy.contains('Verify').click();
   cy.dismissCookieBanner();
-  cy.location('href').should('include', '/locations');
+  // NOTE: cy.location() waits for the page 'load' event, which is blocked by
+  // slow third-party scripts (GTM, Osano, Zendesk, Hotjar, Transifex) and can
+  // time out even when the app has fully navigated. Assert on the rendered
+  // app state instead - the Welcome heading only exists on /locations.
+  cy.url({ timeout: 60000 }).should('include', '/locations');
+  cy.contains('Welcome!', { timeout: 60000 }).should('be.visible');
 });
 
 Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitOptions> = {}) => {

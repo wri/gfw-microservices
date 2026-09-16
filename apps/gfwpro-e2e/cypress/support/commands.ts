@@ -56,7 +56,8 @@ Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'u
 Cypress.Commands.add('loginUI', () => {
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
-  cy.visit(Cypress.config().baseUrl);
+  const baseUrl = Cypress.config().baseUrl || '/';
+  cy.visit(baseUrl);
   cy.contains('Log in').click();
   cy.get('input').eq(0).type(credentials.username);
   cy.get('input').eq(1).type(credentials.password);
@@ -66,10 +67,21 @@ Cypress.Commands.add('loginUI', () => {
   cy.dismissCookieBanner();
   // NOTE: cy.location() waits for the page 'load' event, which is blocked by
   // slow third-party scripts (GTM, Osano, Zendesk, Hotjar, Transifex) and can
-  // time out even when the app has fully navigated. Assert on the rendered
-  // app state instead - the Welcome heading only exists on /locations.
+  // time out even when the app has fully navigated. Assert on a stable app
+  // element instead of translated text to avoid i18n/render timing flakes.
   cy.url({ timeout: 60000 }).should('include', '/locations');
-  cy.contains('Welcome!', { timeout: 60000 }).should('be.visible');
+
+  // If /locations renders blank intermittently, retry once and re-check.
+  // Although "nuw_add" is meant for New Upload Workflow, it serves as a
+  // reliable indicator that the locations page has fully rendered
+  cy.get('body', { timeout: 60000 }).then(($body) => {
+    if ($body.find('[data-cy="nuw_add"]').length === 0) {
+      cy.log('Locations landing did not fully render; reloading once');
+      cy.reload();
+    }
+  });
+
+  cy.get('[data-cy="nuw_add"]', { timeout: 60000 }).should('be.visible');
 });
 
 Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitOptions> = {}) => {
@@ -164,10 +176,6 @@ Cypress.Commands.add('dismissCookieBanner', () => {
 });
 
 Cypress.on('uncaught:exception', (err) => {
-  if (err.message.includes('Cannot read properties of undefined')) {
-    return false;
-  }
-
   if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }

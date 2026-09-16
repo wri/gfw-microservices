@@ -22,7 +22,6 @@ const shouldIgnoreUncaughtException = (message: string): boolean => {
     message.includes('plausible module') ||
     message.includes('Module not found') ||
     message.includes('plausible is not defined') ||
-    message.includes('is not defined') ||
     message.includes("Cannot read properties of null (reading 'sequence')") ||
     message.includes("Cannot set properties of null (setting 'animationInProgress')")
   );
@@ -66,6 +65,17 @@ Cypress.on('window:before:load', (win) => {
   // No-op Plausible stub - the real script overwrites this when it loads
   if (!('plausible' in win)) {
     (win as unknown as Record<string, unknown>).plausible = () => undefined;
+  }
+
+  // No-op Google Analytics stub. Some locations codepaths call gtag
+  // directly; when third-party scripts are delayed or blocked this can throw
+  // and render a blank page.
+  if (!('dataLayer' in win)) {
+    (win as unknown as Record<string, unknown>).dataLayer = [];
+  }
+
+  if (!('gtag' in win)) {
+    (win as unknown as Record<string, unknown>).gtag = () => undefined;
   }
 });
 

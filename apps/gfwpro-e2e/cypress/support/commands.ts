@@ -32,6 +32,36 @@ Cypress.Commands.add('uploadFile', (fileName, mimeType = '') => {
   });
 });
 
+const waitForElementInBody = (
+  selector: string,
+  timeoutMs: number,
+  intervalMs = 500
+): Cypress.Chainable<boolean> => {
+  const startedAt = Date.now();
+
+  return cy.wrap(null, { log: false }).then(() => {
+    return new Cypress.Promise<boolean>((resolve) => {
+      const check = () => {
+        const hasElement = Cypress.$('body').find(selector).length > 0;
+
+        if (hasElement) {
+          resolve(true);
+          return;
+        }
+
+        if (Date.now() - startedAt >= timeoutMs) {
+          resolve(false);
+          return;
+        }
+
+        setTimeout(check, intervalMs);
+      };
+
+      check();
+    });
+  });
+};
+
 // login using desktop header and verify MFA token
 Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'unsafe') => {
   cy.request({
@@ -71,11 +101,9 @@ Cypress.Commands.add('loginUI', () => {
   // element instead of translated text to avoid i18n/render timing flakes.
   cy.url({ timeout: 60000 }).should('include', '/locations');
 
-  // If /locations renders blank intermittently, retry once and re-check.
-  // Although "nuw_add" is meant for New Upload Workflow, it serves as a
-  // reliable indicator that the locations page has fully rendered
-  cy.get('body', { timeout: 60000 }).then(($body) => {
-    if ($body.find('[data-cy="nuw_add"]').length === 0) {
+  // Give the SPA a short grace window to render; reload only if it never appears.
+  waitForElementInBody('[data-cy="nuw_add"]', 15000).then((isRendered) => {
+    if (!isRendered) {
       cy.log('Locations landing did not fully render; reloading once');
       cy.reload();
     }

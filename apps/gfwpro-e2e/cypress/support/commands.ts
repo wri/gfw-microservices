@@ -37,9 +37,9 @@ const waitForElementInBody = (
   timeoutMs: number,
   intervalMs = 500
 ): Cypress.Chainable<boolean> => {
-  const startedAt = Date.now();
-
   return cy.wrap(null, { log: false }).then(() => {
+    const startedAt = Date.now();
+
     return new Cypress.Promise<boolean>((resolve) => {
       const check = () => {
         const hasElement = Cypress.$('body').find(selector).length > 0;

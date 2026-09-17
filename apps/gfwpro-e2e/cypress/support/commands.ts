@@ -32,6 +32,36 @@ Cypress.Commands.add('uploadFile', (fileName, mimeType = '') => {
   });
 });
 
+const waitForElementInBody = (
+  selector: string,
+  timeoutMs: number,
+  intervalMs = 500
+): Cypress.Chainable<boolean> => {
+  return cy.wrap(null, { log: false }).then(() => {
+    const startedAt = Date.now();
+
+    return new Cypress.Promise<boolean>((resolve) => {
+      const check = () => {
+        const hasElement = Cypress.$('body').find(selector).length > 0;
+
+        if (hasElement) {
+          resolve(true);
+          return;
+        }
+
+        if (Date.now() - startedAt >= timeoutMs) {
+          resolve(false);
+          return;
+        }
+
+        setTimeout(check, intervalMs);
+      };
+
+      check();
+    });
+  });
+};
+
 // login using desktop header and verify MFA token
 Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'unsafe') => {
   cy.request({
@@ -56,7 +86,8 @@ Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'u
 Cypress.Commands.add('loginUI', () => {
   const deployment = Cypress.env('deployment');
   const credentials = Cypress.env(deployment);
-  cy.visit(Cypress.config().baseUrl);
+  const baseUrl = Cypress.config().baseUrl || '/';
+  cy.visit(baseUrl);
   cy.contains('Log in').click();
   cy.get('input').eq(0).type(credentials.username);
   cy.get('input').eq(1).type(credentials.password);
@@ -66,10 +97,19 @@ Cypress.Commands.add('loginUI', () => {
   cy.dismissCookieBanner();
   // NOTE: cy.location() waits for the page 'load' event, which is blocked by
   // slow third-party scripts (GTM, Osano, Zendesk, Hotjar, Transifex) and can
-  // time out even when the app has fully navigated. Assert on the rendered
-  // app state instead - the Welcome heading only exists on /locations.
+  // time out even when the app has fully navigated. Assert on a stable app
+  // element instead of translated text to avoid i18n/render timing flakes.
   cy.url({ timeout: 60000 }).should('include', '/locations');
-  cy.contains('Welcome!', { timeout: 60000 }).should('be.visible');
+
+  // Give the SPA a short grace window to render; reload only if it never appears.
+  waitForElementInBody('[data-cy="nuw_add"]', 15000).then((isRendered) => {
+    if (!isRendered) {
+      cy.log('Locations landing did not fully render; reloading once');
+      cy.reload();
+    }
+  });
+
+  cy.get('[data-cy="nuw_add"]', { timeout: 60000 }).should('be.visible');
 });
 
 Cypress.Commands.add('visitAndVerifyLoad', (url, options: Partial<Cypress.VisitOptions> = {}) => {
@@ -164,10 +204,6 @@ Cypress.Commands.add('dismissCookieBanner', () => {
 });
 
 Cypress.on('uncaught:exception', (err) => {
-  if (err.message.includes('Cannot read properties of undefined')) {
-    return false;
-  }
-
   if (err.message.includes('Aborted') || err.name === 'AbortError') {
     return false;
   }

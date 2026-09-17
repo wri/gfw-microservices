@@ -5,6 +5,8 @@ import { Close, InfoOutlined } from '@mui/icons-material';
 const BLOG_LINK =
   'https://pro-news.globalforestwatch.org/news-events/gfw-pro-is-consolidating-into-global-nature-watch';
 const GNW_LINK = 'https://horizon.globalnaturewatch.org/';
+const CONTACT_LINK =
+  'https://gfwpro.zendesk.com/hc/en-us/requests/new?ticket_form_id=30920711977363';
 
 export default function AccountRequestBanner({ dismissible = false, mb = 2 }) {
   const [dismissed, setDismissed] = useState(false);
@@ -35,38 +37,34 @@ export default function AccountRequestBanner({ dismissible = false, mb = 2 }) {
         '& svg': { color: (theme) => theme.palette.secondary[700] },
       }}
     >
-      <AlertTitle sx={{ display: 'flex', alignItems: 'center' }}>
-        <Typography variant="body1" sx={{ fontWeight: 500, flexGrow: 1 }}>
-          Before requesting a GFW Pro account
-        </Typography>
-      </AlertTitle>
       <Typography variant="body2" sx={{ mb: 0.75 }}>
-        GFW Pro, including both the web interface and the API, will retire by the first quarter of
-        2027. Global Nature Watch offers two transition paths:
-      </Typography>
-      <Box component="ul" sx={{ m: 0, pl: 2.5, mb: 0.75, listStyleType: 'disc' }}>
-        <Box component="li" sx={{ mb: 0.5, display: 'list-item' }}>
-          <Typography variant="body2" component="span">
-            <Link href={GNW_LINK} target="_blank" rel="noopener noreferrer" fontWeight={500}>
-              GNW Horizon
-            </Link>
-            : Available in preview now, free browser-based monitoring with no GIS staff or
-            infrastructure needed. Post-2020 risk assessment and alerts coming in months ahead.
-          </Typography>
-        </Box>
-        <Box component="li" sx={{ display: 'list-item' }}>
-          <Typography variant="body2" component="span">
-            <strong>Self-hosted monitoring</strong>: Available now, free and open datasets and
-            scripts for higher volume use cases and integration into your own applications.
-          </Typography>
-        </Box>
-      </Box>
-      <Typography variant="body2">
-        Using or considering GFW Pro today? Start planning your transition{' '}
-        <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer">
-          here
+        As part of the evolution from Global Forest Watch into Global Nature Watch, we are
+        consolidating our product suite and GFW Pro will retire on December 31, 2026. We recommend
+        new users explore the alternatives now available for free across WRI:{' '}
+        <Link href={GNW_LINK} target="_blank" rel="noopener noreferrer" fontWeight={500}>
+          GNW Horizon
         </Link>
-        .
+        , our AI-enhanced, next-generation monitoring experience in preview, and our self-hosted
+        monitoring datasets for direct access and integration into your internal systems. To learn
+        more, read our{' '}
+        <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer">
+          blog post
+        </Link>{' '}
+        outlining these alternatives for those considering GFW Pro or the GFW Pro API.
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 0.75 }}>
+        If those tools meet your needs, we encourage you to start there rather than requesting a GFW
+        Pro account.
+      </Typography>
+      <Typography variant="body2">
+        Please only submit this request if you have a specific, time-bound need for GFW Pro's
+        capabilities that the alternatives cannot address, or if you need to cross-check GFW Pro
+        metrics directly ahead of the platform's retirement. If so, please submit your request and{' '}
+        <Link href={CONTACT_LINK} target="_blank" rel="noopener noreferrer">
+          contact our team directly
+        </Link>{' '}
+        right away. We are only able to move account requests forward when we hear from you
+        directly.
       </Typography>
     </Alert>
   );

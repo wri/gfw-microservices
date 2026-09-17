@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, AlertTitle, Box, IconButton, Link, Typography } from '@mui/material';
+import { Alert, IconButton, Link, Typography } from '@mui/material';
 import { Close, InfoOutlined } from '@mui/icons-material';
 
 const BLOG_LINK =

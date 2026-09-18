@@ -2311,14 +2311,22 @@ class Map extends Component {
           }
           const { transitionListData } = this.state;
 
-          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view).then(
-            (mapCenter) => {
+          setVectorTileLayerForFullList(selectedListData, transitionListData, this.view)
+            .then((mapCenter) => {
               this.setState({ mapCenter });
 
               this.safeGoTo(mapCenter);
               store.dispatch(showMapLoader(false));
-            }
-          );
+            })
+            .catch((error) => {
+              errorLogger.error('Error loading vector tile layer for full list', {
+                component: 'Map',
+                action: 'showSelectedLocations',
+                listId: userList.id,
+                error,
+              });
+              store.dispatch(showMapLoader(false));
+            });
 
           store.dispatch(addList(userList));
         }
@@ -2454,7 +2462,7 @@ class Map extends Component {
         // We have selected a GFW List
         // need to remove all visible graphics from user list,
         const userLayer = this.view.map.findLayerById('user-locations');
-        userLayer.removeAll();
+        userLayer?.removeAll();
 
         // check if the corresponding GFW Layer is already visible
         const layerAlreadyVisible = visibleLayers.filter((l) => l === mapLayer)[0];
@@ -2496,7 +2504,7 @@ class Map extends Component {
 
         list_ids.splice(index, 1);
         if (list_ids.length === 0) {
-          this.view.map.findLayerById('user-locations').removeAll();
+          this.view.map.findLayerById('user-locations')?.removeAll();
         } else {
           this.getUserLocationData(list_ids, list.list_name);
         }

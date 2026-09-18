@@ -2316,7 +2316,6 @@ class Map extends Component {
               this.setState({ mapCenter });
 
               this.safeGoTo(mapCenter);
-              store.dispatch(showMapLoader(false));
             })
             .catch((error) => {
               errorLogger.error('Error loading vector tile layer for full list', {
@@ -2325,6 +2324,8 @@ class Map extends Component {
                 listId: userList.id,
                 error,
               });
+            })
+            .finally(() => {
               store.dispatch(showMapLoader(false));
             });
 

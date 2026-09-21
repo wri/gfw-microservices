@@ -8,7 +8,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
   const mapCenter = await handleUserListLocationsVectorTileLayer(view, listID, 'map', locationIDs);
 
   const userLayer = view.map.findLayerById(USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID);
-  userLayer.removeAll();
+  userLayer?.removeAll();
 
   const locationData = [];
   const centroidGraphics = [];
@@ -27,7 +27,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       centroidGraphics.push(listLocationCentroidGraphic);
     }
   });
-  userLayer.addMany([...centroidGraphics]);
+  userLayer?.addMany([...centroidGraphics]);
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
   return alertsMapExtent || mapCenter;

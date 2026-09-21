@@ -8,7 +8,7 @@ const setVectorTileLayerForFullList = async (listData, transitionListData, view)
   const mapCenter = await handleUserListLocationsVectorTileLayer(view, listID);
 
   const userLayer = view.map.findLayerById(USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID);
-  userLayer.removeAll();
+  userLayer?.removeAll();
 
   const locationData = [];
   const centroidGraphics = [];
@@ -28,7 +28,7 @@ const setVectorTileLayerForFullList = async (listData, transitionListData, view)
     }
   });
 
-  userLayer.addMany([...centroidGraphics]);
+  userLayer?.addMany([...centroidGraphics]);
 
   const alertsMapExtent = transitionListData?.alertsMapExtent;
   return alertsMapExtent || mapCenter;

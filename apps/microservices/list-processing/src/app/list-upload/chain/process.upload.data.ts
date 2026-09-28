@@ -58,27 +58,32 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
 
     for (const attributeField of validAttrs) {
       const rawValue = featurePayload.properties[attributeField];
+      // sanitize the attribute field to keep only printable ASCII characters
+      // (removes carriage returns, newlines, tabs, and other control characters)
+      // so that list details UI does not break due to unexpected characters
+      // eslint-disable-next-line no-control-regex
+      const sanitizedKey = attributeField.replace(/[^\x20-\x7E]/g, '');
 
       if (rawValue !== null) {
-        attributesJson[attributeField] = String(rawValue);
+        attributesJson[sanitizedKey] = String(rawValue);
       }
 
       const newRecord = getFormattedAttributes({
         listId,
-        attributeField,
+        attributeField: sanitizedKey,
         fieldValue: rawValue ?? '',
       });
 
-      const existingRecord = this.listsAttributesRecords.get(attributeField);
+      const existingRecord = this.listsAttributesRecords.get(sanitizedKey);
 
       if (!existingRecord) {
-        this.listsAttributesRecords.set(attributeField, newRecord);
+        this.listsAttributesRecords.set(sanitizedKey, newRecord);
       } else if (
         // we upgrade number in older locations to text if later locations have text
         existingRecord.attribute_type === ListsAttrsTypes.Number &&
         newRecord.attribute_type === ListsAttrsTypes.Text
       ) {
-        this.listsAttributesRecords.set(attributeField, newRecord);
+        this.listsAttributesRecords.set(sanitizedKey, newRecord);
       }
     }
 

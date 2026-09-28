@@ -64,6 +64,14 @@ export class ProcessUploadData extends AbstractHandler<ChainType> {
       // eslint-disable-next-line no-control-regex
       const sanitizedKey = attributeField.replace(/[^\x20-\x7E]/g, '');
 
+      // Re-check the sanitized key: a key made only of control characters can
+      // collapse to an empty string, and a key like "location_id\r" sanitizes
+      // into a reserved/excluded column (e.g. "location_id"). Skip these so we
+      // do not reintroduce the SQL/UI breakage this sanitization prevents.
+      if (!sanitizedKey || this.columnsToExclude.includes(sanitizedKey)) {
+        continue;
+      }
+
       if (rawValue !== null) {
         attributesJson[sanitizedKey] = String(rawValue);
       }

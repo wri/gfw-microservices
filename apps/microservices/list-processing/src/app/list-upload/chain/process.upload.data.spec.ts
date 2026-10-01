@@ -109,6 +109,76 @@ describe('ProcessUploadData', () => {
     });
   });
 
+  describe('processFeatureAttributes - key sanitization', () => {
+    beforeEach(() => {
+      (processUploadData as any).listsAttributesRecords.clear();
+    });
+
+    it('should strip control characters (e.g. \\r\\n) from property names', () => {
+      const list_id = 123;
+      const mockFeature: Feature = {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: {
+          'name\r\n': 'some_value',
+        },
+      };
+
+      const parsed = JSON.parse(processUploadData.processFeatureAttributes(mockFeature, list_id));
+
+      expect(parsed).toHaveProperty('name', 'some_value');
+      expect(parsed).not.toHaveProperty('name\r\n');
+
+      // the sanitized key is also used for the list attribute records
+      const records = (processUploadData as any).listsAttributesRecords;
+      expect(records.get('name')).toEqual({
+        list_id,
+        attribute_name: 'name',
+        attribute_type: 2,
+      });
+    });
+
+    it('should skip property names that sanitize to an empty string', () => {
+      const list_id = 123;
+      const mockFeature: Feature = {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: {
+          '\r\n\t': 'control_only_value',
+          good_col: 'kept',
+        },
+      };
+
+      const parsed = JSON.parse(processUploadData.processFeatureAttributes(mockFeature, list_id));
+
+      expect(Object.keys(parsed)).toEqual(['good_col']);
+      expect(parsed).toHaveProperty('good_col', 'kept');
+
+      const records = (processUploadData as any).listsAttributesRecords;
+      expect(records.has('')).toBe(false);
+    });
+
+    it('should skip property names that sanitize into an excluded column', () => {
+      const list_id = 123;
+      const mockFeature: Feature = {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [0, 0] },
+        properties: {
+          'excluded_col1\r': 'bad_value',
+          valid_col: 'kept',
+        },
+      };
+
+      const parsed = JSON.parse(processUploadData.processFeatureAttributes(mockFeature, list_id));
+
+      expect(parsed).not.toHaveProperty('excluded_col1');
+      expect(parsed).toHaveProperty('valid_col', 'kept');
+
+      const records = (processUploadData as any).listsAttributesRecords;
+      expect(records.has('excluded_col1')).toBe(false);
+    });
+  });
+
   describe('processFeature', () => {
     it('should return the feature unchanged when properties is missing', async () => {
       const mockFeatureNoProps = {

@@ -1,5 +1,7 @@
 import Graphic from '@arcgis/core/Graphic';
 import Extent from '@arcgis/core/geometry/Extent';
+import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import Point from '@arcgis/core/geometry/Point';
 import PopupTemplate from '@arcgis/core/PopupTemplate';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
@@ -81,6 +83,47 @@ export function goToUserListLocations(bounds) {
     ymax,
     spatialReference: SpatialReference.WGS84,
   });
+}
+
+/**
+ * @description - Builds an Extent covering a set of lat/lng points, so the map can zoom to a
+ * specific subset of locations rather than an entire list's static bounds.
+ *
+ * @param {Array<{latitude: number, longitude: number}>} points - Points to include in the extent.
+ * @return {Object|null} - An Esri Extent (or a 1km-buffered point extent for a single location), or null if no valid points are given.
+ */
+export function getExtentFromLocationPoints(points) {
+  if (!points || points.length === 0) {
+    return null;
+  }
+
+  const longitudes = points.map((p) => p.longitude);
+  const latitudes = points.map((p) => p.latitude);
+
+  const xmin = Math.min(...longitudes);
+  const xmax = Math.max(...longitudes);
+  const ymin = Math.min(...latitudes);
+  const ymax = Math.max(...latitudes);
+
+  // A single point (or multiple identical points) has zero width/height; buffer it so there's an area to zoom to
+  if (xmin === xmax && ymin === ymax) {
+    const point = new Point({
+      longitude: xmin,
+      latitude: ymin,
+      spatialReference: SpatialReference.WGS84,
+    });
+    return GeometryEngine.geodesicBuffer(point, 1, 'kilometers').extent;
+  }
+
+  const extent = new Extent({
+    xmin,
+    ymin,
+    xmax,
+    ymax,
+    spatialReference: SpatialReference.WGS84,
+  });
+
+  return extent.expand(1.2);
 }
 
 /**

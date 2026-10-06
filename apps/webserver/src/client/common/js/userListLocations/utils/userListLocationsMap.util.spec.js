@@ -39,7 +39,11 @@ describe('getExtentFromLocationPoints', () => {
     expect(extent.xmax).toBeGreaterThanOrEqual(22);
     expect(extent.ymin).toBeLessThanOrEqual(10);
     expect(extent.ymax).toBeGreaterThanOrEqual(12);
-    expect(extent.expand).toHaveBeenCalledWith(1.2);
+    // expand(1.2) adds 10% padding on each side: 2° span -> 2.2°, centered on the original
+    expect(extent.xmin).toBeCloseTo(19.8, 5);
+    expect(extent.xmax).toBeCloseTo(22.2, 5);
+    expect(extent.ymin).toBeCloseTo(9.8, 5);
+    expect(extent.ymax).toBeCloseTo(12.2, 5);
   });
 });
 

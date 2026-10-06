@@ -35,7 +35,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   uploadLocationState: {
     newListName: 'Random list name 123',
     existingList: null,
-    commodity: 'Palm Oil',
+    commodity: 'Palm oil',
     typeOfAnalysis: {
       AFI: true,
       ALERTS: true,
@@ -154,7 +154,36 @@ describe('ConfigureList', () => {
 
   // START GPV-4967 ————————————————————————————————————————
   it('should show commodity error when submitting empty form', async () => {
-    render(<ConfigureList userLists={mockUserLists} commodity="Cattle" />);
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: null,
+        existingList: null,
+        commodity: '',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [],
+        locationName: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+        isUmlFile: false,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
+    render(<ConfigureList userLists={mockUserLists} />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
     await user.click(nextButton);

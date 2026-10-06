@@ -39,6 +39,7 @@ describe('getExtentFromLocationPoints', () => {
     expect(extent.xmax).toBeGreaterThanOrEqual(22);
     expect(extent.ymin).toBeLessThanOrEqual(10);
     expect(extent.ymax).toBeGreaterThanOrEqual(12);
+    expect(extent.expand).toHaveBeenCalledWith(1.2);
   });
 });
 

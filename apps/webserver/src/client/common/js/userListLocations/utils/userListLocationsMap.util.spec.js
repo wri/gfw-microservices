@@ -1,17 +1,3 @@
-jest.mock('@arcgis/core/geometry/Extent', () => {
-  return jest.fn().mockImplementation(({ xmin, ymin, xmax, ymax }) => ({
-    xmin,
-    ymin,
-    xmax,
-    ymax,
-    expand: jest.fn().mockReturnThis(),
-  }));
-});
-
-jest.mock('@arcgis/core/geometry/Point', () => {
-  return jest.fn().mockImplementation(({ longitude, latitude }) => ({ longitude, latitude }));
-});
-
 jest.mock('@arcgis/core/geometry/geometryEngine', () => ({
   geodesicBuffer: jest.fn().mockImplementation((point) => ({
     extent: {

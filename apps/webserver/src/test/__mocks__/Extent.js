@@ -1,5 +1,5 @@
 class ExtentMock {
-  constructor({ xmin, ymin, xmax, ymax } = {}) {
+  constructor({ xmin = 0, ymin = 0, xmax = 0, ymax = 0 } = {}) {
     this.xmin = xmin;
     this.ymin = ymin;
     this.xmax = xmax;

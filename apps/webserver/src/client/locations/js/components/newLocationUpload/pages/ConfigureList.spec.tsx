@@ -154,7 +154,7 @@ describe('ConfigureList', () => {
 
   // START GPV-4967 ————————————————————————————————————————
   it('should show commodity error when submitting empty form', async () => {
-    render(<ConfigureList userLists={mockUserLists} />);
+    render(<ConfigureList userLists={mockUserLists} commodity="Cattle" />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
     await user.click(nextButton);

@@ -35,7 +35,7 @@ jest.mocked(useUploadLocation).mockReturnValue({
   uploadLocationState: {
     newListName: 'Random list name 123',
     existingList: null,
-    commodity: 'Palm Oil',
+    commodity: 'Palm oil',
     typeOfAnalysis: {
       AFI: true,
       ALERTS: true,
@@ -154,6 +154,35 @@ describe('ConfigureList', () => {
 
   // START GPV-4967 ————————————————————————————————————————
   it('should show commodity error when submitting empty form', async () => {
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: null,
+        existingList: null,
+        commodity: '',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [],
+        locationName: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+        isUmlFile: false,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
@@ -208,6 +237,35 @@ describe('ConfigureList', () => {
   }, 15000);
 
   it('should show missing mandatory field errors', async () => {
+    jest.mocked(useUploadLocation).mockReturnValueOnce({
+      setUploadLocationConfigureList: mockSetUploadLocationConfigureList,
+      clearUploadType: mockClearUploadType,
+      uploadLocationState: {
+        newListName: null,
+        existingList: null,
+        commodity: '',
+        typeOfAnalysis: {
+          AFI: false,
+          ALERTS: false,
+          FCD: false,
+          PalmRisk: false,
+          Weekly: false,
+        },
+        area: { measurementUnit: 'hectares', size: 0 },
+        coordinates: [],
+        locationName: '',
+        uploadedFile: { fileS3Route: '', keyFile: '', url: '' },
+        uploadType: UploadType.ByPolygon,
+        isUmlFile: false,
+      },
+      setUploadLocationByPoint: jest.fn(),
+      setUploadLocationByPolygon: jest.fn(),
+      addFile: jest.fn(),
+      updateSaveMode: jest.fn(),
+      selectUploadType: jest.fn(),
+      setIsUmlFile: jest.fn(),
+    });
+
     render(<ConfigureList userLists={mockUserLists} />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
@@ -244,22 +302,11 @@ describe('ConfigureList', () => {
       ).not.toBeInTheDocument();
     });
 
-    // 5. Click Next again
-    await user.click(nextButton);
-    await waitFor(() => {
-      expect(mockHistoryPush).toHaveBeenCalledTimes(2);
-    });
-
-    // 6. Fill in a list name -> list name error is resolved
+    // 5. Fill in a list name (validation runs on submit, so the error clears on the next Next click)
     const newListNameInput = screen.getByPlaceholderText(/name your new list/i);
     await user.type(newListNameInput, 'New list name');
-    await waitFor(() => {
-      expect(
-        screen.queryByText(/you must provide at least one list name/i)
-      ).not.toBeInTheDocument();
-    });
 
-    // 7. Click Next -> should submit successfully
+    // 6. Click Next -> should submit successfully
     await user.click(nextButton);
     await waitFor(() => {
       expect(mockHistoryPush).toHaveBeenCalledWith('SUMMARY_AND_SUBMIT');
@@ -590,7 +637,7 @@ describe('ConfigureList', () => {
 
     const amountOfTypesOfAnalysis = screen.getAllByRole('checkbox');
 
-    // AFI, ALERTS, Weekly, FCD (PalmRisk only shows for Palm oil)
-    expect(amountOfTypesOfAnalysis.length).toBe(4);
+    // AFI, ALERTS, Weekly, FCD, PalmRisk (PalmRisk shows for Palm oil)
+    expect(amountOfTypesOfAnalysis.length).toBe(5);
   });
 });

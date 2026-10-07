@@ -30,6 +30,8 @@
     "^.+\\.scss$": "<rootDir>/test/__mocks__/object.js",
     "\\.(jpe?g|png|gif|svg)$": "<rootDir>/test/__mocks__/object.js",
     "@arcgis/core/symbols/SimpleFillSymbol": "<rootDir>/test/__mocks__/SimpleFillSymbol.js",
+    "@arcgis/core/geometry/Extent": "<rootDir>/test/__mocks__/Extent.js",
+    "@arcgis/core/geometry/Point": "<rootDir>/test/__mocks__/Point.js",
     "@arcgis": "<rootDir>/test/__mocks__/object.js",
     "@wri-monorepos/constants": "<rootDir>/../../../libs/constants/src/index.ts",
     "src/client/map/js/layers(.*)$": "<rootDir>/test/__mocks__/constructor.js",

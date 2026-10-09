@@ -8,7 +8,6 @@ import {
   Paper,
   Box,
   Alert,
-  IconButton,
   Checkbox,
   Snackbar,
 } from '@mui/material';
@@ -16,7 +15,7 @@ import axios from 'axios';
 import errorLogger from '../../../../../common/js/utils/errorLogger';
 import { PillButton } from '../../../../../components';
 import GDPRFooter from 'common/js/components/GDPRFooter/index';
-import { ArrowBack, Close, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
+import { ArrowBack, NotListedLocation, QueryStats, Download } from '@mui/icons-material';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import { Link } from '../../../../../components';
@@ -86,6 +85,8 @@ import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
+import AlertsUnsubscribeBanner from './AlertsUnsubscribeBanner';
+import RetirementBanner from '../../../../../common/js/components/Banners/RetirementBanner';
 
 // STYLE
 import '../../../../../locations/css/lists.scss';
@@ -114,10 +115,6 @@ import {
 } from './listViews.constants';
 import { AlertsDateSelector } from './components/AlertsDateSelector';
 import { getManualTranslation } from '../../../config/columns/columnHeaders.constants';
-import { ExternalLinks, ReusableText } from '../../../../../utils/constants';
-
-const EUDR_BANNER_KEY = 'GFW-is-eudr-banner-dismissed';
-const ALERTS_UNSUBSCRIBE_BANNER_KEY = 'GFW-is-alerts-unsubscribe-banner-dismissed';
 
 const ACTIONS = {
   COPY: 'copy',
@@ -184,7 +181,6 @@ export default class ListDetails extends Component {
       isDcfActive,
     } = getActiveAnalysisFlags(selectedList);
 
-    const isEudrBannerDismissed = !!localStorage.getItem(EUDR_BANNER_KEY);
     const isAlertsUnsubscribeBannerDismissed = !!localStorage.getItem(
       ALERTS_UNSUBSCRIBE_BANNER_KEY
     );
@@ -237,7 +233,6 @@ export default class ListDetails extends Component {
       isAfiActive,
       isGHGActive,
       isOnlyGHGActive,
-      isEudrBannerDismissed,
       isAlertsUnsubscribeBannerDismissed,
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
@@ -2137,6 +2132,8 @@ export default class ListDetails extends Component {
     return (
       <>
         <div className="list-details">
+          <RetirementBanner dismissible />
+
           {!isGfwList && (
             <>
               <ChangeTypeOfAnalysisModal
@@ -2240,78 +2237,12 @@ export default class ListDetails extends Component {
           <ModalLoader open={isLoading} />
 
           <section className="locations-body list-detail-page">
-            {!isGfwList && !this.state.isEudrBannerDismissed && (
-              <Alert
-                severity="info"
-                action={
-                  <IconButton
-                    onClick={() => {
-                      localStorage.setItem(EUDR_BANNER_KEY, 1);
-                      this.setState({ isEudrBannerDismissed: true });
-                    }}
-                  >
-                    <Close fontSize="small" />
-                  </IconButton>
-                }
-                sx={{
-                  borderRadius: 1,
-                  mb: 2,
-                  alignItems: 'center',
-                  border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
-                  backgroundColor: (theme) => theme.palette.secondary[100],
-                  color: (theme) => theme.palette.secondary[900],
-                  '& svg': {
-                    color: (theme) => theme.palette.secondary[700],
-                  },
-                  '& .MuiAlert-message': {
-                    display: 'flex',
-                    gap: 0.5,
-                  },
-                }}
-              >
-                <Typography variant="body1" sx={{ fontWeight: '500' }}>
-                  Looking for EUDR-related analyses?
-                </Typography>
-                <Typography variant="body1">
-                  The Post-2020 Risk Assessment is recommended to support EUDR compliance.
-                </Typography>
-              </Alert>
-            )}
-
             {!isGfwList &&
               !this.state.isAlertsUnsubscribeBannerDismissed &&
               this.shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) && (
-                <Alert
-                  severity="info"
-                  action={
-                    <IconButton
-                      onClick={() => {
-                        localStorage.setItem(ALERTS_UNSUBSCRIBE_BANNER_KEY, 1);
-                        this.setState({ isAlertsUnsubscribeBannerDismissed: true });
-                      }}
-                    >
-                      <Close fontSize="small" />
-                    </IconButton>
-                  }
-                  sx={{
-                    borderRadius: 1,
-                    mb: 2,
-                    alignItems: 'center',
-                    border: (theme) => `1px solid ${theme.palette.secondary[300]}`,
-                    backgroundColor: (theme) => theme.palette.secondary[100],
-                    color: (theme) => theme.palette.secondary[900],
-                    '& svg': {
-                      color: (theme) => theme.palette.secondary[700],
-                    },
-                  }}
-                >
-                  <Typography variant="body1">
-                    {ReusableText.AlertsUnsubscribeNotice}{' '}
-                    <Link href={ExternalLinks.UploadFees} target="_blank" rel="noopener noreferrer">
-                      See more information here.
-                    </Link>
-                  </Typography>
-                </Alert>
+                <AlertsUnsubscribeBanner
+                  onDismiss={() => this.setState({ isAlertsUnsubscribeBannerDismissed: true })}
+                />
               )}
 
             {selectedList && (

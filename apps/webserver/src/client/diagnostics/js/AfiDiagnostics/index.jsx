@@ -15,6 +15,7 @@ import StaleAnalysisBanner from '../../../listDetails/js/components/lists/ListDe
 import { forestLossDatasetIds, forestLossDatasets } from './forestLossDatasets.constants';
 import '../common/DiagnosticsContainer.scss';
 import { LoadingModal } from '../../../components';
+import RetirementBanner from '../../../common/js/components/Banners/RetirementBanner';
 
 function AfiDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
@@ -120,6 +121,7 @@ function AfiDiagnostics() {
   return (
     <>
       <LoadingModal isLoading={isLoading} />
+      {!isLoading && <RetirementBanner dismissible />}
       {!isLoading && DiagnosticsStatusMessage}
       {!isLoading && isStale && <StaleAnalysisBanner />}
       {!isLoading && !isListBeingAnalyzed && (

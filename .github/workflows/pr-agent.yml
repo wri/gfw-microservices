@@ -77,9 +77,9 @@ jobs:
           # The setting is `config.model`, and the id must carry the
           # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
           # OPENROUTER__KEY.
-          config.model: "openrouter/deepseek/deepseek-v4.1-flash"
+          config.model: 'openrouter/deepseek/deepseek-v4.1-flash'
           config.fallback_models: '["openrouter/deepseek/deepseek-v4.1-flash"]'
           # This id is not in PR-Agent's MAX_TOKENS table, so set the context
           # window explicitly.
-          config.custom_model_max_tokens: "64000"
+          config.custom_model_max_tokens: '64000'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

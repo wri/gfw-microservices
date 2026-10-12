@@ -10,6 +10,16 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
   issue_comment:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      comment_id:
+        description: ID of an existing PR-Agent command comment to replay
+        required: false
+        type: string
+      pr_number:
+        description: PR number to replay its opened event (instead of comment_id)
+        required: false
+        type: string
 
 jobs:
   pr_agent:
@@ -20,7 +30,9 @@ jobs:
        contains(github.event.comment.body, '/review'))
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      # PR-Agent's /review (and describe/improve) only posts PR/issue comments;
+      # it does not push commits, so write access to contents is not needed.
+      contents: read
       pull-requests: write
       issues: write
 
@@ -46,7 +58,11 @@ jobs:
           # Mirrors PR-Agent's AUTO_GENERATED_FILES_EXACT list plus minified
           # assets and source maps (see pr_agent/algo/language_handler.py).
           ignored='(^|/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|composer\.lock|Gemfile\.lock|poetry\.lock|go\.sum|uv\.lock|Cargo\.lock|Pipfile\.lock|mix\.lock|pubspec\.lock|bun\.lockb)$|\.(min\.js|min\.css|js\.map|ts\.map|css\.map)$'
-          count=$(printf '%s\n' "$files" | grep -vE "$ignored" | sed '/^[[:space:]]*$/d' | wc -l)
+          # `|| true` guards against grep exiting 1 when every file matches
+          # $ignored: with `bash -eo pipefail` (the default shell), that
+          # non-zero status would abort the step instead of yielding count=0.
+          # It is grouped with grep so it only applies to grep's exit status.
+          count=$(printf '%s\n' "$files" | { grep -vE "$ignored" || true; } | sed '/^[[:space:]]*$/d' | wc -l)
           if [ "$count" -gt 0 ]; then
             echo "has_reviewable=true" >> "$GITHUB_OUTPUT"
           else
@@ -65,7 +81,11 @@ jobs:
 
       - name: Run PR Agent review
         if: steps.reviewable.outputs.has_reviewable == 'true'
-        uses: the-pr-agent/pr-agent@main
+        # Pinned to a full commit SHA (not a mutable branch ref) because this
+        # job runs on pull_request_target with access to repository secrets.
+        # the-pr-agent/pr-agent is the new home of the former qodo-ai/pr-agent.
+        # Bump the SHA deliberately when upgrading.
+        uses: the-pr-agent/pr-agent@330f0813b5fe0d1f54b794077c2d02aa85a1fb63 # main as of 2026-10-11
         env:
           # Public GitHub repos do not incur GitHub Actions charges, and
           # the PR-Agent project itself is open source. Model API usage still
@@ -78,7 +98,9 @@ jobs:
           # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
           # OPENROUTER__KEY.
           config.model: 'openrouter/deepseek/deepseek-v4.1-flash'
-          config.fallback_models: '["openrouter/deepseek/deepseek-v4.1-flash"]'
+          # No fallback model is configured: a fallback identical to the
+          # primary model adds no resilience (it fails the same way), and we
+          # do not want silent failover to a different provider/model.
           # This id is not in PR-Agent's MAX_TOKENS table, so set the context
           # window explicitly.
           config.custom_model_max_tokens: '64000'

@@ -1,0 +1,85 @@
+name: PR Agent
+
+on:
+  # Use pull_request_target (not pull_request) so the workflow definition is
+  # always read from the BASE branch (main). With `pull_request`, GitHub runs
+  # the workflow file from the PR's merge ref, which is only recomputed when the
+  # PR branch is pushed to. A PR opened before a workflow change keeps running
+  # the OLD workflow until it is rebased/updated.
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+
+jobs:
+  pr_agent:
+    if: |
+      github.event_name == 'pull_request_target' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       contains(github.event.comment.body, '/review'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      # PR-Agent filters out lockfiles as auto-generated, so a PR that only
+      # bumps a lockfile (e.g. Dependabot) yields an empty diff and the tool
+      # errors out ("No PR diff fits the /review request"), failing the check.
+      # Detect that case and skip the review instead of reporting a red X.
+      - name: Check for reviewable changes
+        id: reviewable
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            pr="${{ github.event.issue.number }}"
+          else
+            pr="${{ github.event.pull_request.number }}"
+          fi
+          echo "pr=$pr" >> "$GITHUB_OUTPUT"
+          files=$(gh api \
+            "repos/${{ github.repository }}/pulls/$pr/files" \
+            --paginate --jq '.[].filename')
+          # Mirrors PR-Agent's AUTO_GENERATED_FILES_EXACT list plus minified
+          # assets and source maps (see pr_agent/algo/language_handler.py).
+          ignored='(^|/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|composer\.lock|Gemfile\.lock|poetry\.lock|go\.sum|uv\.lock|Cargo\.lock|Pipfile\.lock|mix\.lock|pubspec\.lock|bun\.lockb)$|\.(min\.js|min\.css|js\.map|ts\.map|css\.map)$'
+          count=$(printf '%s\n' "$files" | grep -vE "$ignored" | sed '/^[[:space:]]*$/d' | wc -l)
+          if [ "$count" -gt 0 ]; then
+            echo "has_reviewable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_reviewable=false" >> "$GITHUB_OUTPUT"
+            echo "Only lockfiles/minified assets changed; skipping PR-Agent review."
+          fi
+
+      - name: Note skipped review
+        if: steps.reviewable.outputs.has_reviewable == 'false' && github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment "${{ steps.reviewable.outputs.pr }}" \
+            --repo "${{ github.repository }}" \
+            --body "🤖 PR-Agent skipped: this PR only changes lockfiles/minified assets, which PR-Agent treats as auto-generated and excludes from review."
+
+      - name: Run PR Agent review
+        if: steps.reviewable.outputs.has_reviewable == 'true'
+        uses: the-pr-agent/pr-agent@main
+        env:
+          # Public GitHub repos do not incur GitHub Actions charges, and
+          # the PR-Agent project itself is open source. Model API usage still
+          # incurs the provider's standard billing, so this key should be set
+          # only if you are comfortable with the provider's usage fees.
+          OPENROUTER__KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # `MODEL` is not a PR-Agent setting, so it was ignored and PR-Agent
+          # fell back to its default OpenAI model, looking for [ADDRESS].
+          # The setting is `config.model`, and the id must carry the
+          # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
+          # OPENROUTER__KEY.
+          config.model: "openrouter/deepseek/deepseek-v4.1-flash"
+          config.fallback_models: '["openrouter/deepseek/deepseek-v4.1-flash"]'
+          # This id is not in PR-Agent's MAX_TOKENS table, so set the context
+          # window explicitly.
+          config.custom_model_max_tokens: "64000"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

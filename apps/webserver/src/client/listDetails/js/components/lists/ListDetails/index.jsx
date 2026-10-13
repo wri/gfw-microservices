@@ -85,9 +85,7 @@ import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
-import AlertsUnsubscribeBanner, {
-  ALERTS_UNSUBSCRIBE_BANNER_KEY,
-} from './AlertsUnsubscribeBanner';
+import AlertsUnsubscribeBanner, { ALERTS_UNSUBSCRIBE_BANNER_KEY } from './AlertsUnsubscribeBanner';
 import RetirementBanner from '../../../../../common/js/components/Banners/RetirementBanner';
 
 // STYLE

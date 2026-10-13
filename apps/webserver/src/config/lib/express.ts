@@ -313,6 +313,9 @@ const redisBasedLimiter = (limitConfig) => {
 export const initialize = (app: Application) => {
   return new Promise((resolve, reject) => {
     logger.info('Initializing express');
+    console.log('test pre');
+    const a = 12;
+    console.log('test post', a);
     try {
       // Configure middleware
       configureMiddleware(app);

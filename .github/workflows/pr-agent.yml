@@ -48,13 +48,11 @@ jobs:
       issues: write
 
     steps:
-      # Manual replay (mirrors The-PR-Agent/pr-agent's pr-agent-review.yaml):
-      # when pr_number is supplied via workflow_dispatch, fetch the PR and
-      # synthesize a pull_request_target "opened" event so the action below
-      # runs a fresh review against that PR.
-      - name: Load PR event for manual replay
+      # Manual replay cannot override GITHUB_EVENT_* variables in Actions.
+      # Instead, validate the target PR and queue a real '/review' comment,
+      # which triggers this workflow's issue_comment path.
+      - name: Queue manual replay via /review comment
         if: github.event_name == 'workflow_dispatch'
-        id: replay
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -62,21 +60,19 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "Supply a numeric PR number"; exit 1; }
-          gh api "repos/$GH_REPO/pulls/$PR_NUMBER" | jq -e --arg repository "$GH_REPO" '
+          gh api "repos/$GH_REPO/pulls/$PR_NUMBER" | jq -e '
             if .state != "open" or .draft then error("PR must be open and ready for review")
-            else {action: "opened", pull_request: ., sender: {type: "User"},
-                  repository: {full_name: $repository}}
-            end' > "$GITHUB_WORKSPACE/pr-agent-event.json"
-          {
-            echo "event_name=pull_request_target"
-            echo "event_path=/github/workspace/pr-agent-event.json"
-          } >> "$GITHUB_OUTPUT"
+            else .number end' >/dev/null
+          gh pr comment "$PR_NUMBER" \
+            --repo "$GH_REPO" \
+            --body "/review"
 
       # PR-Agent filters out lockfiles as auto-generated, so a PR that only
       # bumps a lockfile (e.g. package-lock.json) yields an empty diff and the tool
       # errors out ("No PR diff fits the /review request"), failing the check.
       # Detect that case and skip the review instead of reporting a red X.
       - name: Check for reviewable changes
+        if: github.event_name != 'workflow_dispatch'
         id: reviewable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -108,7 +104,7 @@ jobs:
           fi
 
       - name: Note skipped review
-        if: steps.reviewable.outputs.has_reviewable == 'false' && (github.event_name == 'issue_comment' || github.event_name == 'workflow_dispatch')
+        if: steps.reviewable.outputs.has_reviewable == 'false' && github.event_name == 'issue_comment'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -117,7 +113,7 @@ jobs:
             --body "🤖 PR-Agent skipped: this PR only changes lockfiles/minified assets, which PR-Agent treats as auto-generated and excludes from review."
 
       - name: Run PR Agent review
-        if: steps.reviewable.outputs.has_reviewable == 'true'
+        if: steps.reviewable.outputs.has_reviewable == 'true' && github.event_name != 'workflow_dispatch'
         # Pinned to a full commit SHA (not a mutable branch ref) because this
         # job runs on pull_request_target with access to repository secrets.
         # the-pr-agent/pr-agent is the new home of the former qodo-ai/pr-agent.
@@ -129,11 +125,6 @@ jobs:
           # incurs the provider's standard billing, so this key should be set
           # only if you are comfortable with the provider's usage fees.
           OPENROUTER__KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          # For workflow_dispatch replays, point the action at the synthetic
-          # pull_request_target event built by the "Load PR event" step; for
-          # real events these fall back to the runner-provided defaults.
-          GITHUB_EVENT_NAME: ${{ steps.replay.outputs.event_name || github.event_name }}
-          GITHUB_EVENT_PATH: ${{ steps.replay.outputs.event_path || '/github/workflow/event.json' }}
           # The setting is `config.model`, and the id must carry the
           # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
           # OPENROUTER__KEY.

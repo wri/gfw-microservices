@@ -24,7 +24,9 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
-       contains(github.event.comment.body, '/review'))
+       contains(github.event.comment.body, '/review') &&
+       contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
+                github.event.comment.author_association))
     runs-on: ubuntu-latest
     permissions:
       # PR-Agent's /review (and describe/improve) only posts PR/issue comments;
@@ -126,10 +128,8 @@ jobs:
           # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
           # OPENROUTER__KEY.
           config.model: 'openrouter/deepseek/deepseek-v4.1-flash'
-          # No fallback model is configured: a fallback identical to the
-          # primary model adds no resilience (it fails the same way), and we
-          # do not want silent failover to a different provider/model.
-          # This id is not in PR-Agent's MAX_TOKENS table, so set the context
-          # window explicitly.
+          config.fallback_models: '["openrouter/z-ai/glm-5.3-flash"]'
+          # These ids are not in PR-Agent's MAX_TOKENS table, so set the
+          # context window explicitly.
           config.custom_model_max_tokens: '64000'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

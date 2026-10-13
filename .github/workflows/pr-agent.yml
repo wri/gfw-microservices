@@ -17,6 +17,14 @@ on:
         required: false
         type: string
 
+# Collapse superseded runs: on rapid consecutive pushes (or repeated /review
+# comments), each event would otherwise start an independent pull_request_target
+# run, executing multiple paid LLM reviews in parallel for the same PR. A
+# per-PR concurrency group cancels any in-flight run when a newer one starts.
+concurrency:
+  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   pr_agent:
     if: |
@@ -28,6 +36,10 @@ jobs:
        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
                 github.event.comment.author_association))
     runs-on: ubuntu-latest
+    # Matches the timeout convention used by pr-check.yml, release.yml and the
+    # deploy-* workflows. Bounds runtime and cost if the LLM action hangs (the
+    # default cap is 6 hours).
+    timeout-minutes: 60
     permissions:
       # PR-Agent's /review (and describe/improve) only posts PR/issue comments;
       # it does not push commits, so write access to contents is not needed.

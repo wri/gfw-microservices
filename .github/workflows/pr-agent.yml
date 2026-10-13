@@ -10,26 +10,19 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
   issue_comment:
     types: [created]
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: PR number to replay its opened event (instead of comment_id)
-        required: false
-        type: string
 
 # Collapse superseded runs: on rapid consecutive pushes (or repeated /review
 # comments), each event would otherwise start an independent pull_request_target
 # run, executing multiple paid LLM reviews in parallel for the same PR. A
 # per-PR concurrency group cancels any in-flight run when a newer one starts.
 concurrency:
-  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number || github.run_id }}
+  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   pr_agent:
     if: |
       github.event_name == 'pull_request_target' ||
-      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
        contains(github.event.comment.body, '/review') &&
@@ -48,39 +41,17 @@ jobs:
       issues: write
 
     steps:
-      # Manual replay cannot override GITHUB_EVENT_* variables in Actions.
-      # Instead, validate the target PR and queue a real '/review' comment,
-      # which triggers this workflow's issue_comment path.
-      - name: Queue manual replay via /review comment
-        if: github.event_name == 'workflow_dispatch'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ inputs.pr_number }}
-        run: |
-          set -euo pipefail
-          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "Supply a numeric PR number"; exit 1; }
-          gh api "repos/$GH_REPO/pulls/$PR_NUMBER" | jq -e '
-            if .state != "open" or .draft then error("PR must be open and ready for review")
-            else .number end' >/dev/null
-          gh pr comment "$PR_NUMBER" \
-            --repo "$GH_REPO" \
-            --body "/review"
-
       # PR-Agent filters out lockfiles as auto-generated, so a PR that only
       # bumps a lockfile (e.g. package-lock.json) yields an empty diff and the tool
       # errors out ("No PR diff fits the /review request"), failing the check.
       # Detect that case and skip the review instead of reporting a red X.
       - name: Check for reviewable changes
-        if: github.event_name != 'workflow_dispatch'
         id: reviewable
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "${{ github.event_name }}" = "issue_comment" ]; then
             pr="${{ github.event.issue.number }}"
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            pr="${{ inputs.pr_number }}"
           else
             pr="${{ github.event.pull_request.number }}"
           fi
@@ -113,7 +84,7 @@ jobs:
             --body "🤖 PR-Agent skipped: this PR only changes lockfiles/minified assets, which PR-Agent treats as auto-generated and excludes from review."
 
       - name: Run PR Agent review
-        if: steps.reviewable.outputs.has_reviewable == 'true' && github.event_name != 'workflow_dispatch'
+        if: steps.reviewable.outputs.has_reviewable == 'true'
         # Pinned to a full commit SHA (not a mutable branch ref) because this
         # job runs on pull_request_target with access to repository secrets.
         # the-pr-agent/pr-agent is the new home of the former qodo-ai/pr-agent.

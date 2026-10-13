@@ -122,8 +122,6 @@ jobs:
           # real events these fall back to the runner-provided defaults.
           GITHUB_EVENT_NAME: ${{ steps.replay.outputs.event_name || github.event_name }}
           GITHUB_EVENT_PATH: ${{ steps.replay.outputs.event_path || '/github/workflow/event.json' }}
-          # `MODEL` is not a PR-Agent setting, so it was ignored and PR-Agent
-          # fell back to its default OpenAI model, looking for [ADDRESS].
           # The setting is `config.model`, and the id must carry the
           # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
           # OPENROUTER__KEY.

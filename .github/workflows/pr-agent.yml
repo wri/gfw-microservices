@@ -10,29 +10,26 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
   issue_comment:
     types: [created]
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: PR number to replay its opened event (instead of comment_id)
-        required: false
-        type: string
 
 # Collapse superseded runs: on rapid consecutive pushes (or repeated /review
 # comments), each event would otherwise start an independent pull_request_target
 # run, executing multiple paid LLM reviews in parallel for the same PR. A
 # per-PR concurrency group cancels any in-flight run when a newer one starts.
 concurrency:
-  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || inputs.pr_number || github.run_id }}
+  group: pr-agent-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
   pr_agent:
     if: |
       github.event_name == 'pull_request_target' ||
-      github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
-       contains(github.event.comment.body, '/review') &&
+       (contains(github.event.comment.body, '/review') ||
+        contains(github.event.comment.body, '/describe') ||
+        contains(github.event.comment.body, '/improve') ||
+        contains(github.event.comment.body, '/ask') ||
+        contains(github.event.comment.body, '/update_changelog')) &&
        contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'),
                 github.event.comment.author_association))
     runs-on: ubuntu-latest
@@ -48,30 +45,6 @@ jobs:
       issues: write
 
     steps:
-      # Manual replay (mirrors The-PR-Agent/pr-agent's pr-agent-review.yaml):
-      # when pr_number is supplied via workflow_dispatch, fetch the PR and
-      # synthesize a pull_request_target "opened" event so the action below
-      # runs a fresh review against that PR.
-      - name: Load PR event for manual replay
-        if: github.event_name == 'workflow_dispatch'
-        id: replay
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ inputs.pr_number }}
-        run: |
-          set -euo pipefail
-          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "Supply a numeric PR number"; exit 1; }
-          gh api "repos/$GH_REPO/pulls/$PR_NUMBER" | jq -e --arg repository "$GH_REPO" '
-            if .state != "open" or .draft then error("PR must be open and ready for review")
-            else {action: "opened", pull_request: ., sender: {type: "User"},
-                  repository: {full_name: $repository}}
-            end' > "$GITHUB_WORKSPACE/pr-agent-event.json"
-          {
-            echo "event_name=pull_request_target"
-            echo "event_path=/github/workspace/pr-agent-event.json"
-          } >> "$GITHUB_OUTPUT"
-
       # PR-Agent filters out lockfiles as auto-generated, so a PR that only
       # bumps a lockfile (e.g. package-lock.json) yields an empty diff and the tool
       # errors out ("No PR diff fits the /review request"), failing the check.
@@ -83,8 +56,6 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "issue_comment" ]; then
             pr="${{ github.event.issue.number }}"
-          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            pr="${{ inputs.pr_number }}"
           else
             pr="${{ github.event.pull_request.number }}"
           fi
@@ -108,7 +79,7 @@ jobs:
           fi
 
       - name: Note skipped review
-        if: steps.reviewable.outputs.has_reviewable == 'false' && (github.event_name == 'issue_comment' || github.event_name == 'workflow_dispatch')
+        if: steps.reviewable.outputs.has_reviewable == 'false' && github.event_name == 'issue_comment'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -129,11 +100,6 @@ jobs:
           # incurs the provider's standard billing, so this key should be set
           # only if you are comfortable with the provider's usage fees.
           OPENROUTER__KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          # For workflow_dispatch replays, point the action at the synthetic
-          # pull_request_target event built by the "Load PR event" step; for
-          # real events these fall back to the runner-provided defaults.
-          GITHUB_EVENT_NAME: ${{ steps.replay.outputs.event_name || github.event_name }}
-          GITHUB_EVENT_PATH: ${{ steps.replay.outputs.event_path || '/github/workflow/event.json' }}
           # The setting is `config.model`, and the id must carry the
           # `openrouter/` prefix so LiteLLM routes via OpenRouter and uses
           # OPENROUTER__KEY.

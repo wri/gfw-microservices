@@ -85,7 +85,6 @@ import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 import GHGBanner from './GHGBanner';
 import CARAccordion from './CARAccordion';
 import LocationErrorsAlert from './LocationErrorsAlert';
-import AlertsUnsubscribeBanner, { ALERTS_UNSUBSCRIBE_BANNER_KEY } from './AlertsUnsubscribeBanner';
 import RetirementBanner from '../../../../../common/js/components/Banners/RetirementBanner';
 
 // STYLE
@@ -181,10 +180,6 @@ export default class ListDetails extends Component {
       isDcfActive,
     } = getActiveAnalysisFlags(selectedList);
 
-    const isAlertsUnsubscribeBannerDismissed = !!localStorage.getItem(
-      ALERTS_UNSUBSCRIBE_BANNER_KEY
-    );
-
     this.state = {
       bannerContent: '',
       commodityType: '',
@@ -233,7 +228,6 @@ export default class ListDetails extends Component {
       isAfiActive,
       isGHGActive,
       isOnlyGHGActive,
-      isAlertsUnsubscribeBannerDismissed,
       isDownloadDialogOpen: false,
       isAlertsDateSelectorOpen: false,
       forestDataset: forestDataSet.NaturalForestMap,
@@ -1910,19 +1904,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) {
-    // Check if list has ALERTS analysis
-    const alertsAnalysis = listAnalysesStatus?.find(
-      (item) => item.analysisId === 'ALERTS' || item.analysisId === 'Alerts'
-    );
-
-    // Banner should show if:
-    // 1. List has Alerts analysis
-    // 2. The options field exists and is explicitly not 'Weekly' (meaning it was unsubscribed)
-    // Note: undefined/null options means the list is subscribed (legacy behavior before GPV-5142 migration)
-    return alertsAnalysis && alertsAnalysis.options != null && alertsAnalysis.options !== 'Weekly';
-  }
-
   render() {
     const {
       canopyModalVisible: isFilterModalVisible,
@@ -2237,14 +2218,6 @@ export default class ListDetails extends Component {
           <ModalLoader open={isLoading} />
 
           <section className="locations-body list-detail-page">
-            {!isGfwList &&
-              !this.state.isAlertsUnsubscribeBannerDismissed &&
-              this.shouldShowAlertsUnsubscribeBanner(listAnalysesStatus) && (
-                <AlertsUnsubscribeBanner
-                  onDismiss={() => this.setState({ isAlertsUnsubscribeBannerDismissed: true })}
-                />
-              )}
-
             {selectedList && (
               <Stack
                 sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}

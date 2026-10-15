@@ -89,11 +89,11 @@ jobs:
 
       - name: Run PR Agent review
         if: steps.reviewable.outputs.has_reviewable == 'true'
-        # Pinned to a full commit SHA (not a mutable branch ref) because this
-        # job runs on pull_request_target with access to repository secrets.
+        # Pinned to a specific release tag.
+        # This job runs on pull_request_target with access to repository secrets.
         # the-pr-agent/pr-agent is the new home of the former qodo-ai/pr-agent.
-        # Bump the SHA deliberately when upgrading.
-        uses: the-pr-agent/pr-agent@330f0813b5fe0d1f54b794077c2d02aa85a1fb63 # main as of 2026-10-11
+        # Bump the version tag deliberately when upgrading.
+        uses: the-pr-agent/pr-agent@v0.47.0
         env:
           # Public GitHub repos do not incur GitHub Actions charges, and
           # the PR-Agent project itself is open source. Model API usage still

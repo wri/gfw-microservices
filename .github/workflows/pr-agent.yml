@@ -112,7 +112,7 @@ jobs:
 
           if [ "$lines" -gt 800 ] || [ "$files" -gt 30 ]; then
             tier=heavy
-            model='"openrouter/z-ai/glm-5.3'
+            model='openrouter/z-ai/glm-5.3'
             fallbacks='["openrouter/deepseek/deepseek-v4.1-flash"]'
             max_tokens='128000'
           else

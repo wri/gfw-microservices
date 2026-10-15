@@ -20,7 +20,12 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
       iconMapping={{ info: <Campaign sx={{ fontSize: 20 }} /> }}
       action={
         dismissible ? (
-          <IconButton onClick={() => setDismissed(true)} disableRipple size="small">
+          <IconButton
+            onClick={() => setDismissed(true)}
+            disableRipple
+            size="small"
+            aria-label="Dismiss retirement banner"
+          >
             <Close sx={{ color: (theme) => theme.palette.text.primary, fontSize: 16 }} />
           </IconButton>
         ) : null

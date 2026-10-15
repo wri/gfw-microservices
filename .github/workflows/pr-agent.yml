@@ -107,6 +107,15 @@ jobs:
           # One paginated call yields "<additions+deletions> <filename>" per file.
           data=$(gh api "repos/${{ github.repository }}/pulls/$pr/files" \
             --paginate --jq '.[] | "\(.additions + .deletions) \(.filename)"')
+          # Apply the same auto-generated-file filter as the "Check for
+          # reviewable changes" step, so the sizing reflects only the diff
+          # PR-Agent will actually review. Without this, a regenerated lockfile
+          # alone (often thousands of lines) would push a small code change
+          # into the expensive heavy tier.
+          ignored='(^|/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock|pnpm-lock\.yaml|composer\.lock|Gemfile\.lock|poetry\.lock|go\.sum|uv\.lock|Cargo\.lock|Pipfile\.lock|mix\.lock|pubspec\.lock|bun\.lockb)$|\.(min\.js|min\.css|js\.map|ts\.map|css\.map)$'
+          # `|| true` guards against grep exiting 1 when every file matches
+          # $ignored (same rationale as in the reviewable step).
+          data=$(printf '%s\n' "$data" | { grep -vE "$ignored" || true; } | sed '/^[[:space:]]*$/d')
           lines=$(printf '%s\n' "$data" | awk '{s+=$1} END {print s+0}')
           files=$(printf '%s\n' "$data" | awk 'NF {n++} END {print n+0}')
 

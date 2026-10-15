@@ -314,7 +314,7 @@ export const manualTranslations = {
     es: 'guía de transición',
     pt: 'guia de transição',
   },
-  'and': {
+  and: {
     es: 'y',
     pt: 'e',
   },
@@ -349,7 +349,7 @@ export const manualTranslations = {
       es: 'Si esas herramientas satisfacen sus necesidades, le recomendamos comenzar por ahí en lugar de solicitar una cuenta de GFW Pro.',
       pt: 'Se essas ferramentas atendem às suas necessidades, recomendamos começar por lá em vez de solicitar uma conta do GFW Pro.',
     },
-  'Please only submit this request if you have a specific, time-bound need for GFW Pro\'s capabilities that the alternatives cannot address, or if you need to cross-check GFW Pro metrics directly ahead of the platform\'s retirement. If so, please submit your request and':
+  "Please only submit this request if you have a specific, time-bound need for GFW Pro's capabilities that the alternatives cannot address, or if you need to cross-check GFW Pro metrics directly ahead of the platform's retirement. If so, please submit your request and":
     {
       es: 'Envíe esta solicitud solo si tiene una necesidad específica y limitada en el tiempo de las capacidades de GFW Pro que las alternativas no pueden cubrir, o si necesita verificar directamente las métricas de GFW Pro antes del retiro de la plataforma. Si es así, envíe su solicitud y',
       pt: 'Envie esta solicitação apenas se você tiver uma necessidade específica e limitada no tempo das capacidades do GFW Pro que as alternativas não podem atender, ou se precisar verificar diretamente as métricas do GFW Pro antes da desativação da plataforma. Se for o caso, envie sua solicitação e',
@@ -358,11 +358,10 @@ export const manualTranslations = {
     es: 'contacte directamente a nuestro equipo',
     pt: 'contate nossa equipe diretamente',
   },
-  'right away. We are only able to move account requests forward when we hear from you directly.':
-    {
-      es: 'de inmediato. Solo podemos avanzar con las solicitudes de cuenta cuando recibimos una respuesta directa de usted.',
-      pt: 'imediatamente. Só podemos avançar com as solicitações de conta quando ouvimos de você diretamente.',
-    },
+  'right away. We are only able to move account requests forward when we hear from you directly.': {
+    es: 'de inmediato. Solo podemos avanzar con las solicitudes de cuenta cuando recibimos una respuesta directa de usted.',
+    pt: 'imediatamente. Só podemos avançar com as solicitações de conta quando ouvimos de você diretamente.',
+  },
 };
 
 /**

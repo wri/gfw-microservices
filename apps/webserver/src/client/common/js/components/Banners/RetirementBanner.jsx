@@ -11,7 +11,9 @@ const EXPORT_LINK = 'https://globalnaturewatch.org/help/gfw-pro/guides/share-rec
 export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const [dismissed, setDismissed] = useState(false);
 
-  const tTitle = useTransifexTranslation('New ways forward as GFW Pro retires on December 31, 2026');
+  const tTitle = useTransifexTranslation(
+    'New ways forward as GFW Pro retires on December 31, 2026'
+  );
   const tIntro = useTransifexTranslation(
     'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro, including both the web interface and the API, will retire on December 31, 2026. Global Nature Watch offers two transition paths:'
   );

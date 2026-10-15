@@ -26,7 +26,7 @@ export default function AccountRequestBanner({ dismissible = false, mb = 2 }) {
     'If those tools meet your needs, we encourage you to start there rather than requesting a GFW Pro account.'
   );
   const tOnlySubmit = useTransifexTranslation(
-    'Please only submit this request if you have a specific, time-bound need for GFW Pro\'s capabilities that the alternatives cannot address, or if you need to cross-check GFW Pro metrics directly ahead of the platform\'s retirement. If so, please submit your request and'
+    "Please only submit this request if you have a specific, time-bound need for GFW Pro's capabilities that the alternatives cannot address, or if you need to cross-check GFW Pro metrics directly ahead of the platform's retirement. If so, please submit your request and"
   );
   const tContactTeam = useTransifexTranslation('contact our team directly');
   const tRightAway = useTransifexTranslation(

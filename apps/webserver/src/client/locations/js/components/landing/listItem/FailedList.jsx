@@ -111,9 +111,7 @@ function FailedList({
               reason={isFailedByUsageLimits ? 'limits' : 'default'}
               placement="top"
               label={failedLabel}
-              tooltipMessage={
-                isFailedByUsageLimits ? limitsTooltipMessage : failedTooltipMessage
-              }
+              tooltipMessage={isFailedByUsageLimits ? limitsTooltipMessage : failedTooltipMessage}
             />
           </span>
         </div>

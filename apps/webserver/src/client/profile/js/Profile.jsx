@@ -10,6 +10,7 @@ import ApiKeys from './components/ApiKeys';
 import ApiDocs from './components/ApiDocs';
 import profileTabs from './profileTabs';
 import { PillButton } from '../../components';
+import RetirementBanner from '../../common/js/components/Banners/RetirementBanner';
 
 export default function Profile() {
   const { userInfo, users, organization } = useProfileContext();
@@ -58,6 +59,8 @@ export default function Profile() {
 
   return (
     <Container sx={{ paddingTop: '2rem', maxWidth: '1024px' }}>
+      <RetirementBanner dismissible />
+
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>{dialogMessage}</DialogContent>

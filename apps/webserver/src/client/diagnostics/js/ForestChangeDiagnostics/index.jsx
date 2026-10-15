@@ -9,6 +9,7 @@ import useStaleAnalysis from '../common/useStaleAnalysis';
 import { LoadingModal } from '../../../components';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import StaleAnalysisBanner from '../../../listDetails/js/components/lists/ListDetails/StaleAnalysisBanner';
+import RetirementBanner from '../../../common/js/components/Banners/RetirementBanner';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
@@ -102,6 +103,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
   return (
     <>
       <LoadingModal isLoading={isLoading} />
+      {!isLoading && <RetirementBanner dismissible />}
       {!isLoading && DiagnosticsStatusMessage}
       {!isLoading && isStale && <StaleAnalysisBanner />}
       {!isLoading && !selectedList && !processedListData && (

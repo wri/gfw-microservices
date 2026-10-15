@@ -2,6 +2,7 @@ import './index.scss';
 import { Route, Switch } from 'react-router-dom';
 import { Box } from '@mui/material';
 import GDPRFooter from '../../../../common/js/components/GDPRFooter';
+import RetirementBanner from '../../../../common/js/components/Banners/RetirementBanner';
 
 import {
   UploadLocationByPolygon,
@@ -46,6 +47,7 @@ export function UploadLocationRouter({
       className="new-location-upload"
       sx={{ mt: 1.5, mx: 'auto', maxWidth: '1025px', minWidth: '300px' }}
     >
+      <RetirementBanner dismissible />
       <Switch>
         <Route path={UploadLocationRoutes.OPTIONS} exact>
           <UploadLocationOptions fromList={fromList} userLists={userLists} />

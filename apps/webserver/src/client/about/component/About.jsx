@@ -4,6 +4,7 @@ import Page from '../../common/js/components/Page';
 import { useQuery } from '../../common/js/hooks';
 import { useLocation, useHistory } from 'react-router-dom';
 import './About.scss';
+import RetirementBanner from '../../common/js/components/Banners/RetirementBanner';
 
 const SECTION_LIST = ['About GFW Pro', 'Fees', 'History', 'Tutorials'];
 
@@ -36,6 +37,8 @@ export default function About() {
             <p dangerouslySetInnerHTML={{ __html: aboutStrings.heroDescription }} />
           </div>
         </main>
+
+        <RetirementBanner dismissible />
 
         <div className="page-body">
           <aside className="page-body__sidebar">

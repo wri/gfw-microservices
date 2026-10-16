@@ -119,7 +119,7 @@ jobs:
           lines=$(printf '%s\n' "$data" | awk '{s+=$1} END {print s+0}')
           files=$(printf '%s\n' "$data" | awk 'NF {n++} END {print n+0}')
 
-          if [ "$lines" -gt 800 ] || [ "$files" -gt 30 ]; then
+          if [ "$lines" -gt 500 ] || [ "$files" -gt 15 ]; then
             tier=heavy
             model='openrouter/z-ai/glm-5.3'
             fallbacks='["openrouter/deepseek/deepseek-v4.1-flash"]'

@@ -1,0 +1,15 @@
+doctype
+html
+	head
+		meta(charset='utf-8')
+		meta(name='viewport', content='width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1')
+		meta(name='description', content=description)
+		title #{title}
+		link(href='https://fonts.googleapis.com/css?family=Fira+Sans:300,400,500,600,700', rel='stylesheet')
+		if splashcss
+			link(href=splashcss, rel='stylesheet')
+	body
+		div#splash-mount
+			!= markup
+		if splashjs
+			script(src=splashjs, async)

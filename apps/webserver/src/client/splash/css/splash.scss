@@ -1,0 +1,11 @@
+// Splash page base styles (MUI/Emotion handles component styles).
+// This file exists so the splash webpack chunk emits a CSS asset,
+// matching the [css, js] asset order the dev asset map expects.
+body {
+  margin: 0;
+  font-family: 'Fira Sans', sans-serif;
+}
+
+a {
+  font-family: 'Fira Sans', sans-serif;
+}

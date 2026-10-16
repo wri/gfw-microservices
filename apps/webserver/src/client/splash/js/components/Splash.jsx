@@ -89,7 +89,9 @@ export default function Splash() {
             alt="Global Nature Watch"
             sx={{ height: 40, width: 'auto', display: 'block' }}
           />
-          <Typography sx={{ fontSize: 14, opacity: 0.9, fontWeight: 400 }}>Previously GFW Pro</Typography>
+          <Typography sx={{ fontSize: 14, opacity: 0.9, fontWeight: 400 }}>
+            Previously GFW Pro
+          </Typography>
         </Box>
         <Link
           href={`mailto:${SUPPORT_EMAIL}`}
@@ -99,7 +101,9 @@ export default function Splash() {
         </Link>
       </Box>
 
-      <Box sx={{ backgroundColor: 'primary.100', borderBottom: 1, borderColor: 'primary.200', py: 7 }}>
+      <Box
+        sx={{ backgroundColor: 'primary.100', borderBottom: 1, borderColor: 'primary.200', py: 7 }}
+      >
         <Container maxWidth="lg">
           <Typography
             component="p"
@@ -115,25 +119,43 @@ export default function Splash() {
               mb: 1.5,
             }}
           >
-            <Box component="span" sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'error.main' }} />
+            <Box
+              component="span"
+              sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'error.main' }}
+            />
             Product retired · December 31, 2026
           </Typography>
           <Typography variant="h1" sx={{ fontSize: { xs: 34, md: 44 }, fontWeight: 700, mb: 2 }}>
             GFW Pro has closed.
           </Typography>
-          <Typography sx={{ maxWidth: 640, fontSize: 17, lineHeight: 1.6, color: 'text.secondary' }}>
+          <Typography
+            sx={{ maxWidth: 640, fontSize: 17, lineHeight: 1.6, color: 'text.secondary' }}
+          >
             As part of the{' '}
-            <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer" sx={{ color: 'primary.700', fontWeight: 500 }}>
+            <Link
+              href={BLOG_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ color: 'primary.700', fontWeight: 500 }}
+            >
               evolution from Global Forest Watch to Global Nature Watch (GNW)
             </Link>
-            , we are consolidating our product suite to provide a more unified platform for monitoring and protecting
-            the world's forests and nature. We are also expanding GNW to serve many of the core needs GFW Pro
-            supports today.
+            , we are consolidating our product suite to provide a more unified platform for
+            monitoring and protecting the world's forests and nature. We are also expanding GNW to
+            serve many of the core needs GFW Pro supports today.
           </Typography>
         </Container>
       </Box>
 
-      <Container maxWidth="lg" sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2.5, py: 5 }}>
+      <Container
+        maxWidth="lg"
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+          gap: 2.5,
+          py: 5,
+        }}
+      >
         {CARDS.map((card) => (
           <Box
             key={card.title}
@@ -157,21 +179,44 @@ export default function Splash() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 mb: 1.5,
-                backgroundColor: card.variant === 'default' ? 'primary.100' : 'rgba(255, 255, 255, 0.25)',
+                backgroundColor:
+                  card.variant === 'default' ? 'primary.100' : 'rgba(255, 255, 255, 0.25)',
               }}
             >
-              <card.Icon sx={{ fontSize: 22, color: card.variant === 'default' ? 'primary.700' : 'primary.900' }} />
+              <card.Icon
+                sx={{
+                  fontSize: 22,
+                  color: card.variant === 'default' ? 'primary.700' : 'primary.900',
+                }}
+              />
             </Box>
-            <Typography sx={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.75, mb: 1.5 }}>
+            <Typography
+              sx={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                opacity: 0.75,
+                mb: 1.5,
+              }}
+            >
               {card.kicker}
             </Typography>
-            <Typography sx={{ fontSize: 18, fontWeight: 600, lineHeight: 1.3, mb: 1 }}>{card.title}</Typography>
-            <Typography sx={{ fontSize: 14, lineHeight: 1.55, opacity: 0.9, mb: 2, flexGrow: 1 }}>{card.text}</Typography>
+            <Typography sx={{ fontSize: 18, fontWeight: 600, lineHeight: 1.3, mb: 1 }}>
+              {card.title}
+            </Typography>
+            <Typography sx={{ fontSize: 14, lineHeight: 1.55, opacity: 0.9, mb: 2, flexGrow: 1 }}>
+              {card.text}
+            </Typography>
             <Link
               href={card.href}
               target={card.href.startsWith('mailto:') ? undefined : '_blank'}
               rel="noopener noreferrer"
-              sx={{ fontSize: 14, fontWeight: 600, color: card.variant === 'default' ? 'primary.700' : 'inherit' }}
+              sx={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: card.variant === 'default' ? 'primary.700' : 'inherit',
+              }}
             >
               {card.linkLabel}
             </Link>
@@ -198,10 +243,20 @@ export default function Splash() {
       >
         <span>© 2026 World Resources Institute · Global Nature Watch</span>
         <Box sx={{ display: 'flex', gap: 2.5 }}>
-          <Link href={PRIVACY_LINK} target="_blank" rel="noopener noreferrer" sx={{ color: 'inherit' }}>
+          <Link
+            href={PRIVACY_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ color: 'inherit' }}
+          >
             Privacy Policy
           </Link>
-          <Link href={TERMS_LINK} target="_blank" rel="noopener noreferrer" sx={{ color: 'inherit' }}>
+          <Link
+            href={TERMS_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ color: 'inherit' }}
+          >
             Terms of Use
           </Link>
         </Box>

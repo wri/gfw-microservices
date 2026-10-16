@@ -46,6 +46,13 @@ function FailedList({
   const isInFolder = !!folder;
 
   const updateAnalysisLabel = useTransifexTranslation(locationsPage.lists.update);
+  const failedLabel = useTransifexTranslation(locationsPage.lists.failed);
+  const failedTooltipMessage = useTransifexTranslation(
+    'This list has failed analysis. To receive results, resubmit this list for analysis.'
+  );
+  const limitsTooltipMessage = useTransifexTranslation(
+    'This list was not processed because it would have exceeded your organization\'s current usage limits. Contact our team to increase limits. After limits have been increased, click "submit for analysis" to retry.'
+  );
   const changeTypeOfAnalysisLabel = useTransifexTranslation(
     locationsPage.lists.changeTypeOfAnalysis
   );
@@ -103,12 +110,8 @@ function FailedList({
             <FailedTooltip
               reason={isFailedByUsageLimits ? 'limits' : 'default'}
               placement="top"
-              label={locationsPage.lists.failed}
-              tooltipMessage={
-                isFailedByUsageLimits
-                  ? `This list was not processed because it would have exceeded your organization's current usage limits. Contact our team to increase limits. After limits have been increased, click "submit for analysis" to retry.`
-                  : 'This list has failed analysis. To receive results, resubmit this list for analysis.'
-              }
+              label={failedLabel}
+              tooltipMessage={isFailedByUsageLimits ? limitsTooltipMessage : failedTooltipMessage}
             />
           </span>
         </div>

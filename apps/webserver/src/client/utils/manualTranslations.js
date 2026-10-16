@@ -270,6 +270,98 @@ export const manualTranslations = {
       es: 'Seleccione qué tipo(s) de análisis de datos desea tener disponibles para esta lista. Tenga en cuenta que el procesamiento de análisis cuenta para los límites de uso de su cuenta. Ver más información',
       pt: 'Selecione qual(is) tipo(s) de análise de dados você gostaria de disponibilizar para esta lista. O processamento de análise conta para os limites de uso da sua conta. Veja mais informações',
     },
+  Failed: {
+    es: 'Fallido',
+    pt: 'Falhou',
+  },
+  'This list has failed analysis. To receive results, resubmit this list for analysis.': {
+    es: 'Esta lista no pudo ser analizada. Para recibir resultados, vuelva a enviar esta lista para análisis.',
+    pt: 'Esta lista falhou na análise. Para receber resultados, reenvie esta lista para análise.',
+  },
+  'This list was not processed because it would have exceeded your organization\'s current usage limits. Contact our team to increase limits. After limits have been increased, click "submit for analysis" to retry.':
+    {
+      es: 'Esta lista no fue procesada porque excedería los límites de uso actuales de su organización. Contacte a nuestro equipo para aumentar los límites. Después de que los límites hayan sido aumentados, haga clic en "enviar para análisis" para reintentar.',
+      pt: 'Esta lista não foi processada porque excederia os limites de uso atuais da sua organização. Contate nossa equipe para aumentar os limites. Depois que os limites forem aumentados, clique em "enviar para análise" para tentar novamente.',
+    },
+  'New ways forward as GFW Pro retires on December 31, 2026': {
+    es: 'Nuevas alternativas ante el retiro de GFW Pro el 31 de diciembre de 2026',
+    pt: 'Novos caminhos enquanto o GFW Pro é desativado em 31 de dezembro de 2026',
+  },
+  'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro, including both the web interface and the API, will retire on December 31, 2026. Global Nature Watch offers two transition paths:':
+    {
+      es: 'Como parte de la evolución de Global Forest Watch hacia Global Nature Watch, estamos consolidando nuestro conjunto de productos y GFW Pro, incluidas tanto la interfaz web como la API, se retirará el 31 de diciembre de 2026. Global Nature Watch ofrece dos rutas de transición:',
+      pt: 'Como parte da evolução do Global Forest Watch para o Global Nature Watch, estamos consolidando nosso conjunto de produtos e o GFW Pro, incluindo a interface web e a API, será desativado em 31 de dezembro de 2026. O Global Nature Watch oferece dois caminhos de transição:',
+    },
+  'Self-hosted monitoring': {
+    es: 'Monitoreo autoalojado',
+    pt: 'Monitoramento auto-hospedado',
+  },
+  ': Available now. Open datasets and scripts that reproduce GFW Pro’s Post-2020 Risk Assessment and Recent Disturbance Alerts on your own infrastructure. Requires GIS or data engineering capacity. Your technical team can start today.':
+    {
+      es: ': Disponible ahora. Conjuntos de datos abiertos y scripts que reproducen la Evaluación de Riesgo Post-2020 y las Alertas de Perturbación Reciente de GFW Pro en su propia infraestructura. Requiere capacidad de SIG o ingeniería de datos. Su equipo técnico puede comenzar hoy.',
+      pt: ': Disponível agora. Conjuntos de dados abertos e scripts que reproduzem a Avaliação de Risco Pós-2020 e os Alertas de Perturbação Recente do GFW Pro em sua própria infraestrutura. Requer capacidade de SIG ou engenharia de dados. Sua equipe técnica pode começar hoje.',
+    },
+  ': Available in preview now, free browser-based monitoring with no GIS staff or infrastructure needed. EUDR- and AFi-aligned reporting dashboards coming in months ahead.':
+    {
+      es: ': Disponible ahora en vista previa, monitoreo gratuito basado en navegador sin necesidad de personal de SIG ni infraestructura. Paneles de informes alineados con EUDR y AFi llegarán en los próximos meses.',
+      pt: ': Disponível agora em prévia, monitoramento gratuito baseado em navegador sem necessidade de equipe de SIG ou infraestrutura. Painéis de relatórios alinhados com EUDR e AFi chegarão nos próximos meses.',
+    },
+  'Using or considering GFW Pro today? Read the': {
+    es: '¿Usa o considera GFW Pro hoy? Lea la',
+    pt: 'Usa ou está considerando o GFW Pro hoje? Leia o',
+  },
+  'transition guidance': {
+    es: 'guía de transición',
+    pt: 'guia de transição',
+  },
+  and: {
+    es: 'y',
+    pt: 'e',
+  },
+  'export your data': {
+    es: 'exporte sus datos',
+    pt: 'exporte seus dados',
+  },
+  '. Both paths are self-service.': {
+    es: '. Ambas rutas son de autoservicio.',
+    pt: '. Ambos os caminhos são de autoatendimento.',
+  },
+  'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro will retire on December 31, 2026. We recommend new users explore the alternatives now available for free across WRI:':
+    {
+      es: 'Como parte de la evolución de Global Forest Watch hacia Global Nature Watch, estamos consolidando nuestro conjunto de productos y GFW Pro se retirará el 31 de diciembre de 2026. Recomendamos a los nuevos usuarios explorar las alternativas ahora disponibles de forma gratuita en WRI:',
+      pt: 'Como parte da evolução do Global Forest Watch para o Global Nature Watch, estamos consolidando nosso conjunto de produtos e o GFW Pro será desativado em 31 de dezembro de 2026. Recomendamos que novos usuários explorem as alternativas agora disponíveis gratuitamente na WRI:',
+    },
+  ', our AI-enhanced, next-generation monitoring experience in preview, and our self-hosted monitoring datasets for direct access and integration into your internal systems. To learn more, read our':
+    {
+      es: ', nuestra experiencia de monitoreo de próxima generación mejorada con IA en vista previa, y nuestros conjuntos de datos de monitoreo autoalojados para acceso directo e integración en sus sistemas internos. Para obtener más información, lea nuestra',
+      pt: ', nossa experiência de monitoramento de próxima geração aprimorada com IA em prévia, e nossos conjuntos de dados de monitoramento auto-hospedados para acesso direto e integração em seus sistemas internos. Para saber mais, leia nossa',
+    },
+  'blog post': {
+    es: 'publicación en el blog',
+    pt: 'postagem no blog',
+  },
+  'outlining these alternatives for those considering GFW Pro or the GFW Pro API.': {
+    es: 'que describe estas alternativas para quienes consideran GFW Pro o la API de GFW Pro.',
+    pt: 'descrevendo essas alternativas para quem considera o GFW Pro ou a API do GFW Pro.',
+  },
+  'If those tools meet your needs, we encourage you to start there rather than requesting a GFW Pro account.':
+    {
+      es: 'Si esas herramientas satisfacen sus necesidades, le recomendamos comenzar por ahí en lugar de solicitar una cuenta de GFW Pro.',
+      pt: 'Se essas ferramentas atendem às suas necessidades, recomendamos começar por lá em vez de solicitar uma conta do GFW Pro.',
+    },
+  "Please only submit this request if you have a specific, time-bound need for GFW Pro's capabilities that the alternatives cannot address, or if you need to cross-check GFW Pro metrics directly ahead of the platform's retirement. If so, please submit your request and":
+    {
+      es: 'Envíe esta solicitud solo si tiene una necesidad específica y limitada en el tiempo de las capacidades de GFW Pro que las alternativas no pueden cubrir, o si necesita verificar directamente las métricas de GFW Pro antes del retiro de la plataforma. Si es así, envíe su solicitud y',
+      pt: 'Envie esta solicitação apenas se você tiver uma necessidade específica e limitada no tempo das capacidades do GFW Pro que as alternativas não podem atender, ou se precisar verificar diretamente as métricas do GFW Pro antes da desativação da plataforma. Se for o caso, envie sua solicitação e',
+    },
+  'contact our team directly': {
+    es: 'contacte directamente a nuestro equipo',
+    pt: 'contate nossa equipe diretamente',
+  },
+  'right away. We are only able to move account requests forward when we hear from you directly.': {
+    es: 'de inmediato. Solo podemos avanzar con las solicitudes de cuenta cuando recibimos una respuesta directa de usted.',
+    pt: 'imediatamente. Só podemos avançar com as solicitações de conta quando ouvimos de você diretamente.',
+  },
 };
 
 /**

@@ -143,7 +143,7 @@ jobs:
         # full commit SHA (tags are mutable), but it makes upgrades explicit
         # and readable. the-pr-agent/pr-agent is the new home of the former
         # qodo-ai/pr-agent. Bump the tag deliberately when upgrading.
-        uses: the-pr-agent/pr-agent@v0.47.0
+        uses: the-pr-agent/pr-agent@v0.48.0
         env:
           # Public GitHub repos do not incur GitHub Actions charges, and
           # the PR-Agent project itself is open source. Model API usage still

@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import * as tsMockito from 'ts-mockito';
-import * as fs from 'fs';
 
 import { UspGetListAnalysis } from '@wri-monorepos/sql';
 import { InputService } from '../files/input.service';

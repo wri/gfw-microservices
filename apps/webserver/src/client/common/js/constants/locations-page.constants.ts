@@ -88,6 +88,7 @@ export const locationsPage = {
     download: 'Download…',
     csv: 'CSV',
     shapefile: 'Shapefile',
+    geojson: 'GeoJSON',
     share: 'Share',
     addToFolder: 'Add to folder',
     manage: 'Manage',

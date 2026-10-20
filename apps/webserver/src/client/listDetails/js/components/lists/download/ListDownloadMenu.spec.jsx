@@ -53,4 +53,26 @@ describe('ListDownloadMenu', () => {
     render(<ListDownloadMenu {...defaultProps} />);
     expect(screen.getByText('Download')).toBeInTheDocument();
   });
+
+  it('renders CSV, Shapefile, and GeoJSON options in the download menu', async () => {
+    const { default: downloadRequest } = jest.requireMock(
+      '../../../../../locations/js/components/lists/download/downloadRequest'
+    );
+    const { fireEvent } = require('@testing-library/react');
+
+    render(<ListDownloadMenu {...defaultProps} />);
+
+    // open the popover
+    fireEvent.click(screen.getByText('Download'));
+
+    expect(screen.getByText('Location(s) CSV')).toBeInTheDocument();
+    expect(screen.getByText('Location(s) Shapefile')).toBeInTheDocument();
+    expect(screen.getByText('Location(s) GeoJSON')).toBeInTheDocument();
+
+    // clicking the GeoJSON option triggers a download request with the geojson format
+    fireEvent.click(screen.getByText('Location(s) GeoJSON'));
+    expect(downloadRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ listID: 123, format: 'geojson', type: 'input' })
+    );
+  });
 });

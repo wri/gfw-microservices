@@ -3,6 +3,7 @@ import { ColumnResolverService } from '../shared/column-resolver.service';
 import { describe, expect, test } from '@jest/globals';
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
+import AdmZip from 'adm-zip';
 
 const geoData = [
   {
@@ -189,12 +190,17 @@ describe('Shapefile Service', () => {
   });
 
   beforeEach(() => {
+    createDirectory(dir);
     geometryService.start(filters);
   });
 
   afterEach(() => {
-    fs.unlinkSync(filePath);
-    fs.rmdirSync(dir);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    if (fs.existsSync(dir)) {
+      fs.rmdirSync(dir);
+    }
   });
 
   test('When input data has 3 locations', async () => {
@@ -210,4 +216,52 @@ describe('Shapefile Service', () => {
     expect(geometryService.uploadFileToS3).toHaveBeenCalled();
     expect(fs.existsSync(`/tmp/${filters.key}.zip`)).toBeTruthy();
   }, 70000);
+
+  describe('GeoJSON download', () => {
+    const geojsonFilters = {
+      listId: 5642,
+      listName: 'WRI',
+      key: 'tmp-geojson',
+      combinedColumnsSplitted: [],
+      selectedLocationsList: [],
+      file: 'geojson',
+    };
+
+    const geojsonDir = `/tmp/wri-${geojsonFilters.key}`;
+    const geojsonFilePath = `${geojsonDir}/${geojsonFilters.listName}.geojson`;
+
+    test('When file is geojson, it zips the geojson without converting to shapefile', async () => {
+      // Fresh service instance so the shared beforeEach pipeline (shapefile)
+      // does not interfere with this run.
+      const geojsonService = new GeometryService(mockColumnResolverService);
+      geojsonService.startEmail = jest.fn();
+      geojsonService.errorEmail = jest.fn();
+      geojsonService.finishedEmail = jest.fn();
+      geojsonService.uploadFileToS3 = jest.fn();
+
+      createDirectory(geojsonDir);
+      await geojsonService.start(geojsonFilters);
+      geojsonService.process(geoData);
+
+      await geojsonService.finish(geojsonFilters);
+
+      // The geojson file content should be valid GeoJSON with the feature included
+      const geojsonContent = fs.readFileSync(geojsonFilePath, 'utf8');
+      const parsed = JSON.parse(geojsonContent);
+      expect(parsed.type).toBe('FeatureCollection');
+      expect(parsed.features).toHaveLength(1);
+      expect(parsed.features[0].properties.Location_Name).toBe('OhBoySoy10');
+
+      // The zip should contain the raw .geojson file (no shapefile sidecar files)
+      const zip = new AdmZip(`/tmp/${geojsonFilters.key}.zip`);
+      const zipEntries = zip.getEntries().map((entry) => entry.entryName);
+      expect(zipEntries).toStrictEqual([`${geojsonFilters.listName}.geojson`]);
+
+      expect(geojsonService.uploadFileToS3).toHaveBeenCalled();
+
+      fs.unlinkSync(geojsonFilePath);
+      fs.rmdirSync(geojsonDir);
+      fs.unlinkSync(`/tmp/${geojsonFilters.key}.zip`);
+    }, 70000);
+  });
 });

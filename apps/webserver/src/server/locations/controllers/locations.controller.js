@@ -348,6 +348,10 @@ export const generateShapefile = async (request, response) => {
   await startTaskToCreateFile(request, response, 'shapefile');
 };
 
+export const generateGeojson = async (request, response) => {
+  await startTaskToCreateFile(request, response, 'geojson');
+};
+
 export const generateCSV = async (request, response) => {
   await startTaskToCreateFile(request, response, 'csv');
 };

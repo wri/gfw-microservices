@@ -119,7 +119,9 @@ export abstract class IPipeService {
     });
 
     if (
-      !['input_csv', 'input_shapefile', 'results_csv'].includes(`${type}_${file}`) &&
+      !['input_csv', 'input_shapefile', 'input_geojson', 'results_csv'].includes(
+        `${type}_${file}`
+      ) &&
       !isGFWList
     ) {
       try {

@@ -1,3 +1,15 @@
+/**
+
+ * Copyright (c) 2026 World Resources Institute
+
+ *
+
+ * This source code is licensed under the MIT license found in the
+
+ * LICENSE file in the root directory of this source tree.
+
+ */
+
 import { Logger } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { HttpStatus } from '@nestjs/common';

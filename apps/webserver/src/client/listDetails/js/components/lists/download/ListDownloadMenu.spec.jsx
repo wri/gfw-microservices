@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ListDownloadMenu from './ListDownloadMenu';
+import downloadRequest from '../../../../../locations/js/components/lists/download/downloadRequest';
 import { userAccessLevel } from '../../../../../common/js/config';
 
 // Mock the dependencies
@@ -31,6 +32,14 @@ jest.mock('../../../../../locations/js/components/lists/download/confirmDialog',
   default: jest.fn(() => <div>ConfirmDialog</div>),
 }));
 
+beforeEach(() => {
+  window.gtag = jest.fn();
+});
+
+afterEach(() => {
+  delete window.gtag;
+});
+
 describe('ListDownloadMenu', () => {
   const defaultProps = {
     combinedColumns: [],
@@ -54,12 +63,7 @@ describe('ListDownloadMenu', () => {
     expect(screen.getByText('Download')).toBeInTheDocument();
   });
 
-  it('renders CSV, Shapefile, and GeoJSON options in the download menu', async () => {
-    const { default: downloadRequest } = jest.requireMock(
-      '../../../../../locations/js/components/lists/download/downloadRequest'
-    );
-    const { fireEvent } = require('@testing-library/react');
-
+  it('renders CSV, Shapefile, and GeoJSON options in the download menu', () => {
     render(<ListDownloadMenu {...defaultProps} />);
 
     // open the popover

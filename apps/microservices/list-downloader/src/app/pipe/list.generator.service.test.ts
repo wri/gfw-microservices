@@ -14,11 +14,12 @@ describe('ListGeneratorServiceTest', () => {
   let analysisDataService: AnalysisDataService;
   let listGeneratorService: ListGeneratorService;
   let uspGetListAnalysis: UspGetListAnalysis;
+  let testingModule: TestingModule;
 
   beforeEach(async () => {
     process.env.MSSQL_DATABASE = 'test-db';
 
-    const module: TestingModule = await Test.createTestingModule({
+    testingModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
@@ -35,10 +36,10 @@ describe('ListGeneratorServiceTest', () => {
       ],
     }).compile();
 
-    listGeneratorService = module.get<ListGeneratorService>(ListGeneratorService);
+    listGeneratorService = testingModule.get<ListGeneratorService>(ListGeneratorService);
 
-    analysisDataService = module.get<AnalysisDataService>(AnalysisDataService);
-    uspGetListAnalysis = module.get<UspGetListAnalysis>(UspGetListAnalysis);
+    analysisDataService = testingModule.get<AnalysisDataService>(AnalysisDataService);
+    uspGetListAnalysis = testingModule.get<UspGetListAnalysis>(UspGetListAnalysis);
 
     jest
       .spyOn(analysisDataService, 'getNumberOfPages')
@@ -94,34 +95,69 @@ describe('ListGeneratorServiceTest', () => {
     });
   });
 
+  it('makeFile with geojson file routes to the geometry service', async () => {
+    const geometryServiceInstance = testingModule.get<GeometryService>(GeometryService);
+
+    const geojsonService = (listGeneratorService as any).defineService({
+      type: 'input',
+      file: 'geojson',
+    });
+    const shapefileService = (listGeneratorService as any).defineService({
+      type: 'input',
+      file: 'shapefile',
+    });
+    const csvService = (listGeneratorService as any).defineService({
+      type: 'input',
+      file: 'csv',
+    });
+
+    expect(geojsonService).toBe(geometryServiceInstance);
+    expect(shapefileService).toBe(geometryServiceInstance);
+    expect(csvService).not.toBe(geometryServiceInstance);
+  });
+
   it('makeFile with geojson file requests geometry from the database', async () => {
-    const mockFilters = {
+    // makeFile merges `geometry: 1` into filters for geojson/shapefile. The
+    // AnalysisDataService mock records what it receives, so assert on it.
+    jest
+      .spyOn(analysisDataService, 'getDataPaginated')
+      .mockImplementation(() => Promise.resolve([{ attributes: '{"SomeAttr":"1"}' } as any]));
+
+    await listGeneratorService.makeFile({
       organizationDatabase: 'client-db',
       listId: 15,
       combinedColumns: '',
       selectedLocations: '',
       file: 'geojson',
       isGFWList: false,
-    };
+    });
 
-    const writeFileSpy = jest.spyOn(fs, 'writeFileSync').mockImplementation();
-    const geometryService = (listGeneratorService as any).geometryService;
-    const startSpy = jest.spyOn(geometryService, 'start').mockResolvedValue(undefined);
-    const processSpy = jest.spyOn(geometryService, 'process').mockImplementation(() => undefined);
-    const finishSpy = jest.spyOn(geometryService, 'finish').mockResolvedValue(undefined);
+    // The first call is getListOfFields (before geometry is merged); page calls carry the merged filters
+    const pageCalls = (analysisDataService.getDataPaginated as jest.Mock).mock.calls as Array<
+      Array<{ geometry?: number }>
+    >;
+    const mergedFilters = pageCalls[1][0];
+    expect(mergedFilters.geometry).toBe(1);
+  });
 
-    await listGeneratorService.makeFile(mockFilters);
+  it('makeFile with csv file does not request geometry from the database', async () => {
+    jest
+      .spyOn(analysisDataService, 'getDataPaginated')
+      .mockImplementation(() => Promise.resolve([{ attributes: '{"SomeAttr":"1"}' } as any]));
 
-    expect(startSpy).toHaveBeenCalled();
-    expect(processSpy).toHaveBeenCalled();
-    expect(finishSpy).toHaveBeenCalled();
+    await listGeneratorService.makeFile({
+      organizationDatabase: 'client-db',
+      listId: 15,
+      combinedColumns: '',
+      selectedLocations: '',
+      file: 'csv',
+      isGFWList: false,
+    });
 
-    const filtersPassed = finishSpy.mock.calls[0][0];
-    expect(filtersPassed.geometry).toBe(1);
-
-    writeFileSpy.mockRestore();
-    startSpy.mockRestore();
-    processSpy.mockRestore();
-    finishSpy.mockRestore();
+    const pageCalls = (analysisDataService.getDataPaginated as jest.Mock).mock.calls as Array<
+      Array<{ geometry?: number }>
+    >;
+    const mergedFilters = pageCalls[1][0];
+    expect(mergedFilters.geometry).toBe(0);
   });
 });

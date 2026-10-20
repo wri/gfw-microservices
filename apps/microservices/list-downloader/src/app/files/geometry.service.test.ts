@@ -3,7 +3,7 @@ import { ColumnResolverService } from '../shared/column-resolver.service';
 import { describe, expect, test } from '@jest/globals';
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
-import AdmZip from 'adm-zip';
+import AdmZip = require('adm-zip');
 
 const geoData = [
   {

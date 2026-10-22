@@ -347,8 +347,8 @@
     ]
   },
   "allowScripts": {
-    "sqlite3@5.1.7": true,
-    "cypress@15.15.0": true,
-    "nx@16.7.4": true
+    "cypress": true,
+    "nx": true,
+    "sqlite3": true
   }
 }

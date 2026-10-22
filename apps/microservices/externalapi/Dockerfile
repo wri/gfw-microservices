@@ -1,4 +1,4 @@
-FROM amd64/node:24.16.0 as builder
+FROM amd64/node:24.22.1 as builder
 WORKDIR /build
 COPY package.json .
 COPY package-lock.json .
@@ -9,7 +9,7 @@ RUN npm config set fetch-retries 5 \
  && npm config set fetch-timeout 600000 \
  && for i in 1 2 3; do npm ci --legacy-peer-deps && break || { echo "npm ci failed (attempt $i), retrying..."; [ "$i" -lt 3 ] && sleep 15 || exit 1; }; done
 
-FROM amd64/node:24.16.0 as appbuilder
+FROM amd64/node:24.22.1 as appbuilder
 WORKDIR /appbuilder
 COPY --from=builder /build/ /appbuilder/
 COPY ./ .
@@ -17,7 +17,7 @@ COPY ./ .
 RUN /appbuilder/node_modules/.bin/nx build microservices-externalapi --configuration=production
 
 
-FROM amd64/node:24.16.0
+FROM amd64/node:24.22.1
 WORKDIR /app
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_OPTIONS=--max-old-space-size=16384

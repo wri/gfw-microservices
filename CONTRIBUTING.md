@@ -4,7 +4,7 @@ Thanks for your interest in contributing to this repository.
 
 ## Prerequisites
 
-- Node.js `24.16.0`
+- Node.js `24.22.1`
 - npm
 - Docker (required for local Redis when running webserver)
 

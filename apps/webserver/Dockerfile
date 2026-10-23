@@ -1,5 +1,5 @@
 # Install the main node OS from an official image.
-FROM amd64/node:24.16.0
+FROM amd64/node:24.22.1
 
 #Description of the Image.
 LABEL Description="This is the Global Forest Watch Pro web application container."

@@ -345,5 +345,10 @@
     "*.{json, md, yml}": [
       "nx format:write --uncommitted"
     ]
+  },
+  "allowScripts": {
+    "cypress": true,
+    "nx": true,
+    "sqlite3": true
   }
 }

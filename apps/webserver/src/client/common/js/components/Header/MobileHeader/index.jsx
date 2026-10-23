@@ -9,6 +9,7 @@ import HeaderNavLink from '../HeaderNavLink';
 import MoreInformationAccordion from './MoreInformationAccordion';
 import LoginForm from '../LoginForm';
 import Logo from '../Logo';
+import RequestAccountDialog from '../RequestAccountDialog';
 import { nav } from '../../../config';
 import '../Header.scss';
 
@@ -41,11 +42,7 @@ function MobileHeader({ isLoggedIn }) {
             </div>
 
             <div style={{ justifyContent: 'center', display: 'flex', paddingBottom: '10px' }}>
-              <HeaderNavLink
-                link="/account"
-                label={nav.requestAccount}
-                className="header__request-account-button"
-              />
+              <RequestAccountDialog />
             </div>
             <MenuItem>
               <ListItemText>

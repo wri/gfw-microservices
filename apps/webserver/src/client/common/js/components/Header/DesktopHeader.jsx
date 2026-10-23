@@ -5,6 +5,7 @@ import MoreInformationLinksDropdown from './MoreInformationLinksDropdown';
 import LoginForm from './LoginForm';
 import LanguageDropdownMenu from './LanguageDropdownMenu';
 import Logo from './Logo';
+import RequestAccountDialog from './RequestAccountDialog';
 import { nav } from '../../config';
 import './Header.scss';
 
@@ -57,11 +58,7 @@ function DesktopHeader({ isLoggedIn, active }) {
               link="https://www.globalforestwatch.org/help/gfw-pro/"
               label="Help Center"
             />
-            <HeaderNavLink
-              link="/account"
-              label={nav.requestAccount}
-              className="header__request-account-button"
-            />
+            <RequestAccountDialog />
             <LoginForm />
           </>
         )}

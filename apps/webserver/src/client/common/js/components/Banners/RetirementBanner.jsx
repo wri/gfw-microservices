@@ -27,7 +27,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const tUsing = useTransifexTranslation('Using or considering GFW Pro today? Read the');
   const tTransitionGuidance = useTransifexTranslation('transition guidance');
   const tAnd = useTransifexTranslation('and');
-  const tExportData = useTransifexTranslation('export your data');
+  const tExportData = useTransifexTranslation('export your data.');
   const tBothPaths = useTransifexTranslation('. Both paths are self-service.');
 
   if (dismissed) {

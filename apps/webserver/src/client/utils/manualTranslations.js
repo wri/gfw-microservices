@@ -265,6 +265,43 @@ export const manualTranslations = {
     es: 'Guardar cambios',
     pt: 'Salvar alterações',
   },
+  'Request an account': {
+    es: 'Solicitar una cuenta',
+    pt: 'Solicitar uma conta',
+  },
+  'Got it': {
+    es: 'Entendido',
+    pt: 'Entendi',
+  },
+  'GFW Pro retires December 31, 2026': {
+    es: 'GFW Pro se retira el 31 de diciembre de 2026',
+    pt: 'O GFW Pro será desativado em 31 de dezembro de 2026',
+  },
+  'GFW Pro, including the web interface and API, is consolidating into Global Nature Watch and will retire on December 31, 2026.':
+    {
+      es: 'GFW Pro, incluida la interfaz web y la API, se está consolidando en Global Nature Watch y se retirará el 31 de diciembre de 2026.',
+      pt: 'O GFW Pro, incluindo a interface web e a API, está sendo consolidado no Global Nature Watch e será desativado em 31 de dezembro de 2026.',
+    },
+  'Global Nature Watch offers two self-service transition paths.': {
+    es: 'Global Nature Watch ofrece dos rutas de transición de autoservicio.',
+    pt: 'O Global Nature Watch oferece dois caminhos de transição de autoatendimento.',
+  },
+  'Read the transition blog': {
+    es: 'Lea el blog de transición',
+    pt: 'Leia o blog de transição',
+  },
+  'and plan to': {
+    es: 'y planifique',
+    pt: 'e planeje',
+  },
+  'export your data': {
+    es: 'exportar sus datos',
+    pt: 'exportar seus dados',
+  },
+  'before then, as data will be deleted.': {
+    es: 'antes de esa fecha, ya que los datos serán eliminados.',
+    pt: 'antes dessa data, pois os dados serão excluídos.',
+  },
   "Select which type(s) of data analysis you'd like to be available for this list. Note that analysis processing counts towards your account usage limits. See more information":
     {
       es: 'Seleccione qué tipo(s) de análisis de datos desea tener disponibles para esta lista. Tenga en cuenta que el procesamiento de análisis cuenta para los límites de uso de su cuenta. Ver más información',
@@ -318,9 +355,9 @@ export const manualTranslations = {
     es: 'y',
     pt: 'e',
   },
-  'export your data': {
-    es: 'exporte sus datos',
-    pt: 'exporte seus dados',
+  'export your data.': {
+    es: 'exporte sus datos.',
+    pt: 'exporte seus dados.',
   },
   '. Both paths are self-service.': {
     es: '. Ambas rutas son de autoservicio.',

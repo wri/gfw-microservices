@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as JSONStream from 'JSONStream';
+import * as archiver from 'archiver';
 
 import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
@@ -29,8 +30,8 @@ export class GeometryService extends IPipeService {
   }
 
   async start(filters: ListFieldsFileRequest) {
-    const { listId, key, combinedColumnsSplitted, listName } = filters;
-    this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
+    const { listId, key, combinedColumnsSplitted, listName, file } = filters;
+    this.logger.log(`(${listId}) - Starting ${file} stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
     });
@@ -92,13 +93,32 @@ export class GeometryService extends IPipeService {
   }
 
   async finish(filters: ListFieldsFileRequest) {
-    const { listId, key, listName } = filters;
-    this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
+    const { listId, key, listName, file } = filters;
+    this.logger.log(`(${listId}) - Finished to process data and generate ${file}`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    await this.convertGeojsonToSHP(key, listName);
+    if (file === 'geojson') {
+      await this.zipGeojson(key, listName);
+    } else {
+      await this.convertGeojsonToSHP(key, listName);
+    }
     this.logger.log(`(${listId}) - Data has been zipped`);
     await this.finishProcess(filters);
+  }
+
+  private async zipGeojson(key: string, listName: string) {
+    const output = fs.createWriteStream(`/tmp/${key}.zip`);
+    const archive = archiver('zip', { zlib: { level: 1 } });
+    output.on('close', () => {
+      this.logger.log(`GeoJSON zip finalized for ${listName}`);
+    });
+    archive.pipe(output);
+    archive.append(fs.createReadStream(`/tmp/wri-${key}/${listName}.geojson`), {
+      name: `${listName}.geojson`,
+    });
+    await archive.finalize();
+    await finished(output);
+    output.destroy();
   }
 
   private async convertGeojsonToSHP(key: string, listName: string) {

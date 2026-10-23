@@ -69,8 +69,8 @@ export class ListGeneratorService extends IFileGenerator {
       combinedColumnsSplitted,
       selectedLocationsList,
       listLevelAnalysis,
-      // has to add the following parameter to bring the geometry from the database, use only for shapefile
-      geometry: file === 'shapefile' ? 1 : 0,
+      // has to add the following parameter to bring the geometry from the database, use for shapefile and geojson
+      geometry: file === 'shapefile' || file === 'geojson' ? 1 : 0,
       fields,
     };
 
@@ -99,6 +99,7 @@ export class ListGeneratorService extends IFileGenerator {
     const mapFileType2Service = {
       input_csv: this.inputService,
       input_shapefile: this.geometryService,
+      input_geojson: this.geometryService,
     };
 
     return mapFileType2Service[`${type}_${file}`] ?? this.dashboardService;

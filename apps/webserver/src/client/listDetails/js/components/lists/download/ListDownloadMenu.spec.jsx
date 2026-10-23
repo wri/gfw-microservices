@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ListDownloadMenu from './ListDownloadMenu';
+import downloadRequest from '../../../../../locations/js/components/lists/download/downloadRequest';
 import { userAccessLevel } from '../../../../../common/js/config';
 
 // Mock the dependencies
@@ -31,6 +32,14 @@ jest.mock('../../../../../locations/js/components/lists/download/confirmDialog',
   default: jest.fn(() => <div>ConfirmDialog</div>),
 }));
 
+beforeEach(() => {
+  window.gtag = jest.fn();
+});
+
+afterEach(() => {
+  delete window.gtag;
+});
+
 describe('ListDownloadMenu', () => {
   const defaultProps = {
     combinedColumns: [],
@@ -52,5 +61,22 @@ describe('ListDownloadMenu', () => {
   it('renders the download button when isHoverMenu is false', () => {
     render(<ListDownloadMenu {...defaultProps} />);
     expect(screen.getByText('Download')).toBeInTheDocument();
+  });
+
+  it('renders CSV, Shapefile, and GeoJSON options in the download menu', () => {
+    render(<ListDownloadMenu {...defaultProps} />);
+
+    // open the popover
+    fireEvent.click(screen.getByText('Download'));
+
+    expect(screen.getByText('Location(s) CSV')).toBeInTheDocument();
+    expect(screen.getByText('Location(s) Shapefile')).toBeInTheDocument();
+    expect(screen.getByText('Location(s) GeoJSON')).toBeInTheDocument();
+
+    // clicking the GeoJSON option triggers a download request with the geojson format
+    fireEvent.click(screen.getByText('Location(s) GeoJSON'));
+    expect(downloadRequest).toHaveBeenCalledWith(
+      expect.objectContaining({ listID: 123, format: 'geojson', type: 'input' })
+    );
   });
 });

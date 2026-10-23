@@ -72,6 +72,17 @@ function LandingDownload({
           <ListItemText>{locationsPage.lists.shapefile}</ListItemText>
         </MenuItem>
       );
+      newMenuItem.push(
+        <MenuItem
+          key="geojson"
+          onClick={() => localHandleDownload({ format: 'geojson', type: 'input' })}
+        >
+          <ListItemIcon>
+            <DownloadIcon />
+          </ListItemIcon>
+          <ListItemText>{locationsPage.lists.geojson}</ListItemText>
+        </MenuItem>
+      );
     }
 
     if (isLargeList && hasErrorFile && error_file_storage_path !== 'None') {

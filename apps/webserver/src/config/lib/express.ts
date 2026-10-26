@@ -20,28 +20,12 @@ const { compiledAssets } = config;
 import { PRODUCTION_ENVIRONMENTS } from '../config/environments.config';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';
+import { createSplashPageMiddleware } from './splashPage';
 import * as expressRateLimit from 'express-rate-limit';
 import * as redisRateLimit from 'rate-limit-redis';
 
 // skip certain things not useful for jest unit testing
 const unitTestMode = process.env.NODE_ENV === 'test';
-
-/**
- * Splash page configuration.
- * After this date, all page routes serve the retirement splash page
- * (React view rendered via splashLayout.pug) instead of the normal application.
- * Copy/design is provisional — final version TBD.
- *
- * SPLASH_PAGE_ENABLED=false disables the splash page entirely.
- * SPLASH_PAGE_DATE overrides the activation date (ISO string), e.g. for
- * local preview: SPLASH_PAGE_DATE=2020-01-01
- */
-const SPLASH_PAGE_DATE = process.env.SPLASH_PAGE_DATE
-  ? new Date(process.env.SPLASH_PAGE_DATE)
-  : new Date('2026-12-31T23:59:59Z');
-const SPLASH_PAGE_ENABLED = process.env.SPLASH_PAGE_ENABLED !== 'false';
-
-const isSplashPageActive = () => SPLASH_PAGE_ENABLED && Date.now() >= SPLASH_PAGE_DATE.getTime();
 
 // Updating redis and connect-redis requires syntax change for creating client
 // redisClient is provided to new RedisStore({client:redisClient})
@@ -282,30 +266,27 @@ const configureServerRoutes = (app: Application, limiter: any) => {
  * @param {Express.Application} app
  */
 const configureSplashPage = (app: Application) => {
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (!isSplashPageActive()) {
-      return next();
-    }
-    if (req.method !== 'GET' || req.path.startsWith('/api/')) {
-      return next();
-    }
-    // Let requests for bundled static assets (images, fonts, etc.) fall through
-    // to the static asset middleware instead of rendering the splash page.
-    if (/\.[a-zA-Z0-9]+$/.test(req.path) && !req.path.endsWith('.html')) {
-      return next();
-    }
-    const Splash = compiledAssets.js['splash-component']
-      ? (compiledAssets.js['splash-component'] as { default: unknown }).default
-      : null;
-    const markup = Splash ? renderToString(createElement(Splash as React.ComponentType)) : '';
-    return res.status(200).render('splash', {
-      title: 'GFW Pro has closed | Global Nature Watch',
-      description: 'GFW Pro has retired. Transition to Global Nature Watch.',
-      splashjs: compiledAssets.js.splash,
-      splashcss: compiledAssets.css.splash,
-      markup,
-    });
-  });
+  app.use(
+    createSplashPageMiddleware({
+      date: process.env.SPLASH_PAGE_DATE,
+      enabled: process.env.SPLASH_PAGE_ENABLED,
+      renderSplash: (res: Response) => {
+        const Splash = compiledAssets.js['splash-component']
+          ? (compiledAssets.js['splash-component'] as { default: unknown }).default
+          : null;
+        const markup = Splash
+          ? renderToString(createElement(Splash as React.ComponentType))
+          : '';
+        return res.status(200).render('splash', {
+          title: 'GFW Pro has closed | Global Nature Watch',
+          description: 'GFW Pro has retired. Transition to Global Nature Watch.',
+          splashjs: compiledAssets.js.splash,
+          splashcss: compiledAssets.css.splash,
+          markup,
+        });
+      },
+    })
+  );
 };
 
 /**

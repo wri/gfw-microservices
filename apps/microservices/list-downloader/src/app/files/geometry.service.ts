@@ -134,8 +134,7 @@ export class GeometryService extends IPipeService {
     archive.append(fs.createReadStream(`/tmp/wri-${key}/${listName}.geojson`), {
       name: `${listName}.geojson`,
     });
-    await archive.finalize();
-    await finished(output);
+    await Promise.all([finished(output), archive.finalize()]);
     output.destroy();
   }
 

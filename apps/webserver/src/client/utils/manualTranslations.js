@@ -292,20 +292,14 @@ export const manualTranslations = {
       es: 'Como parte de la evolución de Global Forest Watch hacia Global Nature Watch, estamos consolidando nuestro conjunto de productos y GFW Pro, incluidas tanto la interfaz web como la API, se retirará el 31 de diciembre de 2026. Global Nature Watch ofrece dos rutas de transición:',
       pt: 'Como parte da evolução do Global Forest Watch para o Global Nature Watch, estamos consolidando nosso conjunto de produtos e o GFW Pro, incluindo a interface web e a API, será desativado em 31 de dezembro de 2026. O Global Nature Watch oferece dois caminhos de transição:',
     },
-  'Self-hosted monitoring': {
-    es: 'Monitoreo autoalojado',
-    pt: 'Monitoramento auto-hospedado',
+  'Please read our blog post to learn more about these transition paths.': {
+    es: 'Lea nuestra publicación en el blog para obtener más información sobre estas rutas de transición.',
+    pt: 'Leia nossa postagem no blog para saber mais sobre esses caminhos de transição.',
   },
-  ': Available now. Open datasets and scripts that reproduce GFW Pro’s Post-2020 Risk Assessment and Recent Disturbance Alerts on your own infrastructure. Requires GIS or data engineering capacity. Your technical team can start today.':
-    {
-      es: ': Disponible ahora. Conjuntos de datos abiertos y scripts que reproducen la Evaluación de Riesgo Post-2020 y las Alertas de Perturbación Reciente de GFW Pro en su propia infraestructura. Requiere capacidad de SIG o ingeniería de datos. Su equipo técnico puede comenzar hoy.',
-      pt: ': Disponível agora. Conjuntos de dados abertos e scripts que reproduzem a Avaliação de Risco Pós-2020 e os Alertas de Perturbação Recente do GFW Pro em sua própria infraestrutura. Requer capacidade de SIG ou engenharia de dados. Sua equipe técnica pode começar hoje.',
-    },
-  ': Available in preview now, free browser-based monitoring with no GIS staff or infrastructure needed. EUDR- and AFi-aligned reporting dashboards coming in months ahead.':
-    {
-      es: ': Disponible ahora en vista previa, monitoreo gratuito basado en navegador sin necesidad de personal de SIG ni infraestructura. Paneles de informes alineados con EUDR y AFi llegarán en los próximos meses.',
-      pt: ': Disponível agora em prévia, monitoramento gratuito baseado em navegador sem necessidade de equipe de SIG ou infraestrutura. Painéis de relatórios alinhados com EUDR e AFi chegarão nos próximos meses.',
-    },
+  'Please note, we will not accept requests for new accounts after November 2nd.': {
+    es: 'Tenga en cuenta que no aceptaremos solicitudes de nuevas cuentas después del 2 de noviembre.',
+    pt: 'Observe que não aceitaremos solicitações de novas contas após 2 de novembro.',
+  },
   'Using or considering GFW Pro today? Read the': {
     es: '¿Usa o considera GFW Pro hoy? Lea la',
     pt: 'Usa ou está considerando o GFW Pro hoje? Leia o',

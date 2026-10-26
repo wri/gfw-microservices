@@ -10,8 +10,24 @@ const TRANSITION_BLOG_URL =
 const EXPORT_DATA_URL =
   'https://globalnaturewatch.org/help/gfw-pro/guides/share-receive-export-lists/';
 
-function RequestAccountDialog() {
-  const [open, setOpen] = useState(false);
+export function RequestAccountDialogButton({ onClick }) {
+  const translatedTitle = useTransifexTranslation('Request an account');
+  return (
+    <button type="button" className="header__request-account-button" onClick={onClick}>
+      {translatedTitle}
+    </button>
+  );
+}
+
+function RequestAccountDialog({ open: controlledOpen, onOpenChange }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = (value) => {
+    setInternalOpen(value);
+    if (onOpenChange) {
+      onOpenChange(value);
+    }
+  };
   const translatedTitle = useTransifexTranslation('Request an account');
   const translatedHeading = useTransifexTranslation('GFW Pro retires December 31, 2026');
   const translatedBody = useTransifexTranslation(
@@ -29,16 +45,8 @@ function RequestAccountDialog() {
   const handleClose = () => setOpen(false);
 
   return (
-    <>
-      <button
-        type="button"
-        className="header__request-account-button"
-        onClick={() => setOpen(true)}
-      >
-        {translatedTitle}
-      </button>
-      <CustomDialog
-        open={open}
+    <CustomDialog
+      open={open}
         dialogActionConfirm={
           <PillButton variant="contained" size="small" onClick={handleClose}>
             {translatedGotIt}
@@ -64,7 +72,6 @@ function RequestAccountDialog() {
           </>
         }
       />
-    </>
   );
 }
 

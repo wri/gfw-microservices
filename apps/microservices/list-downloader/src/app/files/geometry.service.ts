@@ -97,13 +97,26 @@ export class GeometryService extends IPipeService {
     this.logger.log(`(${listId}) - Finished to process data and generate ${file}`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
-    if (file === 'geojson') {
-      await this.zipGeojson(key, listName);
-    } else {
-      await this.convertGeojsonToSHP(key, listName);
+    try {
+      if (file === 'geojson') {
+        await this.zipGeojson(key, listName);
+      } else {
+        await this.convertGeojsonToSHP(key, listName);
+      }
+      this.logger.log(`(${listId}) - Data has been zipped`);
+      await this.finishProcess(filters);
+    } catch (error) {
+      // Zipping, S3 upload, or the finished-email itself failed. Without this
+      // catch the user would never learn the download failed (the controller
+      // only logs the rejection), so notify them via the error email.
+      this.logger.error(
+        `(${listId}) - Failed to finalize ${file} download: ${
+          error instanceof Error ? error.stack : error
+        }`
+      );
+      await this.errorEmail(filters);
+      throw error;
     }
-    this.logger.log(`(${listId}) - Data has been zipped`);
-    await this.finishProcess(filters);
   }
 
   private async zipGeojson(key: string, listName: string) {
@@ -111,6 +124,11 @@ export class GeometryService extends IPipeService {
     const archive = archiver('zip', { zlib: { level: 1 } });
     output.on('close', () => {
       this.logger.log(`GeoJSON zip finalized for ${listName}`);
+    });
+    // Surface archiver errors (e.g. missing source file) instead of letting
+    // them become unhandled error events that crash the process silently.
+    archive.on('error', (err) => {
+      throw err;
     });
     archive.pipe(output);
     archive.append(fs.createReadStream(`/tmp/wri-${key}/${listName}.geojson`), {

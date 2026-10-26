@@ -274,9 +274,7 @@ const configureSplashPage = (app: Application) => {
         const Splash = compiledAssets.js['splash-component']
           ? (compiledAssets.js['splash-component'] as { default: unknown }).default
           : null;
-        const markup = Splash
-          ? renderToString(createElement(Splash as React.ComponentType))
-          : '';
+        const markup = Splash ? renderToString(createElement(Splash as React.ComponentType)) : '';
         return res.status(200).render('splash', {
           title: 'GFW Pro has closed | Global Nature Watch',
           description: 'GFW Pro has retired. Transition to Global Nature Watch.',

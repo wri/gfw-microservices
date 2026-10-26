@@ -6,9 +6,10 @@ const createReq = (overrides: Partial<Request> = {}): Request =>
     method: 'GET',
     path: '/',
     ...overrides,
-  }) as unknown as Request;
+  } as unknown as Request);
 
-const createRes = (): Response => ({ status: jest.fn().mockReturnThis(), render: jest.fn() }) as unknown as Response;
+const createRes = (): Response =>
+  ({ status: jest.fn().mockReturnThis(), render: jest.fn() } as unknown as Response);
 
 const createNext = (): NextFunction => jest.fn();
 

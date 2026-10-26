@@ -17,7 +17,9 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
     'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro, including both the web interface and the API, will retire on December 31, 2026. Global Nature Watch offers two transition paths.'
   );
   const tUsing = useTransifexTranslation('Using or considering GFW Pro today? Read the');
-  const tBlogPost = useTransifexTranslation('Please read our blog post to learn more about these transition paths.');
+  const tBlogPost = useTransifexTranslation(
+    'Please read our blog post to learn more about these transition paths.'
+  );
   const tTransitionGuidance = useTransifexTranslation('transition guidance');
   const tAnd = useTransifexTranslation('and');
   const tExportData = useTransifexTranslation('export your data');
@@ -62,9 +64,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
           {tTitle}
         </Typography>
       </AlertTitle>
-      <Typography variant="body2">
-        {tIntro}
-      </Typography>
+      <Typography variant="body2">{tIntro}</Typography>
       <Link href={BLOG_LINK} target="_blank" rel="noopener noreferrer">
         {tBlogPost}
       </Link>{' '}

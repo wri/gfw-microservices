@@ -9,9 +9,7 @@ import HeaderNavLink from '../HeaderNavLink';
 import MoreInformationAccordion from './MoreInformationAccordion';
 import LoginForm from '../LoginForm';
 import Logo from '../Logo';
-import RequestAccountDialog, {
-  RequestAccountDialogButton,
-} from '../RequestAccountDialog';
+import RequestAccountDialog, { RequestAccountDialogButton } from '../RequestAccountDialog';
 import { nav } from '../../../config';
 import '../Header.scss';
 
@@ -103,10 +101,7 @@ function MobileHeader({ isLoggedIn }) {
           <Divider />
         </div>
       )}
-      <RequestAccountDialog
-        open={requestAccountOpen}
-        onOpenChange={setRequestAccountOpen}
-      />
+      <RequestAccountDialog open={requestAccountOpen} onOpenChange={setRequestAccountOpen} />
     </>
   );
 }

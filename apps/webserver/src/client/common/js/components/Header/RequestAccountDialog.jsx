@@ -47,31 +47,31 @@ function RequestAccountDialog({ open: controlledOpen, onOpenChange }) {
   return (
     <CustomDialog
       open={open}
-        dialogActionConfirm={
-          <PillButton variant="contained" size="small" onClick={handleClose}>
-            {translatedGotIt}
-          </PillButton>
-        }
-        dialogTitle={translatedTitle}
-        dialogMessage={
-          <>
-            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-              {translatedHeading}
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              {translatedBody} {translatedTransitionPaths}{' '}
-              <Link href={TRANSITION_BLOG_URL} target="_blank" rel="noopener noreferrer">
-                {translatedReadBlog}
-              </Link>{' '}
-              {translatedAndPlanTo}{' '}
-              <Link href={EXPORT_DATA_URL} target="_blank" rel="noopener noreferrer">
-                {translatedExportData}
-              </Link>{' '}
-              {translatedBeforeThen}
-            </Typography>
-          </>
-        }
-      />
+      dialogActionConfirm={
+        <PillButton variant="contained" size="small" onClick={handleClose}>
+          {translatedGotIt}
+        </PillButton>
+      }
+      dialogTitle={translatedTitle}
+      dialogMessage={
+        <>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            {translatedHeading}
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            {translatedBody} {translatedTransitionPaths}{' '}
+            <Link href={TRANSITION_BLOG_URL} target="_blank" rel="noopener noreferrer">
+              {translatedReadBlog}
+            </Link>{' '}
+            {translatedAndPlanTo}{' '}
+            <Link href={EXPORT_DATA_URL} target="_blank" rel="noopener noreferrer">
+              {translatedExportData}
+            </Link>{' '}
+            {translatedBeforeThen}
+          </Typography>
+        </>
+      }
+    />
   );
 }
 

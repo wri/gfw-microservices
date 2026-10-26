@@ -6,9 +6,7 @@ import MoreInformationLinksDropdown from './MoreInformationLinksDropdown';
 import LoginForm from './LoginForm';
 import LanguageDropdownMenu from './LanguageDropdownMenu';
 import Logo from './Logo';
-import RequestAccountDialog, {
-  RequestAccountDialogButton,
-} from './RequestAccountDialog';
+import RequestAccountDialog, { RequestAccountDialogButton } from './RequestAccountDialog';
 import { nav } from '../../config';
 import './Header.scss';
 

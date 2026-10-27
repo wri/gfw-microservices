@@ -287,10 +287,10 @@ export const manualTranslations = {
     es: 'Nuevas alternativas ante el retiro de GFW Pro el 31 de diciembre de 2026',
     pt: 'Novos caminhos enquanto o GFW Pro é desativado em 31 de dezembro de 2026',
   },
-  'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro, including both the web interface and the API, will retire on December 31, 2026. Global Nature Watch offers two transition paths:':
+  'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro, including both the web interface and the API, will retire on December 31, 2026. Global Nature Watch offers two transition paths.':
     {
-      es: 'Como parte de la evolución de Global Forest Watch hacia Global Nature Watch, estamos consolidando nuestro conjunto de productos y GFW Pro, incluidas tanto la interfaz web como la API, se retirará el 31 de diciembre de 2026. Global Nature Watch ofrece dos rutas de transición:',
-      pt: 'Como parte da evolução do Global Forest Watch para o Global Nature Watch, estamos consolidando nosso conjunto de produtos e o GFW Pro, incluindo a interface web e a API, será desativado em 31 de dezembro de 2026. O Global Nature Watch oferece dois caminhos de transição:',
+      es: 'Como parte de la evolución de Global Forest Watch hacia Global Nature Watch, estamos consolidando nuestro conjunto de productos y GFW Pro, incluidas tanto la interfaz web como la API, se retirará el 31 de diciembre de 2026. Global Nature Watch ofrece dos rutas de transición.',
+      pt: 'Como parte da evolução do Global Forest Watch para o Global Nature Watch, estamos consolidando nosso conjunto de produtos e o GFW Pro, incluindo a interface web e a API, será desativado em 31 de dezembro de 2026. O Global Nature Watch oferece dois caminhos de transição.',
     },
   'Please read our blog post to learn more about these transition paths.': {
     es: 'Lea nuestra publicación en el blog para obtener más información sobre estas rutas de transición.',

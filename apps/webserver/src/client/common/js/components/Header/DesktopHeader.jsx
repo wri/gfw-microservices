@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import HeaderNavLink from './HeaderNavLink';
 import NewFeatureNotifications from './NewFeatureNotifications';
 import AccountDropDownMenu from './AccountDropDownMenu';
@@ -5,11 +6,13 @@ import MoreInformationLinksDropdown from './MoreInformationLinksDropdown';
 import LoginForm from './LoginForm';
 import LanguageDropdownMenu from './LanguageDropdownMenu';
 import Logo from './Logo';
+import RequestAccountDialog, { RequestAccountDialogButton } from './RequestAccountDialog';
 import { nav } from '../../config';
 import './Header.scss';
 
 function DesktopHeader({ isLoggedIn, active }) {
   const isProManager = active === 'pro-manager';
+  const [requestAccountOpen, setRequestAccountOpen] = useState(false);
   return (
     <header className={`header ${isLoggedIn ? '' : 'header--responsive'}`} data-cy="desktopHeader">
       <nav className="header__container">
@@ -57,11 +60,8 @@ function DesktopHeader({ isLoggedIn, active }) {
               link="https://www.globalforestwatch.org/help/gfw-pro/"
               label="Help Center"
             />
-            <HeaderNavLink
-              link="/account"
-              label={nav.requestAccount}
-              className="header__request-account-button"
-            />
+            <RequestAccountDialogButton onClick={() => setRequestAccountOpen(true)} />
+            <RequestAccountDialog open={requestAccountOpen} onOpenChange={setRequestAccountOpen} />
             <LoginForm />
           </>
         )}

@@ -1,6 +1,12 @@
 .list-diagnostics-dialog {
   min-width: 750px;
 
+  @media (max-width: 780px) {
+    min-width: 0;
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+  }
+
   &__actions {
     display: flex;
     align-items: center;

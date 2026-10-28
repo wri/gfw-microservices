@@ -76,9 +76,8 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         {tAnd}{' '}
         <Link href={EXPORT_LINK} target="_blank" rel="noopener noreferrer">
           {tExportData}
-        </Link>
-        {' '}{tBothPaths}{' '}
-        {tNewAccountRequests}
+        </Link>{' '}
+        {tBothPaths} {tNewAccountRequests}
       </Typography>
     </Alert>
   );

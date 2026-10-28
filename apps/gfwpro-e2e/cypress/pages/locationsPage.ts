@@ -35,6 +35,7 @@ class LocationsPage {
     downloadCSVOptionBtn: () => cy.contains('CSV'),
     mapOptionBtn: () => cy.contains('span[role="menuitem"]', 'Map'),
     downloadShapefileptionBtn: () => cy.contains('Shapefile'),
+    downloadGeojsonOptionBtn: () => cy.contains('GeoJSON'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadTemplateBtn: () => cy.contains('Download'),
     downloadTemplateUploadLocationBtn: () => cy.get('[data-testid="DownloadIcon"]'),
@@ -312,6 +313,10 @@ class LocationsPage {
   }
   clickOnDownloadList() {
     this.elements.downloadListBtn().click();
+  }
+
+  clickOnGeojsonDownloadOption() {
+    this.elements.downloadGeojsonOptionBtn().click();
   }
 
   clickOnLocationCheckbox(locationName: string) {

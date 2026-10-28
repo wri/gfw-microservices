@@ -11,6 +11,7 @@ class ListDetailsPage {
     downloadCSVOptionListDetail: () => cy.contains('CSV'),
     downloadResultsOptionListDetail: () => cy.contains('Results'),
     downloadShapefileptionListDetail: () => cy.contains('Shapefile'),
+    downloadGeojsonOptionListDetail: () => cy.get('[data-cy="download-list-geojson"]'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
     copyMoveBtn: () => cy.contains('Copy/Move'),
     copyBtn: () => cy.get('.MuiButton-primary'),
@@ -327,6 +328,9 @@ class ListDetailsPage {
   }
   clickOnShapefileOption() {
     this.elements.downloadShapefileptionListDetail().click();
+  }
+  clickOnGeojsonOption() {
+    this.elements.downloadGeojsonOptionListDetail().click();
   }
   openAlertsLandCoverSelect() {
     this.elements.alertsLandCoverSelect().click();

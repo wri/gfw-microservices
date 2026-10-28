@@ -35,6 +35,15 @@ describe('Locations View', () => {
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
     listDetailPage.clickCloseAlertDownload();
+
+    locationsPage.clickOnMoreOptionsListOK();
+    //Download GeoJSON
+    locationsPage.clickOnDownloadList();
+    expect(locationsPage.elements.downloadGeojsonOptionBtn().should('be.visible'));
+    locationsPage.clickOnGeojsonDownloadOption();
+    expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
+    expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
+    listDetailPage.clickCloseAlertDownload();
   });
 
   Then('I test download list into list details', () => {
@@ -52,6 +61,13 @@ describe('Locations View', () => {
     //Download Shapefile
     listDetailPage.clickOnDownload();
     listDetailPage.clickOnShapefileOption();
+    expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
+    expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
+    listDetailPage.clickCloseAlertDownload();
+    //Download GeoJSON
+    listDetailPage.clickOnDownload();
+    expect(listDetailPage.elements.downloadGeojsonOptionListDetail().should('be.visible'));
+    listDetailPage.clickOnGeojsonOption();
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));
     listDetailPage.clickCloseAlertDownload();

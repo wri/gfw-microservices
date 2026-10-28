@@ -39,7 +39,7 @@ interface ListDownloadMenuProps {
 }
 
 interface HandleMenuClickParams {
-  format: 'csv' | 'shapefile';
+  format: 'csv' | 'shapefile' | 'geojson';
   type: 'input';
 }
 
@@ -65,6 +65,7 @@ function ListDownloadMenu({
 
   const labelLocationsCsv = useTransifexTranslation('Location(s) CSV');
   const labelLocationsShapefile = useTransifexTranslation('Location(s) Shapefile');
+  const labelLocationsGeojson = useTransifexTranslation('Location(s) GeoJSON');
   const labelDownloadsNote = useTransifexTranslation(
     'Downloads contain location data only; no analysis'
   );
@@ -121,6 +122,12 @@ function ListDownloadMenu({
         gtag('event', 'shapefile download click', {
           event_category: 'Download',
           event_label: 'User clicked on the shapefile option in the download dropdown menu',
+        });
+        break;
+      case 'geojson':
+        gtag('event', 'geojson download click', {
+          event_category: 'Download',
+          event_label: 'User clicked on the GeoJSON option in the download dropdown menu',
         });
         break;
       default:
@@ -205,6 +212,15 @@ function ListDownloadMenu({
               onClick={() => handleMenuClick({ format: 'shapefile', type: 'input' })}
             >
               <ListItemText>{labelLocationsShapefile}</ListItemText>
+            </MenuItem>
+          )}
+
+          {isSourceFileDownloadEnabled && (
+            <MenuItem
+              data-cy="download-list-geojson"
+              onClick={() => handleMenuClick({ format: 'geojson', type: 'input' })}
+            >
+              <ListItemText>{labelLocationsGeojson}</ListItemText>
             </MenuItem>
           )}
           <Divider />

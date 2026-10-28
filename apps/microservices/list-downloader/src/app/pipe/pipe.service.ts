@@ -63,7 +63,7 @@ export class PipeService {
         userEmail,
         listId,
         listName: listNameToLog,
-        fileType: file as 'csv' | 'shapefile' | 'json',
+        fileType: file as 'csv' | 'shapefile' | 'json' | 'geojson',
         downloadType: type,
         source: filters.source,
       });

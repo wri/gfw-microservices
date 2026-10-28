@@ -1107,6 +1107,11 @@ module.exports = (app, limiter) => {
    * @summary Get filtered data and return csv
    */
   app.get('/locations/shapefile/:id', controller.generateShapefile);
+
+  /**
+   * @summary Get filtered data and return geojson
+   */
+  app.get('/locations/geojson/:id', controller.generateGeojson);
   /**
    * Consuming microservices
    */

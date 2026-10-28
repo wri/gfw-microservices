@@ -213,6 +213,10 @@ export const manualTranslations = {
     es: 'Shapefile de ubicación(es)',
     pt: 'Shapefile de localização(ões)',
   },
+  'Location(s) GeoJSON': {
+    es: 'GeoJSON de ubicación(es)',
+    pt: 'GeoJSON de localização(ões)',
+  },
   'Downloads contain location data only; no analysis': {
     es: 'Las descargas contienen solo datos de ubicación; sin análisis',
     pt: 'Os downloads contêm apenas dados de localização; sem análise',

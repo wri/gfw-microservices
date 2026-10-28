@@ -7,7 +7,7 @@ export interface DownloadActivityLogData {
   userEmail: string;
   listId: number;
   listName: string;
-  fileType: 'csv' | 'shapefile' | 'json';
+  fileType: 'csv' | 'shapefile' | 'json' | 'geojson';
   downloadType: string; // e.g., 'input', 'results', 'afi', 'alerts', etc.
   analysisType?: string; // for diagnostics, e.g., 'commodityRiskDiagnosticLocationSummary'
   source?: 'listDetails' | 'landing' | 'diagnostics'; // Where the download was triggered from
@@ -104,13 +104,19 @@ export class DownloadActivityLogService {
   private buildActivityDescription(
     listId: number,
     listName: string,
-    fileType: 'csv' | 'shapefile' | 'json',
+    fileType: 'csv' | 'shapefile' | 'json' | 'geojson',
     downloadType: string,
     analysisType?: string,
     source?: 'listDetails' | 'landing' | 'diagnostics'
   ): string {
     const fileTypeDisplay =
-      fileType === 'csv' ? 'CSV' : fileType === 'shapefile' ? 'Shapefile' : 'JSON';
+      fileType === 'csv'
+        ? 'CSV'
+        : fileType === 'shapefile'
+        ? 'Shapefile'
+        : fileType === 'geojson'
+        ? 'GeoJSON'
+        : 'JSON';
     const sourceDisplay = source ? ` from ${this.getSourceDisplayName(source)}` : '';
 
     let description = `List Download${sourceDisplay}: ${fileTypeDisplay} for list "${listName}" (ID: ${listId})`;

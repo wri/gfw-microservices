@@ -21,8 +21,19 @@ const sendMessageToQueue = async (request, source) => {
     const { data } = await axios.post(`${process.env.LD_MICROSERVICE_URL}/list/download`, message);
     return data;
   } catch (err) {
-    const { data } = err.response;
-    logger.error('err', JSON.stringify(data));
+    // err.response is undefined for connection errors (service down, DNS, timeout),
+    // so guard before destructuring to avoid masking the real cause.
+    if (err.response) {
+      logger.error('err', JSON.stringify(err.response.data));
+    } else {
+      logger.error(
+        `Failed to reach list-downloader microservice at ${process.env.LD_MICROSERVICE_URL}: ${err.message}`
+      );
+    }
+    // Re-throw so callers (e.g. startTaskToCreateFile) return a 500 instead of
+    // a 200 with an undefined filter, which makes the download appear accepted
+    // when it never reached the microservice.
+    throw err;
   }
 };
 

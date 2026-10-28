@@ -312,13 +312,13 @@ export const manualTranslations = {
     es: 'y',
     pt: 'e',
   },
-  'export your data': {
-    es: 'exporte sus datos',
-    pt: 'exporte seus dados',
+  'export your data.': {
+    es: 'exporte sus datos.',
+    pt: 'exporte seus dados.',
   },
-  '. Both paths are self-service.': {
-    es: '. Ambas rutas son de autoservicio.',
-    pt: '. Ambos os caminhos são de autoatendimento.',
+  'Both paths are self-service.': {
+    es: 'Ambas rutas son de autoservicio.',
+    pt: 'Ambos os caminhos são de autoatendimento.',
   },
   'As part of the evolution from Global Forest Watch into Global Nature Watch, we are consolidating our product suite and GFW Pro will retire on December 31, 2026. We recommend new users explore the alternatives now available for free across WRI:':
     {

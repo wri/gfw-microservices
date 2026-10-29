@@ -278,8 +278,11 @@ const configureSplashPage = (app: Application) => {
         return res.status(200).render('splash', {
           title: 'GFW Pro has closed | Global Nature Watch',
           description: 'GFW Pro has retired. Transition to Global Nature Watch.',
-          splashjs: compiledAssets.js.splash,
-          splashcss: compiledAssets.css.splash,
+          // compiledAssets stores bare filenames served from /, so both URLs
+          // must be root-relative to resolve from nested page routes
+          // (e.g. /user-profile/ would otherwise resolve /splash.js → /user-profile/splash.js).
+          splashjs: compiledAssets.js.splash && `/${compiledAssets.js.splash}`,
+          splashcss: compiledAssets.css.splash && `/${compiledAssets.css.splash}`,
           markup,
         });
       },

@@ -23,7 +23,7 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
   const tTransitionGuidance = useTransifexTranslation('transition guidance');
   const tAnd = useTransifexTranslation('and');
   const tExportData = useTransifexTranslation('export your data.');
-  const tBothPaths = useTransifexTranslation('. Both paths are self-service.');
+  const tBothPaths = useTransifexTranslation('Both paths are self-service.');
   const tNewAccountRequests = useTransifexTranslation(
     'Please note, we will not accept requests for new accounts after November 2nd.'
   );
@@ -76,9 +76,8 @@ export default function RetirementBanner({ dismissible = false, mb = 2 }) {
         {tAnd}{' '}
         <Link href={EXPORT_LINK} target="_blank" rel="noopener noreferrer">
           {tExportData}
-        </Link>
-        {tBothPaths}
-        {tNewAccountRequests}
+        </Link>{' '}
+        {tBothPaths} {tNewAccountRequests}
       </Typography>
     </Alert>
   );

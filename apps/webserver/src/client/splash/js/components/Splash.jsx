@@ -1,5 +1,7 @@
-import { Box, Container, Link, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Box, ClickAwayListener, Container, Link, Typography } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
+import LanguageIcon from '@mui/icons-material/Language';
 import StorageIcon from '@mui/icons-material/Storage';
 import ArticleIcon from '@mui/icons-material/Article';
 import EmailIcon from '@mui/icons-material/Email';
@@ -120,6 +122,103 @@ const renderCard = (card, t) => (
   </Box>
 );
 
+const LANGUAGE_ABBREVIATIONS = { en: 'EN', es: 'ES', pt: 'PT' };
+
+/**
+ * Language selector matching the site navbar pattern: a globe-icon button
+ * showing the current language code, opening a dropdown of language names.
+ */
+const LanguageMenu = ({ language, onLanguageChange }) => {
+  const [open, setOpen] = useState(false);
+
+  const select = (code) => {
+    onLanguageChange(code);
+    setOpen(false);
+  };
+
+  return (
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <Box sx={{ position: 'relative' }}>
+        <Box
+          component="button"
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-label="Change language"
+          onClick={() => setOpen((value) => !value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setOpen(false);
+            }
+          }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.75,
+            p: 0.75,
+            border: '1px solid rgba(255, 255, 255, 0.5)',
+            borderRadius: 1,
+            backgroundColor: 'transparent',
+            color: 'inherit',
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+            fontSize: 13,
+            fontWeight: 500,
+            lineHeight: 1,
+            '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.15)' },
+          }}
+        >
+          {LANGUAGE_ABBREVIATIONS[language] || language.toUpperCase()}
+          <LanguageIcon sx={{ fontSize: 18 }} />
+        </Box>
+        {open && (
+          <Box
+            component="ul"
+            role="listbox"
+            sx={{
+              position: 'absolute',
+              top: 'calc(100% + 6px)',
+              right: 0,
+              m: 0,
+              p: 0.5,
+              listStyle: 'none',
+              minWidth: 160,
+              backgroundColor: 'background.paper',
+              color: 'text.primary',
+              borderRadius: 1,
+              boxShadow: 3,
+              zIndex: 10,
+            }}
+          >
+            {SPLASH_LANGUAGES.map((lang) => (
+              <Box
+                component="li"
+                key={lang.code}
+                role="option"
+                aria-selected={language === lang.code}
+                onClick={() => select(lang.code)}
+                sx={{
+                  px: 1.5,
+                  py: 1,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  borderRadius: 0.5,
+                  fontWeight: language === lang.code ? 600 : 400,
+                  color: language === lang.code ? 'primary.700' : 'text.primary',
+                  backgroundColor: language === lang.code ? 'primary.100' : 'transparent',
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                }}
+              >
+                {lang.label}
+              </Box>
+            ))}
+          </Box>
+        )}
+      </Box>
+    </ClickAwayListener>
+  );
+};
+
 /**
  * Splash page shown after GFW Pro retires (December 31, 2026).
  * Copy/design is provisional — final version TBD.
@@ -164,38 +263,7 @@ export default function Splash() {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {SPLASH_LANGUAGES.map((lang, index) => (
-              <Box key={lang.code} component="span" sx={{ display: 'flex', alignItems: 'center' }}>
-                {index > 0 && (
-                  <Box component="span" sx={{ mx: 0.75, opacity: 0.5 }}>
-                    ·
-                  </Box>
-                )}
-                <Box
-                  component="button"
-                  type="button"
-                  aria-pressed={language === lang.code}
-                  onClick={() => setLanguage(lang.code)}
-                  sx={{
-                    border: 'none',
-                    backgroundColor: 'transparent',
-                    cursor: 'pointer',
-                    p: 0,
-                    fontSize: 13,
-                    fontWeight: language === lang.code ? 700 : 400,
-                    color: 'inherit',
-                    opacity: language === lang.code ? 1 : 0.75,
-                    textDecoration: language === lang.code ? 'underline' : 'none',
-                    textUnderlineOffset: 3,
-                    fontFamily: 'inherit',
-                  }}
-                >
-                  {lang.label}
-                </Box>
-              </Box>
-            ))}
-          </Box>
+          <LanguageMenu language={language} onLanguageChange={setLanguage} />
           <Link
             href={`mailto:${SUPPORT_EMAIL}`}
             sx={{ fontSize: 14, fontWeight: 500, color: 'inherit', whiteSpace: 'nowrap' }}

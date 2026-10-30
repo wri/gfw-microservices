@@ -30,6 +30,8 @@ describe('AddNewLocationToAnalysisTable', () => {
     } as unknown as jest.Mocked<DataSource>;
 
     mockClientStoreConnection.getConnection = jest.fn().mockResolvedValue(mockConnection);
+    mockClientStoreConnection.refreshConnection = jest.fn().mockResolvedValue(true);
+    mockClientStoreConnection.invalidateConnection = jest.fn().mockResolvedValue(undefined);
     handler = new AddNewLocationToAnalysisTable(mockClientStoreConnection);
   });
 
@@ -95,6 +97,9 @@ describe('AddNewLocationToAnalysisTable', () => {
 
     // Should be called twice - once for 1000 records and once for 500 records
     expect(mockConnection.query).toHaveBeenCalledTimes(2);
+    // The cached connection must be kept alive once per batch so the 30s
+    // dynamic-connection TTL cannot expire mid-loop.
+    expect(mockClientStoreConnection.refreshConnection).toHaveBeenCalledTimes(2);
   });
 
   it('should handle empty geojson features array', async () => {

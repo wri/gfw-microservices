@@ -151,4 +151,44 @@ describe('createDatasourceConfig', () => {
     expect(connections[0]).toBe(connections[1]);
     expect(connections[1]).toBe(connections[2]);
   });
+
+  it('refreshConnection should return true for a cached connection', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: 'refreshListTable',
+    });
+
+    await clientStoreConnection.getConnection('refreshDB', [ListEntity]);
+
+    await expect(clientStoreConnection.refreshConnection('refreshDB', [ListEntity])).resolves.toBe(
+      true
+    );
+  });
+
+  it('refreshConnection should return false when nothing is cached', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+
+    await expect(clientStoreConnection.refreshConnection('missingDB')).resolves.toBe(false);
+  });
+
+  it('invalidateConnection should drop the cached connection', async () => {
+    process.env.NODE_ENV = TEST_ENVIRONMENT;
+    const clientStoreConnection = new ClientStoreConnection();
+    const ListEntity = new EntitySchema<ListSchemaType>({
+      ...ListSchema,
+      name: 'invalidateListTable',
+    });
+
+    const first = await clientStoreConnection.getConnection('invalidateDB', [ListEntity]);
+    expect((await getConnMap('dynamic')).size).toBe(1);
+
+    await clientStoreConnection.invalidateConnection('invalidateDB', [ListEntity]);
+    expect((await getConnMap('dynamic')).size).toBe(0);
+
+    const second = await clientStoreConnection.getConnection('invalidateDB', [ListEntity]);
+    expect(second).not.toBe(first);
+  });
 });

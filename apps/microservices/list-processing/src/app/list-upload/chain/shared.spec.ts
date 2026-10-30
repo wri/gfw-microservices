@@ -1,4 +1,4 @@
-import { logExecutionTime } from './shared';
+import { isConnectionClosedError, logExecutionTime, runBatchedInsertWithKeepAlive } from './shared';
 import { performance } from 'perf_hooks';
 import { Logger } from '@nestjs/common';
 
@@ -101,5 +101,137 @@ describe('logExecutionTime', () => {
 
     expect(result).toBe('result');
     expect(loggerLogSpy).toHaveBeenCalledWith('TestClass.testMethod executed in 1.00min');
+  });
+});
+
+describe('isConnectionClosedError', () => {
+  it.each([
+    'Failed to insert batch: QueryFailedError: ConnectionError: Connection is closed.',
+    'Connection lost',
+    'read ECONNRESET',
+    'socket hang up',
+  ])('detects closed-connection error: %s', (message) => {
+    expect(isConnectionClosedError(new Error(message))).toBe(true);
+  });
+
+  it.each([
+    'Violation of PRIMARY KEY constraint',
+    'Invalid column name',
+    'Timeout: Request failed to complete in 15000ms',
+  ])('does not treat other errors as closed-connection: %s', (message) => {
+    expect(isConnectionClosedError(new Error(message))).toBe(false);
+  });
+
+  it('handles non-Error values', () => {
+    expect(isConnectionClosedError('Connection is closed')).toBe(true);
+    expect(isConnectionClosedError(undefined)).toBe(false);
+  });
+});
+
+describe('runBatchedInsertWithKeepAlive', () => {
+  const entity = { name: 'list_test_table' } as never;
+  const organizationDatabase = 'test-org-db';
+
+  const createConnection = () => {
+    const connection = { id: 'conn' };
+    return {
+      getConnection: jest.fn().mockResolvedValue(connection),
+      refreshConnection: jest.fn().mockResolvedValue(true),
+      invalidateConnection: jest.fn().mockResolvedValue(undefined),
+    };
+  };
+
+  it('refreshes the cached connection before every batch', async () => {
+    const clientStoreConnection = createConnection();
+    const insertBatch = jest.fn().mockResolvedValue(undefined);
+
+    await runBatchedInsertWithKeepAlive({
+      clientStoreConnection: clientStoreConnection as never,
+      organizationDatabase,
+      entity,
+      batches: [[1], [2], [3]],
+      insertBatch,
+    });
+
+    expect(clientStoreConnection.refreshConnection).toHaveBeenCalledTimes(3);
+    expect(insertBatch).toHaveBeenCalledTimes(3);
+    expect(clientStoreConnection.invalidateConnection).not.toHaveBeenCalled();
+  });
+
+  it('re-acquires the connection and retries the batch when it is closed', async () => {
+    const clientStoreConnection = createConnection();
+    const insertBatch = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('ConnectionError: Connection is closed.'))
+      .mockResolvedValue(undefined);
+
+    await runBatchedInsertWithKeepAlive({
+      clientStoreConnection: clientStoreConnection as never,
+      organizationDatabase,
+      entity,
+      batches: [[1]],
+      insertBatch,
+    });
+
+    expect(clientStoreConnection.invalidateConnection).toHaveBeenCalledTimes(1);
+    // initial acquire + re-acquire after invalidation
+    expect(clientStoreConnection.getConnection).toHaveBeenCalledTimes(2);
+    expect(insertBatch).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not retry non-connection errors', async () => {
+    const clientStoreConnection = createConnection();
+    const insertBatch = jest
+      .fn()
+      .mockRejectedValue(new Error('Violation of PRIMARY KEY constraint'));
+
+    await expect(
+      runBatchedInsertWithKeepAlive({
+        clientStoreConnection: clientStoreConnection as never,
+        organizationDatabase,
+        entity,
+        batches: [[1]],
+        insertBatch,
+      })
+    ).rejects.toThrow('Violation of PRIMARY KEY constraint');
+
+    expect(clientStoreConnection.invalidateConnection).not.toHaveBeenCalled();
+    expect(insertBatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('gives up after maxAttempts and rethrows', async () => {
+    const clientStoreConnection = createConnection();
+    const insertBatch = jest
+      .fn()
+      .mockRejectedValue(new Error('ConnectionError: Connection is closed.'));
+
+    await expect(
+      runBatchedInsertWithKeepAlive({
+        clientStoreConnection: clientStoreConnection as never,
+        organizationDatabase,
+        entity,
+        batches: [[1]],
+        insertBatch,
+        maxAttempts: 2,
+      })
+    ).rejects.toThrow('Connection is closed');
+
+    expect(insertBatch).toHaveBeenCalledTimes(2);
+  });
+
+  it('invokes onBatchComplete after each successful batch', async () => {
+    const clientStoreConnection = createConnection();
+    const onBatchComplete = jest.fn().mockResolvedValue(undefined);
+
+    await runBatchedInsertWithKeepAlive({
+      clientStoreConnection: clientStoreConnection as never,
+      organizationDatabase,
+      entity,
+      batches: [[1], [2]],
+      insertBatch: jest.fn().mockResolvedValue(undefined),
+      onBatchComplete,
+    });
+
+    expect(onBatchComplete).toHaveBeenCalledTimes(2);
   });
 });

@@ -16,7 +16,11 @@ import helmet from 'helmet';
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
 import config from '../config';
+const { compiledAssets } = config;
 import { PRODUCTION_ENVIRONMENTS } from '../config/environments.config';
+import { createElement } from 'react';
+import { renderToString } from 'react-dom/server';
+import { createSplashPageMiddleware } from './splashPage';
 import * as expressRateLimit from 'express-rate-limit';
 import * as redisRateLimit from 'rate-limit-redis';
 
@@ -255,6 +259,38 @@ const configureServerRoutes = (app: Application, limiter: any) => {
 };
 
 /**
+ * @function configureSplashPage
+ * @summary After SPLASH_PAGE_DATE, render the retirement splash page (React
+ *          view + minimal splashLayout.pug) for all page routes. API routes are
+ *          skipped so health checks and programmatic clients keep working.
+ * @param {Express.Application} app
+ */
+const configureSplashPage = (app: Application) => {
+  app.use(
+    createSplashPageMiddleware({
+      date: process.env.SPLASH_PAGE_DATE,
+      enabled: process.env.SPLASH_PAGE_ENABLED,
+      renderSplash: (res: Response) => {
+        const Splash = compiledAssets.js['splash-component']
+          ? (compiledAssets.js['splash-component'] as { default: unknown }).default
+          : null;
+        const markup = Splash ? renderToString(createElement(Splash as React.ComponentType)) : '';
+        return res.status(200).render('splash', {
+          title: 'GFW Pro has closed | Global Nature Watch',
+          description: 'GFW Pro has retired. Transition to Global Nature Watch.',
+          // compiledAssets stores bare filenames served from /, so both URLs
+          // must be root-relative to resolve from nested page routes
+          // (e.g. /user-profile/ would otherwise resolve /splash.js → /user-profile/splash.js).
+          splashjs: compiledAssets.js.splash && `/${compiledAssets.js.splash}`,
+          splashcss: compiledAssets.css.splash && `/${compiledAssets.css.splash}`,
+          markup,
+        });
+      },
+    })
+  );
+};
+
+/**
  * @function configureErrorRoutes
  * @summary Configure 500 and 404 error routes
  * @param {Express.Application} app
@@ -332,6 +368,8 @@ export const initialize = (app: Application) => {
       app.use(errorSanitizationMiddleware);
       // Set path for static assets
       configureStaticAssetPath(app);
+      // Serve the retirement splash page after the configured date
+      configureSplashPage(app);
       // Configure the server routes
       const limiter = rateLimiterUtil.useRateLimiter() ? redisBasedLimiter : null;
       configureServerRoutes(app, limiter);

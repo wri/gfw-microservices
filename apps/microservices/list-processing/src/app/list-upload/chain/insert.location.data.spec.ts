@@ -181,8 +181,8 @@ describe('InsertLocationData', () => {
 
     await insertLocationData.handle(input);
 
-    // 120 rows / BATCH_SIZE(50) => 3 batches => 3 keep-alive refreshes
-    expect(refreshSpy).toHaveBeenCalledTimes(3);
+    // 120 rows / BATCH_SIZE(50) => 3 batches, refreshed before and after each
+    expect(refreshSpy).toHaveBeenCalledTimes(6);
   });
 
   it('should re-acquire the connection and retry when it is closed mid-insert', async () => {

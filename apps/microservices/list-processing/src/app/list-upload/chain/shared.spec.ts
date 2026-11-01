@@ -141,7 +141,7 @@ describe('runBatchedInsertWithKeepAlive', () => {
     };
   };
 
-  it('refreshes the cached connection before every batch', async () => {
+  it('refreshes the cached connection before and after every batch', async () => {
     const clientStoreConnection = createConnection();
     const insertBatch = jest.fn().mockResolvedValue(undefined);
 
@@ -153,7 +153,8 @@ describe('runBatchedInsertWithKeepAlive', () => {
       insertBatch,
     });
 
-    expect(clientStoreConnection.refreshConnection).toHaveBeenCalledTimes(3);
+    // Refreshed both before and after each of the 3 batches.
+    expect(clientStoreConnection.refreshConnection).toHaveBeenCalledTimes(6);
     expect(insertBatch).toHaveBeenCalledTimes(3);
     expect(clientStoreConnection.invalidateConnection).not.toHaveBeenCalled();
   });

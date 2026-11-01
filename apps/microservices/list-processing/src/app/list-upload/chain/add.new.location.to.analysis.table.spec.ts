@@ -99,7 +99,7 @@ describe('AddNewLocationToAnalysisTable', () => {
     expect(mockConnection.query).toHaveBeenCalledTimes(2);
     // The cached connection must be kept alive once per batch so the 30s
     // dynamic-connection TTL cannot expire mid-loop.
-    expect(mockClientStoreConnection.refreshConnection).toHaveBeenCalledTimes(2);
+    expect(mockClientStoreConnection.refreshConnection).toHaveBeenCalledTimes(4);
   });
 
   it('should handle empty geojson features array', async () => {

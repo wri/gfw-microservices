@@ -215,6 +215,18 @@ export class ClientStoreConnection {
     }
   }
 
+  /**
+   * Applies the default entity set for a database when the caller did not
+   * provide one. Shared by `getConnection`, `refreshConnection` and
+   * `invalidateConnection` so the three cannot drift apart.
+   */
+  private resolveEntities(
+    database: string,
+    entities?: MixedList<EntityType>
+  ): MixedList<EntityType> {
+    return entities ?? (database === 'gfwpro' ? systemEntities : organizationEntities);
+  }
+
   private getConnectionId(database: string, entities: MixedList<EntityType>): string {
     const entityType = ClientStoreConnection.getConnectionType(entities);
     let connectionId = process.env.MSSQL_HOSTNAME + database;
@@ -245,9 +257,7 @@ export class ClientStoreConnection {
    * @returns true when a cached connection was found and refreshed.
    */
   async refreshConnection(database: string, entities?: MixedList<EntityType>): Promise<boolean> {
-    if (!entities) {
-      entities = database === 'gfwpro' ? systemEntities : organizationEntities;
-    }
+    entities = this.resolveEntities(database, entities);
     const entityType = ClientStoreConnection.getConnectionType(entities);
     const connectionId = this.getConnectionId(database, entities);
     const [mapToUse, release] = await ClientStoreConnection.getConnections(entityType);
@@ -269,17 +279,13 @@ export class ClientStoreConnection {
    * has been closed by the server or by the cache TTL and must be replaced.
    */
   async invalidateConnection(database: string, entities?: MixedList<EntityType>): Promise<void> {
-    if (!entities) {
-      entities = database === 'gfwpro' ? systemEntities : organizationEntities;
-    }
+    entities = this.resolveEntities(database, entities);
     const entityType = ClientStoreConnection.getConnectionType(entities);
     await this.clearCache(this.getConnectionId(database, entities), entityType);
   }
 
   async getConnection(database: string, entities?: MixedList<EntityType>): Promise<DataSource> {
-    if (!entities) {
-      entities = database === 'gfwpro' ? systemEntities : organizationEntities;
-    }
+    entities = this.resolveEntities(database, entities);
     const entityType = ClientStoreConnection.getConnectionType(entities);
     const connectionId = this.getConnectionId(database, entities);
     const [mapToInsert, release] = await ClientStoreConnection.getConnections(entityType);

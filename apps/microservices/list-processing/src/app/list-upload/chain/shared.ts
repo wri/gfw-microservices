@@ -158,5 +158,10 @@ export async function runBatchedInsertWithKeepAlive<TEntity, TBatch>({
         connection = await clientStoreConnection.getConnection(organizationDatabase, entities);
       }
     }
+
+    // Refresh again after the batch: a single batch may itself run longer than
+    // the TTL, so refreshing only before it would leave the connection
+    // unprotected for the remainder of the loop.
+    await clientStoreConnection.refreshConnection(organizationDatabase, entities);
   }
 }

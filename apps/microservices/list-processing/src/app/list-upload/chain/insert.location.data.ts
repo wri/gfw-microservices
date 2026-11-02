@@ -2,7 +2,7 @@ import { DataSource, EntitySchema } from 'typeorm';
 import { AbstractHandler, ChainType, RequestNewList } from './types';
 import { ClientStoreConnection, ListSchema, ListSchemaType } from '@wri-monorepos/sql';
 import { Logger } from '@nestjs/common';
-import { yieldIfLong } from './shared';
+import { runBatchedInsertWithKeepAlive, yieldIfLong } from './shared';
 
 const BATCH_SIZE = 50;
 
@@ -53,20 +53,28 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
       name: listTable,
     });
 
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase, [
-      ListEntity,
-    ]);
-
     this.convertErrorDetails(values);
+
+    const batches: Record<string, unknown>[][] = [];
+    for (let i = 0; i < values.length; i += BATCH_SIZE) {
+      batches.push(values.slice(i, i + BATCH_SIZE));
+    }
 
     try {
       let lastYieldTimestamp = Date.now();
-      for (let i = 0; i < values.length; i += BATCH_SIZE) {
-        const batch = values.slice(i, i + BATCH_SIZE);
-
-        await this.insertBatch(connection, ListEntity, batch);
-        lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
-      }
+      await runBatchedInsertWithKeepAlive({
+        clientStoreConnection: this.clientStoreConnection,
+        organizationDatabase,
+        entity: ListEntity,
+        batches,
+        insertBatch: (connection, batch) => this.insertBatch(connection, ListEntity, batch),
+        // Yield periodically to avoid CPU overload that may trigger AWS ECS
+        // health check failures.
+        onBatchComplete: async () => {
+          lastYieldTimestamp = await yieldIfLong(lastYieldTimestamp);
+        },
+        logger: this.logger,
+      });
 
       return request;
     } catch (error) {

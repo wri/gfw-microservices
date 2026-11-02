@@ -215,10 +215,19 @@ export class ClientStoreConnection {
     }
   }
 
-  async getConnection(database: string, entities?: MixedList<EntityType>): Promise<DataSource> {
-    if (!entities) {
-      entities = database === 'gfwpro' ? systemEntities : organizationEntities;
-    }
+  /**
+   * Applies the default entity set for a database when the caller did not
+   * provide one. Shared by `getConnection`, `refreshConnection` and
+   * `invalidateConnection` so the three cannot drift apart.
+   */
+  private resolveEntities(
+    database: string,
+    entities?: MixedList<EntityType>
+  ): MixedList<EntityType> {
+    return entities ?? (database === 'gfwpro' ? systemEntities : organizationEntities);
+  }
+
+  private getConnectionId(database: string, entities: MixedList<EntityType>): string {
     const entityType = ClientStoreConnection.getConnectionType(entities);
     let connectionId = process.env.MSSQL_HOSTNAME + database;
     if (entityType === 'dynamic') {
@@ -233,6 +242,52 @@ export class ClientStoreConnection {
         })
         .join('')}`;
     }
+    return connectionId;
+  }
+
+  /**
+   * Extends the lifetime of an already cached connection so it is not destroyed
+   * while a long-running operation (e.g. a batched insert loop) is still using it.
+   *
+   * The cache TTL is otherwise only refreshed by `getConnection` calls, so code
+   * that acquires a connection once and then works with it for longer than the
+   * TTL (30s for dynamic connections) can have the DataSource destroyed
+   * mid-flight, surfacing as `ConnectionError: Connection is closed`.
+   *
+   * @returns true when a cached connection was found and refreshed.
+   */
+  async refreshConnection(database: string, entities?: MixedList<EntityType>): Promise<boolean> {
+    entities = this.resolveEntities(database, entities);
+    const entityType = ClientStoreConnection.getConnectionType(entities);
+    const connectionId = this.getConnectionId(database, entities);
+    const [mapToUse, release] = await ClientStoreConnection.getConnections(entityType);
+    try {
+      const cached = mapToUse.get(connectionId);
+      if (!cached) {
+        return false;
+      }
+      this.refreshCachedConnectionTimeout(cached, connectionId, entityType);
+      return true;
+    } finally {
+      release();
+    }
+  }
+
+  /**
+   * Drops a cached connection (destroying it in the background) so the next
+   * `getConnection` call creates a fresh DataSource. Useful when a connection
+   * has been closed by the server or by the cache TTL and must be replaced.
+   */
+  async invalidateConnection(database: string, entities?: MixedList<EntityType>): Promise<void> {
+    entities = this.resolveEntities(database, entities);
+    const entityType = ClientStoreConnection.getConnectionType(entities);
+    await this.clearCache(this.getConnectionId(database, entities), entityType);
+  }
+
+  async getConnection(database: string, entities?: MixedList<EntityType>): Promise<DataSource> {
+    entities = this.resolveEntities(database, entities);
+    const entityType = ClientStoreConnection.getConnectionType(entities);
+    const connectionId = this.getConnectionId(database, entities);
     const [mapToInsert, release] = await ClientStoreConnection.getConnections(entityType);
     try {
       const cached = mapToInsert.get(connectionId);

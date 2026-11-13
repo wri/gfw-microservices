@@ -9,11 +9,11 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  */
 module.exports = (app) => {
   /**
-   * @name /account
+   * @name /account1
    * @see account.controller
    * @memberof Router
    */
-  app.get('/account', controller.account);
+  app.get('/account1', controller.account);
 
   app.post('/auth/signinpost', async (req, res) => {
     console.log('POST /auth/signinpost');

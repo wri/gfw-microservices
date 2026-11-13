@@ -67,7 +67,7 @@ export default function Login(): JSX.Element {
   }, []);
 
   const signUpForPro = useCallback(() => {
-    window.location.href = '/account';
+    window.location.href = '/account1';
   }, []);
 
   // Memoized computed values

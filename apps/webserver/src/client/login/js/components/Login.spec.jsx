@@ -125,7 +125,7 @@ describe('Login Component', () => {
       const signUpButton = screen.getByText(loginStrings.appRequestAccount);
       await user.click(signUpButton);
 
-      expect(mockLocationHref).toHaveBeenCalledWith('/account');
+      expect(mockLocationHref).toHaveBeenCalledWith('/account1');
     });
 
     it('opens demo link when learn more button is clicked', async () => {

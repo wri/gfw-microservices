@@ -1,21 +1,53 @@
 import * as axiosRetry from 'axios-retry';
 
+export type BackoffStrategy = 'fixed' | 'exponential';
+
 export interface RetryOptions {
   retries?: number;
   delayMs?: number;
+  backoff?: BackoffStrategy;
+  maxDelayMs?: number;
   isRetryable?: (err: any) => boolean;
   logger?: { warn: (msg: string) => void };
 }
 
 /**
- * Executes an async function with retry logic and fixed delay between attempts.
- * This function uses a FIXED delay between retries
+ * Calculates the delay before the next retry attempt.
+ *
+ * For 'fixed', every retry waits `delayMs`.
+ * For 'exponential', the wait doubles each attempt: delayMs, 2*delayMs, 4*delayMs, ...
+ * capped at `maxDelayMs` when provided.
+ *
+ * @param attempt - The 1-based number of the attempt that just failed
+ * @param options - Resolved retry options
+ * @returns The delay in milliseconds
+ */
+export function calculateBackoffDelay(
+  attempt: number,
+  options: { delayMs: number; backoff: BackoffStrategy; maxDelayMs?: number }
+): number {
+  const { delayMs, backoff, maxDelayMs } = options;
+
+  if (backoff !== 'exponential') {
+    return delayMs;
+  }
+
+  const exponentialDelay = delayMs * Math.pow(2, attempt - 1);
+  return maxDelayMs !== undefined ? Math.min(exponentialDelay, maxDelayMs) : exponentialDelay;
+}
+
+/**
+ * Executes an async function with retry logic and a delay between attempts.
+ * Supports either a FIXED delay or EXPONENTIAL backoff between retries.
  *
  * @template T - The return type of the function being retried
  * @param fn - The async function to execute with retry logic
  * @param options - Configuration options for retry behavior
  * @param options.retries - Total number of attempts (including the initial attempt). Default: 3
- * @param options.delayMs - Fixed delay in milliseconds between retry attempts. Default: 1000ms
+ * @param options.delayMs - Base delay in milliseconds between retry attempts. Default: 1000ms
+ * @param options.backoff - Delay strategy: 'fixed' (default) or 'exponential'.
+ *                          Exponential doubles the wait after each failed attempt.
+ * @param options.maxDelayMs - Optional ceiling for the computed delay (useful with exponential)
  * @param options.isRetryable - Function to determine if an error should trigger a retry.
  *                              If not provided or returns false, the error is thrown immediately.
  *                              Default: () => false (no retries on error)
@@ -28,7 +60,14 @@ export async function retryWithDelay<T>(
   fn: () => Promise<T>,
   options: RetryOptions = {}
 ): Promise<T> {
-  const { retries = 3, delayMs = 1000, isRetryable = () => false, logger } = options;
+  const {
+    retries = 3,
+    delayMs = 1000,
+    backoff = 'fixed',
+    maxDelayMs,
+    isRetryable = () => false,
+    logger,
+  } = options;
 
   let attempt = 0;
   let lastError: any;
@@ -39,10 +78,13 @@ export async function retryWithDelay<T>(
     } catch (err) {
       lastError = err;
       if (++attempt < retries && isRetryable(err)) {
+        const waitMs = calculateBackoffDelay(attempt, { delayMs, backoff, maxDelayMs });
         logger?.warn?.(
-          `Retryable error: ${err.code || err.message}. Retrying (${retries - attempt} left)...`
+          `Retryable error: ${err.code || err.message}. Retrying in ${waitMs}ms (${
+            retries - attempt
+          } left)...`
         );
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        await new Promise((resolve) => setTimeout(resolve, waitMs));
       } else {
         break;
       }

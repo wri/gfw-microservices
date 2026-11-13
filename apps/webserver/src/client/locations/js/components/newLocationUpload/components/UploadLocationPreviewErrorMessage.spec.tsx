@@ -137,7 +137,7 @@ describe('UploadLocationPreviewErrorMessage', () => {
 
   it('should render UML ID error message', () => {
     const error = {
-      errors: ['UML LookUp: did not found lat/long for some-id'],
+      errors: ['UML LookUp: did not find lat/long for some-id'],
     };
 
     render(
@@ -241,7 +241,7 @@ describe('UploadLocationPreviewErrorMessage', () => {
 
   it('should render CAR LookUp error message', () => {
     const error = {
-      errors: ['CAR LookUp: did not found lat/long for some-id'],
+      errors: ['CAR LookUp: did not find lat/long for some-id'],
     };
 
     render(

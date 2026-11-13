@@ -3,6 +3,7 @@ import { IdLookupFn } from '.';
 import { Logger } from '@nestjs/common';
 import * as wkx from 'wkx';
 import { readLastUpdatedDateSicar } from './read.last.updated.date.sicar';
+import { retryWithDelay, isRetryableError } from '../utils/retry';
 
 const logger = new Logger('car.lat.long.lookup');
 
@@ -20,15 +21,19 @@ export const carLookup: IdLookupFn = async (ids) => {
 
   try {
     const sicarLastUpdated = await readLastUpdatedDateSicar();
-    const response = await axios.get(DATA_API_URL, {
-      headers: {
-        'x-api-key': process.env.GFW_DATA_API_KEY,
-        'Content-Type': 'application/json',
-      },
-      params: {
-        sql: `SELECT property_c,geom FROM mytable WHERE property_c IN (${sqlIds})`,
-      },
-    });
+    const response = await retryWithDelay(
+      () =>
+        axios.get(DATA_API_URL, {
+          headers: {
+            'x-api-key': process.env.GFW_DATA_API_KEY,
+            'Content-Type': 'application/json',
+          },
+          params: {
+            sql: `SELECT property_c,geom FROM mytable WHERE property_c IN (${sqlIds})`,
+          },
+        }),
+      { retries: 3, delayMs: 1000, isRetryable: isRetryableError, logger }
+    );
 
     if (response.data.data.length > 0) {
       response.data.data.forEach((found) => {

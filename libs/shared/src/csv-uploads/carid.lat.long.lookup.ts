@@ -32,7 +32,7 @@ export const carLookup: IdLookupFn = async (ids) => {
             sql: `SELECT property_c,geom FROM mytable WHERE property_c IN (${sqlIds})`,
           },
         }),
-      { retries: 3, delayMs: 1000, isRetryable: isRetryableError, logger }
+      { retries: 4, delayMs: 4000, backoff: 'exponential', isRetryable: isRetryableError, logger }
     );
 
     if (response.data.data.length > 0) {

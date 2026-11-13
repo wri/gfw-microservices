@@ -19,7 +19,7 @@ export const DEFAULT_SPLASH_PAGE_DATE = '2026-12-31T23:59:59Z';
 export const SPLASH_PAGE_ROUTES = [
   '/',
   '/about',
-  '/account',
+  '/account1',
   '/activity-log',
   '/analytics',
   '/apimap',

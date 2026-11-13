@@ -104,7 +104,7 @@ describe('ListUploadService', () => {
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {
-            errorDetails: ['UML LookUp: did not found lat/long for location1'],
+            errorDetails: ['UML LookUp: did not find lat/long for location1'],
           },
         },
       ],
@@ -137,7 +137,7 @@ describe('ListUploadService', () => {
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {
-            errorDetails: ['CAR LookUp: did not found lat/long for location2'],
+            errorDetails: ['CAR LookUp: did not find lat/long for location2'],
           },
         },
       ],
@@ -171,8 +171,8 @@ describe('ListUploadService', () => {
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {
             errorDetails: [
-              'UML LookUp: did not found lat/long for location1',
-              'CAR LookUp: did not found lat/long for location2',
+              'UML LookUp: did not find lat/long for location1',
+              'CAR LookUp: did not find lat/long for location2',
             ],
           },
         },
@@ -240,8 +240,8 @@ describe('ListUploadService', () => {
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {
             errorDetails: [
-              'UML LookUp: did not found lat/long for location1',
-              'CAR LookUp: did not found lat/long for location2',
+              'UML LookUp: did not find lat/long for location1',
+              'CAR LookUp: did not find lat/long for location2',
             ],
           },
         },
@@ -314,9 +314,9 @@ describe('ListUploadService', () => {
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {
             errorDetails: [
-              'UML LookUp: did not found lat/long for location1',
+              'UML LookUp: did not find lat/long for location1',
               'Invalid coordinate format',
-              'CAR LookUp: did not found lat/long for location2',
+              'CAR LookUp: did not find lat/long for location2',
             ],
           },
         },

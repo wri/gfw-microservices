@@ -173,7 +173,7 @@ const errorMessageBuilder = ({
       // @see {@link https://gfw.atlassian.net/browse/GPV-4541}
       match: (msg) =>
         msg.startsWith('You have entered an invalid ID not found in the system') ||
-        msg.startsWith('CAR LookUp: did not found lat/long for'),
+        msg.startsWith('CAR LookUp: did not find lat/long for'),
       message: {
         title: 'Invalid file',
         body: 'The defined ID is not recognized by GFW Pro. Please enter a recognized ID system value.',

@@ -349,6 +349,13 @@
   "allowScripts": {
     "cypress": true,
     "nx": true,
-    "sqlite3": true
+    "sqlite3": true,
+    "better-sqlite3": true,
+    "@parcel/watcher": true,
+    "esbuild": true,
+    "msgpackr-extract": true,
+    "@scarf/scarf": false,
+    "@vaadin/vaadin-usage-statistics": false,
+    "core-js": false
   }
 }

@@ -10,7 +10,10 @@ export class ZodValidationPipe implements PipeTransform {
       return this.schema.parse(value);
     } catch (error) {
       if (error instanceof ZodError) {
-        throw new BadRequestException(fromZodError(error));
+        // Spread into a plain object: Nest's Express adapter replaces an `Error`
+        // response body with a generic `{ statusCode, message }` payload, which
+        // would drop the validation `details`/`name` fields.
+        throw new BadRequestException({ ...fromZodError(error) });
       }
       if (error.response?.message) {
         throw new BadRequestException(error.response.message);

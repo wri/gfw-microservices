@@ -355,7 +355,10 @@
     "esbuild": true,
     "msgpackr-extract": true,
     "@scarf/scarf": false,
-    "@vaadin/vaadin-usage-statistics": false,
-    "core-js": false
+    "core-js": false,
+    "@vaadin/vaadin-usage-statistics": true
+  },
+  "vaadin": {
+    "disableUsageStatistics": true
   }
 }

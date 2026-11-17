@@ -14,21 +14,32 @@ Then('I am able to download the list data', () => {
   cy.get('[data-cy="download-diagnostics"]').should('be.visible');
 });
 
-// Dismiss the confirmation dialog using its own "Got it" button.
-// Avoid [data-testid="CloseIcon"]: MUI stamps that test id on every <Close /> icon,
-// and this page also renders one inside the sunset banner, so the selector is ambiguous.
+// Dismiss the download confirmation dialog if it is open.
+// Key off the dialog's own "Got it" button rather than [data-cy="download-dialog"]:
+// that data-cy is shared with other dialogs (e.g. AlertsDateSelector), so its presence
+// does not prove *this* dialog is open and would make the click below flaky.
+// Avoid [data-testid="CloseIcon"] too: MUI stamps that test id on every <Close /> icon,
+// and this page also renders one inside the sunset banner, so it is ambiguous.
 const closeDownloadDialogIfOpen = () => {
   cy.get('body').then(($body) => {
-    if ($body.find('[data-cy="download-dialog"]').length) {
+    if ($body.find('[data-cy="download-dialog-got-it"]:visible').length) {
       cy.get('[data-cy="download-dialog-got-it"]').click();
-      cy.get('[data-cy="download-dialog"]').should('not.exist');
+      cy.get('[data-cy="download-dialog-got-it"]').should('not.exist');
     }
   });
 };
 
-// Scope the icon to the chart header so the index is stable.
+// DownloadForOfflineIcon is only rendered by DiagnosticsChartHeader, so scoping to
+// .diagnostics-chart-header yields the same set (and therefore the same indices) as the
+// previous document-wide query. Assert the count so an index shift fails loudly instead
+// of silently clicking the wrong chart.
 const clickChartDownloadIcon = (index: number) => {
-  cy.get('.diagnostics-chart-header [data-testid="DownloadForOfflineIcon"]').eq(index).click();
+  cy.get('.diagnostics-chart-header [data-testid="DownloadForOfflineIcon"]')
+    .should(($icons) => {
+      expect($icons.length, 'chart download icons').to.be.greaterThan(index);
+    })
+    .eq(index)
+    .click();
 };
 
 Then('I am able to download percentage tree of forest', () => {

@@ -12,7 +12,7 @@ env:
 
 jobs:
   test_qa:
-    runs-on: ubuntu-4core-16gb
+    runs-on: ubuntu-latest
     timeout-minutes: 90 # Timeout the workflow after 90 minutes = 1.5 hours
 
     strategy:

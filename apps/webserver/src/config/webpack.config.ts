@@ -61,15 +61,13 @@ export default (): webpack.Configuration => {
       {
         loader: 'sass-loader',
         options: {
-          // Use the modern Sass API instead of the deprecated legacy JS API.
-          api: 'modern',
           sassOptions: {
             // Don't emit warnings for stylesheets pulled in from node_modules.
             quietDeps: true,
-            // The codebase still uses @import and global built-ins (darken(),
-            // lighten(), map-get(), ...). Silence those deprecations until the
-            // stylesheets are migrated to @use / sass:color / sass:map.
-            silenceDeprecations: ['import', 'global-builtin', 'color-functions'],
+            // The codebase still uses @import, global built-ins (darken(),
+            // lighten(), map-get(), ...) and the legacy JS API. Silence those
+            // deprecations rather than migrating the stylesheets.
+            silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions'],
           },
         },
       },

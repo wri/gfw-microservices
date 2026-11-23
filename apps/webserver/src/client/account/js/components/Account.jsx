@@ -219,7 +219,7 @@ export default class Account extends Component {
         });
         console.log(`Error: ${err}`);
       };
-      request.open('POST', '/createnewaccount', true);
+      request.open('POST', '/createnewaccount1', true);
       request.setRequestHeader('Content-Type', 'application/json');
       const obj = Object.assign({}, this.state);
       obj.arr_org_classification_ids = this.state.arr_org_classification_ids.map((c) => c.value);

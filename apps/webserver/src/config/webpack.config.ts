@@ -58,7 +58,21 @@ export default (): webpack.Configuration => {
       { loader: MiniCssExtractPlugin.loader },
       { loader: 'css-loader', options: { esModule: false } },
       { loader: 'postcss-loader' },
-      { loader: 'sass-loader' },
+      {
+        loader: 'sass-loader',
+        options: {
+          // Use the modern Sass API instead of the deprecated legacy JS API.
+          api: 'modern',
+          sassOptions: {
+            // Don't emit warnings for stylesheets pulled in from node_modules.
+            quietDeps: true,
+            // The codebase still uses @import and global built-ins (darken(),
+            // lighten(), map-get(), ...). Silence those deprecations until the
+            // stylesheets are migrated to @use / sass:color / sass:map.
+            silenceDeprecations: ['import', 'global-builtin', 'color-functions'],
+          },
+        },
+      },
     ],
     exclude: excludes,
   });

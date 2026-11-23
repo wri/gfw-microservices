@@ -1,13 +1,11 @@
 import Graphic from '@arcgis/core/Graphic';
 import { showMapLoader } from '../../actions/mapActions';
-import Locator from '@arcgis/core/tasks/Locator';
+import { addressToLocations, suggestLocations } from '@arcgis/core/rest/locator';
 import SearchSource from '@arcgis/core/widgets/Search/SearchSource';
 import store from '../../store';
 import errorLogger from '../../../../common/js/utils/errorLogger';
 
-const locator = new Locator({
-  url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-});
+const WORLD_GEOCODE_URL = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer';
 
 function createWorldGeocodingSource(sourceIndex = 999) {
   return new SearchSource({
@@ -16,7 +14,7 @@ function createWorldGeocodingSource(sourceIndex = 999) {
 
     async getSuggestions(params) {
       try {
-        const results = await locator.suggestLocations({
+        const results = await suggestLocations(WORLD_GEOCODE_URL, {
           text: params.suggestTerm,
           location: params.location,
           maxSuggestions: 4,
@@ -52,7 +50,7 @@ function createWorldGeocodingSource(sourceIndex = 999) {
           return [];
         }
 
-        const locations = await locator.addressToLocations({
+        const locations = await addressToLocations(WORLD_GEOCODE_URL, {
           address: { SingleLine: address },
           maxLocations: 1,
         });

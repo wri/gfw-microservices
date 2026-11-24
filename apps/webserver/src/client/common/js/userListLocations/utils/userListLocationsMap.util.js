@@ -8,6 +8,7 @@ import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 
 // Utils
 import geojsonUtil from '../../utils/arcgis-to-geojson';
+import { ensurePopupWidget } from '../../utils/esri.utils';
 import {
   getLongLat,
   getVectorTilePointFeature,
@@ -167,7 +168,11 @@ export async function setUserListLocationsVectorTileLayer(
   esriMapView.map.add(userLocationsVectorTileLayer);
 
   await userLocationsVectorTileLayer.when(() => {
-    esriMapView.popup.watch('selectedFeature', (graphic) => {
+    // ArcGIS 4.34 creates the Popup widget lazily, so `esriMapView.popup` may still be a
+    // plain properties placeholder here (no `watch`/`open`). Ensure a live widget first.
+    const popup = ensurePopupWidget(esriMapView);
+
+    popup.watch('selectedFeature', (graphic) => {
       if (graphic) {
         handleVectorTileHighlightLayerStyle(
           userLocationsVectorTileLayer,
@@ -203,7 +208,7 @@ export async function setUserListLocationsVectorTileLayer(
             return graphic;
           });
 
-          esriMapView.popup.open({
+          popup.open({
             location: event.mapPoint, // Set the location of the popup to the clicked location
             features: getFeaturesGraphics,
           });

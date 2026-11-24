@@ -21,7 +21,8 @@ export async function getLocationGeometry(props, mapView, selectedList) {
 
   if (selectedList && !selectedList.isGlobalForestWatchList) {
     const { listData, userLists, gfwLists, userSharedLists } = props;
-    const selectedFeaturePopup = mapView.popup.features[mapView.popup.selectedFeatureIndex];
+    // `popup` can still be a plain properties placeholder in ArcGIS 4.34, so guard the access.
+    const selectedFeaturePopup = mapView?.popup?.features?.[mapView.popup.selectedFeatureIndex];
     let listTableName;
 
     if (!_isEmpty(listData)) {

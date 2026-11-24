@@ -11,6 +11,7 @@ import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
 import MapView from '@arcgis/core/views/MapView';
 import Point from '@arcgis/core/geometry/Point';
 import PopupTemplate from '@arcgis/core/PopupTemplate';
+import Popup from '@arcgis/core/widgets/Popup';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
@@ -975,9 +976,19 @@ class Map extends Component {
       customActions.push(popupSubscribeAction);
     }
 
-    // Remove the default popup actions (e.g. zoom)
-    this.view.popup.viewModel.includeDefaultActions = false;
-    this.view.popup.actions = customActions;
+    // ArcGIS 4.34 creates the Popup widget lazily: `view.popup` is only a plain
+    // properties placeholder until the popup is first opened, so
+    // `view.popup.viewModel` is undefined here (it used to be a live Popup in
+    // 4.20). Instantiate the widget explicitly so `viewModel`, `actions`,
+    // `on()` and `watch()` are all available immediately.
+    this.view.popup = new Popup({
+      view: this.view,
+      viewModel: {
+        // Remove the default popup actions (e.g. zoom)
+        includeDefaultActions: false,
+      },
+      actions: customActions,
+    });
     this.defaultPopupActions = customActions;
 
     this.initializeSketchViewModel(view);

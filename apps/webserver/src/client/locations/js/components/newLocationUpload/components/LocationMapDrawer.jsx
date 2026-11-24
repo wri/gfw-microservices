@@ -33,10 +33,23 @@ export const LocationMapDrawer = ({
   const modeRef = useRef(mode);
   const hoverGraphicsRef = useRef([]);
   const hoverTimeoutRef = useRef(null);
+  const goToTimeoutRef = useRef(null);
 
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  // Cancel any queued goTo animation on unmount. Otherwise the timer fires after
+  // the MapView is destroyed and ArcGIS throws
+  // "Cannot read properties of null (reading 'animation')" as an unhandled rejection.
+  useEffect(() => {
+    return () => {
+      if (goToTimeoutRef.current) {
+        clearTimeout(goToTimeoutRef.current);
+        goToTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   // Hover event
   useEffect(() => {
@@ -187,13 +200,27 @@ export const LocationMapDrawer = ({
     addCoordinateTextFromPolygon(polygon, mapView);
 
     if (polygon && polygon.centroid) {
-      setTimeout(() => {
-        mapView.goTo(
-          {
-            target: [polygon.centroid],
-          },
-          { duration: 1000 }
-        );
+      if (goToTimeoutRef.current) {
+        clearTimeout(goToTimeoutRef.current);
+      }
+
+      goToTimeoutRef.current = setTimeout(() => {
+        goToTimeoutRef.current = null;
+
+        if (!mapView || mapView.destroyed) {
+          return;
+        }
+
+        mapView
+          .goTo(
+            {
+              target: [polygon.centroid],
+            },
+            { duration: 1000 }
+          )
+          .catch(() => {
+            // The view can be destroyed while the animation is in flight.
+          });
       }, 500);
     }
 

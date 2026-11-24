@@ -22,6 +22,7 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   const [coordinates, setCoordinates] = useState<Coordinate[]>(
     Array.from({ length: initialAmountOfCoordinates }, () => generateEmptyCoordinate())
   );
+  const goToTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     sketchViewModelRef.current = sketchViewModel;
@@ -36,7 +37,18 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
     return cleanup;
   }, [shouldLoadMap]);
 
+  const clearPendingGoTo = () => {
+    if (goToTimeoutRef.current) {
+      clearTimeout(goToTimeoutRef.current);
+      goToTimeoutRef.current = null;
+    }
+  };
+
   const cleanup = () => {
+    // Cancel any queued goTo animation before destroying the view. Otherwise the
+    // timer fires after destroy() and ArcGIS throws
+    // "Cannot read properties of null (reading 'animation')" as an unhandled rejection.
+    clearPendingGoTo();
     if (sketchViewModelRef.current) {
       sketchViewModelRef.current.destroy();
       sketchViewModelRef.current = null;
@@ -98,13 +110,26 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
 
     mapView.graphics.add(graphic);
 
-    setTimeout(() => {
-      mapView?.goTo(
-        {
-          target: graphic,
-        },
-        { duration: 1000 }
-      );
+    clearPendingGoTo();
+    goToTimeoutRef.current = setTimeout(() => {
+      goToTimeoutRef.current = null;
+
+      const view = mapViewRef.current;
+      if (!view || view.destroyed) {
+        return;
+      }
+
+      view
+        .goTo(
+          {
+            target: graphic,
+          },
+          { duration: 1000 }
+        )
+        .catch(() => {
+          // The view can be destroyed while the animation is in flight (e.g. the
+          // user navigates to the next step). Swallow the resulting rejection.
+        });
     }, 500);
     setGeometry(geometry);
     addCoordinateTextFromPolygon(geometry, mapView);

@@ -23,7 +23,10 @@ const shouldIgnoreUncaughtException = (message: string): boolean => {
     message.includes('Module not found') ||
     message.includes('plausible is not defined') ||
     message.includes("Cannot read properties of null (reading 'sequence')") ||
-    message.includes("Cannot set properties of null (setting 'animationInProgress')")
+    message.includes("Cannot set properties of null (setting 'animationInProgress')") ||
+    // ArcGIS MapView teardown race: a queued goTo() animation fires after the
+    // view is destroyed (e.g. navigating away from the polygon step).
+    message.includes("Cannot read properties of null (reading 'animation')")
   );
 };
 

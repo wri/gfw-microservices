@@ -127,6 +127,7 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
     setError,
     reset,
     watch,
+    getValues,
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -360,7 +361,15 @@ export function ConfigureList({ userLists }: { userLists: UserList[] }) {
                   value={field.value || ''}
                   onChange={(e) => {
                     const value = (e.target.value as CommoditiesType) || '';
-                    reset({ commodity: value as CommoditiesType });
+                    // Preserve the current field values and only override the
+                    // commodity. Passing a partial object to `reset` used to
+                    // keep the other values, but react-hook-form >= 7.92 treats
+                    // the object as the complete form state and wipes every
+                    // field that is not included.
+                    reset({
+                      ...getValues(),
+                      commodity: value as CommoditiesType,
+                    });
                     setFormFields((v) => ({ ...v, existingListName: '' }));
                     field.onChange(value);
                   }}

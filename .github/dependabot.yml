@@ -19,6 +19,12 @@ updates:
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+      # Pinned deliberately: 11.1.x uses `const` type parameters which require
+      # TypeScript >= 5.0, but this repo is on TypeScript 4.9.
+      - dependency-name: '@nestjs/terminus'
+      # Pinned deliberately: 4.2+ ships an index.d.ts that re-exports "./*.ts"
+      # paths which TypeScript 4.9 cannot resolve.
+      - dependency-name: 'date-fns'
 
   - package-ecosystem: 'github-actions'
     directory: '/'

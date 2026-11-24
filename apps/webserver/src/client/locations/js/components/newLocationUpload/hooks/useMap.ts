@@ -38,7 +38,9 @@ export const useMap = (shouldLoadMap: boolean, initialAmountOfCoordinates: numbe
   }, [shouldLoadMap]);
 
   const clearPendingGoTo = () => {
-    if (goToTimeoutRef.current) {
+    // Timeout IDs can be 0 in some environments, so compare against null
+    // explicitly rather than relying on truthiness.
+    if (goToTimeoutRef.current !== null) {
       clearTimeout(goToTimeoutRef.current);
       goToTimeoutRef.current = null;
     }

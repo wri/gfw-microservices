@@ -23,16 +23,30 @@ const shouldIgnoreUncaughtException = (message: string): boolean => {
     message.includes('Module not found') ||
     message.includes('plausible is not defined') ||
     message.includes("Cannot read properties of null (reading 'sequence')") ||
-    message.includes("Cannot set properties of null (setting 'animationInProgress')") ||
-    // ArcGIS MapView teardown race: a queued goTo() animation fires after the
-    // view is destroyed (e.g. navigating away from the polygon step).
-    message.includes("Cannot read properties of null (reading 'animation')")
+    message.includes("Cannot set properties of null (setting 'animationInProgress')")
+  );
+};
+
+// ArcGIS MapView teardown race: a queued goTo() animation fires after the view
+// is destroyed (e.g. navigating away from the polygon step). The message alone
+// is generic, so also require an ArcGIS frame in the stack to avoid masking
+// unrelated regressions. Production bundles are minified, so match the ArcGIS
+// `goTo` frame as well as the unminified module path.
+const ARCGIS_STACK_PATTERN = /arcgis|\.goTo\b/i;
+
+const isArcGisTeardownError = (err: Error): boolean => {
+  const message = err?.message ?? '';
+  const stack = err?.stack ?? '';
+
+  return (
+    message.includes("Cannot read properties of null (reading 'animation')") &&
+    ARCGIS_STACK_PATTERN.test(stack)
   );
 };
 
 // Handle module resolution errors at runtime
 Cypress.on('uncaught:exception', (err) => {
-  if (shouldIgnoreUncaughtException(err.message)) {
+  if (shouldIgnoreUncaughtException(err.message) || isArcGisTeardownError(err)) {
     // Catch general "not defined" errors
     console.warn('Ignored error:', err.message);
     return false; // Ignore error and continue test

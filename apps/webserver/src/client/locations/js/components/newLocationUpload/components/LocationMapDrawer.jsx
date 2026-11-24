@@ -44,7 +44,9 @@ export const LocationMapDrawer = ({
   // "Cannot read properties of null (reading 'animation')" as an unhandled rejection.
   useEffect(() => {
     return () => {
-      if (goToTimeoutRef.current) {
+      // Timeout IDs can be 0 in some environments, so compare against null
+      // explicitly rather than relying on truthiness.
+      if (goToTimeoutRef.current !== null) {
         clearTimeout(goToTimeoutRef.current);
         goToTimeoutRef.current = null;
       }
@@ -200,7 +202,7 @@ export const LocationMapDrawer = ({
     addCoordinateTextFromPolygon(polygon, mapView);
 
     if (polygon && polygon.centroid) {
-      if (goToTimeoutRef.current) {
+      if (goToTimeoutRef.current !== null) {
         clearTimeout(goToTimeoutRef.current);
       }
 

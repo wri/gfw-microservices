@@ -19,10 +19,19 @@ import { MAP_WATER_COLOR } from '../config/map.config';
 export async function getLocationGeometry(props, mapView, selectedList) {
   let geometry = {};
 
+  // `popup` can still be a plain properties placeholder in ArcGIS 4.34, so read the
+  // selected feature defensively instead of assuming the widget is instantiated.
+  const popupFeatures = mapView?.popup?.features;
+  const selectedFeatureIndex = mapView?.popup?.selectedFeatureIndex;
+  const selectedFeaturePopup = popupFeatures?.[selectedFeatureIndex];
+
   if (selectedList && !selectedList.isGlobalForestWatchList) {
+    // Without a selected popup feature there is no location to resolve.
+    if (!selectedFeaturePopup) {
+      return geometry;
+    }
+
     const { listData, userLists, gfwLists, userSharedLists } = props;
-    // `popup` can still be a plain properties placeholder in ArcGIS 4.34, so guard the access.
-    const selectedFeaturePopup = mapView?.popup?.features?.[mapView.popup.selectedFeatureIndex];
     let listTableName;
 
     if (!_isEmpty(listData)) {
@@ -39,8 +48,8 @@ export async function getLocationGeometry(props, mapView, selectedList) {
       selectedFeaturePopup
     );
     geometry = selectedFeaturePopupGraphic.geometry;
-  } else if (mapView?.popup?.features && mapView?.popup?.features.length > 0) {
-    geometry = mapView.popup.features[mapView.popup.selectedFeatureIndex].geometry;
+  } else if (selectedFeaturePopup) {
+    geometry = selectedFeaturePopup.geometry;
   }
 
   return geometry;

@@ -41,8 +41,8 @@ module.exports = (app) => {
     }
   });
 
-  app.post('/createnewaccount', (req, res) => {
-    console.log('POST /createnewaccount');
+  app.post('/createnewaccount1', (req, res) => {
+    console.log('POST /createnewaccount1');
     let {
       parent_org_name,
       is_subsidiary,
